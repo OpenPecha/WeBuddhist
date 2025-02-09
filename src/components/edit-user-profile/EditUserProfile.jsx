@@ -9,7 +9,7 @@ import {useTranslate} from "@tolgee/react";
 const EditUserProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useTranslate();
+  const {t} = useTranslate();
 
 
   const userInfo = location.state?.userInfo || {};
@@ -18,7 +18,7 @@ const EditUserProfile = () => {
       return response.data;
     },
     {
-      onSuccess:(data) => {
+      onSuccess: (data) => {
         navigate("/profile")
       }
     }
@@ -83,29 +83,29 @@ const EditUserProfile = () => {
       <Form onSubmit={handleSubmit}>
         <Tabs defaultActiveKey="personalDetails" id="edit-profile-tabs" className="mb-4">
           {/* Personal Details Tab */}
-          <Tab eventKey="personalDetails" title="Personal Details">
+          <Tab eventKey="personalDetails" title={t("profile.personal_details")}>
             <Row>
               <Col md={6}>
                 <Form.Group controlId="formFirstName">
-                  <Form.Label>{t("profile.first_name")}</Form.Label>
+                  <Form.Label>{t("sign_up.form.first_name")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="firstname"
                     value={formData.firstname}
                     onChange={handleChange}
-                    placeholder={ t("profile.enter-your-first-name") }
+                    placeholder={t("profile.enter-your-first-name")}
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group controlId="formLastName">
-                  <Form.Label>{ t("profile.last_name") }</Form.Label>
+                  <Form.Label>{t("sign_up.form.last_name")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="lastname"
                     value={formData.lastname}
                     onChange={handleChange}
-                    placeholder={ t("profile.enter-your-last-name") }
+                    placeholder={t("profile.enter-your-last-name")}
                   />
                 </Form.Group>
               </Col>
@@ -114,25 +114,25 @@ const EditUserProfile = () => {
             <Row>
               <Col md={6}>
                 <Form.Group controlId="formTitle">
-                  <Form.Label>{ t("profile.title") }</Form.Label>
+                  <Form.Label>{t("admin.english_title")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
-                    placeholder={ t("profile.enter-your-title") }
+                    placeholder={t("profile.enter-your-title")}
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group controlId="formOrganization">
-                  <Form.Label>{ t("profile.organization") }</Form.Label>
+                  <Form.Label>{t("profile.organization")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="organization"
                     value={formData.organization}
                     onChange={handleChange}
-                    placeholder={ t("profile.enter-your-organization") }
+                    placeholder={t("profile.enter-your-organization")}
                   />
                 </Form.Group>
               </Col>
@@ -141,73 +141,73 @@ const EditUserProfile = () => {
             <Row>
               <Col md={6}>
                 <Form.Group controlId="formLocation">
-                  <Form.Label>{ t("profile.enter-your-location") }</Form.Label>
+                  <Form.Label>{t("profile.enter-your-location")}</Form.Label>
                   <Form.Control
                     type="text"
                     name="location"
                     value={formData.location}
                     onChange={handleChange}
-                    placeholder={ t("profile.enter-your-location") }
+                    placeholder={t("profile.enter-your-location")}
                   />
                 </Form.Group>
               </Col>
             </Row>
 
-            <Form.Group controlId="formEducation">
-              <Form.Label>{ t("profile.education") }</Form.Label>
-              {formData.educations.map((edu, index) => (
-                <Row key={index} className="mb-2 align-items-center">
-                  <Col md={10}>
-                    <Form.Control
-                      type="text"
-                      value={edu}
-                      onChange={(e) => handleEducationChange(index, e.target.value)}
-                      placeholder={ t("profile.enter-your-education") }
-                    />
-                  </Col>
-                  <Col md={2} className="d-flex justify-content-between">
-                    <Button
-                      variant="outline-dark"
-                      size="sm"
-                      onClick={addEducation}
-                      className="me-2"
-                    >
-                      +
-                    </Button>
-                    {index !== 0 && (
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => {
-                          const updatedEducation = formData.educations.filter((_, i) => i !== index);
-                          setFormData({...formData, educations: updatedEducation});
-                        }}
-                      >
-                        ×
-                      </Button>
-                    )}
-                  </Col>
-                </Row>
-              ))}
-            </Form.Group>
+            <Row className="mb-2 align-items-center">
+              <Form.Group controlId="formEducation">
+                <Form.Label>{t("profile.education")}</Form.Label>
+                {formData.educations.map((edu, index) => (
+                  <div className="form-education" key={index}>
+                    <Col md={12} className="position-relative">
+                      <Form.Control
+                        type="text"
+                        value={edu}
+                        onChange={(e) => handleEducationChange(index, e.target.value)}
+                        placeholder={t("profile.enter-your-education")}
+                      />
+                      {index !== 0 && (
+                        <span
+                          className="remove-icon"
+                          onClick={() => {
+                            const updatedEducation = formData.educations.filter((_, i) => i !== index);
+                            setFormData({ ...formData, educations: updatedEducation });
+                          }}
+                        >
+              ✕
+            </span>
+                      )}
+                    </Col>
+                  </div>
+                ))}
+                <Button
+                  variant="outline-dark"
+                  size="sm"
+                  onClick={addEducation}
+                  className="btn-add"
+                >
+                  Add line
+                </Button>
+              </Form.Group>
+            </Row>
+
 
             <Row>
               <Form.Group controlId="formAboutMe">
-                <Form.Label>{ t("profile.about-me") }</Form.Label>
+                <Form.Label>{t("profile.about-me")}</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={3}
                   name="about_me"
                   value={formData.about_me}
                   onChange={handleChange}
-                  placeholder={ t("profile.tell-us-about-yourself") }
+                  placeholder={t("profile.tell-us-about-yourself")}
                 />
               </Form.Group>
             </Row>
           </Tab>
 
           {/* Contact Details Tab */}
-          <Tab eventKey="contactDetails" title="Contact Details">
+          <Tab eventKey="contactDetails" title={t("profile.contact_details")}>
             <Row>
               {formData.social_profiles.map((profile) => (
                 <Col md={6} key={profile.account}>
@@ -227,11 +227,11 @@ const EditUserProfile = () => {
         </Tabs>
 
         <div className="form-buttons">
-          <Button variant="outline-danger" type="button" onClick={() => navigate(-1)}>
-            { t("profile.cancel") }
+          <Button className="btn-cancel" type="button" onClick={() => navigate(-1)}>
+            {t("common.button.cancel")}
           </Button>
-          <Button variant="outline-success" type="submit">
-            { t("profile.submit") }
+          <Button className="btn-submit" type="submit">
+            {t("common.button.save")}
           </Button>
         </div>
       </Form>
