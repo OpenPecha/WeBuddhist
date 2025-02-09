@@ -21,6 +21,16 @@ export const mockUseAuth = () => {
   }));
 }
 
+export const mockUseAuth0 = () => {
+  vi.mock("@auth0/auth0-react", () => ({
+    useAuth0: () => ({
+      isAuthenticated: false,
+      logout: vi.fn(),
+      loginWithRedirect: vi.fn(),
+      user: null,
+    }),
+  }));
+}
 export const mockReactQuery = () => {
   vi.mock("react-query", async () => {
     const actual = await vi.importActual("react-query");

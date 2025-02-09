@@ -1,10 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
 import UserProfile from "./UserProfile.jsx";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import {QueryClient, QueryClientProvider, useQuery} from "react-query";
 import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
+import {ACCESS_TOKEN} from "../../utils/Constants.js";
 
 mockAxios();
 mockUseAuth()
@@ -17,7 +18,7 @@ describe("UserProfile Component", () => {
     lastname: "Doe",
     title: "Senior Software Engineer",
     location: "Bangalore",
-    educations: ["Master of Computer Application (MCA)", "Bachelor of Science, Physics",],
+    educations: ["Master of Computer Application (MCA)", "Bachelor of Science, Physics"],
     organization: "pecha org",
     following: 1,
     followers: 1,
@@ -29,6 +30,13 @@ describe("UserProfile Component", () => {
       { account: "youtube", url: "https://youtube.com" },
     ]
   };
+  beforeAll(() => {
+    vi.spyOn(window, 'alert').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    window.alert.mockRestore(); // Restore the original implementation of alert
+  });
 
   beforeEach(() => {
     useQuery.mockImplementation(() => ({
@@ -52,7 +60,7 @@ describe("UserProfile Component", () => {
   test("renders the user profile with all details", () => {
     setup();
 
-    // Check if name and job title are rendered
+    // Check if name and job title ares rendered
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("Senior Software Engineer")).toBeInTheDocument();
 
@@ -63,7 +71,7 @@ describe("UserProfile Component", () => {
 
   test("Edit profile button", () => {
     setup();
-    expect(screen.getByText("Edit Profile")).toBeInTheDocument()
+    expect(screen.getByText("Edit Profile")).toBeInTheDocument();
   });
 
   test("renders all social media links with correct attributes", () => {
@@ -92,18 +100,63 @@ describe("UserProfile Component", () => {
     expect(email).toHaveAttribute("href", "mailto:test@pecha.com");
   });
 
-  //todo - fix or delte after translation update in tolgee
-  // test("renders tab components and displays their content", () => {
-  //   setup();
-  //
-  //   // Check if the tabs are rendered
-  //   expect(screen.getAllByText("Sheets")[0]).toBeInTheDocument();
-  //   expect(screen.getAllByText("Collections")[0]).toBeInTheDocument();
-  //   expect(screen.getAllByText("Notes")[0]).toBeInTheDocument();
-  //   expect(screen.getAllByText("Buddhist Text Tracker")[0]).toBeInTheDocument();
-  //
-  //   // Check default tab content
-  //   expect(screen.getByText("Manage your sheets and documents here.")).toBeInTheDocument();
-  // });
+  test("renders tabs and their content", () => {
+    setup();
+
+    // Check if the tabs are rendered
+    expect(screen.getByLabelText("profile.sheets.title")).toBeInTheDocument();
+    expect(screen.getByLabelText("profile.collections.title")).toBeInTheDocument();
+    expect(screen.getByLabelText("profile.notes.title")).toBeInTheDocument();
+    expect(screen.getByLabelText("profile.text_tracker.title")).toBeInTheDocument();
+
+    // Check content for each tab
+    fireEvent.click(screen.getByLabelText("profile.sheets.title"));
+    expect(screen.getByLabelText("profile.sheets.title")).toBeInTheDocument();
+    expect(screen.getByText("profile.sheets.description")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText("profile.collections.title"));
+    expect(screen.getByLabelText("profile.collections.title")).toBeInTheDocument();
+    expect(screen.getByText("profile.collections.description")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText("profile.notes.title"));
+    expect(screen.getByLabelText("profile.notes.title")).toBeInTheDocument();
+    expect(screen.getByText("profile.notes.description")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText("profile.text_tracker.title"));
+    expect(screen.getByLabelText("profile.text_tracker.title")).toBeInTheDocument();
+    expect(screen.getByText("profile.text_tracker.descriptions")).toBeInTheDocument();
+  });
+
+  test("picture upload", async () => {
+    setup(); // Ensure setup() renders your component or initializes the test environment
+
+    const fileInput = screen.getByText("Add Picture");
+    expect(fileInput).toBeInTheDocument();
+
+    const file = new Blob(["test"], { type: "image/png" });
+    Object.defineProperty(fileInput, 'files', { value: [file] });
+    fireEvent.change(fileInput);
+
+
+    const invalidFile = new Blob(["test2"], { type: "text/plain" });
+    Object.defineProperty(fileInput, 'files2', { value: [invalidFile] });
+    fireEvent.change(fileInput);
+
+
+    const largeFile = new Blob(["test3".repeat(1024 * 1024 + 1)], { type: "image/png" });
+    Object.defineProperty(fileInput, 'files3', { value: [largeFile] });
+    fireEvent.change(fileInput);
+
+  });
+
+  test("handles logout correctly", () => {
+    setup();
+    const logoutText = screen.getByText("Log Out");
+    fireEvent.click(logoutText);
+
+    // Check if logout logic works correctly by verifying localStorage and sessionStorage are cleared
+    expect(localStorage.getItem(ACCESS_TOKEN)).toBeNull();
+    expect(sessionStorage.getItem(ACCESS_TOKEN)).toBeNull();
+  });
 
 });

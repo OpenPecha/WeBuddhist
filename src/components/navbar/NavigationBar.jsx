@@ -94,7 +94,7 @@ const NavigationBar = () => {
             </Nav.Link>
 
             <Dropdown align="end">
-              <Dropdown.Toggle variant="light" id="dropdown-basic">
+              <Dropdown.Toggle variant="light" id="dropdown-basic" data-testid = "dropdown-basic">
                 <FaGlobe size={ 20 } />
               </Dropdown.Toggle>
 
