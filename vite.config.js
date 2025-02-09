@@ -24,7 +24,8 @@ export default defineConfig(({ mode }) => {
       coverage: {
         provider: 'istanbul',
         reporter: ["text", "json", "html"],
-        reportsDirectory: "./coverage"
+        reportsDirectory: "./coverage",
+        exclude: ["**/*.js", "**/*test.jsx"],
       },
     },
     css: {
