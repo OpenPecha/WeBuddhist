@@ -35,8 +35,7 @@ const ResetPassword = () => {
       return response.data;
     },
     {
-      onSuccess: (data) => {
-        console.log("Reset password successful", data);
+      onSuccess: () => {
         setFormData({ newPassword: "", confirmPassword: "" });
       },
       onError: (error) => {

@@ -71,7 +71,6 @@ const EditUserProfile = () => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
     updateProfileMutation.mutateAsync(formData)
   };
 

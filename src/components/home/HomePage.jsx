@@ -1,12 +1,9 @@
 import { Button, Col, Container, Row } from "react-bootstrap";
 import "./HomePage.scss";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useTranslate } from "@tolgee/react";
 
 const HomePage = () => {
     const { t } = useTranslate();
-    const {user} = useAuth0();
-    console.log(user)
 
     return (
         <Container fluid className="homepage-container">

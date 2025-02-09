@@ -36,8 +36,7 @@ const ForgotPassword = () => {
         } else if (!validateEmail(email)) {
             setError(t("user.validation.invalid_email"));
         } else {
-            setError(""); // Clear any previous errors
-            console.log("Email submitted:", email);
+            setError("");
             forgotPasswordMutation.mutate({email})
         }
     };
