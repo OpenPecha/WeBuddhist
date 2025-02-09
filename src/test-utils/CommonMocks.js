@@ -21,12 +21,16 @@ export const mockUseAuth = () => {
   }));
 }
 
-export const mockUseQuery = () => {
+export const mocQuery = () => {
   vi.mock("react-query", async () => {
     const actual = await vi.importActual("react-query");
     return {
       ...actual,
       useQuery: vi.fn(),
+      useMutation: vi.fn(() => ({
+        mutateAsync: vi.fn().mockResolvedValue({ success: true }),
+        mutate: vi.fn().mockResolvedValue({ success: true }),
+      }))
     };
   });
 }

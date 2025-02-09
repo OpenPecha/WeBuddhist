@@ -1,15 +1,15 @@
-import {useState} from "react";
-import {Button, Col, Form, Row, Tab, Tabs} from "react-bootstrap";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useState } from "react";
+import { Button, Col, Form, Row, Tab, Tabs } from "react-bootstrap";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./EditUserProfile.scss";
-import {useMutation} from "react-query";
+import { useMutation } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
-import {useTranslate} from "@tolgee/react";
+import { useTranslate } from "@tolgee/react";
 
 const EditUserProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const {t} = useTranslate();
+  const { t } = useTranslate();
 
 
   const userInfo = location.state?.userInfo || {};
@@ -35,37 +35,37 @@ const EditUserProfile = () => {
     about_me: userInfo.about_me || "",
     avatar_url: userInfo.avatar_url || "",
     social_profiles: [
-      {account: "email", url: userInfo.email || ""},
-      {account: "x.com", url: userInfo["x.com"] || ""},
-      {account: "linkedin", url: userInfo.linkedIn || ""},
-      {account: "facebook", url: userInfo.facebook || ""},
-      {account: "youtube", url: userInfo.youtube || ""},
+      { account: "email", url: userInfo.email || "" },
+      { account: "x.com", url: userInfo["x.com"] || "" },
+      { account: "linkedin", url: userInfo.linkedIn || "" },
+      { account: "facebook", url: userInfo.facebook || "" },
+      { account: "youtube", url: userInfo.youtube || "" },
     ],
   });
 
   // Handle input change for simple fields
   const handleChange = (e) => {
-    const {name, value} = e.target;
-    setFormData({...formData, [name]: value});
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   // Handle education changes
   const handleEducationChange = (index, value) => {
     const updatedEducation = [...formData.educations];
     updatedEducation[index] = value;
-    setFormData({...formData, educations: updatedEducation});
+    setFormData({ ...formData, educations: updatedEducation });
   };
 
   const addEducation = () => {
-    setFormData({...formData, educations: [...formData.educations, ""]});
+    setFormData({ ...formData, educations: [...formData.educations, ""] });
   };
 
   // Handle social profile changes
   const handleSocialProfileChange = (account, value) => {
     const updatedProfiles = formData.social_profiles.map((profile) =>
-      profile.account === account ? {...profile, url: value} : profile
+      profile.account === account ? { ...profile, url: value } : profile
     );
-    setFormData({...formData, social_profiles: updatedProfiles});
+    setFormData({ ...formData, social_profiles: updatedProfiles });
   };
 
   // Handle form submission
@@ -73,81 +73,80 @@ const EditUserProfile = () => {
     e.preventDefault();
     console.log(formData);
     updateProfileMutation.mutateAsync(formData)
-    // You can perform the API call or any other processing here
   };
 
   return (
     <div className="edit-user-profile">
       <h2>Edit Your Profile</h2>
-      <hr/>
-      <Form onSubmit={handleSubmit}>
+      <hr />
+      <Form onSubmit={ handleSubmit }>
         <Tabs defaultActiveKey="personalDetails" id="edit-profile-tabs" className="mb-4">
-          {/* Personal Details Tab */}
-          <Tab eventKey="personalDetails" title={t("profile.personal_details")}>
+          {/* Personal Details Tab */ }
+          <Tab eventKey="personalDetails" title={ t("profile.personal_details") }>
             <Row>
-              <Col md={6}>
+              <Col md={ 6 }>
                 <Form.Group controlId="formFirstName">
-                  <Form.Label>{t("sign_up.form.first_name")}</Form.Label>
+                  <Form.Label>{ t("sign_up.form.first_name") }</Form.Label>
                   <Form.Control
                     type="text"
                     name="firstname"
-                    value={formData.firstname}
-                    onChange={handleChange}
-                    placeholder={t("profile.enter-your-first-name")}
+                    value={ formData.firstname }
+                    onChange={ handleChange }
+                    placeholder={ t("profile.enter-your-first-name") }
                   />
                 </Form.Group>
               </Col>
-              <Col md={6}>
+              <Col md={ 6 }>
                 <Form.Group controlId="formLastName">
-                  <Form.Label>{t("sign_up.form.last_name")}</Form.Label>
+                  <Form.Label>{ t("sign_up.form.last_name") }</Form.Label>
                   <Form.Control
                     type="text"
                     name="lastname"
-                    value={formData.lastname}
-                    onChange={handleChange}
-                    placeholder={t("profile.enter-your-last-name")}
+                    value={ formData.lastname }
+                    onChange={ handleChange }
+                    placeholder={ t("profile.enter-your-last-name") }
                   />
                 </Form.Group>
               </Col>
             </Row>
 
             <Row>
-              <Col md={6}>
+              <Col md={ 6 }>
                 <Form.Group controlId="formTitle">
-                  <Form.Label>{t("admin.english_title")}</Form.Label>
+                  <Form.Label>{ t("admin.english_title") }</Form.Label>
                   <Form.Control
                     type="text"
                     name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    placeholder={t("profile.enter-your-title")}
+                    value={ formData.title }
+                    onChange={ handleChange }
+                    placeholder={ t("profile.enter-your-title") }
                   />
                 </Form.Group>
               </Col>
-              <Col md={6}>
+              <Col md={ 6 }>
                 <Form.Group controlId="formOrganization">
-                  <Form.Label>{t("profile.organization")}</Form.Label>
+                  <Form.Label>{ t("profile.organization") }</Form.Label>
                   <Form.Control
                     type="text"
                     name="organization"
-                    value={formData.organization}
-                    onChange={handleChange}
-                    placeholder={t("profile.enter-your-organization")}
+                    value={ formData.organization }
+                    onChange={ handleChange }
+                    placeholder={ t("profile.enter-your-organization") }
                   />
                 </Form.Group>
               </Col>
             </Row>
 
             <Row>
-              <Col md={6}>
+              <Col md={ 6 }>
                 <Form.Group controlId="formLocation">
-                  <Form.Label>{t("profile.enter-your-location")}</Form.Label>
+                  <Form.Label>{ t("profile.enter-your-location") }</Form.Label>
                   <Form.Control
                     type="text"
                     name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    placeholder={t("profile.enter-your-location")}
+                    value={ formData.location }
+                    onChange={ handleChange }
+                    placeholder={ t("profile.enter-your-location") }
                   />
                 </Form.Group>
               </Col>
@@ -155,34 +154,34 @@ const EditUserProfile = () => {
 
             <Row className="mb-2 align-items-center">
               <Form.Group controlId="formEducation">
-                <Form.Label>{t("profile.education")}</Form.Label>
-                {formData.educations.map((edu, index) => (
-                  <div className="form-education" key={index}>
-                    <Col md={12} className="position-relative">
+                <Form.Label>{ t("profile.education") }</Form.Label>
+                { formData.educations.map((edu, index) => (
+                  <div className="form-education" key={ index }>
+                    <Col md={ 12 } className="position-relative">
                       <Form.Control
                         type="text"
-                        value={edu}
-                        onChange={(e) => handleEducationChange(index, e.target.value)}
-                        placeholder={t("profile.enter-your-education")}
+                        value={ edu }
+                        onChange={ (e) => handleEducationChange(index, e.target.value) }
+                        placeholder={ t("profile.enter-your-education") }
                       />
-                      {index !== 0 && (
+                      { index !== 0 && (
                         <span
                           className="remove-icon"
-                          onClick={() => {
+                          onClick={ () => {
                             const updatedEducation = formData.educations.filter((_, i) => i !== index);
                             setFormData({ ...formData, educations: updatedEducation });
-                          }}
+                          } }
                         >
               ✕
             </span>
-                      )}
+                      ) }
                     </Col>
                   </div>
-                ))}
+                )) }
                 <Button
                   variant="outline-dark"
                   size="sm"
-                  onClick={addEducation}
+                  onClick={ addEducation }
                   className="btn-add"
                 >
                   Add line
@@ -193,45 +192,45 @@ const EditUserProfile = () => {
 
             <Row>
               <Form.Group controlId="formAboutMe">
-                <Form.Label>{t("profile.about-me")}</Form.Label>
+                <Form.Label>{ t("profile.about-me") }</Form.Label>
                 <Form.Control
                   as="textarea"
-                  rows={3}
+                  rows={ 3 }
                   name="about_me"
-                  value={formData.about_me}
-                  onChange={handleChange}
-                  placeholder={t("profile.tell-us-about-yourself")}
+                  value={ formData.about_me }
+                  onChange={ handleChange }
+                  placeholder={ t("profile.tell-us-about-yourself") }
                 />
               </Form.Group>
             </Row>
           </Tab>
 
-          {/* Contact Details Tab */}
-          <Tab eventKey="contactDetails" title={t("profile.contact_details")}>
+          {/* Contact Details Tab */ }
+          <Tab eventKey="contactDetails" title={ t("profile.contact_details") }>
             <Row>
-              {formData.social_profiles.map((profile) => (
-                <Col md={6} key={profile.account}>
-                  <Form.Group controlId={`form${profile.account}`}>
-                    <Form.Label>{t(`profile.${profile.account}`)}</Form.Label>
+              { formData.social_profiles.map((profile) => (
+                <Col md={ 6 } key={ profile.account }>
+                  <Form.Group controlId={ `form${ profile.account }` }>
+                    <Form.Label>{ t(`profile.${ profile.account }`) }</Form.Label>
                     <Form.Control
                       type="text"
-                      value={profile.url}
-                      onChange={(e) => handleSocialProfileChange(profile.account, e.target.value)}
-                      placeholder={t(`profile.enter-your-${profile.account}`)}
+                      value={ profile.url }
+                      onChange={ (e) => handleSocialProfileChange(profile.account, e.target.value) }
+                      placeholder={ t(`profile.enter-your-${ profile.account }`) }
                     />
                   </Form.Group>
                 </Col>
-              ))}
+              )) }
             </Row>
           </Tab>
         </Tabs>
 
         <div className="form-buttons">
-          <Button className="btn-cancel" type="button" onClick={() => navigate(-1)}>
-            {t("common.button.cancel")}
+          <Button className="btn-cancel" type="button" onClick={ () => navigate(-1) }>
+            { t("common.button.cancel") }
           </Button>
           <Button className="btn-submit" type="submit">
-            {t("common.button.save")}
+            { t("common.button.save") }
           </Button>
         </div>
       </Form>
