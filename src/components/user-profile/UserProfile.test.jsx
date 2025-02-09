@@ -3,12 +3,12 @@ import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
 import UserProfile from "./UserProfile.jsx";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
-import { mockAxios, mockTolgee, mockUseAuth, mocQuery } from "../../test-utils/CommonMocks.js";
+import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
 
 mockAxios();
 mockUseAuth()
-mocQuery()
+mockReactQuery()
 
 describe("UserProfile Component", () => {
   const queryClient = new QueryClient();

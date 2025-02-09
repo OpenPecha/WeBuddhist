@@ -21,7 +21,7 @@ export const mockUseAuth = () => {
   }));
 }
 
-export const mocQuery = () => {
+export const mockReactQuery = () => {
   vi.mock("react-query", async () => {
     const actual = await vi.importActual("react-query");
     return {

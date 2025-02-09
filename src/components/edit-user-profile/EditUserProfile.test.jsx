@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import EditUserProfile from "./EditUserProfile.jsx";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { mockAxios, mockTolgee, mockUseAuth, mocQuery } from "../../test-utils/CommonMocks.js";
+import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import "@testing-library/jest-dom";
 import { TolgeeProvider } from "@tolgee/react";
 
@@ -10,7 +10,7 @@ vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom"); // Import the actual module for non-mocked exports
   return {
     ...actual,
-    useNavigate: vi.fn(), // Mock `useNavigate`
+    useNavigate: vi.fn(),
     useLocation: vi.fn(() => ({
       state: {
         userInfo: {
@@ -36,7 +36,7 @@ vi.mock("react-router-dom", async () => {
 
 mockAxios();
 mockUseAuth()
-mocQuery()
+mockReactQuery()
 
 describe("EditUserProfile Component", () => {
   const queryClient = new QueryClient();
