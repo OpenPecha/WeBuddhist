@@ -22,8 +22,9 @@ export default defineConfig(({ mode }) => {
       globals: true,
       setupFiles: "./src/test-utils/CommonMocks.js",
       coverage: {
-        reporter: ["text", "html"],
-        reportsDirectory: "./coverage",
+        provider: 'istanbul',
+        reporter: ["text", "json", "html"],
+        reportsDirectory: "./coverage"
       },
     },
     css: {
