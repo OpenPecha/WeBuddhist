@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import * as ReactRouterDom from "react-router-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 import EditUserProfile from "./EditUserProfile.jsx";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -36,7 +37,7 @@ vi.mock("react-router-dom", async () => {
 
 mockAxios();
 mockUseAuth()
-mockReactQuery()
+mockReactQuery();
 
 describe("EditUserProfile Component", () => {
   const queryClient = new QueryClient();
@@ -95,6 +96,8 @@ describe("EditUserProfile Component", () => {
   });
 
   it("Submit button", () => {
+    const mockedUsedNavigate = vi.fn();
+    vi.spyOn(ReactRouterDom, "useNavigate").mockImplementation(() => mockedUsedNavigate);
     setup();
     const submitButton = screen.getByText("Save");
     fireEvent.click(submitButton);

@@ -18,6 +18,8 @@ export default [
         expect: 'readonly',
         test: 'readonly',
         beforeEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
       },
       parserOptions: {
         ecmaVersion: 'latest',

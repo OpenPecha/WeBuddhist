@@ -1,11 +1,11 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
 import UserProfile from "./UserProfile.jsx";
-import {QueryClient, QueryClientProvider, useQuery} from "react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
-import {ACCESS_TOKEN} from "../../utils/Constants.js";
+import { ACCESS_TOKEN } from "../../utils/Constants.js";
 
 mockAxios();
 mockUseAuth()
@@ -128,25 +128,19 @@ describe("UserProfile Component", () => {
   });
 
   test("picture upload", async () => {
-    setup(); // Ensure setup() renders your component or initializes the test environment
+    setup();
 
-    const fileInput = screen.getByText("Add Picture");
-    expect(fileInput).toBeInTheDocument();
+    const fileInput = screen.getByLabelText("Add Picture", { selector: "input" });
 
-    const file = new Blob(["test"], { type: "image/png" });
-    Object.defineProperty(fileInput, 'files', { value: [file] });
-    fireEvent.change(fileInput);
+    const file = new File(["test".repeat(900 * 900)], "test.png", { type: "image/png" });
+    fireEvent.change(fileInput, { target: { files: [file] } });
 
 
-    const invalidFile = new Blob(["test2"], { type: "text/plain" });
-    Object.defineProperty(fileInput, 'files2', { value: [invalidFile] });
-    fireEvent.change(fileInput);
+    const invalidFile = new File(["test2".repeat(100 * 100 + 1)], "test.txt", { type: "text/plain" });
+    fireEvent.change(fileInput, { target: { files: [invalidFile] } });
 
-
-    const largeFile = new Blob(["test3".repeat(1024 * 1024 + 1)], { type: "image/png" });
-    Object.defineProperty(fileInput, 'files3', { value: [largeFile] });
-    fireEvent.change(fileInput);
-
+    const largeFile = new File(["test3".repeat(1024 * 1024 + 1)], "test.png", { type: "image/png" });
+    fireEvent.change(fileInput, { target: { files: [largeFile] } });
   });
 
   test("handles logout correctly", () => {
