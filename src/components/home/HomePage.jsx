@@ -1,10 +1,21 @@
 import { Button, Col, Container, Row } from "react-bootstrap";
 import "./HomePage.scss";
 import { useTranslate } from "@tolgee/react";
+import axiosInstance from "../../config/axios-config.js";
+import {LANGUAGE} from "../../utils/Constants.js";
+import {useQuery} from "react-query";
 
+
+const fetchTexts = async () => {
+    const language = localStorage.getItem(LANGUAGE) ??  "bo";
+    const { data } = await axiosInstance.get("api/v1/texts", {
+        params: { language }
+    });
+    return data;
+}
 const HomePage = () => {
     const { t } = useTranslate();
-
+    const {data: textData, isLoading: textsIsLoading} = useQuery("texts", fetchTexts,{refetchOnWindowFocus: false})
     return (
         <Container fluid className="homepage-container">
             <Row className="justify-content-center">
