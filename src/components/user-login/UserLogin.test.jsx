@@ -5,6 +5,7 @@ import UserLogin from "./UserLogin";
 import "@testing-library/jest-dom";
 import { mockAxios, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
+import axiosInstance from "../../config/axios-config.js";
 
 mockUseAuth();
 mockAxios();
@@ -74,6 +75,9 @@ describe("UserLogin Component", () => {
   });
 
   test("submits the form when valid data is entered", () => {
+    axiosInstance.post.mockResolvedValueOnce({
+      data: { auth: { access_token: "myAccessToken" } },
+    });
     setup();
 
     const emailInput = screen.getByPlaceholderText("Email Address");

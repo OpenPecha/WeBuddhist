@@ -1,12 +1,13 @@
 import { vi } from "vitest";
 import { Tolgee } from "@tolgee/react";
 import localeEn from "../i18n/en.json";
+import "@testing-library/jest-dom";
 
 export const mockAxios = () => {
-  vi.mock("../services/config/axios-config.js", () => ({
+  vi.mock("../config/axios-config.js", () => ({
     default: {
       get: vi.fn(),
-      post: vi.fn(),
+      post: vi.fn(() => Promise.resolve({ data: "Success" })),
     },
   }));
 };
@@ -31,19 +32,37 @@ export const mockUseAuth0 = () => {
     }),
   }));
 }
+
 export const mockReactQuery = () => {
   vi.mock("react-query", async () => {
     const actual = await vi.importActual("react-query");
     return {
       ...actual,
       useQuery: vi.fn(),
-      useMutation: vi.fn(() => ({
-        mutateAsync: vi.fn().mockResolvedValue({ success: true }),
-        mutate: vi.fn().mockResolvedValue({ success: true }),
-      }))
+      useMutation: (mutationFn, options) => {
+        const mutate = async (args) => {
+          try {
+            const result = await mutationFn(args);
+            if (options?.onSuccess) {
+              options.onSuccess(result);
+            }
+            return result;
+          } catch (error) {
+            if (options?.onError) {
+              options.onError(error);
+            }
+            throw error;
+          }
+        };
+        return {
+          mutate,
+          mutateAsync: mutate,
+        };
+      },
     };
   });
 }
+
 
 export const mockTolgee = Tolgee()
   .init({
