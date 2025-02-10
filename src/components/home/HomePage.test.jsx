@@ -1,5 +1,5 @@
-import {mockAxios, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
-import {QueryClient, QueryClientProvider} from "react-query";
+import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
+import {QueryClient, QueryClientProvider, useQuery} from "react-query";
 import {BrowserRouter as Router} from "react-router-dom";
 import {TolgeeProvider} from "@tolgee/react";
 import HomePage from "./HomePage.jsx";
@@ -8,6 +8,7 @@ import "@testing-library/jest-dom";
 
 mockAxios();
 mockUseAuth()
+mockReactQuery()
 describe("UserRegistration Component", () => {
 
   const queryClient = new QueryClient();
@@ -22,6 +23,12 @@ describe("UserRegistration Component", () => {
       </Router>
     );
   };
+  beforeEach(() => {
+    useQuery.mockImplementation(() => ({
+      data: {},
+      isLoading: false,
+    }));
+  });
   test("renders titles", () => {
     setup();
     expect(screen.getByText("Browse the Library")).toBeInTheDocument();
