@@ -101,6 +101,7 @@ function App() {
                 <Route path="/register" element={ <UserRegistration /> } />
                 <Route path="/login" element={ <UserLogin /> } />
                 <Route path="/topics" element={<Topics/>}/>
+                <Route path="/topics/:id" element={<Topics />} />
                 <Route path="*" element={ <HomePage /> } />
             </Routes>
         </>
