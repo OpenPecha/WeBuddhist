@@ -7,7 +7,6 @@ import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import "./Topics.scss"
 import {useTranslate} from "@tolgee/react";
 
-
 const fetchTopics = async (parentId) => {
   const language = localStorage.getItem(LANGUAGE) ??  "bo";
   const { data } = await axiosInstance.get("api/v1/topics", {
@@ -69,7 +68,7 @@ const Topics = () => {
   }
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    setSelectedLetter(""); // Reset letter selection when searching
+    setSelectedLetter("");
   };
 
   const handleLetterClick = (letter) => {
@@ -129,7 +128,6 @@ const Topics = () => {
         className="mb-3"
       />
 
-      {/* Alphabet Filter */}
       <div className="alphabet-filter">
         {alphabet.map((letter) => (
           <Button
@@ -148,7 +146,6 @@ const Topics = () => {
     </div>
   }
 
-  console.log("yo")
   return (
     <Container fluid className="topics-container">
       <Row className="topics-wrapper">
