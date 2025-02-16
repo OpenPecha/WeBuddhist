@@ -55,6 +55,24 @@
     }
   }
 
+  .search-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 1.5rem  5.9rem 0 5.9rem;
+
+    .alphabet-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .alphabet-button {
+      padding: 5px 10px;
+      font-size: 14px;
+    }
+  }
+
   .topic-info {
     display: flex;
     justify-content: center;

@@ -3,7 +3,7 @@ import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import { useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {Button, Card, Col, Container, Row} from "react-bootstrap";
+import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import "./Topics.scss"
 import {useTranslate} from "@tolgee/react";
 
@@ -21,12 +21,19 @@ const Topics = () => {
   const navigate = useNavigate()
   const { t } = useTranslate();
   const [parentId, setParentId] = useState(id || "");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLetter, setSelectedLetter] = useState("");
 
   const { data: topicsData, isLoading: topicsIsLoading } = useQuery(
     ["topics", parentId],
     () => fetchTopics(parentId),
     { refetchOnWindowFocus: false }
   );
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+  if(topicsIsLoading){
+    return <p>Loading ...</p>
+  }
 
   const topicsList = {
     "topics": [
@@ -60,11 +67,30 @@ const Topics = () => {
     setParentId(topic.title)
     topic?.parent_id && navigate(`/topics/${topic.title}`)
   }
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setSelectedLetter(""); // Reset letter selection when searching
+  };
+
+  const handleLetterClick = (letter) => {
+    setSelectedLetter(letter);
+    setSearchTerm("");
+  };
 
   const renderTopicsList = () => {
-    return  (
+    const filteredTopics = topicsList["topics"].filter((topic) => {
+      if (searchTerm) {
+        return topic.title.toLowerCase().includes(searchTerm.toLowerCase());
+      }
+      if (selectedLetter) {
+        return topic.title.startsWith(selectedLetter);
+      }
+      return true;
+    });
+
+    return (
       <Row xs={1} md={2} className="g-4">
-        {topicsList["topics"].map((topic, index) => (
+        {filteredTopics.map((topic, index) => (
           <Col key={index}>
             <Card className="topic-card">
               <button className="topic-button" onClick={() => handleTopicClick(topic)}>
@@ -74,9 +100,9 @@ const Topics = () => {
           </Col>
         ))}
       </Row>
-    )
-
+    );
   };
+
   const renderTopicsInfo = () => {
     return (
       <Card className="topic-info-card">
@@ -93,12 +119,42 @@ const Topics = () => {
       {parentId && id ? t(`topic.${parentId}`) : t("topics.explore_by_topic")}
     </h4>
   }
+  const renderSearchBar = () => {
+    return <div className="search-container">
+      <Form.Control
+        type="text"
+        placeholder="Search topics..."
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className="mb-3"
+      />
 
+      {/* Alphabet Filter */}
+      <div className="alphabet-filter">
+        {alphabet.map((letter) => (
+          <Button
+            key={letter}
+            variant={selectedLetter === letter ? "primary" : "outline-secondary"}
+            className="alphabet-button"
+            onClick={() => handleLetterClick(letter)}
+          >
+            {letter}
+          </Button>
+        ))}
+        <Button variant={"dark"} className="clear-letter-click" onClick={() =>setSelectedLetter("")}>
+          clear
+        </Button>
+      </div>
+    </div>
+  }
+
+  console.log("yo")
   return (
     <Container fluid className="topics-container">
       <Row className="topics-wrapper">
         <Col xs={12} md={7} className="topics-list">
           {renderTopicTitle()}
+          {renderSearchBar()}
           {renderTopicsList()}
         </Col>
 
