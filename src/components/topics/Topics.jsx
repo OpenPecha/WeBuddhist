@@ -139,7 +139,7 @@ const Topics = () => {
             {letter}
           </Button>
         ))}
-        <Button variant={"dark"} className="clear-letter-click" onClick={() =>setSelectedLetter("")}>
+        <Button variant="outline-dark" className="clear-letter-click" onClick={() =>setSelectedLetter("")}>
           clear
         </Button>
       </div>

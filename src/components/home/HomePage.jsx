@@ -22,7 +22,7 @@ const HomePage = () => {
                 <Col lg={7} md={8} className="left-section">
                     <div className="section-1 d-flex justify-content-between align-items-center">
                         <h2 className="title browse-library-text">{ t("home.browse_text") }</h2>
-                        <Button className="browse-button">
+                        <Button variant="outline-dark">
                             { t("side_nav.explore_collections") }
                         </Button>
                     </div>
