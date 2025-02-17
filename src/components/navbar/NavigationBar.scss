@@ -10,7 +10,7 @@ $font-family: Arial, sans-serif;
 
 .custom-navbar {
   box-shadow: 0 2px 5px $shadow-color;
-  @media(min-width: 1400px){
+  @media(min-width: 400px){
     .container{
       max-width:100%
     }
