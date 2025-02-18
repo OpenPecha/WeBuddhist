@@ -132,7 +132,7 @@ const Topics = () => {
         {alphabet.map((letter) => (
           <Button
             key={letter}
-            variant={selectedLetter === letter ? "primary" : "outline-secondary"}
+            variant={selectedLetter === letter ? "success" : "outline-secondary"}
             className="alphabet-button"
             onClick={() => handleLetterClick(letter)}
           >
