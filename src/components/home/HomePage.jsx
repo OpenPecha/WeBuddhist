@@ -15,7 +15,7 @@ const fetchTexts = async () => {
 }
 const HomePage = () => {
     const { t } = useTranslate();
-    const {data: textData, isLoading: textsIsLoading} = useQuery("texts", fetchTexts,{refetchOnWindowFocus: false})
+    const {data: textData, isLoading: textsIsLoading} = useQuery("texts", fetchTexts,{refetchOnWindowFocus: false,staleTime: 1000 * 60 * 20})
     return (
         <Container fluid className="homepage-container">
             <Row className="justify-content-center">

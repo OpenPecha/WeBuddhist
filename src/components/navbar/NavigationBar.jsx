@@ -7,6 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/Constants.js";
 import { useTolgee, useTranslate } from "@tolgee/react";
 import { setFontVariables } from "../../config/commonConfigs.js";
+import {useQueryClient} from "react-query";
 import { useState } from 'react';
 
 const NavigationBar = () => {
@@ -15,13 +16,14 @@ const NavigationBar = () => {
  const { isLoggedIn, logout: pechaLogout } = useAuth();
  const { isAuthenticated, logout } = useAuth0();
  const tolgee = useTolgee(['language']);
+ const queryClient = useQueryClient();
 
- const changeLanguage = async (lng) => {
-   await tolgee.changeLanguage(lng);
-   localStorage.setItem(LANGUAGE, lng);
-   setFontVariables(lng);
-   setExpanded(false);
- };
+  const changeLanguage = async (lng) => {
+    await tolgee.changeLanguage(lng);
+    localStorage.setItem(LANGUAGE, lng);
+    setFontVariables(lng);
+    await queryClient.invalidateQueries("texts")
+  };
 
  function handleLogout(e) {
    e.preventDefault()
