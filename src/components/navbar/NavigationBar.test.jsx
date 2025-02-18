@@ -16,11 +16,11 @@ mockReactQuery()
 mockUseAuth0()
 
 const mockLoggedInStatusForIndividualTestCase = () => { vi.spyOn(useAuthContext, "useAuth").mockReturnValue({
-    isLoggedIn: true,
-    login: vi.fn(),
-    logout: vi.fn(),
-  });
-  
+  isLoggedIn: true,
+  login: vi.fn(),
+  logout: vi.fn(),
+});
+
   const mockUseAuth0 = vi.spyOn(require('@auth0/auth0-react'), 'useAuth0');
   mockUseAuth0.mockReturnValue({
     isAuthenticated: true,  // Mocked value for this test case
@@ -53,14 +53,8 @@ describe("UserRegistration Component", () => {
 
   test("renders search input and button", () => {
     setup();
-    const searchInputs = screen.getAllByPlaceholderText("Search");
-    expect(searchInputs).toHaveLength(2); // One for mobile, one for desktop
-  
-    const searchButtons = screen.getAllByText("Search");
-    expect(searchButtons).toHaveLength(2); 
-    
-    expect(searchInputs[0]).toBeInTheDocument();
-    expect(searchInputs[1]).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
+    expect(screen.getByText("Search")).toBeInTheDocument();
   });
 
   test("renders login and register buttons when not authenticated", () => {
@@ -88,22 +82,19 @@ describe("UserRegistration Component", () => {
 
   test("language change triggers changeLanguage function", async () => {
     setup();
-    const mobileDropdown = screen.getByTestId("dropdown-basic");
-    await userEvent.click(mobileDropdown);
-    const mobileEnglishOption = screen.getByText("English");
-    await userEvent.click(mobileEnglishOption);
+    const options = screen.getByTestId("dropdown-basic");
+    await userEvent.click(options);
+
+    const englishOption = screen.getByText("English")
+    await userEvent.click(englishOption);
+
     expect(localStorage.getItem("language")).toBe("en");
-    
-    await userEvent.click(mobileDropdown);
-    const mobileTibetanOption = screen.getByText("བོད་ཡིག");
-    await userEvent.click(mobileTibetanOption);
+    await userEvent.click(options);
+
+    const hebrewOption = screen.getByText("བོད་ཡིག")
+    await userEvent.click(hebrewOption);
+
     expect(localStorage.getItem("language")).toBe("bo-IN");
-    
-    const desktopDropdown = screen.getByTestId("dropdown-basic-desktop");
-    await userEvent.click(desktopDropdown);
-    const desktopEnglishOption = screen.getAllByText("English")[1];
-    await userEvent.click(desktopEnglishOption);
-    expect(localStorage.getItem("language")).toBe("en");
   });
 
 });
