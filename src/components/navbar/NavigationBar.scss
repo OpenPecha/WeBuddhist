@@ -10,21 +10,102 @@ $font-family: Arial, sans-serif;
 
 .custom-navbar {
   box-shadow: 0 2px 5px $shadow-color;
-  @media(min-width: 1400px){
+  @media(min-width: 400px){
     .container{
       max-width:100%
     }
   }
+
   &.bg-light{
     background-color: white!important;
+  }
+
+  .navbar-brand {
+    position: relative;
+    z-index: 40;
+  }
+
+  @media (max-width: 990px) {
+    .navbar-toggler {
+      z-index: 30;
+    }
+
+    .container {
+      position: relative;
+      z-index: 20;
+    }
+
+    .d-flex.d-lg-none {
+      position: relative;
+      z-index: 30;
+
+      .dropdown {
+        position: static;
+        .dropdown-menu {
+          position: absolute;
+          right: 10px;
+          left: auto;
+          top: 100%;
+          z-index: 3000;
+          margin-top: 5px;
+          background-color: white;
+          border: 1px solid rgba(0, 0, 0, 0.15);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+
+    .navbar-collapse {
+      position: fixed;
+      top: 110px;
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 110px);
+      background-color: white;
+      z-index: 10;
+      transition: all 0.3s ease-in;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      &:not(.show) {
+        display: none;
+      }
+
+      &.show {
+        transform: translateX(0);
+      }
+
+      .navbar-nav {
+        width: 100%;
+        margin-top: 0;
+        
+        .nav-link {
+          text-align: start;
+          padding: 0.75rem 0;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
+
+      .btn {
+        width: 100%;
+        margin: 0.5rem 0;
+      }
+    }
   }
 
   .navbar-nav {
     .nav-link {
       color: $secondary-color !important;
-      font-weight: bold;
+      font-weight: 500;
       margin-right: 15px;
-
+      
       &:hover {
         color: $hover-color !important;
       }
@@ -45,7 +126,7 @@ $font-family: Arial, sans-serif;
     font-weight: bold;
     color: $primary-color;
     border-color: $primary-color;
-
+    
     &:hover {
       background-color: $primary-color;
       color: $light-color;
@@ -57,7 +138,7 @@ $font-family: Arial, sans-serif;
     color: $light-color;
     background-color: $primary-color;
     border-color: $primary-color;
-
+    
     &:hover {
       background-color: $dark-color;
     }

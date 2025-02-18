@@ -1,12 +1,33 @@
+$button-color: #888888;
+$greenline-color: rgb(151, 179, 134);
+$redline-color: brown;
+$background-color: #f8f9fa;
+$primary-color: #666666;
+$rightsection-color: #FBFBFA;
+
 .homepage-container {
   padding: 0;
   max-width: 1280px;
   display: inline;
 }
+
 .row{
   --bs-gutter-x:0;
   margin: 0 5rem !important;
+  @media (max-width: 1200px) {
+   margin: 0 2rem !important; 
+ }
+  @media (max-width: 768px) {
+    margin: 0 1rem !important; 
+  }
 }
+
+.full-width-row {
+  margin: 0 !important;
+  width: 100%;
+}
+
+
 .left-section,
 .right-section {
   padding-top: 10%;
@@ -16,15 +37,31 @@
 }
 
 .left-section {
-  padding-right: 7rem!important;
   .section-1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 2rem 0 2rem;
     margin-bottom: 2rem;
 
+ 
+    @media (max-width: 576px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
     .browse-library-text {
-      font-weight: bold;
+      font-weight: 600;
+      align-items: flex-start;
+      word-wrap: break-word;
+      max-width: 100%;
+    }
+
+    .browse-button {
+      background-color: $button-color;
+      border: none;
+      padding: 0.5rem 1rem;
+      white-space: nowrap;
     }
   }
 
@@ -33,41 +70,50 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-
       margin-bottom: 5%;
+      padding: 1rem;
+    
 
       .green-line {
         width: 100%;
-        height: 5px;
-        background-color: rgb(151, 179, 134);;
+        height: 4px;
+        background-color: $greenline-color;
       }
 
       .red-line {
         width: 100%;
-        height: 5px;
-        background-color: brown;
+        height: 4px;
+        background-color: $redline-color;
       }
 
       .part-title {
+        text-align: left;
         margin: 0;
+        word-break: break-word;
+        hyphens: auto;
       }
 
       .part-subtitle {
+        text-align: left;
+        color: $primary-color;
         margin: 0;
+        word-break: break-word;
+        hyphens: auto;
       }
     }
   }
 }
 
 .right-section {
-  background-color: #f8f9fa;
+  background-color: $rightsection-color ;
   height: auto;
-
+  padding: 2rem;
 
   .right-title {
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 1rem;
+    text-align: start;
+    color: $primary-color;
+    margin: 1rem;
+    word-wrap: break-word;
   }
 
   .right-divider {
@@ -78,18 +124,18 @@
   }
 
   .right-paragraph {
+    text-align: start;
     line-height: 1.5;
-    color: #555;
+    color: $primary-color;
+    margin: 1rem;
+    word-wrap: break-word;
 
     .learn-more {
-      color: #007bff;
-      font-weight: bold;
+      text-decoration: underline;
       cursor: pointer;
-
       &:hover {
         text-decoration: underline;
       }
     }
   }
 }
-
