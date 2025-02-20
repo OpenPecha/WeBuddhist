@@ -1,4 +1,4 @@
-import {LANGUAGE} from "../../utils/Constants.js";
+import {getAlphabet, LANGUAGE} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import { useState} from "react";
@@ -28,8 +28,9 @@ const Topics = () => {
     () => fetchTopics(parentId),
     { refetchOnWindowFocus: false }
   );
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-
+  const currentLanguage = localStorage.getItem(LANGUAGE) || "bo-IN";
+  console.log(currentLanguage)
+  const alphabetList = getAlphabet(currentLanguage);
   if(topicsIsLoading){
     return <p>Loading ...</p>
   }
@@ -129,7 +130,7 @@ const Topics = () => {
       />
 
       <div className="alphabet-filter">
-        {alphabet.map((letter) => (
+        {alphabetList.map((letter) => (
           <Button
             key={letter}
             variant={selectedLetter === letter ? "primary" : "outline-secondary"}
