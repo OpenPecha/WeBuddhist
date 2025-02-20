@@ -115,7 +115,7 @@ const Topics = () => {
 
   const renderTopicTitle = () => {
     return <h4 className="topics-title">
-      {parentId && id ? t(`topic.${parentId}`) : t("topics.explore_by_topic")}
+      {parentId && id ? t(`topic.${parentId}`) : t("topic.search_topics")}
     </h4>
   }
   const renderSearchBar = () => {
@@ -132,7 +132,7 @@ const Topics = () => {
         {alphabet.map((letter) => (
           <Button
             key={letter}
-            variant={selectedLetter === letter ? "primary" : "outline-secondary"}
+            variant={selectedLetter === letter ? "success" : "outline-secondary"}
             className="alphabet-button"
             onClick={() => handleLetterClick(letter)}
           >
