@@ -6,30 +6,35 @@
 
 .topics-wrapper {
   display: flex;
-  flex-wrap: wrap;
   gap: 20px;
 
   .topics-list {
-    display: flex;
-    flex-direction: column;
-
+    flex: 1; 
+    max-width: calc(100% - 350px); 
+    
     .topics-title{
       margin-left: 5.7rem;
       text-align: left;
     }
 
-    .topic-card {
-      text-align: center;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s ease-in-out;
+    .row {
+      margin: 0 5.7rem;
+      width: auto;
+    }
 
-      &:hover {
-        transform: scale(1.01);
-      }
+    .col {
+      padding: 0.5rem;
+    }
+
+    .topic-card {
+      border: none;
+      padding: 10px;
+      transition: transform 0.2s ease-in-out;
+      height: 100%;
+
 
       .topic-button {
+        text-align: start;
         background: none;
         border: none;
         color: #333;
@@ -38,6 +43,10 @@
         text-decoration: none;
         padding: 5px;
         cursor: pointer;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
 
         &:hover {
           color: #1abc9c;
@@ -60,7 +69,7 @@
     flex-direction: column;
     gap: 10px;
     margin: 1.5rem  5.9rem 0 5.9rem;
-
+    
     .alphabet-filter {
       display: flex;
       flex-wrap: wrap;
@@ -74,8 +83,8 @@
   }
 
   .topic-info {
-    display: flex;
-    justify-content: center;
+    width: 300px;
+    flex-shrink: 0; 
     margin-top: 3.7rem;
 
     .topic-info-card {
@@ -89,17 +98,65 @@
   }
 }
 
-// Responsive Styles
+@media (min-width: 769px) and (max-width: 1199px) {
+  .topics-wrapper {
+    .topics-list {
+      max-width: calc(100% - 300px); 
+      
+      .topics-title {
+        margin-left: 2rem;
+      }
+
+      .row {
+        margin: 0 2rem;
+      }
+
+      .col {
+        padding: 0.75rem;
+      }
+    }
+
+    .search-container {
+      margin: 1.5rem 2rem;
+    }
+
+    .topic-info {
+      width: 250px; 
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .topics-wrapper {
     flex-direction: column;
 
     .topics-list {
-      .topic-card {
-        button {
-          font-size: 14px;
-        }
+      max-width: 100%; 
+      
+      .topics-title {
+        margin-left: 1rem;
       }
+
+      .row {
+        margin: 0 1rem;
+      }
+
+      .col {
+        padding: 0.5rem;
+      }
+
+      .topic-card button {
+        font-size: 14px;
+      }
+    }
+
+    .search-container {
+      margin: 1.5rem 1rem;
+    }
+
+    .topic-info {
+      width: 100%;
+      margin: 1rem;
     }
   }
 }
