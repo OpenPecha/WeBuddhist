@@ -109,7 +109,7 @@ const NavigationBar = () => {
        </div>
       
        <Navbar.Collapse id="navbar-links">
-         <Nav className="me-auto ">
+         <Nav className="me-auto navbaritems ">
            <Nav.Link as={Link} to="/texts" onClick={handleNavClick}>
              {t("header.text")}
            </Nav.Link>
@@ -122,7 +122,7 @@ const NavigationBar = () => {
          </Nav>
 
 
-         <div className="d-none d-lg-flex align-items-center">
+         <div className="d-none d-lg-flex align-items-center navbaritems">
            <Form className="d-flex me-3">
              <InputGroup>
                <Form.Control
@@ -138,7 +138,7 @@ const NavigationBar = () => {
          </div>
 
 
-         <Nav className="d-flex align-items-lg-center">
+         <Nav className="d-flex align-items-lg-center navbaritems">
            {(!isLoggedIn && !isAuthenticated) ? (
              <div className="d-flex flex-column flex-lg-row">
                <Button as={Link} to="/login" variant="outline-dark" className="mb-2 mb-lg-0 me-lg-2" onClick={handleNavClick}>

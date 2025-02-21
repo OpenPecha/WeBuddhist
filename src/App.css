@@ -9,6 +9,12 @@
   --content-font-family: 'content-font',"Roboto";
   --subcontent-font-size: 11px;
   --subcontent-font-family: 'sub-content-font',"Roboto";
+  --listtitle-font-size: 16px;
+  --listtitle-font-family: 'list-title-font',"Roboto";
+  --listsubtitle-font-size: 14px;
+  --listsubtitle-font-family: 'list-subtitle-font',"Roboto";
+  --navbaritems-font-size: 16px;
+  --navbaritems-font-family: 'navbar-items-font',"Roboto";
 }
 
 @font-face {
@@ -49,6 +55,21 @@
 .subcontent {
   font-size: var(--subcontent-font-size);
   font-family: var(--subcontent-font-family);
+}
+
+.listtitle{
+  font-size: var(--listtitle-font-size);
+  font-family: var(--listtitle-font-family);
+}
+
+.listsubtitle{
+  font-size: var(--listsubtitle-font-size);
+  font-family: var(--listsubtitle-font-family);
+}
+
+.navbaritems{ 
+  font-size: var(--navbaritems-font-size);
+  font-family: var(--navbaritems-font-family);
 }
 
 .logo {

@@ -1,7 +1,7 @@
 import {getAlphabet, LANGUAGE} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
-import { useState} from "react";
+import { useState, useEffect } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import "./Topics.scss"
@@ -22,15 +22,36 @@ const Topics = () => {
   const [parentId, setParentId] = useState(id || "");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLetter, setSelectedLetter] = useState("");
+  const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem(LANGUAGE) || "bo-IN");
+  const [alphabetList, setAlphabetList] = useState(getAlphabet(currentLanguage));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newLanguage = localStorage.getItem(LANGUAGE) || "bo-IN";
+      setCurrentLanguage(newLanguage);
+      setAlphabetList(getAlphabet(newLanguage));
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    const interval = setInterval(() => {
+      const storedLanguage = localStorage.getItem(LANGUAGE) || "bo-IN";
+      if (storedLanguage !== currentLanguage) {
+        setCurrentLanguage(storedLanguage);
+        setAlphabetList(getAlphabet(storedLanguage));
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [currentLanguage]);
 
   const { data: topicsData, isLoading: topicsIsLoading } = useQuery(
     ["topics", parentId],
     () => fetchTopics(parentId),
     { refetchOnWindowFocus: false }
   );
-  const currentLanguage = localStorage.getItem(LANGUAGE) || "bo-IN";
-  console.log(currentLanguage)
-  const alphabetList = getAlphabet(currentLanguage);
   if(topicsIsLoading){
     return <p>Loading ...</p>
   }
@@ -115,7 +136,7 @@ const Topics = () => {
   }
 
   const renderTopicTitle = () => {
-    return <h4 className="topics-title">
+    return <h4 className="topics-title listtitle">
       {parentId && id ? t(`topic.${parentId}`) : t("topic.search_topics")}
     </h4>
   }
@@ -134,13 +155,13 @@ const Topics = () => {
           <Button
             key={letter}
             variant={selectedLetter === letter ? "primary" : "outline-secondary"}
-            className="alphabet-button"
+            className="alphabet-button listsubtitle"
             onClick={() => handleLetterClick(letter)}
           >
             {letter}
           </Button>
         ))}
-        <Button variant="outline-dark" className="clear-letter-click" onClick={() =>setSelectedLetter("")}>
+        <Button variant="outline-dark" className="clear-letter-click" onClick={() => setSelectedLetter("")}>
           clear
         </Button>
       </div>

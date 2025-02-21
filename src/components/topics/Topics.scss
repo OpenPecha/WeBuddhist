@@ -80,6 +80,10 @@
       padding: 5px 10px;
       font-size: 14px;
     }
+    .alphabet-button.listsubtitle {
+      font-size: var(--listsubtitle-font-size) !important;
+      font-family: var(--listsubtitle-font-family) !important; 
+    }
   }
 
   .topic-info {
