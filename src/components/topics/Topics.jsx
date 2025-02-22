@@ -1,17 +1,22 @@
-import {LANGUAGE} from "../../utils/Constants.js";
+import {LANGUAGE, mapLanguageCode} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import "./Topics.scss"
 import {useTranslate} from "@tolgee/react";
 
 const fetchTopics = async (parentId) => {
-  console.log(parentId)
-  const language = localStorage.getItem(LANGUAGE) ??  "bo";
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language =(storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
   const { data } = await axiosInstance.get("api/v1/topics", {
-    params: {language, ...(parentId && { parent_id: parentId })}
+    params: {
+      language,
+      ...(parentId && { parent_id: parentId }),
+      limit: 12,
+      skip: 0
+    }
   });
   return data;
 }
@@ -23,20 +28,52 @@ const Topics = () => {
   const [parentId, setParentId] = useState(id || "");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLetter, setSelectedLetter] = useState("");
+  const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem(LANGUAGE));
   const translatedKey = t("topic.alphabet");
   const cleanAlphabetArray = translatedKey
     .split("")
     .filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
 
-  const { data: topicsData, isLoading: topicsIsLoading } = useQuery(
-    ["topics", parentId],
+  const { data: topicsData, isLoading, isFetching } = useQuery(
+    ["topics", parentId, currentLanguage],
     () => fetchTopics(parentId),
-    { refetchOnWindowFocus: false }
+    { refetchOnWindowFocus: false,refetchOnMount: true }
   );
-  if(topicsIsLoading){
-    return <p>Loading ...</p>
+
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === LANGUAGE) {
+        setCurrentLanguage(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    const intervalId = setInterval(() => {
+      const storedLanguage = localStorage.getItem(LANGUAGE);
+      if (storedLanguage !== currentLanguage) {
+        setCurrentLanguage(storedLanguage);
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(intervalId);
+    };
+  }, [currentLanguage]);
+
+  if(isLoading || isFetching){
+    return (
+      <Container fluid className="topics-container">
+        <Row className="topics-wrapper">
+          <Col xs={12} className="text-center py-5">
+            <p>Loading topics...</p>
+          </Col>
+        </Row>
+      </Container>
+    );
   }
-  const topicsList = topicsData || { topics: [], total: 0, skip: 0, limit: 10 };
+  const topicsList = topicsData || { topics: [], total: 0, skip: 0, limit: 12 };
 
   function handleTopicClick(topic) {
     setParentId(topic.title)
@@ -69,7 +106,7 @@ const Topics = () => {
           filteredTopics.map((topic, index) => (
             <Col key={index}>
               <Card className="topic-card">
-                <button className="topic-button" onClick={() => handleTopicClick(topic)}>
+                <button className="topic-button listtitle" onClick={() => handleTopicClick(topic)}>
                   {topic.title}
                 </button>
               </Card>
@@ -97,35 +134,35 @@ const Topics = () => {
 
   const renderTopicTitle = () => {
     return <h4 className="topics-title listtitle">
-        {parentId && id ? t(`topic.${parentId}`) : t("topic.search_topics")}
-      </h4>
+      {parentId && id ? t(`topic.${parentId}`) : t("topic.search_topics")}
+    </h4>
   }
   const renderSearchBar = () => {
     return <div className="search-container">
-        <Form.Control
-          type="text"
-          placeholder="Search topics..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="mb-3"
-        />
+      <Form.Control
+        type="text"
+        placeholder="Search topics..."
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className="mb-3"
+      />
 
-        <div className="alphabet-filter">
-          {cleanAlphabetArray.map((letter,index) => (
-            <Button
-              key={index}
-              variant={selectedLetter === letter ? "primary" : "outline-secondary"}
-              className="alphabet-button listsubtitle"
-              onClick={() => handleLetterClick(letter)}
-            >
-              {letter}
-            </Button>
-          ))}
-          <Button variant="outline-dark" className="clear-letter-click" onClick={() => setSelectedLetter("")}>
-            clear
+      <div className="alphabet-filter">
+        {cleanAlphabetArray.map((letter,index) => (
+          <Button
+            key={index}
+            variant={selectedLetter === letter ? "secondary" : "outline-secondary"}
+            className="alphabet-button listsubtitle"
+            onClick={() => handleLetterClick(letter)}
+          >
+            {letter}
           </Button>
-        </div>
+        ))}
+        <Button variant="outline-dark" className="clear-letter-click" onClick={() => setSelectedLetter("")}>
+          clear
+        </Button>
       </div>
+    </div>
   }
 
   return (
