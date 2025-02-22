@@ -1,7 +1,7 @@
-import {getAlphabet, LANGUAGE} from "../../utils/Constants.js";
+import {LANGUAGE} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import "./Topics.scss"
@@ -22,30 +22,10 @@ const Topics = () => {
   const [parentId, setParentId] = useState(id || "");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLetter, setSelectedLetter] = useState("");
-  const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem(LANGUAGE) || "bo-IN");
-  const [alphabetList, setAlphabetList] = useState(getAlphabet(currentLanguage));
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const newLanguage = localStorage.getItem(LANGUAGE) || "bo-IN";
-      setCurrentLanguage(newLanguage);
-      setAlphabetList(getAlphabet(newLanguage));
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    const interval = setInterval(() => {
-      const storedLanguage = localStorage.getItem(LANGUAGE) || "bo-IN";
-      if (storedLanguage !== currentLanguage) {
-        setCurrentLanguage(storedLanguage);
-        setAlphabetList(getAlphabet(storedLanguage));
-      }
-    }, 1000);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
-    };
-  }, [currentLanguage]);
+  const translatedKey = t("topic.alphabet"); 
+  const cleanAlphabetArray = translatedKey
+  .split("")
+  .filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
 
   const { data: topicsData, isLoading: topicsIsLoading } = useQuery(
     ["topics", parentId],
@@ -134,8 +114,8 @@ const Topics = () => {
       </Card>
     );
   }
-
-  const renderTopicTitle = () => {
+  
+    const renderTopicTitle = () => {
     return <h4 className="topics-title listtitle">
       {parentId && id ? t(`topic.${parentId}`) : t("topic.search_topics")}
     </h4>
@@ -151,9 +131,9 @@ const Topics = () => {
       />
 
       <div className="alphabet-filter">
-        {alphabetList.map((letter) => (
+        {cleanAlphabetArray.map((letter,index) => (
           <Button
-            key={letter}
+            key={index}
             variant={selectedLetter === letter ? "primary" : "outline-secondary"}
             className="alphabet-button listsubtitle"
             onClick={() => handleLetterClick(letter)}
