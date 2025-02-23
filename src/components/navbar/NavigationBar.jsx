@@ -10,6 +10,10 @@ import { setFontVariables } from "../../config/commonConfigs.js";
 import {useQueryClient} from "react-query";
 import { useState } from 'react';
 
+export const invalidateQueries = async (queryClient) => {
+  const queriesToInvalidate = ["texts", "topics"];
+  await Promise.all(queriesToInvalidate.map(query => queryClient.invalidateQueries(query)));
+};
 const NavigationBar = () => {
  const [expanded, setExpanded] = useState(false);
  const { t } = useTranslate();
@@ -22,7 +26,7 @@ const NavigationBar = () => {
     await tolgee.changeLanguage(lng);
     localStorage.setItem(LANGUAGE, lng);
     setFontVariables(lng);
-    await queryClient.invalidateQueries("texts")
+    await invalidateQueries(queryClient)
   };
 
  function handleLogout(e) {

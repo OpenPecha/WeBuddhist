@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import "./Topics.scss"
+import React from "react";
 import {useTranslate} from "@tolgee/react";
 
 const fetchTopics = async (parentId) => {
@@ -28,41 +29,18 @@ const Topics = () => {
   const [parentId, setParentId] = useState(id || "");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLetter, setSelectedLetter] = useState("");
-  const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem(LANGUAGE));
   const translatedKey = t("topic.alphabet");
-  const cleanAlphabetArray = translatedKey
-    .split("")
-    .filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
+  const cleanAlphabetArray = translatedKey.split("").filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
 
-  const { data: topicsData, isLoading, isFetching } = useQuery(
-    ["topics", parentId, currentLanguage],
+  const { data: topicsData, isLoading } = useQuery(
+    ["topics", parentId],
     () => fetchTopics(parentId),
-    { refetchOnWindowFocus: false,refetchOnMount: true }
+    { refetchOnWindowFocus: false}
   );
 
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === LANGUAGE) {
-        setCurrentLanguage(e.newValue);
-      }
-    };
+  const topicsList = topicsData || { topics: [], total: 0, skip: 0, limit: 12 };
 
-    window.addEventListener('storage', handleStorageChange);
-
-    const intervalId = setInterval(() => {
-      const storedLanguage = localStorage.getItem(LANGUAGE);
-      if (storedLanguage !== currentLanguage) {
-        setCurrentLanguage(storedLanguage);
-      }
-    }, 1000);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      clearInterval(intervalId);
-    };
-  }, [currentLanguage]);
-
-  if(isLoading || isFetching){
+  if(isLoading){
     return (
       <Container fluid className="topics-container">
         <Row className="topics-wrapper">
@@ -73,11 +51,13 @@ const Topics = () => {
       </Container>
     );
   }
-  const topicsList = topicsData || { topics: [], total: 0, skip: 0, limit: 12 };
 
   function handleTopicClick(topic) {
-    setParentId(topic.title)
-    topic?.parent_id && navigate(`/topics/${topic.title}`)
+
+    if(topic?.has_child){
+      navigate(`/topics/${topic.title}`)
+      setParentId(topic.id)
+    }
   }
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -182,4 +162,4 @@ const Topics = () => {
   );
 };
 
-export default Topics;
+export default React.memo(Topics);
