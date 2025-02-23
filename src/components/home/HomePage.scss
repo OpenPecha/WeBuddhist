@@ -62,6 +62,8 @@ $rightsection-color: #FBFBFA;
       border: none;
       padding: 0.5rem 1rem;
       white-space: nowrap;
+      font-size: 17px !important; 
+      font-family: "Monlam-bodyig-semi-bold-ttf" !important;
     }
   }
 
@@ -87,6 +89,7 @@ $rightsection-color: #FBFBFA;
       }
 
       .part-title {
+        font-size: 24px;
         text-align: left;
         margin: 0;
         word-break: break-word;
