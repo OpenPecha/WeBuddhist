@@ -1,16 +1,23 @@
-import {LANGUAGE} from "../../utils/Constants.js";
+import {LANGUAGE, mapLanguageCode} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
-import { useState} from "react";
+import { useState, useEffect } from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import "./Topics.scss"
+import React from "react";
 import {useTranslate} from "@tolgee/react";
 
 const fetchTopics = async (parentId) => {
-  const language = localStorage.getItem(LANGUAGE) ??  "bo";
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language =(storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
   const { data } = await axiosInstance.get("api/v1/topics", {
-    params: {language, ...(parentId && { parent_id: parentId })}
+    params: {
+      language,
+      ...(parentId && { parent_id: parentId }),
+      limit: 12,
+      skip: 0
+    }
   });
   return data;
 }
@@ -22,49 +29,35 @@ const Topics = () => {
   const [parentId, setParentId] = useState(id || "");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLetter, setSelectedLetter] = useState("");
+  const translatedKey = t("topic.alphabet");
+  const cleanAlphabetArray = translatedKey.split("").filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
 
-  const { data: topicsData, isLoading: topicsIsLoading } = useQuery(
+  const { data: topicsData, isLoading } = useQuery(
     ["topics", parentId],
     () => fetchTopics(parentId),
-    { refetchOnWindowFocus: false }
+    { refetchOnWindowFocus: false}
   );
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-  if(topicsIsLoading){
-    return <p>Loading ...</p>
+  const topicsList = topicsData || { topics: [], total: 0, skip: 0, limit: 12 };
+
+  if(isLoading){
+    return (
+      <Container fluid className="topics-container">
+        <Row className="topics-wrapper">
+          <Col xs={12} className="text-center py-5">
+            <p>Loading topics...</p>
+          </Col>
+        </Row>
+      </Container>
+    );
   }
 
-  const topicsList = {
-    "topics": [
-      {
-        "id": "71adcc30-cfaa-4aee-9c1c-bda059a48e9e",
-        "title": "Topic 1"
-      },
-      {
-        "id": "5b8ed517-37c0-4daf-8ad9-a730c8d2f3ce",
-        "title": "Topic 2"
-      },
-      {
-        "id": "2fc5e913-3ed9-4e72-a630-b93d86a4ecfb",
-        "title": "Topic 3"
-      },
-      {
-        "id": "28d6e7bb-6bd3-41b0-9a72-474bfff146d3",
-        "title": "Topic 4",
-        "parent_id": {
-          "id": "28d6e7bb-6bd3-41b0-9a72-474bfff146d3",
-          "title": "Topic 4"
-        }
-      },
-      {
-        "id": "b87890b5-405a-41bf-8403-e06c7bad0ebb",
-        "title": "Topic 5"
-      }
-    ]
-  }
   function handleTopicClick(topic) {
-    setParentId(topic.title)
-    topic?.parent_id && navigate(`/topics/${topic.title}`)
+
+    if(topic?.has_child){
+      navigate(`/topics/${topic.title}`)
+      setParentId(topic.id)
+    }
   }
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -77,7 +70,7 @@ const Topics = () => {
   };
 
   const renderTopicsList = () => {
-    const filteredTopics = topicsList["topics"].filter((topic) => {
+    const filteredTopics = topicsList.topics.filter((topic) => {
       if (searchTerm) {
         return topic.title.toLowerCase().includes(searchTerm.toLowerCase());
       }
@@ -89,15 +82,21 @@ const Topics = () => {
 
     return (
       <Row xs={1} md={2} className="g-4">
-        {filteredTopics.map((topic, index) => (
-          <Col key={index}>
-            <Card className="topic-card">
-              <button className="topic-button" onClick={() => handleTopicClick(topic)}>
-                {topic.title}
-              </button>
-            </Card>
+        {filteredTopics.length > 0 ? (
+          filteredTopics.map((topic, index) => (
+            <Col key={index}>
+              <Card className="topic-card">
+                <button className="topic-button listtitle" onClick={() => handleTopicClick(topic)}>
+                  {topic.title}
+                </button>
+              </Card>
+            </Col>
+          ))
+        ) : (
+          <Col>
+            <p>No topics found</p>
           </Col>
-        ))}
+        )}
       </Row>
     );
   };
@@ -114,7 +113,7 @@ const Topics = () => {
   }
 
   const renderTopicTitle = () => {
-    return <h4 className="topics-title">
+    return <h4 className="topics-title listtitle">
       {parentId && id ? t(`topic.${parentId}`) : t("topic.search_topics")}
     </h4>
   }
@@ -129,18 +128,18 @@ const Topics = () => {
       />
 
       <div className="alphabet-filter">
-        {alphabet.map((letter) => (
+        {cleanAlphabetArray.map((letter,index) => (
           <Button
-            key={letter}
-            variant={selectedLetter === letter ? "success" : "outline-secondary"}
-            className="alphabet-button"
+            key={index}
+            variant={selectedLetter === letter ? "secondary" : "outline-secondary"}
+            className="alphabet-button listsubtitle"
             onClick={() => handleLetterClick(letter)}
           >
             {letter}
           </Button>
         ))}
-        <Button variant="outline-dark" className="clear-letter-click" onClick={() =>setSelectedLetter("")}>
-          clear
+        <Button variant="outline-dark" className="clear-letter-click" onClick={() => setSelectedLetter("")}>
+          {t("topic.clear")} {/*Todo : add clear in tolgee*/}
         </Button>
       </div>
     </div>
@@ -163,4 +162,4 @@ const Topics = () => {
   );
 };
 
-export default Topics;
+export default React.memo(Topics);

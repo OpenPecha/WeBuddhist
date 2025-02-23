@@ -1,14 +1,21 @@
 import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import {QueryClient, QueryClientProvider} from "react-query";
+import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
 import Topics from "./Topics.jsx";
+import {vi} from "vitest";
 
 mockAxios();
 mockUseAuth()
 mockReactQuery()
+
+vi.mock("../../utils/Constants.js", () => ({
+  getAlphabet: () => ["A", "B", "C", "T"],
+  LANGUAGE: "LANGUAGE"
+}));
 
 describe("Topics Component", () => {
 
@@ -43,10 +50,11 @@ describe("Topics Component", () => {
   }
 
   beforeEach(() => {
-    useQuery.mockImplementation(() => ({
+    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
       data: mockTopicsData,
       isLoading: false,
     }));
+    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue("bo-IN");
   });
 
   const setup = () => {
@@ -69,7 +77,10 @@ describe("Topics Component", () => {
   });
 
   test("displays loading state when data is being fetched", () => {
-    useQuery.mockImplementation(() => ({ data: null, isLoading: true }));
+    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({ 
+      data: null, 
+      isLoading: true 
+    }));
     setup();
     expect(screen.getByText("Loading ...")).toBeInTheDocument();
   });
@@ -91,7 +102,8 @@ describe("Topics Component", () => {
 
   test("clears selected letter filter", () => {
     setup();
-    fireEvent.click(screen.getByText("T"));
+    const letterButton = screen.getByText("T");
+    fireEvent.click(letterButton);
     fireEvent.click(screen.getByText("clear"));
     expect(screen.getByText("Topic 1")).toBeInTheDocument();
     expect(screen.getByText("Topic 5")).toBeInTheDocument();

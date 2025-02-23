@@ -16,6 +16,18 @@ const fontConfig = {
       fontSize: "14px",
       fontFamily: "Roboto",
     },
+    listtitle: {
+      fontSize: "20px",
+      fontFamily: "Roboto",
+    },
+    listsubtitle: {
+      fontSize: "14px",
+      fontFamily: "Roboto",
+    },
+    navbaritems: {
+      fontSize: "16px",
+      fontFamily: "Roboto",
+    },
   },
   "bo-IN": {
     title: {
@@ -34,6 +46,18 @@ const fontConfig = {
       fontSize: "14px",
       fontFamily: "Monlam-bodyig-regular-ttf",
     },
+    listtitle: {
+      fontSize: "20px",
+      fontFamily: "Monlam-uni-ouchan2-ttf",
+    },
+    listsubtitle: {
+      fontSize: "14px",
+      fontFamily: "Monlam-uni-ouchan2-ttf",
+    },
+    navbaritems: {
+      fontSize: "16px",
+      fontFamily: "Monlam-uni-ouchan2-ttf",
+    },
   },
 };
 
@@ -41,7 +65,7 @@ export const setFontVariables = (language) => {
   const root = document.getElementById("root");
   const fonts = fontConfig[language] || fontConfig["en"];
   Object.entries(fonts).forEach(([key, styles]) => {
-    root?.style.setProperty(`--${ key }-font-size`, styles.fontSize);
-    root?.style.setProperty(`--${ key }-font-family`, styles.fontFamily);
+    root?.style.setProperty(`--${key}-font-size`, styles.fontSize);
+    root?.style.setProperty(`--${key}-font-family`, styles.fontFamily);
   });
 };

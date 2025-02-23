@@ -10,6 +10,10 @@ import { setFontVariables } from "../../config/commonConfigs.js";
 import {useQueryClient} from "react-query";
 import { useState } from 'react';
 
+export const invalidateQueries = async (queryClient) => {
+  const queriesToInvalidate = ["texts", "topics"];
+  await Promise.all(queriesToInvalidate.map(query => queryClient.invalidateQueries(query)));
+};
 const NavigationBar = () => {
  const [expanded, setExpanded] = useState(false);
  const { t } = useTranslate();
@@ -22,7 +26,7 @@ const NavigationBar = () => {
     await tolgee.changeLanguage(lng);
     localStorage.setItem(LANGUAGE, lng);
     setFontVariables(lng);
-    await queryClient.invalidateQueries("texts")
+    await invalidateQueries(queryClient)
   };
 
  function handleLogout(e) {
@@ -109,7 +113,7 @@ const NavigationBar = () => {
        </div>
       
        <Navbar.Collapse id="navbar-links">
-         <Nav className="me-auto ">
+         <Nav className="me-auto navbaritems ">
            <Nav.Link as={Link} to="/texts" onClick={handleNavClick}>
              {t("header.text")}
            </Nav.Link>
@@ -122,7 +126,7 @@ const NavigationBar = () => {
          </Nav>
 
 
-         <div className="d-none d-lg-flex align-items-center">
+         <div className="d-none d-lg-flex align-items-center navbaritems">
            <Form className="d-flex me-3">
              <InputGroup>
                <Form.Control
@@ -138,7 +142,7 @@ const NavigationBar = () => {
          </div>
 
 
-         <Nav className="d-flex align-items-lg-center">
+         <Nav className="d-flex align-items-lg-center navbaritems">
            {(!isLoggedIn && !isAuthenticated) ? (
              <div className="d-flex flex-column flex-lg-row">
                <Button as={Link} to="/login" variant="outline-dark" className="mb-2 mb-lg-0 me-lg-2" onClick={handleNavClick}>
