@@ -139,7 +139,7 @@ const Topics = () => {
           </Button>
         ))}
         <Button variant="outline-dark" className="clear-letter-click" onClick={() => setSelectedLetter("")}>
-          clear
+          {t("topic.clear")} {/*Todo : add clear in tolgee*/}
         </Button>
       </div>
     </div>
