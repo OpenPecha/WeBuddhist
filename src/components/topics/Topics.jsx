@@ -1,8 +1,8 @@
 import {LANGUAGE, mapLanguageCode} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
-import { useState, useEffect } from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useLocation, useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import "./Topics.scss"
 import React from "react";
@@ -23,14 +23,15 @@ const fetchTopics = async (parentId) => {
 }
 
 const Topics = () => {
-  const {id} = useParams()
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate()
   const { t } = useTranslate();
-  const [parentId, setParentId] = useState(id || "");
+  const [parentId, setParentId] = useState(searchParams.get("id") || null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLetter, setSelectedLetter] = useState("");
   const translatedKey = t("topic.alphabet");
   const cleanAlphabetArray = translatedKey.split("").filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
+  const location = useLocation();
 
   const { data: topicsData, isLoading } = useQuery(
     ["topics", parentId],
@@ -39,6 +40,10 @@ const Topics = () => {
   );
 
   const topicsList = topicsData || { topics: [], total: 0, skip: 0, limit: 12 };
+
+  useEffect(()=>{
+    setParentId(searchParams.get("id"))
+  },[location])
 
   if(isLoading){
     return (
@@ -53,9 +58,8 @@ const Topics = () => {
   }
 
   function handleTopicClick(topic) {
-
     if(topic?.has_child){
-      navigate(`/topics/${topic.title}`)
+      setSearchParams({ id: topic.id });
       setParentId(topic.id)
     }
   }
@@ -114,7 +118,7 @@ const Topics = () => {
 
   const renderTopicTitle = () => {
     return <h4 className="topics-title listtitle">
-      {parentId && id ? t(`topic.${parentId}`) : t("topic.search_topics")}
+      {parentId ? topicsData.parent?.title : t("topic.explore")}
     </h4>
   }
   const renderSearchBar = () => {
