@@ -1,3 +1,6 @@
+.textalign{
+  text-align: left;
+}
 .edit-user-profile {
   margin: 3rem auto;
   max-width: 900px;
@@ -32,15 +35,12 @@
       padding: 0.75rem 1.5rem;
 
       &.active {
-        background-color: #1abc9c;
+        background-color: #C39F48;
         color: white;
         border: none;
       }
 
-      &:hover {
-        background-color: #e9ecef;
-        color: #1a1d20;
-      }
+      
     }
   }
 
@@ -88,10 +88,11 @@
   }
 
   .btn-submit {
-    background-color: brown;
+    background-color: #C39F48;
+    padding: 12px 20px 12px 20px;
     border: none;
     &:hover {
-      background-color: darkred;
+      background-color: #ba9439 ;
       color: white;
     }
   }
@@ -113,7 +114,6 @@
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.3s ease;
-      height: 45.66px;
     }
 
     .remove-icon {

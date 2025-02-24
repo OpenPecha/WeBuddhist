@@ -121,7 +121,7 @@ const Topics = () => {
     return <div className="search-container">
       <Form.Control
         type="text"
-        placeholder="Search topics..."
+        placeholder={t("topic_search")}
         value={searchTerm}
         onChange={handleSearchChange}
         className="mb-3"

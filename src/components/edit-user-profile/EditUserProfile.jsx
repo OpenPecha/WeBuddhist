@@ -36,9 +36,9 @@ const EditUserProfile = () => {
     avatar_url: userInfo.avatar_url || "",
     social_profiles: [
       { account: "email", url: userInfo.email || "" },
-      { account: "x.com", url: userInfo["x.com"] || "" },
-      { account: "linkedin", url: userInfo.linkedIn || "" },
-      { account: "facebook", url: userInfo.facebook || "" },
+      { account: "profile.twitter", url: userInfo["x.com"] || "" },
+      { account: "profile.linkedlin", url: userInfo.linkedIn || "" },
+      { account: "profile.facebook", url: userInfo.facebook || "" },
       { account: "youtube", url: userInfo.youtube || "" },
     ],
   });
@@ -75,14 +75,14 @@ const EditUserProfile = () => {
   };
 
   return (
-    <div className="edit-user-profile">
-      <h2>Edit Your Profile</h2>
+    <div className="edit-user-profile listtitle">
+      <h2>{t("edit_profile.header")}</h2>
       <hr />
-      <Form onSubmit={ handleSubmit }>
+      <Form onSubmit={ handleSubmit } className="textalign">
         <Tabs defaultActiveKey="personalDetails" id="edit-profile-tabs" className="mb-4">
           {/* Personal Details Tab */ }
           <Tab eventKey="personalDetails" title={ t("profile.personal_details") }>
-            <Row>
+            <Row className="p-3">
               <Col md={ 6 }>
                 <Form.Group controlId="formFirstName">
                   <Form.Label>{ t("sign_up.form.first_name") }</Form.Label>
@@ -109,10 +109,10 @@ const EditUserProfile = () => {
               </Col>
             </Row>
 
-            <Row>
+            <Row className="p-3">
               <Col md={ 6 }>
                 <Form.Group controlId="formTitle">
-                  <Form.Label>{ t("admin.english_title") }</Form.Label>
+                  <Form.Label>{ t("topic.admin.title") }</Form.Label>
                   <Form.Control
                     type="text"
                     name="title"
@@ -124,7 +124,7 @@ const EditUserProfile = () => {
               </Col>
               <Col md={ 6 }>
                 <Form.Group controlId="formOrganization">
-                  <Form.Label>{ t("profile.organization") }</Form.Label>
+                  <Form.Label>{ t("edit_profile.organization") }</Form.Label>
                   <Form.Control
                     type="text"
                     name="organization"
@@ -136,10 +136,10 @@ const EditUserProfile = () => {
               </Col>
             </Row>
 
-            <Row>
+            <Row className="p-3">
               <Col md={ 6 }>
                 <Form.Group controlId="formLocation">
-                  <Form.Label>{ t("profile.enter-your-location") }</Form.Label>
+                  <Form.Label>{ t("edit_profile.location") }</Form.Label>
                   <Form.Control
                     type="text"
                     name="location"
@@ -151,9 +151,9 @@ const EditUserProfile = () => {
               </Col>
             </Row>
 
-            <Row className="mb-2 align-items-center">
+            <Row className="mb-2 align-items-center p-3">
               <Form.Group controlId="formEducation">
-                <Form.Label>{ t("profile.education") }</Form.Label>
+                <Form.Label>{ t("edit_profile.education_info") }</Form.Label>
                 { formData.educations.map((edu, index) => (
                   <div className="form-education" key={ index }>
                     <Col md={ 12 } className="position-relative">
@@ -181,17 +181,17 @@ const EditUserProfile = () => {
                   variant="outline-dark"
                   size="sm"
                   onClick={ addEducation }
-                  className="btn-add"
+                  className="btn-add p-3"
                 >
-                  Add line
-                </Button>
+                  {t("edit_profile.line_add")}
+                 </Button>
               </Form.Group>
             </Row>
 
 
-            <Row>
+            <Row className="p-3">
               <Form.Group controlId="formAboutMe">
-                <Form.Label>{ t("profile.about-me") }</Form.Label>
+                <Form.Label>{ t("edit_profile.about_me") }</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={ 3 }
@@ -206,11 +206,11 @@ const EditUserProfile = () => {
 
           {/* Contact Details Tab */ }
           <Tab eventKey="contactDetails" title={ t("profile.contact_details") }>
-            <Row>
+            <Row className="p-3">
               { formData.social_profiles.map((profile) => (
-                <Col md={ 6 } key={ profile.account }>
+                <Col md={ 6 } key={ profile.account } className=" p-3">
                   <Form.Group controlId={ `form${ profile.account }` }>
-                    <Form.Label>{ t(`profile.${ profile.account }`) }</Form.Label>
+                    <Form.Label>{ t(`common.${ profile.account }`) }</Form.Label>
                     <Form.Control
                       type="text"
                       value={ profile.url }
