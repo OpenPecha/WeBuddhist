@@ -1,26 +1,30 @@
 import {LANGUAGE, mapLanguageCode} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
-import {useEffect, useState} from "react";
+import {useDeferredValue, useEffect, useState} from "react";
 import {useLocation, useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
 import "./Topics.scss"
 import React from "react";
 import {useTranslate} from "@tolgee/react";
+import {useDebounce} from "use-debounce";
 
-const fetchTopics = async (parentId) => {
+const fetchTopics = async (parentId, searchTerm) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language =(storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+
   const { data } = await axiosInstance.get("api/v1/topics", {
     params: {
       language,
       ...(parentId && { parent_id: parentId }),
+      ...(searchTerm && { search: searchTerm }),
       limit: 12,
-      skip: 0
-    }
+      skip: 0,
+    },
   });
+
   return data;
-}
+};
 
 const Topics = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,22 +32,23 @@ const Topics = () => {
   const { t } = useTranslate();
   const [parentId, setParentId] = useState(searchParams.get("id") || null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 700);
   const [selectedLetter, setSelectedLetter] = useState("");
   const translatedKey = t("topic.alphabet");
   const cleanAlphabetArray = translatedKey.split("").filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
   const location = useLocation();
 
   const { data: topicsData, isLoading } = useQuery(
-    ["topics", parentId],
-    () => fetchTopics(parentId),
-    { refetchOnWindowFocus: false}
+    ["topics", parentId, debouncedSearchTerm],
+    () => fetchTopics(parentId, debouncedSearchTerm),
+    { refetchOnWindowFocus: false }
   );
 
   const topicsList = topicsData || { topics: [], total: 0, skip: 0, limit: 12 };
 
-  useEffect(()=>{
+  useEffect(() => {
     setParentId(searchParams.get("id"))
-  },[location])
+  }, [location])
 
   if(isLoading){
     return (
@@ -75,9 +80,6 @@ const Topics = () => {
 
   const renderTopicsList = () => {
     const filteredTopics = topicsList.topics.filter((topic) => {
-      if (searchTerm) {
-        return topic.title.toLowerCase().includes(searchTerm.toLowerCase());
-      }
       if (selectedLetter) {
         return topic.title.startsWith(selectedLetter);
       }
