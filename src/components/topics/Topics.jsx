@@ -120,7 +120,7 @@ const Topics = () => {
 
   const renderTopicTitle = () => {
     return <h4 className="topics-title listtitle">
-      {parentId ? topicsData.parent?.title : t("topic.explore")}
+      {parentId ? topicsData.parent?.title : t("topic.expore")}
     </h4>
   }
   const renderSearchBar = () => {
