@@ -39,7 +39,7 @@ const Topics = () => {
   const location = useLocation();
 
   const { data: topicsData, isLoading } = useQuery(
-    ["topics", parentId, debouncedSearchTerm],
+    ["topics", parentId, debouncedSearchTerm,selectedLetter],
     () => fetchTopics(parentId, debouncedSearchTerm),
     { refetchOnWindowFocus: false }
   );
