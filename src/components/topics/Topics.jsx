@@ -1,15 +1,15 @@
 import {LANGUAGE, mapLanguageCode} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
-import {useEffect, useState} from "react";
-import {useLocation, useNavigate, useParams, useSearchParams} from "react-router-dom";
-import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
+import {useEffect, useMemo, useState} from "react";
+import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
+import {Button, Card, Col, Container, Form, Pagination, Row} from "react-bootstrap";
 import "./Topics.scss"
 import React from "react";
 import {useTranslate} from "@tolgee/react";
 import {useDebounce} from "use-debounce";
 
-const fetchTopics = async (parentId, searchTerm) => {
+const fetchTopics = async (parentId, searchTerm, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 
@@ -18,8 +18,8 @@ const fetchTopics = async (parentId, searchTerm) => {
       language,
       ...(parentId && { parent_id: parentId }),
       ...(searchTerm && { search: searchTerm }),
-      limit: 12,
-      skip: 0,
+      limit,
+      skip,
     },
   });
 
@@ -38,12 +38,20 @@ const Topics = () => {
   const cleanAlphabetArray = translatedKey.split("").filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
   const location = useLocation();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const skip = useMemo(() =>{
+    return (currentPage - 1) * limit;
+  },[currentPage])
+
   const { data: topicsData, isLoading } = useQuery(
-    ["topics", parentId, debouncedSearchTerm,selectedLetter],
-    () => fetchTopics(parentId, debouncedSearchTerm),
+    ["topics", parentId, debouncedSearchTerm, selectedLetter, currentPage, limit],
+    () => fetchTopics(parentId, debouncedSearchTerm, limit, skip),
     { refetchOnWindowFocus: false }
   );
 
+  const totalTopics = topicsData?.total || 0;
+  const totalPages = Math.ceil(totalTopics / limit);
   const topicsList = topicsData || { topics: [], total: 0, skip: 0, limit: 12 };
 
   useEffect(() => {
@@ -61,6 +69,15 @@ const Topics = () => {
       </Container>
     );
   }
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleLimitChange = (e) => {
+    setLimit(Number(e.target.value));
+    setCurrentPage(1);
+  };
 
   function handleTopicClick(topic) {
     if(topic?.has_child){
@@ -86,7 +103,7 @@ const Topics = () => {
       return true;
     });
 
-    return (
+    return (<>
       <Row xs={1} md={2} className="g-4">
         {filteredTopics.length > 0 ? (
           filteredTopics.map((topic, index) => (
@@ -104,6 +121,11 @@ const Topics = () => {
           </Col>
         )}
       </Row>
+        <Row>
+          {renderPagination()}
+        </Row>
+      </>
+
     );
   };
 
@@ -151,6 +173,31 @@ const Topics = () => {
     </div>
   }
 
+  const renderPagination = () => {
+    return <div className="pagination-container">
+      <Pagination>
+        <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+        {[...Array(totalPages).keys()].map((number) => (
+          <Pagination.Item
+            key={number + 1}
+            active={number + 1 === currentPage}
+            onClick={() => handlePageChange(number + 1)}
+          >
+            {number + 1}
+          </Pagination.Item>
+        ))}
+        <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+      </Pagination>
+      <Form.Group controlId="limitSelect" className="mb-3">
+        <Form.Select value={limit} onChange={handleLimitChange}>
+          <option value="10">10</option>
+          <option value="12">12</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </Form.Select>
+      </Form.Group>
+    </div>
+  }
   return (
     <Container fluid className="topics-container">
       <Row className="topics-wrapper">
@@ -164,6 +211,7 @@ const Topics = () => {
           {renderTopicsInfo()}
         </Col>
       </Row>
+
     </Container>
   );
 };
