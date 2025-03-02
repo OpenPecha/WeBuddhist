@@ -69,6 +69,21 @@ $card-shadow:rgba(0, 0, 0, 0.1);
       }
 
     }
+
+    .pagination-container {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-start;
+
+      .page-item{
+        &.active{
+          border: none;
+        }
+      }
+      .active > .page-link {
+        background-color: $hover-color;
+      }
+    }
   }
 
   .search-container {
@@ -107,6 +122,8 @@ $card-shadow:rgba(0, 0, 0, 0.1);
       border-radius: 10px;
     }
   }
+
+
 }
 
 @media (min-width: 769px) and (max-width: 1199px) {
