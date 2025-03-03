@@ -25,10 +25,10 @@ vi.mock("react-router-dom", async () => {
           about_me: "Software Engineer with 5 years of experience.",
           email: "john.doe@example.com",
           avatar_url: "https://profile.example.com",
-          twitterHandle: "@johndoe",
+          "x.com": "@johndoe",
           linkedIn: "https://linkedin.com/in/johndoe",
           facebook: "https://facebook.com/johndoe",
-          youtubeChannel: "https://youtube.com/johndoe",
+          youtube: "https://youtube.com/johndoe",
         },
       },
     })),
@@ -36,8 +36,53 @@ vi.mock("react-router-dom", async () => {
 });
 
 mockAxios();
-mockUseAuth()
+mockUseAuth();
 mockReactQuery();
+
+// Mock the translation function
+vi.mock("@tolgee/react", async () => {
+  const actual = await vi.importActual("@tolgee/react");
+  return {
+    ...actual,
+    useTranslate: () => ({
+      t: (key) => {
+        const translations = {
+          "edit_profile.header": "Edit Profile",
+          "profile.personal_details": "Personal Details",
+          "sign_up.form.first_name": "First Name",
+          "sign_up.form.last_name": "Last Name",
+          "topic.admin.title": "Title",
+          "edit_profile.organization": "Organization",
+          "edit_profile.location": "Location",
+          "edit_profile.education_info": "Education",
+          "profile.enter-your-education": "Enter your education",
+          "edit_profile.line_add": "Add line",
+          "edit_profile.about_me": "About Me",
+          "profile.contact_details": "Contact Details",
+          "common.button.cancel": "Cancel",
+          "common.button.save": "Save",
+          "profile.enter-your-first-name": "Enter your first name",
+          "profile.enter-your-last-name": "Enter your last name",
+          "profile.enter-your-title": "Enter your title",
+          "profile.enter-your-organization": "Enter your organization",
+          "profile.enter-your-location": "Enter your location",
+          "profile.tell-us-about-yourself": "Tell us about yourself",
+          "common.email": "Email",
+          "common.x.com": "X.com",
+          "common.linkedin": "LinkedIn",
+          "common.facebook": "Facebook",
+          "common.youtube": "YouTube",
+          "profile.enter-your-email": "Enter your email",
+          "profile.enter-your-x.com": "Enter your X.com",
+          "profile.enter-your-linkedin": "Enter your LinkedIn",
+          "profile.enter-your-facebook": "Enter your Facebook",
+          "profile.enter-your-youtube": "Enter your YouTube",
+        };
+        return translations[key] || key;
+      }
+    })
+  };
+});
 
 describe("EditUserProfile Component", () => {
   const queryClient = new QueryClient();
@@ -61,10 +106,8 @@ describe("EditUserProfile Component", () => {
     expect(screen.getByLabelText("First Name")).toHaveValue("John");
     expect(screen.getByLabelText("Last Name")).toHaveValue("Doe");
     expect(screen.getByLabelText("Title")).toHaveValue("Developer");
-    // expect(screen.getByLabelText("Organization")).toHaveValue("Tech Corp");
-    // expect(screen.getByLabelText("Website")).toHaveValue("https://example.com");
-    // expect(screen.getByLabelText("Location")).toHaveValue("New York");
-    // expect(screen.getByLabelText("Email")).toHaveValue("john.doe@example.com");
+    expect(screen.getByLabelText("Organization")).toHaveValue("Tech Corp");
+    expect(screen.getByLabelText("Location")).toHaveValue("New York");
   });
 
   it("updates the form values when the user types in the input fields", () => {
@@ -83,11 +126,11 @@ describe("EditUserProfile Component", () => {
 
     const addButton = screen.getByText("Add line");
     fireEvent.click(addButton);
-
-    // const educationFields = screen.getAllByPlaceholderText("Enter your education");
-    // expect(educationFields).toHaveLength(2);
+    
+    // After clicking the Add button, there should be two education fields
+    const educationInputs = screen.getAllByPlaceholderText("Enter your education");
+    expect(educationInputs).toHaveLength(2);
   });
-
 
   it("Cancel button", () => {
     setup();
