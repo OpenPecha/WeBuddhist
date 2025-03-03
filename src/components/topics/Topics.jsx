@@ -103,29 +103,26 @@ const Topics = () => {
       return true;
     });
 
-    return (<>
-      <Row xs={1} md={2} className="g-4">
-        {filteredTopics.length > 0 ? (
-          filteredTopics.map((topic, index) => (
-            <Col key={index}>
-              <Card className="topic-card">
-                <button className="topic-button listtitle" onClick={() => handleTopicClick(topic)}>
-                  {topic.title}
-                </button>
-              </Card>
+    return (
+      <div className="topics-scrollable-area ">
+        <Row xs={1} md={2} className="g-4">
+          {filteredTopics.length > 0 ? (
+            filteredTopics.map((topic, index) => (
+              <Col key={index}>
+                <Card className="topic-card">
+                  <button className="topic-button listtitle" onClick={() => handleTopicClick(topic)}>
+                    {topic.title}
+                  </button>
+                </Card>
+              </Col>
+            ))
+          ) : (
+            <Col>
+              <p>No topics found</p>
             </Col>
-          ))
-        ) : (
-          <Col>
-            <p>No topics found</p>
-          </Col>
-        )}
-      </Row>
-        <Row>
-          {renderPagination()}
+          )}
         </Row>
-      </>
-
+      </div>
     );
   };
 
@@ -174,44 +171,51 @@ const Topics = () => {
   }
 
   const renderPagination = () => {
-    return <div className="pagination-container">
-      <Pagination>
-        <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-        {[...Array(totalPages).keys()].map((number) => (
-          <Pagination.Item
-            key={number + 1}
-            active={number + 1 === currentPage}
-            onClick={() => handlePageChange(number + 1)}
-          >
-            {number + 1}
-          </Pagination.Item>
-        ))}
-        <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-      </Pagination>
-      <Form.Group controlId="limitSelect" className="mb-3">
-        <Form.Select value={limit} onChange={handleLimitChange}>
-          <option value="10">10</option>
-          <option value="12">12</option>
-          <option value="20">20</option>
-          <option value="50">50</option>
-        </Form.Select>
-      </Form.Group>
-    </div>
+    return (
+      <div className="pagination-wrapper">
+        <div className="pagination-container">
+          <Pagination>
+            <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+            {[...Array(totalPages).keys()].map((number) => (
+              <Pagination.Item
+                key={number + 1}
+                active={number + 1 === currentPage}
+                onClick={() => handlePageChange(number + 1)}
+              >
+                {number + 1}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+          </Pagination>
+          <Form.Group controlId="limitSelect" className="mb-3">
+            <Form.Select value={limit} onChange={handleLimitChange}>
+              <option value="10">10</option>
+              <option value="12">12</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </Form.Select>
+          </Form.Group>
+        </div>
+      </div>
+    );
   }
   return (
-    <Container fluid className="topics-container">
+    <Container fluid className="topics-container border">
       <Row className="topics-wrapper">
         <Col xs={12} md={7} className="topics-list">
           {renderTopicTitle()}
           {renderSearchBar()}
-          {renderTopicsList()}
+          <div className="topics-content">
+            {renderTopicsList()}
+            {renderPagination()}
+          </div>
         </Col>
 
         <Col xs={12} md={4} className="topic-info">
           {renderTopicsInfo()}
         </Col>
       </Row>
-
+      
     </Container>
   );
 };
