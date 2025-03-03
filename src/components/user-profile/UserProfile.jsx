@@ -131,7 +131,7 @@ const UserProfile = () => {
   return (
     <>
       { !userInfoIsLoading ?
-        <div className="user-profile">
+        <div className="user-profile listtitle">
           <div className="pecha-user-profile">
             <div className="section1">
               <div className="profile-left">
@@ -177,44 +177,44 @@ const UserProfile = () => {
               </div>
             </div>
 
-            <div className="section2">
+            <div className="section2 listtitle">
               <Tabs defaultActiveKey="sheets" id="user-profile-tabs" className="mb-3">
                 <Tab
                   eventKey="sheets"
                   title={
                     <>
-                      <i className="bi bi-file-earmark"></i> { t("profile.sheets.title") }
+                      <i className="bi bi-file-earmark"></i> { t("profile.tab.sheets") }
                     </>
                   }
                 >
                   <div className="tab-content">
-                    <h3>{ t("profile.sheets.title") }</h3>
-                    <p>{ t("profile.sheets.description") }</p>
+                    <h3>{ t("profile.tab.sheets") }</h3>
+                    <p>{ t("profile.sheet_description") }</p>
                   </div>
                 </Tab>
                 <Tab
                   eventKey="collections"
                   title={
                     <>
-                      <i className="bi bi-stack"></i> { t("profile.collections.title") }
+                      <i className="bi bi-stack"></i> { t("profile.tab.collection") }
                     </>
                   }
                 >
                   <div className="tab-content">
-                    <h3>{ t("profile.collections.title") }</h3>
-                    <p>{ t("profile.collections.description") }</p>
+                    <h3>{ t("profile.tab.collection") }</h3>
+                    <p>{ t("profile.tab.collection.description") }</p>
                   </div>
                 </Tab>
                 <Tab
                   eventKey="notes"
                   title={
                     <>
-                      <i className="bi bi-pencil"></i> { t("profile.notes.title") }
+                      <i className="bi bi-pencil"></i> { t("user_profile.notes") }
                     </>
                   }
                 >
                   <div className="tab-content">
-                    <h3>{ t("profile.notes.title") }</h3>
+                    <h3>{ t("user_profile.notes") }</h3>
                     <p>{ t("profile.notes.description") }</p>
                   </div>
                 </Tab>
@@ -222,12 +222,12 @@ const UserProfile = () => {
                   eventKey="tracker"
                   title={
                     <>
-                      <i className="bi bi-reception-4"></i> { t("profile.text_tracker.title") }
+                      <i className="bi bi-reception-4"></i> { t("profile.buddhish_text_tracker") }
                     </>
                   }
                 >
                   <div className="tab-content">
-                    <h3>{ t("profile.text_tracker.title") }</h3>
+                    <h3>{ t("profile.buddhish_text_tracker") }</h3>
                     <p>{ t("profile.text_tracker.descriptions") }</p>
                   </div>
                 </Tab>
