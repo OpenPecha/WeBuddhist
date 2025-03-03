@@ -36,9 +36,9 @@ const EditUserProfile = () => {
     avatar_url: userInfo.avatar_url || "",
     social_profiles: [
       { account: "email", url: userInfo.email || "" },
-      { account: "profile.twitter", url: userInfo["x.com"] || "" },
-      { account: "profile.linkedlin", url: userInfo.linkedIn || "" },
-      { account: "profile.facebook", url: userInfo.facebook || "" },
+      { account: "x.com", url: userInfo["x.com"] || "" },
+      { account: "linkedin", url: userInfo.linkedIn || "" },
+      { account: "facebook", url: userInfo.facebook || "" },
       { account: "youtube", url: userInfo.youtube || "" },
     ],
   });
