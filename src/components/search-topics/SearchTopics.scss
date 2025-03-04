@@ -161,7 +161,9 @@ $navbar-height:62px;
       width: 100%;
       background-color: $background-color;
       padding: 20px;
-      
+      border: 1px solid $card-border;
+      box-shadow: 2px 2px 10px $card-shadow;
+      border-radius: 10px;
     }
   }
 }

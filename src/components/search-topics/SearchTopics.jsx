@@ -4,7 +4,7 @@ import {useQuery} from "react-query";
 import {useEffect, useMemo, useState} from "react";
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Pagination, Row} from "react-bootstrap";
-import "./Topics.scss"
+import "./SearchTopics.scss"
 import React from "react";
 import {useTranslate} from "@tolgee/react";
 import {useDebounce} from "use-debounce";
@@ -26,7 +26,7 @@ const fetchTopics = async (parentId, searchTerm, limit, skip) => {
   return data;
 };
 
-const Topics = () => {
+const SearchTopics = () => {
   
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate()
@@ -67,9 +67,9 @@ const Topics = () => {
   const topicsList = effectiveTopicsData || { topics: [], total: 0, skip: 0, limit: 12 };
   console.log(topicsList)
   useEffect(() => {
-    console.log('Current route:', location.pathname);
-    console.log('Search params:', Object.fromEntries(searchParams));
-  }, [location, searchParams]);
+  console.log('Current route:', location.pathname);
+  console.log('Search params:', Object.fromEntries(searchParams));
+}, [location, searchParams]);
   useEffect(() => {
     const newParentId = searchParams.get("id");
     if (newParentId !== parentId) {
@@ -123,15 +123,25 @@ const Topics = () => {
         </div>
       );
     }
+  
+    // Add a null check for topicsList and topicsList.topics
+    if (!topicsList || !topicsList.topics) {
+      return (
+        <div className="topics-error-container">
+          <p className="text-center my-4">No topics data available</p>
+        </div>
+      );
+    }
+  
     const filteredTopics = topicsList.topics.filter((topic) => {
       if (selectedLetter) {
-        return topic.title.startsWith(selectedLetter);
+        return topic.title.toLowerCase().startsWith(selectedLetter.toLowerCase());
       }
       return true;
     });
-
+  
     return (
-      <div className="topics-scrollable-area ">
+      <div className="topics-scrollable-area">
         <Row xs={1} md={2} className="g-4">
           {filteredTopics.length > 0 ? (
             filteredTopics.map((topic, index) => (
@@ -263,4 +273,4 @@ const Topics = () => {
   );
 };
 
-export default React.memo(Topics);
+export default React.memo(SearchTopics);
