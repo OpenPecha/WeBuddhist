@@ -9,7 +9,7 @@ import React from "react";
 import {useTranslate} from "@tolgee/react";
 import {useDebounce} from "use-debounce";
 
-const fetchTopics = async (parentId, searchTerm, limit, skip) => {
+const fetchTopics = async (parentId, searchTerm, limit, skip,hierarchy=true) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 
@@ -19,6 +19,7 @@ const fetchTopics = async (parentId, searchTerm, limit, skip) => {
       ...(parentId && { parent_id: parentId }),
       ...(searchTerm && { search: searchTerm }),
       limit,
+      hierarchy,
       skip,
     },
   });
@@ -203,8 +204,8 @@ const Topics = () => {
   const renderSearchpage=()=>{
 
     return (
-      <div>
-        <p onClick={() => navigate('./all')}>{t("topic.a_to_z")}</p>
+      <div className="subtitle pointer">
+        <p  onClick={() => navigate('/all')}>{t("topic.a_to_z")}</p>
         <p>{t("topic.browse_topic")}</p>
       </div>
     )
@@ -263,4 +264,4 @@ const Topics = () => {
   );
 };
 
-export default React.memo(Topics);
+export default Topics;

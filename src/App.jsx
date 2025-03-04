@@ -103,7 +103,7 @@ function App() {
                 <Route path="/login" element={ <UserLogin /> } />
                 <Route path="/topics" element={<Topics/>}/>
                 <Route path="/topics/category/:id" element={<Topics />} />
-                <Route path="/topics/all" element={<SearchTopics />} />
+                <Route path="/all" element={<SearchTopics />} />
                 <Route path="*" element={ <HomePage /> } />
             </Routes>
         </>

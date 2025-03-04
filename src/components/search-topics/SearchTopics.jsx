@@ -9,7 +9,7 @@ import React from "react";
 import {useTranslate} from "@tolgee/react";
 import {useDebounce} from "use-debounce";
 
-const fetchTopics = async (parentId, searchTerm, limit, skip) => {
+const fetchTopics = async (parentId, searchTerm, limit, skip,hierarchy=false) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 
@@ -19,6 +19,7 @@ const fetchTopics = async (parentId, searchTerm, limit, skip) => {
       ...(parentId && { parent_id: parentId }),
       ...(searchTerm && { search: searchTerm }),
       limit,
+      hierarchy,
       skip,
     },
   });
@@ -67,9 +68,9 @@ const SearchTopics = () => {
   const topicsList = effectiveTopicsData || { topics: [], total: 0, skip: 0, limit: 12 };
   console.log(topicsList)
   useEffect(() => {
-  console.log('Current route:', location.pathname);
-  console.log('Search params:', Object.fromEntries(searchParams));
-}, [location, searchParams]);
+    console.log('Current route:', location.pathname);
+    console.log('Search params:', Object.fromEntries(searchParams));
+  }, [location, searchParams]);
   useEffect(() => {
     const newParentId = searchParams.get("id");
     if (newParentId !== parentId) {
@@ -123,25 +124,15 @@ const SearchTopics = () => {
         </div>
       );
     }
-  
-    // Add a null check for topicsList and topicsList.topics
-    if (!topicsList || !topicsList.topics) {
-      return (
-        <div className="topics-error-container">
-          <p className="text-center my-4">No topics data available</p>
-        </div>
-      );
-    }
-  
     const filteredTopics = topicsList.topics.filter((topic) => {
       if (selectedLetter) {
-        return topic.title.toLowerCase().startsWith(selectedLetter.toLowerCase());
+        return topic.title.startsWith(selectedLetter);
       }
       return true;
     });
-  
+
     return (
-      <div className="topics-scrollable-area">
+      <div className="topics-scrollable-area ">
         <Row xs={1} md={2} className="g-4">
           {filteredTopics.length > 0 ? (
             filteredTopics.map((topic, index) => (
@@ -179,7 +170,7 @@ const SearchTopics = () => {
 
   const renderTopicTitle = () => {
     return <h4 className="topics-title listtitle">
-      {parentId ? topicsData.parent?.title : t("topic.expore")}
+      {parentId ? topicsData.parent?.title : t("topic.all_topics")}
     </h4>
   }
   const renderSearchBar = () => {
@@ -210,16 +201,7 @@ const SearchTopics = () => {
     </div>
   }
 
-  const renderSearchpage=()=>{
-
-    return (
-      <div>
-        <p onClick={() => navigate('./all')}>{t("topic.a_to_z")}</p>
-        <p>{t("topic.browse_topic")}</p>
-      </div>
-    )
-  }
-    
+ 
   const renderPagination = () => {
     if (!topicsList.topics || topicsList.topics.length === 0) {
       return null;
@@ -258,8 +240,8 @@ const SearchTopics = () => {
         <Col xs={12} md={7} className="topics-list">
           {renderTopicTitle()}
           <div className="topics-content">
+            {renderSearchBar()}
             {renderTopicsList()}
-            {renderSearchpage()}
             {!isLoading && renderPagination()}
           </div>
         </Col>
@@ -273,4 +255,4 @@ const SearchTopics = () => {
   );
 };
 
-export default React.memo(SearchTopics);
+export default SearchTopics
