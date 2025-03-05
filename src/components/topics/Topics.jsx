@@ -3,7 +3,7 @@ import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {useEffect, useMemo, useState} from "react";
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
-import {Button, Card, Col, Container, Form, Pagination, Row} from "react-bootstrap";
+import { Card, Col, Container, Form, Pagination, Row} from "react-bootstrap";
 import "./Topics.scss"
 import React from "react";
 import {useTranslate} from "@tolgee/react";

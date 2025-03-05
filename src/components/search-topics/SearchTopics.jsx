@@ -34,8 +34,10 @@ const Topics = () => {
   const { t } = useTranslate();
   const [parentId, setParentId] = useState(searchParams.get("id") || null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm] = useDebounce(searchTerm, 700);
-  const [selectedLetter, setSelectedLetter] = useState("");
+  const [debouncedSearchTerm] = useDebounce(
+    searchTerm.length >= 3 ? searchTerm : "", 
+    700
+  );  const [selectedLetter, setSelectedLetter] = useState("");
   const translatedKey = t("topic.alphabet");
   const cleanAlphabetArray = translatedKey.split("").filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
   const location = useLocation();
@@ -98,10 +100,13 @@ const Topics = () => {
           }
   }
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
     setSelectedLetter("");
-    setIsLocalLoading(true);
-    setCurrentPage(1);
+      if (value.length >= 3) {
+      setIsLocalLoading(true);
+      setCurrentPage(1);
+    }
   };
 
   const handleLetterClick = (letter) => {
