@@ -9,7 +9,7 @@ import React from "react";
 import {useTranslate} from "@tolgee/react";
 import {useDebounce} from "use-debounce";
 
-const fetchTopics = async (parentId, searchTerm, limit, skip) => {
+const fetchTopics = async (parentId, searchTerm, limit, skip, hierarchy) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 
@@ -20,6 +20,7 @@ const fetchTopics = async (parentId, searchTerm, limit, skip) => {
       ...(searchTerm && { search: searchTerm }),
       limit,
       skip,
+      hierarchy
     },
   });
 
@@ -37,7 +38,8 @@ const Topics = () => {
   const translatedKey = t("topic.alphabet");
   const cleanAlphabetArray = translatedKey.split("").filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
   const location = useLocation();
-
+  const [isDeepSearch, setIsDeepSearch] = useState(false)
+  const [hierarchy, setHierarchy]=useState(true)
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const skip = useMemo(() =>{
@@ -46,7 +48,13 @@ const Topics = () => {
 
   const { data: topicsData, isLoading } = useQuery(
     ["topics", parentId, debouncedSearchTerm, selectedLetter, currentPage, limit],
-    () => fetchTopics(parentId, debouncedSearchTerm, limit, skip),
+    () => {
+      let requiredSearchTerm = debouncedSearchTerm;
+      if(!debouncedSearchTerm){
+        requiredSearchTerm = selectedLetter
+      }
+      return fetchTopics(parentId, requiredSearchTerm, limit, skip,hierarchy)
+    },
     { refetchOnWindowFocus: false }
   );
 
@@ -95,15 +103,20 @@ const Topics = () => {
     setSearchTerm("");
   };
 
+  const onDeepSearchButtonClick = () => {
+    setIsDeepSearch(true)
+    setSearchParams("");
+    setHierarchy(false)
+  }
   const renderTopicsList = () => {
     const filteredTopics = topicsList.topics.filter((topic) => {
       if (selectedLetter) {
-        return topic.title.startsWith(selectedLetter);
+        return topic.title.includes(selectedLetter);
       }
       return true;
     });
 
-    return (<>
+    return ((isDeepSearch && (selectedLetter || searchTerm)) || (!isDeepSearch)) && <>
       <Row xs={1} md={2} className="g-4">
         {filteredTopics.length > 0 ? (
           filteredTopics.map((topic, index) => (
@@ -121,12 +134,10 @@ const Topics = () => {
           </Col>
         )}
       </Row>
-        <Row>
-          {renderPagination()}
-        </Row>
-      </>
-
-    );
+      {filteredTopics.length > 0 && <Row>
+        {renderPagination()}
+      </Row>}
+    </>
   };
 
   const renderTopicsInfo = () => {
@@ -147,29 +158,43 @@ const Topics = () => {
   }
   const renderSearchBar = () => {
     return <div className="search-container">
-      <Form.Control
-        type="text"
-        placeholder="Search topics..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="mb-3"
-      />
+      {isDeepSearch?
+        <>
+          <Form.Control
+            type="text"
+            placeholder="Search topics..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="mb-3"
+          />
 
-      <div className="alphabet-filter">
-        {cleanAlphabetArray.map((letter,index) => (
-          <Button
-            key={index}
-            variant={selectedLetter === letter ? "secondary" : "outline-secondary"}
-            className="alphabet-button listsubtitle"
-            onClick={() => handleLetterClick(letter)}
-          >
-            {letter}
-          </Button>
-        ))}
-        <Button variant="outline-dark" className="clear-letter-click" onClick={() => setSelectedLetter("")}>
-          {t("topic.clear")} {/*Todo : add clear in tolgee*/}
-        </Button>
-      </div>
+          <div className="alphabet-filter">
+            {cleanAlphabetArray.map((letter, index) => (
+              <Button
+                key={index}
+                variant={selectedLetter === letter ? "secondary" : "outline-secondary"}
+                className="alphabet-button listsubtitle"
+                onClick={() => handleLetterClick(letter)}
+              >
+                {letter}
+              </Button>
+            ))}
+            <Button variant="outline-dark" className="clear-letter-click" onClick={() => setSelectedLetter("")}>
+              {t("topic.clear")} {/*Todo : add clear in tolgee*/}
+            </Button>
+          </div>
+          <Button className="back-button" variant={"outline-secondary"} onClick={() => {
+            setIsDeepSearch(false)
+            setSearchTerm("")
+            setSelectedLetter("")
+            setHierarchy(true)
+            setSearchParams("");
+          }}>Back</Button>
+        </> :
+        <div className="deep-search-container">
+          <Button className="deep-search-button" variant={"outline-secondary"} onClick={onDeepSearchButtonClick}>{t("topic.a_to_z")}</Button>
+          <p>{t("topic.browse_topic")}</p>
+        </div>}
     </div>
   }
 
