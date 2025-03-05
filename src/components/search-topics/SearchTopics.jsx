@@ -66,11 +66,6 @@ const Topics = () => {
   const totalTopics = effectiveTopicsData?.total || 0;
   const totalPages = Math.ceil(totalTopics / limit);
   const topicsList = effectiveTopicsData || { topics: [], total: 0, skip: 0, limit: 12 };
-  console.log(topicsList)
-  useEffect(() => {
-    console.log('Current route:', location.pathname);
-    console.log('Search params:', Object.fromEntries(searchParams));
-  }, [location, searchParams]);
   useEffect(() => {
     const newParentId = searchParams.get("id");
     if (newParentId !== parentId) {
