@@ -4,11 +4,100 @@ $background-color:rgb(251, 251, 250);
 $card-border:#ddd;
 $card-shadow:rgba(0, 0, 0, 0.1);
 $navbar-height:62px;
+.topic-info-card {
+  background-color: $background-color;
+  padding: 20px;
+  
+  .section-title {
+    text-align: start;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+  }
+   .about-section p {
+    text-align: start;
+   }
+  .about-section, 
+  .trending-topics-section,
+  .join-conversation-section {
+    margin-bottom: 20px;
 
+
+  }
+  .join-conversation-section p {
+    text-align: start;
+  }
+  
+  .trending-topics-section {
+    .trending-list {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      
+      li {
+        background-color: #f0f0f0;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        
+        &:hover {
+          background-color: #e0e0e0;
+        }
+      }
+    }
+  }
+  
+  .make-sheet-btn {
+    background-color: #D4AF37; // Gold-like color from the image
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}
+.subtitle.pointer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  
+  margin: 1rem 5.7rem;
+  
+  p {
+    margin: 0;
+    cursor: pointer;    
+    &:first-child {
+      font-weight: bold;
+      color: black;
+    }
+    &:last-child {
+      color: #888;
+      font-size: 16px;
+    }
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .subtitle.pointer {
+    margin: 1rem;
+  }
+}
 .topics-container {
   height: calc(100vh - #{$navbar-height});
   overflow: hidden;
-  padding: 0; 
+  padding: 0;
   margin: 0;
 
 }
@@ -27,7 +116,7 @@ $navbar-height:62px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    
+    padding: 10px;
     .topics-title {
       padding-top: 1rem;
       margin-left: 5.7rem;

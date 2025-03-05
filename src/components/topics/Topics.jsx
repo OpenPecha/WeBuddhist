@@ -160,10 +160,24 @@ const Topics = () => {
   const renderTopicsInfo = () => {
     return (
       <div className="topic-info-card">
-        
-          <h5 className="listtitle">{t("topic.about")}</h5>
+         <div className="about-section">
+         <h5 className="listtitle section-title">{t("topic.about")}</h5>
+          <hr className="right-divider"/>
           <p>{t("topic.about_description")}</p>
-       
+         </div>
+         <div className="trending-topics-section">
+          <h5 className="listtitle section-title">{t("topic.trend")}</h5>
+          <hr className="right-divider"/>
+          </div>
+          <div className="join-conversation-section">
+          <h5 className="listtitle section-title">{t("side_nav.join_conversation")}</h5>
+          <hr className="right-divider"/>
+
+          <p>{t("side_nav.join_conversation.descriptions")}</p>
+          <div>
+           {t("side_nav.join_conversation.button.make_sheet")}
+          </div>
+          </div>
       </div>
     );
   }
@@ -173,34 +187,6 @@ const Topics = () => {
       {parentId ? topicsData.parent?.title : t("topic.expore")}
     </h4>
   }
-  const renderSearchBar = () => {
-    return <div className="search-container">
-      <Form.Control
-        type="text"
-        placeholder="Search topics..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-        className="mb-3"
-      />
-
-      <div className="alphabet-filter">
-        {cleanAlphabetArray.map((letter,index) => (
-          <Button
-            key={index}
-            variant={selectedLetter === letter ? "secondary" : "outline-secondary"}
-            className="alphabet-button listsubtitle"
-            onClick={() => handleLetterClick(letter)}
-          >
-            {letter}
-          </Button>
-        ))}
-        <Button variant="outline-dark" className="clear-letter-click" onClick={() => setSelectedLetter("")}>
-          {t("topic.clear")}
-        </Button>
-      </div>
-    </div>
-  }
-
   const renderSearchpage=()=>{
 
     return (
@@ -244,7 +230,7 @@ const Topics = () => {
     );
   }
   return (
-    <Container fluid className="topics-container border">
+    <Container fluid className="topics-container">
       <Row className="topics-wrapper">
         <Col xs={12} md={7} className="topics-list">
           {renderTopicTitle()}

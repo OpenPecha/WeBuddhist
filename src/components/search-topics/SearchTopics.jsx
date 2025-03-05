@@ -4,7 +4,7 @@ import {useQuery} from "react-query";
 import {useEffect, useMemo, useState} from "react";
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Pagination, Row} from "react-bootstrap";
-import "./SearchTopics.scss"
+import "../topics/Topics.scss"
 import React from "react";
 import {useTranslate} from "@tolgee/react";
 import {useDebounce} from "use-debounce";
@@ -27,7 +27,7 @@ const fetchTopics = async (parentId, searchTerm, limit, skip,hierarchy=false) =>
   return data;
 };
 
-const SearchTopics = () => {
+const Topics = () => {
   
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate()
@@ -160,17 +160,26 @@ const SearchTopics = () => {
   const renderTopicsInfo = () => {
     return (
       <div className="topic-info-card">
-        
-          <h5 className="listtitle">{t("topic.about")}</h5>
-          <p>{t("topic.about_description")}</p>
-       
+         <div className="trending-topics-section">
+          <h5 className="listtitle section-title">{t("topic.trend")}</h5>
+          <hr className="right-divider"/>
+          </div>
+          <div className="join-conversation-section">
+          <h5 className="listtitle section-title">{t("side_nav.join_conversation")}</h5>
+          <hr className="right-divider"/>
+
+          <p>{t("side_nav.join_conversation.descriptions")}</p>
+          <div>
+           {t("side_nav.join_conversation.button.make_sheet")}
+          </div>
+          </div>
       </div>
     );
   }
 
   const renderTopicTitle = () => {
     return <h4 className="topics-title listtitle">
-      {parentId ? topicsData.parent?.title : t("topic.all_topics")}
+      {parentId ? topicsData.parent?.title : t("topic.expore")}
     </h4>
   }
   const renderSearchBar = () => {
@@ -200,8 +209,7 @@ const SearchTopics = () => {
       </div>
     </div>
   }
-
- 
+  
   const renderPagination = () => {
     if (!topicsList.topics || topicsList.topics.length === 0) {
       return null;
@@ -235,7 +243,7 @@ const SearchTopics = () => {
     );
   }
   return (
-    <Container fluid className="topics-container border">
+    <Container fluid className="topics-container">
       <Row className="topics-wrapper">
         <Col xs={12} md={7} className="topics-list">
           {renderTopicTitle()}
@@ -255,4 +263,4 @@ const SearchTopics = () => {
   );
 };
 
-export default SearchTopics
+export default Topics;
