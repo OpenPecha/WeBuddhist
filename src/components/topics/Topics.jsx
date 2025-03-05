@@ -36,8 +36,6 @@ const Topics = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchTerm, 700);
   const [selectedLetter, setSelectedLetter] = useState("");
-  const translatedKey = t("topic.alphabet");
-  const cleanAlphabetArray = translatedKey.split("").filter((char) => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
   const location = useLocation();
   const [isLocalLoading, setIsLocalLoading] = useState(false);
   const [topicsCache, setTopicsCache] = useState({});
@@ -98,19 +96,7 @@ const Topics = () => {
       setCurrentPage(1);
           }
   }
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    setSelectedLetter("");
-    setIsLocalLoading(true);
-    setCurrentPage(1);
-  };
 
-  const handleLetterClick = (letter) => {
-    setSelectedLetter(letter);
-    setSearchTerm("");
-    setIsLocalLoading(true);
-    setCurrentPage(1);
-  };
 
   const renderTopicsList = () => {
     if (isLoading) {
@@ -232,7 +218,7 @@ const Topics = () => {
           {renderTopicTitle()}
           <div className="topics-content">
             {renderTopicsList()}
-            {renderSearchpage()}
+            {!isLoading && renderSearchpage()}
             {!isLoading && renderPagination()}
           </div>
         </Col>
