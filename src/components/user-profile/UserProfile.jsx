@@ -5,10 +5,26 @@ import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useTranslate } from "@tolgee/react";
-import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/Constants.js";
+import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, mapLanguageCode, REFRESH_TOKEN } from "../../utils/Constants.js";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useMemo, useState } from "react";
 
+const fetchsheet = async (userid="7d6df9a4-bff7-4e43-a386-46658d443772", limit, skip) => {
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+  console.log(language)
+  const { data } = await axiosInstance.get("api/v1/sheets", {
+    params: {
+      language,
+      ...(userid && { user_id: userid }),
+      limit,
+      skip,
+    },
+  });
+
+  return data;
+};
 
 const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
@@ -33,7 +49,11 @@ const UserProfile = () => {
   const { t } = useTranslate();
   const { isLoggedIn, logout: pechaLogout } = useAuth();
   const { isAuthenticated, logout } = useAuth0();
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit, setLimit] = useState(10);
+      const skip = useMemo(() =>{
+        return (currentPage - 1) * limit;
+      },[currentPage])
   const uploadProfileImageMutation = useMutation(uploadProfileImage, {
     onSuccess: async () => {
       alert("Image uploaded successfully!");
@@ -128,6 +148,15 @@ const UserProfile = () => {
     );
   }
 
+  const { 
+    data: sheetsData, 
+    isLoading: sheetsIsLoading 
+  } = useQuery(
+    ["sheets", currentPage, limit], 
+    () => fetchsheet("123", limit, skip), 
+    { refetchOnWindowFocus: false }
+  );
+  console.log(sheetsData)
   return (
     <>
       { !userInfoIsLoading ?
@@ -188,8 +217,32 @@ const UserProfile = () => {
                   }
                 >
                   <div className="tab-content">
-                    <h3>{ t("profile.tab.sheets") }</h3>
-                    <p>{ t("profile.sheet_description") }</p>
+
+                    {/* <h3>{ t("profile.tab.sheets") }</h3>
+                    <p>{ t("profile.sheet_description") }</p> */}
+                    <div className="sheets-list">
+                    {sheetsIsLoading ? (
+                      <p>Loading sheets...</p>
+                    ) : (
+                      sheetsData?.sheets.map((sheet) => (
+                        <div key={sheet.id} className="sheet-item">
+                          <div className="sheet-content listtitle">
+                            <h4 className="sheet-title">{sheet.title}</h4>
+                            <div className="sheet-metadata content">
+                              <span className="sheet-views">{sheet.views}  { t("sheet.view_count") }</span>
+                              <span className="sheet-dot">·</span>
+                              <span className="sheet-date">{sheet.date}</span>
+                              <span className="sheet-dot">·</span>
+                              <span className="sheet-topics ">
+                                {sheet.topics?.join(', ') || 'No topics'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+      </div>
+
                   </div>
                 </Tab>
                 <Tab

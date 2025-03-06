@@ -30,6 +30,19 @@ describe("UserProfile Component", () => {
       { account: "youtube", url: "https://youtube.com" },
     ]
   };
+
+  const mockSheetsData = {
+    sheets: [
+      {
+        id: '1',
+        title: 'Sample Sheet 1',
+        views: 123,
+        date: '2023-01-01',
+        topics: ['Topic 1', 'Topic 2']
+      }
+    ]
+  };
+  
   beforeAll(() => {
     vi.spyOn(window, 'alert').mockImplementation(() => {});
   });
@@ -39,10 +52,24 @@ describe("UserProfile Component", () => {
   });
 
   beforeEach(() => {
-    useQuery.mockImplementation(() => ({
-      data: mockUserInfo,
-      isLoading: false,
-    }));
+    useQuery.mockImplementation((queryKey) => {
+      if (queryKey === "userInfo") {
+        return {
+          data: mockUserInfo,
+          isLoading: false,
+          refetch: vi.fn()
+        };
+      } else if (Array.isArray(queryKey) && queryKey[0] === "sheets") {
+        return {
+          data: mockSheetsData,
+          isLoading: false
+        };
+      }
+      return {
+        data: mockUserInfo,
+        isLoading: false,
+      };
+    });
   });
 
   const setup = () => {
@@ -102,6 +129,7 @@ describe("UserProfile Component", () => {
 
   test("renders tabs and their content", () => {
     setup();
+
   
     // Find the actual tab buttons by their role and text content
     const sheetsTab = screen.getByRole('tab', { name: /Sheets/i });
@@ -126,6 +154,7 @@ describe("UserProfile Component", () => {
     // Click on Notes tab
     fireEvent.click(notesTab);
     expect(screen.getByRole('tabpanel', { name: /Notes/i })).toBeInTheDocument();
+
     expect(screen.getByText("profile.notes.description")).toBeInTheDocument();
   
     // Click on Buddhist Text Tracker tab
