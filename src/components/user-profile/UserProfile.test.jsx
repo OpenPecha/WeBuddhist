@@ -130,30 +130,36 @@ describe("UserProfile Component", () => {
   test("renders tabs and their content", () => {
     setup();
 
-    // Check if the tabs are rendered
-    expect(screen.getByLabelText("profile.sheets.title")).toBeInTheDocument();
-    expect(screen.getByLabelText("profile.collections.title")).toBeInTheDocument();
-    expect(screen.getByLabelText("profile.notes.title")).toBeInTheDocument();
-    expect(screen.getByLabelText("profile.text_tracker.title")).toBeInTheDocument();
+  
+    // Find the actual tab buttons by their role and text content
+    const sheetsTab = screen.getByRole('tab', { name: /Sheets/i });
+    const collectionsTab = screen.getByRole('tab', { name: /Collections/i });
+    const notesTab = screen.getByRole('tab', { name: /Notes/i });
+    const trackerTab = screen.getByRole('tab', { name: /Buddhist Text Tracker/i });
+  
+    expect(sheetsTab).toBeInTheDocument();
+    expect(collectionsTab).toBeInTheDocument();
+    expect(notesTab).toBeInTheDocument();
+    expect(trackerTab).toBeInTheDocument();
+  
+    // The Sheets tab is active by default, so check its content first
+    expect(screen.getByRole('tabpanel', { name: /Sheets/i })).toBeInTheDocument();
+    expect(screen.getByText("You can use sheets to save and organize sources, write new texts, create lessons, lectures, articles, and more.")).toBeInTheDocument();
+  
+    // Click on Collections tab
+    fireEvent.click(collectionsTab);
+    expect(screen.getByRole('tabpanel', { name: /Collections/i })).toBeInTheDocument();
+    expect(screen.getByText("You can use collections to organize your sheets or public sheets you like. Collections can be shared privately or made public on Pecha")).toBeInTheDocument();
+  
+    // Click on Notes tab
+    fireEvent.click(notesTab);
+    expect(screen.getByRole('tabpanel', { name: /Notes/i })).toBeInTheDocument();
 
-    // Check content for sheets tab with actual sheet data
-    fireEvent.click(screen.getByLabelText("profile.sheets.title"));
-    expect(screen.getByLabelText("profile.sheets.title")).toBeInTheDocument();
-    // Since sheets tab now loads dynamic content instead of static description text
-    expect(screen.getByText("Sample Sheet 1")).toBeInTheDocument();
-    expect(screen.getByText("123 sheet.view_count")).toBeInTheDocument();
-    
-    // Check other tabs still have their static descriptions
-    fireEvent.click(screen.getByLabelText("profile.collections.title"));
-    expect(screen.getByLabelText("profile.collections.title")).toBeInTheDocument();
-    expect(screen.getByText("profile.collections.description")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByLabelText("profile.notes.title"));
-    expect(screen.getByLabelText("profile.notes.title")).toBeInTheDocument();
     expect(screen.getByText("profile.notes.description")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByLabelText("profile.text_tracker.title"));
-    expect(screen.getByLabelText("profile.text_tracker.title")).toBeInTheDocument();
+  
+    // Click on Buddhist Text Tracker tab
+    fireEvent.click(trackerTab);
+    expect(screen.getByRole('tabpanel', { name: /Buddhist Text Tracker/i })).toBeInTheDocument();
     expect(screen.getByText("profile.text_tracker.descriptions")).toBeInTheDocument();
   });
 
