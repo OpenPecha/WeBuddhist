@@ -30,6 +30,19 @@ describe("UserProfile Component", () => {
       { account: "youtube", url: "https://youtube.com" },
     ]
   };
+
+  const mockSheetsData = {
+    sheets: [
+      {
+        id: '1',
+        title: 'Sample Sheet 1',
+        views: 123,
+        date: '2023-01-01',
+        topics: ['Topic 1', 'Topic 2']
+      }
+    ]
+  };
+  
   beforeAll(() => {
     vi.spyOn(window, 'alert').mockImplementation(() => {});
   });
@@ -39,10 +52,24 @@ describe("UserProfile Component", () => {
   });
 
   beforeEach(() => {
-    useQuery.mockImplementation(() => ({
-      data: mockUserInfo,
-      isLoading: false,
-    }));
+    useQuery.mockImplementation((queryKey) => {
+      if (queryKey === "userInfo") {
+        return {
+          data: mockUserInfo,
+          isLoading: false,
+          refetch: vi.fn()
+        };
+      } else if (Array.isArray(queryKey) && queryKey[0] === "sheets") {
+        return {
+          data: mockSheetsData,
+          isLoading: false
+        };
+      }
+      return {
+        data: mockUserInfo,
+        isLoading: false,
+      };
+    });
   });
 
   const setup = () => {
@@ -109,11 +136,14 @@ describe("UserProfile Component", () => {
     expect(screen.getByLabelText("profile.notes.title")).toBeInTheDocument();
     expect(screen.getByLabelText("profile.text_tracker.title")).toBeInTheDocument();
 
-    // Check content for each tab
+    // Check content for sheets tab with actual sheet data
     fireEvent.click(screen.getByLabelText("profile.sheets.title"));
     expect(screen.getByLabelText("profile.sheets.title")).toBeInTheDocument();
-    expect(screen.getByText("profile.sheets.description")).toBeInTheDocument();
-
+    // Since sheets tab now loads dynamic content instead of static description text
+    expect(screen.getByText("Sample Sheet 1")).toBeInTheDocument();
+    expect(screen.getByText("123 sheet.view_count")).toBeInTheDocument();
+    
+    // Check other tabs still have their static descriptions
     fireEvent.click(screen.getByLabelText("profile.collections.title"));
     expect(screen.getByLabelText("profile.collections.title")).toBeInTheDocument();
     expect(screen.getByText("profile.collections.description")).toBeInTheDocument();
