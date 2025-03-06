@@ -196,3 +196,39 @@
 
 }
 
+.sheets-list {
+  .sheet-item {
+    text-align: start;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 15px 0;
+
+    .sheet-content {
+      .sheet-title {
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .sheet-summary {
+        color: #666;
+        margin-bottom: 10px;
+      }
+
+      .sheet-metadata {
+        display: flex;
+        align-items: center;
+        color: #888;
+
+        .sheet-dot {
+          margin: 0 8px;
+          color: #ccc;
+        }
+
+        .sheet-views, 
+        .sheet-date, 
+        .sheet-topics {
+          display: inline-block;
+        }
+      }
+    }
+  }
+}
