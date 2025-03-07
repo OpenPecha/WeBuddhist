@@ -106,6 +106,31 @@ $card-shadow:rgba(0, 0, 0, 0.1);
       font-size: var(--listsubtitle-font-size) !important;
       font-family: var(--listsubtitle-font-family) !important; 
     }
+
+    .back-button{
+      border: none;
+      align-self: flex-start;
+      padding: 0;
+      &:hover{
+        background-color: white;
+        color: darkred;
+      }
+    }
+    .deep-search-container{
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      .deep-search-button{
+        width: 50%;
+        align-self: center;
+        border: none;
+        &:hover{
+          background-color: white;
+          color: darkred;
+        }
+      }
+    }
+
   }
 
   .topic-info {
