@@ -23,12 +23,21 @@ describe("UserRegistration Component", () => {
       </Router>
     );
   };
-  beforeEach(() => {
-    useQuery.mockImplementation(() => ({
-      data: {},
-      isLoading: false,
-    }));
-  });
+ beforeEach(() => {
+  useQuery.mockImplementation(() => ({
+    data: {
+      terms: [
+        { title: "content.title.words_of_buddha", description: "content.subtitle.words_of_buddha" },
+        { title: "content.title.liturgy", description: "content.subtitle.prayers_rutuals" },
+        { title: "content.title.Buddhavacana", description: "content.subtitle.buddhavacana" },
+      ],
+      total: 3,
+      skip: 0,
+      limit: 10
+    },
+    isLoading: false,
+  }));
+});
   test("renders titles", () => {
     setup();
     expect(screen.getByText("Browse the Library")).toBeInTheDocument();

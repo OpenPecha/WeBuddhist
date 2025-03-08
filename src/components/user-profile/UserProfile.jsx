@@ -10,7 +10,7 @@ import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMemo, useState } from "react";
 
-const fetchsheet = async (userid="7d6df9a4-bff7-4e43-a386-46658d443772", limit, skip) => {
+const fetchsheet = async (userid, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
   console.log(language)
