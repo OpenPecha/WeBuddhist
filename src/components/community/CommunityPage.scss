@@ -1,219 +1,294 @@
 .container-community {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 20px;
-    gap: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 20px;
+  gap: 30px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 0 15px;
   }
-  .avatar-initials {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
+
+.avatar-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #666;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.sheet-community {
+  flex: 2;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  
+  @media (max-width: 768px) {
+    flex: none;
+    width: 100%;
+    padding: 15px;
+  }
+}
+
+.sidebar-community {
+  flex: 1;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  
+  @media (max-width: 768px) {
+    flex: none;
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+  }
+}
+
+.section-title {
+  text-align: start;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: normal;
+  
+  @media (max-width: 768px) {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+}
+
+.published-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  
+  @media (max-width: 768px) {
+    gap: 20px;
+  }
+}
+
+.published-item {
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eee;
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  @media (max-width: 768px) {
+    padding-bottom: 20px;
+  }
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.author-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 14px;
+  color: white;
+  
+  @media (max-width: 768px) {
     width: 32px;
     height: 32px;
-    border-radius: 50%;
-    background-color: #e0e0e0;
-    color: #666;
-    font-weight: bold;
-    font-size: 14px;
+    font-size: 12px;
   }
-  .sheet-community {
-    flex: 2;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-  }
+}
+
+.author-name {
+  font-weight: 500;
+}
+
+.time-ago {
+  color: #777;
+}
+
+.item-title {
+  font-size: 20px;
+  margin-bottom: 5px;
+  color: #333;
   
-  .sidebar-community {
-    flex: 1;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
+  @media (max-width: 768px) {
+    font-size: 18px;
   }
+}
+
+.item-subtitle {
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.item-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.sidebar-section {
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
   
-  .section-title {
-    text-align: start;
-    font-size: 24px;
-    color: #333;
+  @media (max-width: 768px) {
     margin-bottom: 20px;
-    font-weight: normal;
+    padding: 12px;
   }
+}
+
+.sidebar-title {
+  color: #555;
+  margin-bottom: 15px;
+  font-weight: normal;
   
-  .published-list {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-  }
-  
-  .published-item {
-    padding-bottom: 30px;
-    border-bottom: 1px solid #eee;
-    
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-  
-  .author-info {
-    display: flex;
-    align-items: center;
+  @media (max-width: 768px) {
     margin-bottom: 10px;
   }
-  
-  .author-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-    font-size: 14px;
-    color: white;
+}
+
+.sidebar-content {
+  color: #666;
+  line-height: 1.5;
+}
+
+.make-sheet-btn, .explore-collections-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  margin-top: 15px;
+  background-color: #c9b37e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover {
+    background-color: #b79d5f;
   }
+}
+
+.btn-icon {
+  margin-right: 8px;
+}
+
+.follow-list {
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   
-  .author-name {
-    font-weight: 500;
+  @media (max-width: 768px) {
+    height: auto;
+    max-height: 200px;
+    overflow-y: auto;
+    gap: 12px;
   }
+}
+
+.follow-item {
+  display: flex;
+  align-items: center;
+}
+
+.follow-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 12px;
+  color: white;
   
-  .time-ago {
-    color: #777;
+  @media (max-width: 768px) {
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
   }
-  
-  .item-title {
-    font-size: 20px;
-    margin-bottom: 5px;
-    color: #333;
-  }
-  
-  .item-subtitle {
-    color: #555;
-    margin-bottom: 5px;
-  }
-  
-  .item-description {
-    font-size: 14px;
-    color: #666;
-    line-height: 1.5;
-  }
-  
-  .sidebar-section {
-    margin-bottom: 30px;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-  }
-  
-  .sidebar-title {
-    color: #555;
-    margin-bottom: 15px;
-    font-weight: normal;
-  }
-  
-  .sidebar-content {
-    color: #666;
-    line-height: 1.5;
-  }
-  
-  .make-sheet-btn, .explore-collections-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 10px;
-    margin-top: 15px;
-    background-color: #c9b37e;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+}
+
+.follow-name {
+  font-weight: 500;
+}
+
+.follow-handle {
+  font-size: 13px;
+  color: #777;
+}
+
+.collections-description {
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.sheets-list {
+  .sheet-item {
+    text-align: start;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 15px 0;
     
-    &:hover {
-      background-color: #b79d5f;
+    @media (max-width: 768px) {
+      padding: 12px 0;
     }
-  }
-  
-  .btn-icon {
-    margin-right: 8px;
-  }
-  
-  .follow-list {
-    height: 220px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .follow-item {
-    display: flex;
-    align-items: center;
-  }
-  
-  .follow-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-color: #999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-    font-size: 12px;
-    color: white;
-  }
-  
-  .follow-name {
-    font-weight: 500;
-  }
-  
-  .follow-handle {
-    font-size: 13px;
-    color: #777;
-  }
-  
-  .collections-description {
-    color: #666;
-    line-height: 1.5;
-    margin-bottom: 15px;
-  }
-  .sheets-list {
-    .sheet-item {
-      text-align: start;
-      border-bottom: 1px solid #f0f0f0;
-      padding: 15px 0;
-  
-      .sheet-content {
-        .sheet-title {
-          color: #333;
-          margin-bottom: 5px;
+    
+    .sheet-content {
+      .sheet-title {
+        color: #333;
+        margin-bottom: 5px;
+      }
+      
+      .sheet-summary {
+        color: #666;
+        margin-bottom: 10px;
+      }
+      
+      .sheet-metadata {
+        display: flex;
+        align-items: center;
+        color: #888;
+        
+        .sheet-dot {
+          margin: 0 8px;
+          color: #ccc;
         }
-  
-        .sheet-summary {
-          color: #666;
-          margin-bottom: 10px;
-        }
-  
-        .sheet-metadata {
-          display: flex;
-          align-items: center;
-          color: #888;
-  
-          .sheet-dot {
-            margin: 0 8px;
-            color: #ccc;
+        
+        .sheet-date {
+          font-size: 14px;
+          
+          @media (max-width: 768px) {
+            font-size: 12px;
           }
-        .sheet-date{
-            font-size: 14px;
         }
-          .sheet-views, 
-          .sheet-date, 
-          .sheet-topics {
-            display: inline-block;
-          }
+        
+        .sheet-views,
+        .sheet-date,
+        .sheet-topics {
+          display: inline-block;
         }
       }
     }
   }
+}
