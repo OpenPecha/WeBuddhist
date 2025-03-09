@@ -1,3 +1,4 @@
+
 import React from "react";
 import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
 import {QueryClient, QueryClientProvider} from "react-query";
@@ -12,6 +13,7 @@ import "@testing-library/jest-dom";
 mockAxios();
 mockUseAuth();
 mockReactQuery();
+
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -76,6 +78,7 @@ describe("HomePage Component", () => {
     );
   };
 
+
   test("renders HomePage component", () => {
     setup();
     // General structure tests that should pass regardless of translation
@@ -118,6 +121,7 @@ describe("HomePage Component", () => {
     const button = browseSection.querySelector("button");
     expect(button).toBeInTheDocument();
   });
+
 
   test("renders the content section correctly", () => {
     setup();
@@ -250,3 +254,4 @@ describe("HomePage Component", () => {
     expect(document.querySelector(".right-section")).toBeInTheDocument();
   });
 });
+

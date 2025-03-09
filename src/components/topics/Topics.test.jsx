@@ -1,12 +1,12 @@
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
-import {QueryClient, QueryClientProvider} from "react-query";
+import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import * as reactQuery from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
 import Topics from "./Topics.jsx";
-import {vi} from "vitest";
+import { vi } from "vitest";
 
 mockAxios();
 mockUseAuth()
@@ -82,7 +82,7 @@ describe("Topics Component", () => {
       isLoading: true 
     }));
     setup();
-    expect(screen.getByText("Loading ...")).toBeInTheDocument();
+    expect(screen.getByText("Loading topics...")).toBeInTheDocument();
   });
 
   test("filters topics based on search input", () => {
@@ -104,7 +104,7 @@ describe("Topics Component", () => {
     setup();
     const letterButton = screen.getByText("T");
     fireEvent.click(letterButton);
-    fireEvent.click(screen.getByText("clear"));
+    fireEvent.click(screen.getByText("topic.clear"));
     expect(screen.getByText("Topic 1")).toBeInTheDocument();
     expect(screen.getByText("Topic 5")).toBeInTheDocument();
   });
