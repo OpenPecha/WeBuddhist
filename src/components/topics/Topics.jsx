@@ -9,7 +9,7 @@ import React from "react";
 import {useTranslate} from "@tolgee/react";
 import {useDebounce} from "use-debounce";
 
-const fetchTopics = async (parentId, searchFilter, limit, skip, hierarchy) => {
+export const fetchTopics = async (parentId, searchFilter, limit, skip, hierarchy) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 

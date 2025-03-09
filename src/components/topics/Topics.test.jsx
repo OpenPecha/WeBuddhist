@@ -2,12 +2,14 @@ import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-u
 import * as reactQuery from "react-query";
 
 import {TolgeeProvider} from "@tolgee/react";
-import {fireEvent, render, screen} from "@testing-library/react";
+import {fireEvent, render, screen, waitFor} from "@testing-library/react";
 import {BrowserRouter as Router} from "react-router-dom";
 
 import "@testing-library/jest-dom";
-import Topics from "./Topics.jsx";
+import Topics, {fetchTopics} from "./Topics.jsx";
 import { vi } from "vitest";
+import {QueryClient, QueryClientProvider} from "react-query";
+import axiosInstance from "../../config/axios-config.js";
 
 mockAxios();
 mockUseAuth();
@@ -16,6 +18,7 @@ mockReactQuery();
 vi.mock("../../utils/Constants.js", () => ({
   getAlphabet: () => ["A", "B", "C", "T"],
   LANGUAGE: "LANGUAGE",
+  mapLanguageCode: () => "en"
 }));
 
 describe("Topics Component", () => {
@@ -35,7 +38,7 @@ describe("Topics Component", () => {
       data: mockTopicsData,
       isLoading: false,
     }));
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
+    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en");
   });
 
   const setup = () => {
@@ -72,6 +75,7 @@ describe("Topics Component", () => {
     setup();
     const nextButton = screen.getByText("Next")
     expect(nextButton).toBeInTheDocument()
+    fireEvent.click(nextButton)
     fireEvent.click(screen.getByText("All Topics A-Z"));
     const searchInput = screen.getByPlaceholderText("Search topics...");
     expect(nextButton).not.toBeInTheDocument()
@@ -114,5 +118,23 @@ describe("Topics Component", () => {
     expect(screen.getByText("Topic Information")).toBeInTheDocument()
     expect(screen.getByText("Details about the selected topic will be displayed here.")).toBeInTheDocument()
   })
+
+  test("fetches topics with correct parameters", async () => {
+    axiosInstance.get.mockResolvedValueOnce({ data: mockTopicsData });
+    const result = await fetchTopics("123", "Kind", 10, 0, true);
+
+    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/topics", {
+      params: {
+        language: "en",
+        parent_id: "123",
+        search: "Kind",
+        limit: 10,
+        skip: 0,
+        hierarchy: true
+      }
+    });
+
+    expect(result).toEqual(mockTopicsData);
+  });
 });
 
