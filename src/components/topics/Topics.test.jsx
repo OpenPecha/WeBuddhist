@@ -1,12 +1,13 @@
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
-import {QueryClient, QueryClientProvider} from "react-query";
+import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import * as reactQuery from "react-query";
+
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router} from "react-router-dom";
+
 import "@testing-library/jest-dom";
 import Topics from "./Topics.jsx";
-import {vi} from "vitest";
+import { vi } from "vitest";
 
 mockAxios();
 mockUseAuth();
@@ -95,6 +96,7 @@ describe("Topics Component", () => {
     const letterButton = screen.getByText("H");
     fireEvent.click(letterButton);
     fireEvent.click(screen.getByText("topic.clear"));
+
     expect(screen.getByPlaceholderText("Search topics...")).toBeInTheDocument()
   });
 
@@ -113,3 +115,4 @@ describe("Topics Component", () => {
     expect(screen.getByText("Details about the selected topic will be displayed here.")).toBeInTheDocument()
   })
 });
+

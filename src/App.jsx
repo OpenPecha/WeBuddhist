@@ -22,9 +22,9 @@ const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 
 function App() {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, isLoggedIn, logout: pechaLogout } = useAuth();
     const [intervalId, setIntervalId] = useState(null);
-    const { getIdTokenClaims, isAuthenticated } = useAuth0();
+    const { getIdTokenClaims, isAuthenticated, logout } = useAuth0();
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -32,7 +32,19 @@ function App() {
                 try {
                     const claims = await getIdTokenClaims();
                     const idToken = claims.__raw;
-                    sessionStorage.setItem(ACCESS_TOKEN, idToken)
+                    if (Date.now() >= claims.exp) {
+                        localStorage.removeItem(LOGGED_IN_VIA);
+                        sessionStorage.removeItem(ACCESS_TOKEN);
+                        localStorage.removeItem(REFRESH_TOKEN)
+                        isLoggedIn && pechaLogout()
+                        isAuthenticated && await logout({
+                            logoutParams: {
+                                returnTo: window.location.origin + "/texts",
+                            },
+                        });
+                    } else {
+                        sessionStorage.setItem(ACCESS_TOKEN, idToken);
+                    }
                 } catch (error) {
                     console.error("Error fetching token:", error);
                 }
