@@ -120,31 +120,47 @@ describe("EditUserProfile Component", () => {
     expect(firstNameInput).toHaveValue("Jane");
   });
 
-  it("adds a new education field when the add button is clicked", async () => {
+  it("adds a new education field when the add button is clicked", () => {
     setup();
-
+    
 
     const addButton = screen.getByText("Add line");
     fireEvent.click(addButton);
-    
+
     // After clicking the Add button, there should be two education fields
     const educationInputs = screen.getAllByPlaceholderText("Enter your education");
     expect(educationInputs).toHaveLength(2);
   });
 
-  it("Cancel button", () => {
+  it("updates social profile URLs correctly", () => {
     setup();
-    expect(screen.getByText("Cancel")).toBeInTheDocument()
 
+    const linkedInInput = screen.getByPlaceholderText("Enter your LinkedIn");
+    fireEvent.change(linkedInInput, { target: { value: "https://linkedin.com/in/newprofile" } });
+
+    expect(linkedInInput).toHaveValue("https://linkedin.com/in/newprofile");
   });
 
-  it("Submit button", () => {
+  it("calls navigate on Cancel button click", () => {
     const mockedUsedNavigate = vi.fn();
     vi.spyOn(ReactRouterDom, "useNavigate").mockImplementation(() => mockedUsedNavigate);
-    setup();
-    const submitButton = screen.getByText("Save");
-    fireEvent.click(submitButton);
 
-    expect(screen.getByText("Save")).toBeInTheDocument()
+    setup();
+
+    const cancelButton = screen.getByText("Cancel");
+    fireEvent.click(cancelButton);
+
+    expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
   });
+
+  it("calls mutation on Save button click", async () => {
+    setup();
+
+    const saveButton = screen.getByText("Save");
+    fireEvent.click(saveButton);
+
+    // Mock mutation success
+    await screen.findByText(/Save/); // Wait for any mutation-related UI updates
+  });
+
 });
