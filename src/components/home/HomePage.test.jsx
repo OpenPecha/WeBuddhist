@@ -1,15 +1,15 @@
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
-import {QueryClient, QueryClientProvider, useQuery} from "react-query";
-import {BrowserRouter as Router} from "react-router-dom";
-import {TolgeeProvider} from "@tolgee/react";
+import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { BrowserRouter as Router } from "react-router-dom";
+import { TolgeeProvider } from "@tolgee/react";
 import HomePage from "./HomePage.jsx";
-import {  render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 mockAxios();
 mockUseAuth()
 mockReactQuery()
-describe("UserRegistration Component", () => {
+describe("HomePage Component", () => {
 
   const queryClient = new QueryClient();
   const setup = () => {
@@ -25,7 +25,15 @@ describe("UserRegistration Component", () => {
   };
   beforeEach(() => {
     useQuery.mockImplementation(() => ({
-      data: {},
+      data: {
+        terms: [{
+          "id": "67b9a7b0ff90db7fb4ac8207",
+          "title": "Liturgy",
+          "description": "Prayers and rituals",
+          "slug": "Liturgy",
+          "has_child": false
+        }]
+      },
       isLoading: false,
     }));
   });
@@ -40,13 +48,7 @@ describe("UserRegistration Component", () => {
   test("renders sub titles  ", () => {
     setup();
 
-    expect(screen.getByText("content.title.words_of_buddha")).toBeInTheDocument();
-    expect(screen.getByText("content.subtitle.words_of_buddha")).toBeInTheDocument();
-    expect(screen.getByText("content.title.liturgy")).toBeInTheDocument();
-    expect(screen.getByText("content.subtitle.prayers_rutuals")).toBeInTheDocument();
-    expect(screen.getByText("content.title.Buddhavacana")).toBeInTheDocument();
-    expect(screen.getByText("content.subtitle.buddhavacana")).toBeInTheDocument();
+    expect(screen.getByText("Liturgy")).toBeInTheDocument();
+    expect(screen.getByText("Prayers and rituals")).toBeInTheDocument();
   });
-
-
 });
