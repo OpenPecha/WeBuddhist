@@ -1,12 +1,13 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
-import UserProfile from "./UserProfile.jsx";
+import UserProfile ,{fetchsheet} from "./UserProfile.jsx";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
 import { ACCESS_TOKEN } from "../../utils/Constants.js";
 import * as ReactRouterDom from "react-router-dom";
+import axiosInstance from "../../config/axios-config.js";
 
 // Mock react-router-dom for the navigation test
 vi.mock("react-router-dom", async () => {
@@ -220,5 +221,22 @@ describe("UserProfile Component", () => {
      // Check sheet metadata
      expect(sheetTitle).toBeInTheDocument()
     
+  });
+  test("fetches sheet with correct parameters", async () => {
+    window.localStorage.getItem.mockReturnValue("en");
+    
+    axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
+    const result = await fetchsheet("123", 10, 0);
+  
+    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+      params: {
+        language: "en",
+        user_id: "123",
+        limit: 10,
+        skip: 0,
+      }
+    });
+  
+    expect(result).toEqual(mockSheetsData);
   });
 });

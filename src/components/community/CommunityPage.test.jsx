@@ -2,9 +2,10 @@ import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-uti
 import {QueryClient, QueryClientProvider, useQuery} from "react-query";
 import {BrowserRouter as Router} from "react-router-dom";
 import {TolgeeProvider} from "@tolgee/react";
-import CommunityPage from "./CommunityPage.jsx";
+import CommunityPage, {fetchsheet} from "./CommunityPage.jsx";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import axiosInstance from "../../config/axios-config.js";
 
 mockAxios();
 mockUseAuth();
@@ -37,7 +38,24 @@ describe("CommunityPage Component", () => {
       }
     ]
   };
+  beforeEach(() => {
+    // Mock localStorage and sessionStorage methods
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        removeItem: vi.fn(),
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+      },
+      writable: true,
+    });
 
+    Object.defineProperty(window, "sessionStorage", {
+      value: {
+        removeItem: vi.fn(),
+      },
+      writable: true,
+    });
+  });
   const setup = () => {
     render(
       <Router>
@@ -109,5 +127,22 @@ describe("CommunityPage Component", () => {
     setup();
     expect(screen.queryByText("Test Sheet Title")).not.toBeInTheDocument();
     expect(screen.queryByText("Loading sheets...")).not.toBeInTheDocument();
+  });
+
+  test("fetches sheet with correct parameters", async () => {
+    vi.spyOn(window.localStorage, "getItem").mockReturnValue("en");    
+    axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
+    const result = await fetchsheet("123", 10, 0);
+  
+    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+      params: {
+        language: "en",
+        user_id: "123",
+        limit: 10,
+        skip: 0,
+      }
+    });
+  
+    expect(result).toEqual(mockSheetsData);
   });
 });

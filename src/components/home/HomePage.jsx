@@ -7,7 +7,7 @@ import { LANGUAGE, mapLanguageCode } from "../../utils/Constants.js";
 import {useQuery} from "react-query";
 import { useParams } from "react-router-dom";
 
-const fetchTexts = async (parentId) => {
+export const fetchTexts = async (parentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
   const { data } = await axiosInstance.get("api/v1/terms", {

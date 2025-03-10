@@ -5,10 +5,9 @@ import { LANGUAGE, mapLanguageCode } from '../../utils/Constants';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config.js';
 
-const fetchsheet = async (userid="", limit, skip) => {
+export const fetchsheet = async (userid="", limit, skip) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
-    console.log(language)
     const { data } = await axiosInstance.get("api/v1/sheets", {
       params: {
         language,
