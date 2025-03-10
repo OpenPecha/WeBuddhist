@@ -6,10 +6,10 @@ import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router, useParams} from "react-router-dom";
-import HomePage from "./HomePage.jsx";
+import HomePage, {fetchTexts}  from "./HomePage.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
-
+import axiosInstance from "../../config/axios-config.js";
 mockAxios();
 mockUseAuth();
 mockReactQuery();
@@ -41,7 +41,6 @@ vi.mock("../../utils/Constants.js", () => ({
 
 describe("HomePage Component", () => {
   const queryClient = new QueryClient();
-
   const mockTermsData = {
     terms: [
       { title: "content.title.words_of_buddha", description: "content.subtitle.words_of_buddha" },
@@ -252,6 +251,23 @@ describe("HomePage Component", () => {
     expect(document.querySelector(".section-1")).toBeInTheDocument();
     expect(document.querySelector(".section-2")).toBeInTheDocument();
     expect(document.querySelector(".right-section")).toBeInTheDocument();
+  });
+
+  test("fetches term with correct parameters", async () => {
+    window.localStorage.getItem.mockReturnValue("en");
+    axiosInstance.get.mockResolvedValueOnce({ data: mockTermsData });
+    const parentId = "123";
+    const result = await fetchTexts(parentId);
+      expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/terms", {
+      params: {
+        language: "en",
+        parent_id: "123",
+        limit: 10,
+        skip: 0
+      }
+    });
+  
+    expect(result).toEqual(mockTermsData);
   });
 });
 
