@@ -1,59 +1,43 @@
-
 import React, { useState } from 'react';
+import { Tabs, Tab } from 'react-bootstrap';
 import './TextDetail.scss';
-import {  FiChevronDown} from 'react-icons/fi';
+import { FiChevronDown } from 'react-icons/fi';
 import { useTranslate } from '@tolgee/react';
 
 const TextDetail = () => {
   const [selectedVersion, setSelectedVersion] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('');
-  const [activeTab, setActiveTab] = useState('contents');
   const { t } = useTranslate();
- 
+
   return (
     <div className="pecha-app">
       <main className="main-content">
         <div className="content-area">
           <div className="text-header">
-          <h1 className="title">The short path of Samantabhadra the lamp that illuminates with light</h1>
-          <div className="navbaritems subcom">{t("text.commentary")}</div>
+            <h1 className="title">The short path of Samantabhadra the lamp that illuminates with light</h1>
+            <div className="navbaritems subcom">{t("text.commentary")}</div>
             <button className="continue-button navbaritems">{t("text.button.continue_reading")}</button>
           </div>
-          
-          <div className="tabs listtitle">
-            <button
-              className={`tab ${activeTab === 'contents' ? 'active' : ''}`}
-              onClick={() => setActiveTab('contents')}
-            >
-              {t("text.contents")}
-            </button>
-            <button
-              className={`tab ${activeTab === 'versions' ? 'active' : ''}`}
-              onClick={() => setActiveTab('versions')}
-            >
-              {t("common.version")}
-            </button>
-          </div>
 
-          {activeTab === 'contents' ? (
-            <div className="text-sections">
-              <div className="section">
-                <h2 className="section-title">content here</h2>
+          <Tabs defaultActiveKey="contents" id="text-tabs" className="custom-tabs">
+            <Tab eventKey="contents" title={t("text.contents")}>
+              <div className="text-sections">
+                <div className="section">
+                  <h2 className="section-title">content here</h2>
+                </div>
               </div>
-
-             
-            </div>
-          ) : (  
-            <div>
-             <p>version here</p>
-             {/* todo */}
-            </div>
-          )}
+            </Tab>
+            <Tab eventKey="versions" title={t("common.version")}>
+              <div>
+                <p>version here</p>
+              </div>
+            </Tab>
+          </Tabs>
         </div>
-        
+
         <aside className="sidebar navbaritems">
           <div className="download-panel">
-          <p>{t("side_nav.download_text")}</p>
+            <p>{t("side_nav.download_text")}</p>
             <div className="select-group">
               <label>{t("side_nav.download_text.select_version")}</label>
               <div className="select-wrapper">
@@ -63,15 +47,14 @@ const TextDetail = () => {
                 >
                   <option value="" disabled>{t("side_nav.download_text.select_version")}</option>
                   <option value="version1">Dummy</option>
-          
                 </select>
                 <FiChevronDown size={16} />
               </div>
             </div>
-            
+
             <div className="select-group navbaritems">
               <label>{t("side_nav.download_text.select_format")}</label>
-              <div className="select-wrapper ">
+              <div className="select-wrapper">
                 <select
                   value={selectedFormat}
                   onChange={(e) => setSelectedFormat(e.target.value)}
@@ -85,7 +68,7 @@ const TextDetail = () => {
                 <FiChevronDown size={16} />
               </div>
             </div>
-            
+
             <button className="download-button">{t("text.download")}</button>
           </div>
         </aside>
