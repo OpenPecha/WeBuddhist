@@ -34,7 +34,7 @@ function App() {
                 try {
                     const claims = await getIdTokenClaims();
                     const idToken = claims.__raw;
-                    if (Date.now() >= claims.exp) {
+                    if (Date.now() >= claims.exp * 1000) {
                         localStorage.removeItem(LOGGED_IN_VIA);
                         sessionStorage.removeItem(ACCESS_TOKEN);
                         localStorage.removeItem(REFRESH_TOKEN)
