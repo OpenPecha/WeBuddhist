@@ -49,7 +49,7 @@ This is the frontend application for the OpenPecha platform, designed to manage 
 ## Key Features
 
 - Modern React-based frontend
-- Internationalization support via i18next
+- Internationalization support via tolgee
 - Authentication via Auth0
 - Responsive UI with React Bootstrap
 - State management with React Query
@@ -60,7 +60,7 @@ This is the frontend application for the OpenPecha platform, designed to manage 
 - React Router DOM
 - React Bootstrap
 - Auth0 React
-- i18next
+- tolgee
 - React Query
 - Vite
 - Vitest
