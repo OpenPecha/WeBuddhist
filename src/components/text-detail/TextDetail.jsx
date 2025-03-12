@@ -3,6 +3,7 @@ import { Tabs, Tab } from 'react-bootstrap';
 import './TextDetail.scss';
 import { FiChevronDown } from 'react-icons/fi';
 import { useTranslate } from '@tolgee/react';
+import Versions from "./versions/Versions.jsx";
 
 const TextDetail = () => {
   const [selectedVersion, setSelectedVersion] = useState('');
@@ -28,9 +29,7 @@ const TextDetail = () => {
               </div>
             </Tab>
             <Tab eventKey="versions" title={t("common.version")}>
-              <div>
-                <p>version here</p>
-              </div>
+              <Versions/>
             </Tab>
           </Tabs>
         </div>

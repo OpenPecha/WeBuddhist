@@ -1,0 +1,164 @@
+$primary-color: hsl(42, 49%, 46%);
+$text-color: #333;
+$comcolor: #636363;
+$border-color: #e5e5e5;
+$background-light: #fff;
+$nav-color: #555;
+$white-color: white;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+.pecha-app {
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .main-content {
+    display: flex;
+    flex: 1;
+    padding: 2rem;
+    background-color: $background-light;
+    gap: 2rem;
+    width: 100%;
+
+    .content-area {
+      flex: 1;
+      max-width: 100%;
+
+      .text-header {
+        margin-bottom: 2rem;
+
+        .subcom {
+          color: $comcolor;
+        }
+
+        .continue-button {
+          background-color: $primary-color;
+          color: white;
+          border: none;
+          margin-top: 2rem;
+          padding: 0.5rem 1rem;
+          border-radius: 4px;
+          cursor: pointer;
+
+          &:hover {
+            background-color: rgba($primary-color, 0.9);
+          }
+        }
+      }
+
+      .nav-tabs {
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        justify-content: flex-start;
+
+        .nav-link {
+          color: $nav-color;
+          font-weight: 500;
+          border-radius: 5px 5px 0 0;
+          padding: 0.75rem 1.5rem;
+          margin-right: 0.5rem;
+
+          &.active {
+            background-color: $primary-color;
+            color: $white-color;
+          }
+        }
+      }
+
+      .custom-tabs {
+        .text-sections {
+          .section {
+            margin-bottom: 1.5rem;
+          }
+
+          .section-title {
+            font-size: 1.15rem;
+            font-weight: normal;
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+
+    .sidebar {
+      width: 300px;
+
+      .download-panel {
+        border: 1px solid $border-color;
+        border-radius: 4px;
+        padding: 1.5rem;
+
+        .select-group {
+          margin-bottom: 1.5rem;
+
+          label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+          }
+          .select-wrapper {
+            position: relative;
+
+            select {
+              width: 100%;
+              padding: 0.75rem;
+              border: 1px solid $border-color;
+              border-radius: 4px;
+              background-color: white;
+              appearance: none;
+              font-size: 0.9rem;
+              cursor: pointer;
+            }
+            svg {
+              position: absolute;
+              right: 10px;
+              top: 50%;
+              transform: translateY(-50%);
+              pointer-events: none;
+              color: #777;
+            }
+          }
+        }
+
+        .download-button {
+          width: 100%;
+          padding: 0.75rem;
+          background-color: $primary-color;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          font-size: 0.95rem;
+          cursor: pointer;
+
+          &:hover {
+            background-color: rgba($primary-color, 0.9);
+          }
+        }
+      }
+
+      @media (max-width: 768px) {
+        width: 100%;
+        margin-top: 2rem;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .main-content {
+      flex-direction: column;
+
+      .content-area {
+        max-width: 100%;
+      }
+    }
+  }
+}

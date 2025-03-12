@@ -18,7 +18,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
 import Topics from "./components/topics/Topics.jsx";
 import CommunityPage from "./components/community/CommunityPage.jsx";
-import TextDetail from "./components/Text-detail/TextDetail.jsx";
+import TextDetail from "./components/text-detail/TextDetail.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 
