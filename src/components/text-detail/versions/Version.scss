@@ -1,0 +1,12 @@
+
+.versions-container{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: green;
+  .version{
+    display: flex;
+    justify-content: space-between;
+    background-color: red;
+  }
+}
