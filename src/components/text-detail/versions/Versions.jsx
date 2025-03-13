@@ -1,5 +1,4 @@
-
-
+import "./Versions.scss"
 
 const Versions = () =>{
 
@@ -49,11 +48,12 @@ const Versions = () =>{
       {
         data.map((version,index) => <>
           <div  key={index} className="version">
-            <div>
+            <div className="version-title">
               {version.title}
+              <br/>
               Revision History
             </div>
-            <div>
+            <div className="version-language">
               {version.language}
             </div>
           </div>
