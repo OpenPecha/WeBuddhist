@@ -1,3 +1,5 @@
+$primary-color: #666666;
+
 
 .versions-container{
   display: flex;
@@ -7,11 +9,19 @@
     display: flex;
     justify-content: space-between;
 
+    .review-history{
+      color: $primary-color;
+      font-size: 15px;
+    }
+
     .version-language{
-      padding: 5px 10px;
+      height: 30px;
+      padding: 3px 10px;
       background-color: #EDEDEC;
       color: #666666;
       border-radius: 25px;
+      font-size: 15px;
+
     }
   }
 }

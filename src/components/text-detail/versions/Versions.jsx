@@ -1,7 +1,14 @@
 import "./Versions.scss"
+import {useTranslate} from "@tolgee/react";
 
 const Versions = () =>{
+  const { t } = useTranslate();
 
+  const languageMap = {
+    "sa":"language.sanskrit",
+    "bo":"language.tibetan",
+    "en":"language.english"
+  }
   const data =  [
       {
         "id": "uuid.v4",
@@ -48,13 +55,17 @@ const Versions = () =>{
       {
         data.map((version,index) => <>
           <div  key={index} className="version">
-            <div className="version-title">
-              {version.title}
-              <br/>
-              Revision History
+            <div>
+              <div className="version-title listtitle">
+                {version.title}
+                <br/>
+              </div>
+              <div className="review-history">
+                Revision History
+              </div>
             </div>
             <div className="version-language">
-              {version.language}
+              {t(languageMap[version.language])}
             </div>
           </div>
           <hr/>
