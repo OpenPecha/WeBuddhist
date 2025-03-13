@@ -1,0 +1,114 @@
+.main-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    background-color: white;
+  }
+  
+  .text-category-container {
+    flex: 1;
+    padding: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: start;
+    color: #333;
+    overflow-y: auto;
+    
+    .category-header {
+      margin-bottom: 2rem;
+      
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 400;
+        letter-spacing: 0.05rem;
+      }
+    }
+    
+    .text-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+    
+    .text-section {
+      .section-title {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.05rem;
+      }
+      
+      .section-divider {
+        height: 1px;
+        
+        margin-bottom: 1.5rem;
+      }
+      
+      .text-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+      
+      .text-item {
+        p {
+          cursor: pointer;
+          width: fit-content;
+          font-size: 1.2rem;
+          line-height: 1.4;
+          color: #333;
+          border-top: 1px solid #e0e0e0;
+          padding-top: 1rem;
+          font-weight: 400;
+        }
+      }
+    }
+  }
+  
+  .sidebar {
+    width: 380px;
+    background-color: #f7f7f7;
+    border-left: 1px solid #e0e0e0;
+    position: relative;
+    
+    .sidebar-toggle {
+      position: absolute;
+      top: 160px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #999;
+      font-size: 1.2rem;
+    }
+  }
+  
+  // Specific layout for commentary texts with grid layout
+  @media (min-width: 768px) {
+    .text-section {
+      &:nth-child(2) {
+        .text-list {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem 3rem;
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .text-category-container {
+      padding: 1rem;
+      
+      .category-header h1 {
+        font-size: 1.5rem;
+      }
+      
+      .text-item p {
+        font-size: 1rem;
+      }
+    }
+    
+    .sidebar {
+       display: none;
+    }
+  }
