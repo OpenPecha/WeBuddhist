@@ -1,18 +1,96 @@
-$hover-color: #6e6e6e;
-
+$primary-color: hsl(42, 49%, 46%);
+$hover-color: darken($primary-color, 20%);
+$border-radius: 6px;
+$transition-speed: 0.2s;
 
 .pagination-container {
   display: flex;
-  gap: 1rem;
+  align-items: center;
   justify-content: flex-start;
+  gap: 1rem;
+  padding: 0.5rem 0;
 
-  .page-item {
-    &.active {
-      border: none;
+  .pagination {
+    display: flex;
+    align-items: center;
+    //box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+    padding:0.25rem  1rem;
+
+    .page-item {
+      margin: 0 4px;
+
+      &.active {
+        .page-link {
+          border-bottom: 4px solid  $primary-color;
+          color: #6e6e6e;
+          font-weight: bold;
+          background-color: white;
+        }
+      }
+
+
+      .page-link {
+        color: #6e6e6e;
+        border: none;
+        padding: 6px 10px;
+        transition: background-color $transition-speed ease, color $transition-speed ease;
+
+        &:hover {
+          cursor: pointer;
+        }
+        &:focus{
+          box-shadow: none;
+        }
+      }
+
+      &.disabled {
+        .page-link {
+          color: #ccc;
+          pointer-events: none;
+          background: none;
+        }
+      }
     }
   }
 
-  .active > .page-link {
-    background-color: $hover-color;
+  .form-group {
+    width: 4rem;
+    position: relative;
+
+    select {
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background-color: white;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      transition: border-color 0.2s ease;
+
+      &:hover {
+        border-color: $primary-color;
+        box-shadow: none;
+      }
+
+      &:focus {
+        border-color: $primary-color;
+        outline: none;
+        box-shadow: none;
+      }
+    }
+
   }
+
+  .form-group select:focus option:checked{
+    background-color: $primary-color !important;
+    color: white !important;
+
+  }
+  .form-group select:focus option:hover{
+    background-color: $primary-color !important;
+    color: white !important;
+  }
+
+
 }

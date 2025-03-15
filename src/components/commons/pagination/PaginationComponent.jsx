@@ -25,7 +25,7 @@ const PaginationComponent = ({ pagination, totalPages, handlePageChange, setPagi
         />
       </Pagination>
 
-      <Form.Group controlId="limitSelect" className="mb-3">
+      <Form.Group controlId="limitSelect" className="form-group mb-3">
         <Form.Select
           value={pagination.limit}
           onChange={(e) => setPagination({ currentPage: 1, limit: Number(e.target.value) })}

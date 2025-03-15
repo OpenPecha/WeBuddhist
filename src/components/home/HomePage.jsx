@@ -5,7 +5,7 @@ import { useTranslate } from "@tolgee/react";
 import axiosInstance from "../../config/axios-config.js";
 import { LANGUAGE, mapLanguageCode } from "../../utils/Constants.js";
 import {useQuery} from "react-query";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 export const fetchTexts = async (parentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -66,7 +66,15 @@ const HomePage = () => {
           {textsList.terms.slice(0, 2).map((term, index) => (
             <Col key={index} md={10} lg={6} className={`part ${index === 0 ? 'part-left' : 'part-right'}`}>
               <div className={`${index === 0 ? 'green-line' : 'red-line'} mb-3`} />
-              <div className="listtitle part-title">{term.title}</div>
+              <div className="listtitle part-title">
+                {!term.has_child ? (
+                  <Link to={`/texts/text-category/${term.id}`} className="term-link">
+                    {term.title}
+                  </Link>
+                ) : (
+                  term.title
+                )}
+              </div>
               <p className="content part-subtitle">{term.description}</p>
             </Col>
           ))}
@@ -75,8 +83,15 @@ const HomePage = () => {
           {textsList.terms.slice(2, 3).map((term, index) => (
             <Col key={index} md={10} lg={6} className="part  part-left ">
               <div className="red-line  mb-3"/>
-              <div className="listtitle part-title">{term.title}</div>
-              <p className="content part-subtitle">{term.description}</p>
+              <div className="listtitle part-title">
+                {!term.has_child ? (
+                  <Link to={`/texts/text-category/${term.id}`} className="term-link">
+                    {term.title}
+                  </Link>
+                ) : (
+                  term.title
+                )}
+              </div>              <p className="content part-subtitle">{term.description}</p>
             </Col>
           ))}
         </Row>
