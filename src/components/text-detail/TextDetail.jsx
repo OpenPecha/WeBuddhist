@@ -4,29 +4,58 @@ import './TextDetail.scss';
 import { FiChevronDown } from 'react-icons/fi';
 import { useTranslate } from '@tolgee/react';
 import Versions from "./versions/Versions.jsx";
+import Content from "./content/Content.jsx";
+import axiosInstance from '../../config/axios-config';
+import { LANGUAGE, mapLanguageCode } from '../../utils/Constants.js';
+import { useParams } from 'react-router-dom';
+import { useQuery } from 'react-query';
 
+const fetchTextDetail = async (text_id="1212",skip,limit) => {
+  try {
+    const { data } = await axiosInstance.get(`api/v1/texts/${text_id}/versions`, {
+      params: {
+        skip,
+        limit
+      }
+    });
+    return data;
+  } catch (error) {
+    console.error("Error fetching text details:", error);
+    return { title: "", type: "" }; 
+  }
+};
 const TextDetail = () => {
   const [selectedVersion, setSelectedVersion] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('');
   const { t } = useTranslate();
+  const text_id= "ttt";
 
+  const { data: textDetail, isLoading } = useQuery(
+    ["textDetail", text_id],
+    () => fetchTextDetail(text_id),
+    {
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 20,
+      onError: (err) => {
+        console.error("Query error:", err);
+      }
+    }
+  );
+console.log(textDetail.text.title)
+  const textData = textDetail || { title: "", type: "" };
   return (
     <div className="pecha-app">
       <main className="main-content">
         <div className="content-area">
           <div className="text-header">
-            <h1 className="title">The short path of Samantabhadra the lamp that illuminates with light</h1>
-            <div className="navbaritems subcom">{t("text.commentary")}</div>
+            <h1 className="title">{textDetail.text.title|| ""}</h1>
+            <div className="navbaritems subcom">{textDetail.text.type || ""}</div>
             <button className="continue-button navbaritems">{t("text.button.continue_reading")}</button>
           </div>
 
           <Tabs defaultActiveKey="contents" id="text-tabs" className="custom-tabs">
             <Tab eventKey="contents" title={t("text.contents")}>
-              <div className="text-sections">
-                <div className="section">
-                  <h2 className="section-title">content here</h2>
-                </div>
-              </div>
+              <Content/>
             </Tab>
             <Tab eventKey="versions" title={t("common.version")}>
               <Versions/>

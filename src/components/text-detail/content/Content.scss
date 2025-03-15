@@ -1,0 +1,46 @@
+.no-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #666;
+}
+.listtitle {
+    margin: 1rem 0;
+
+    .section-container {
+      margin-bottom: 0.5rem;
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .toggle-icon {
+          margin-right: 0.5rem;
+          min-width: 16px;
+          display: flex;
+          align-items: center;
+        }
+
+        .empty-icon {
+          width: 16px;
+          margin-right: 0.5rem;
+        }
+      }
+
+      .nested-content {
+        margin-left: 1.25rem;
+
+        .section-container {
+          margin-top: 0.25rem;
+        }
+      }
+    }
+  }
