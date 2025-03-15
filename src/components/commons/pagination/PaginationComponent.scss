@@ -1,0 +1,18 @@
+$hover-color: #6e6e6e;
+
+
+.pagination-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+
+  .page-item {
+    &.active {
+      border: none;
+    }
+  }
+
+  .active > .page-link {
+    background-color: $hover-color;
+  }
+}

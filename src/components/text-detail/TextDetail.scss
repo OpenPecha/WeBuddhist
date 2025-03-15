@@ -66,10 +66,11 @@ $white-color: white;
           border-radius: 5px 5px 0 0;
           padding: 0.75rem 1.5rem;
           margin-right: 0.5rem;
+          border: none;
 
           &.active {
-            background-color: $primary-color;
-            color: $white-color;
+            border-bottom: 4px solid  $primary-color;
+            color: $primary-color;
           }
         }
       }
