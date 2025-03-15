@@ -6,7 +6,6 @@ import { useTranslate } from '@tolgee/react';
 import Versions from "./versions/Versions.jsx";
 import Content from "./content/Content.jsx";
 import axiosInstance from '../../config/axios-config';
-import { LANGUAGE, mapLanguageCode } from '../../utils/Constants.js';
 import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 
@@ -41,8 +40,6 @@ const TextDetail = () => {
       }
     }
   );
-console.log(textDetail.text.title)
-  const textData = textDetail || { title: "", type: "" };
   return (
     <div className="pecha-app">
       <main className="main-content">
