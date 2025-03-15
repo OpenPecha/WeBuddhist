@@ -11,8 +11,9 @@ import { useQuery } from 'react-query';
 
 const fetchTextDetail = async (text_id="1212",skip,limit) => {
   try {
-    const { data } = await axiosInstance.get(`api/v1/texts/${text_id}/versions`, {
+    const { data } = await axiosInstance.get(`/api/v1/texts/${text_id}/versions`, {
       params: {
+        text_id,
         skip,
         limit
       }
@@ -40,13 +41,14 @@ const TextDetail = () => {
       }
     }
   );
+  console.log(textDetail)
   return (
     <div className="pecha-app">
       <main className="main-content">
         <div className="content-area">
           <div className="text-header">
-            <h1 className="title">{textDetail.text.title|| ""}</h1>
-            <div className="navbaritems subcom">{textDetail.text.type || ""}</div>
+            <h1 className="title">{textDetail?.text?.title|| ""}</h1>
+            <div className="navbaritems subcom">{textDetail?.text?.type || ""}</div>
             <button className="continue-button navbaritems">{t("text.button.continue_reading")}</button>
           </div>
 
