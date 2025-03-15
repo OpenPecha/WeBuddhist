@@ -6,42 +6,39 @@ import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 
-const fetchTextCategory = async (categoryId, limit = 10, skip = 0) => {
-  try {
+const fetchTextCategory = async (categoryid, limit = 10, skip = 0) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
     const { data } = await axiosInstance.get("api/v1/texts", {
       params: {
         language,
-        category_id: categoryId,
-        limit,
-        skip
+        category:categoryid,
+        limit:10,
+        skip:0
       },
     });
     return data;
-  } catch (error) {
-    return null;
-  }
 };
 
 const TextCategory = () => {
-  const { id } = useParams();
+  const categoryid= "1"
   const { t } = useTranslate();
   const { data: categoryTextData, isLoading } = useQuery(
-    ["texts", id],
-    () => fetchTextCategory(id),
+    ["texts", categoryid],
+    () => fetchTextCategory(categoryid),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20,
-      retry: 1
+
     }
   );
+  console.log(categoryTextData)
 
   if (isLoading) {
     return <div className="notfound listtitle">Loading content...</div>;
   }
 
-  if (!categoryTextData || !Array.isArray(categoryTextData.texts)) {
+  if (!categoryTextData) {
     return <div className="notfound listtitle">
       <div className="no-content">No content found</div>
     </div>;
