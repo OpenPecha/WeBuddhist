@@ -5,7 +5,7 @@ import { FiChevronDown } from 'react-icons/fi';
 import { useTranslate } from '@tolgee/react';
 import Versions from "./versions/Versions.jsx";
 import Content from "./content/Content.jsx";
-import axiosInstance from '../../config/axios-config';
+import axiosInstance from '../../config/axios-config.js';
 import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 
