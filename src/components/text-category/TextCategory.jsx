@@ -7,43 +7,54 @@ import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 
 const fetchTextCategory = async (categoryid, limit = 10, skip = 0) => {
-    const storedLanguage = localStorage.getItem(LANGUAGE);
-    const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
-    const { data } = await axiosInstance.get("api/v1/texts", {
-      params: {
-        language,
-        category:categoryid,
-        limit:10,
-        skip:0
-      },
-    });
-    return data;
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+  
+  const { data } = await axiosInstance.get("api/v1/texts", {
+    params: {
+      language,
+      category: categoryid,
+      limit,
+      skip
+    },
+  });
+  
+  return data;
 };
 
 const TextCategory = () => {
-  const categoryid= "1"
+  // Get category ID from URL params instead of hardcoding
+  const { categoryid } = useParams();
   const { t } = useTranslate();
-  const { data: categoryTextData, isLoading } = useQuery(
+  
+  const { data: categoryTextData, isLoading, error } = useQuery(
     ["texts", categoryid],
     () => fetchTextCategory(categoryid),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20,
-
     }
   );
-  console.log(categoryTextData)
-
+  
+  console.log("API response:", categoryTextData);
+  
   if (isLoading) {
     return <div className="notfound listtitle">Loading content...</div>;
   }
-
-  if (!categoryTextData) {
+  
+  if (error) {
+    console.error("Error fetching text category:", error);
+    return <div className="notfound listtitle">
+      <div className="no-content">Error loading content</div>
+    </div>;
+  }
+  
+  if (!categoryTextData || !categoryTextData.texts) {
     return <div className="notfound listtitle">
       <div className="no-content">No content found</div>
     </div>;
   }
-
+  
   const textsByType = categoryTextData.texts.reduce((acc, text) => {
     if (!acc[text.type]) {
       acc[text.type] = [];
@@ -51,20 +62,20 @@ const TextCategory = () => {
     acc[text.type].push(text);
     return acc;
   }, {});
-
+  
   const rootTexts = textsByType["root_text"] || [];
   const commentaryTexts = textsByType["commentary"] || [];
-
+  
   return (
     <div className="main-container listtitle">
       <div className="text-category-container">
         <div className="category-header">
-          <h1>{categoryTextData.category?.title}</h1>
+          <h1>{categoryTextData.category?.title || "Text Category"}</h1>
         </div>
         <div className="text-sections">
           {rootTexts.length > 0 && (
             <div className="text-section">
-              <h2 className="section-title">{t("text.type.root_text")}</h2>
+              <h2 className="section-title">{t("text.type.root_text", "Root Texts")}</h2>
               <div className="section-divider"></div>
               <div className="text-list">
                 {rootTexts.map(text => (
@@ -75,9 +86,10 @@ const TextCategory = () => {
               </div>
             </div>
           )}
+          
           {commentaryTexts.length > 0 && (
             <div className="text-section">
-              <h2 className="section-title">{t("text.type.commentary")}</h2>
+              <h2 className="section-title">{t("text.type.commentary", "Commentaries")}</h2>
               <div className="section-divider"></div>
               <div className="text-list">
                 {commentaryTexts.map(text => (
