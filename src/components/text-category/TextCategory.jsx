@@ -7,45 +7,48 @@ import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 
 const fetchTextCategory = async (categoryid, limit = 10, skip = 0) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
-  
-  const { data } = await axiosInstance.get("api/v1/texts", {
-    params: {
-      language,
-      category: categoryid,
-      limit,
-      skip
-    },
-  });
-  
-  return data;
+  try {
+    const storedLanguage = localStorage.getItem(LANGUAGE);
+    const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+    
+    const { data } = await axiosInstance.get("/api/v1/texts", {
+      params: {
+        language,
+        category: categoryid,
+        limit,
+        skip
+      }
+    });
+    return data;
+  } catch (error) {
+    console.error("API call error:", error.response || error);
+    throw error;
+  }
 };
 
 const TextCategory = () => {
-  // Get category ID from URL params instead of hardcoding
   const { categoryid } = useParams();
   const { t } = useTranslate();
   
   const { data: categoryTextData, isLoading, error } = useQuery(
     ["texts", categoryid],
-    () => fetchTextCategory(categoryid),
+    () => fetchTextCategory(categoryid || "67b9a7b0ff90db7fb4ac8207"),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20,
+      retry: 1,
+      onError: (err) => console.error("Query error:", err)
     }
   );
   
-  console.log("API response:", categoryTextData);
   
   if (isLoading) {
     return <div className="notfound listtitle">Loading content...</div>;
   }
   
   if (error) {
-    console.error("Error fetching text category:", error);
     return <div className="notfound listtitle">
-      <div className="no-content">Error loading content</div>
+      <div className="no-content">Error loading content: {error.message}</div>
     </div>;
   }
   
@@ -71,6 +74,9 @@ const TextCategory = () => {
       <div className="text-category-container">
         <div className="category-header">
           <h1>{categoryTextData.category?.title || "Text Category"}</h1>
+          {categoryTextData.category?.description && (
+            <p className="category-description">{categoryTextData.category.description}</p>
+          )}
         </div>
         <div className="text-sections">
           {rootTexts.length > 0 && (
@@ -78,8 +84,8 @@ const TextCategory = () => {
               <h2 className="section-title">{t("text.type.root_text", "Root Texts")}</h2>
               <div className="section-divider"></div>
               <div className="text-list">
-                {rootTexts.map(text => (
-                  <div key={text.id} className="text-item">
+                {rootTexts.map((text,i) => (
+                  <div key={i} className="text-item">
                     <p>{text.title}</p>
                   </div>
                 ))}
@@ -89,11 +95,11 @@ const TextCategory = () => {
           
           {commentaryTexts.length > 0 && (
             <div className="text-section">
-              <h2 className="section-title">{t("text.type.commentary", "Commentaries")}</h2>
+              <h2 className="section-title">{t("text.type.commentary")}</h2>
               <div className="section-divider"></div>
               <div className="text-list">
-                {commentaryTexts.map(text => (
-                  <div key={text.id} className="text-item">
+                {commentaryTexts.map((text,i) => (
+                  <div key={i} className="text-item">
                     <p>{text.title}</p>
                   </div>
                 ))}
