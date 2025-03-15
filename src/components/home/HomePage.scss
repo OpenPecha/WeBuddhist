@@ -102,7 +102,7 @@ $rightsection-color: #FBFBFA;
           transition: color 0.2s ease;
           
           &:hover {
-            color: darken($primary-color, 15%);
+            color: $primary-color;
             text-decoration: underline;
           }
         }
