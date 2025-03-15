@@ -19,7 +19,7 @@ import { setFontVariables } from "./config/commonConfigs.js";
 import Topics from "./components/topics/Topics.jsx";
 import CommunityPage from "./components/community/CommunityPage.jsx";
 import TextDetail from "./components/text-detail/TextDetail.jsx";
-
+import TextCategory from "./components/text-category/TextCategory.jsx";
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 
 function App() {
@@ -118,6 +118,7 @@ function App() {
                 <Route path="/topics/:id" element={<Topics />} />
                 <Route path="/community" element={ <CommunityPage /> } />
                 <Route path="/text-detail" element={ <TextDetail /> } />
+                <Route path="/texts/text-category/:id" element={ <TextCategory /> } />
                 <Route path="*" element={ <HomePage /> } />
             </Routes>
         </>
