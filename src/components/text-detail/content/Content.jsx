@@ -7,7 +7,7 @@ import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 
-const fetchTextContent = async (text_id) => {
+export const fetchTextContent = async (text_id) => {
   try {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
