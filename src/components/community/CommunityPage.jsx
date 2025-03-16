@@ -36,7 +36,6 @@ const CommunityPage = () => {
     () => fetchsheet("123", limit, skip), 
     { refetchOnWindowFocus: false }
   );
-  console.log(sheetsData)
 
   return (
     <div className='container-community'>

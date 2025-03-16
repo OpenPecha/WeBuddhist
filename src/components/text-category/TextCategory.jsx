@@ -68,7 +68,6 @@ const TextCategory = () => {
   
   const rootTexts = textsByType["root_text"] || [];
   const commentaryTexts = textsByType["commentary"] || [];
-   console.log(rootTexts)
   return (
     <div className="main-container listtitle">
       <div className="text-category-container">
