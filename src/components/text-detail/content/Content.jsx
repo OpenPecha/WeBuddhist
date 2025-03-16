@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import './Content.scss';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { LANGUAGE, mapLanguageCode } from '../../../utils/Constants';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
+import { useParams } from 'react-router-dom';
+import PaginationComponent from '../../commons/pagination/PaginationComponent';
 
 const fetchTextContent = async (text_id) => {
   try {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-    const { data } = await axiosInstance.get(`api/v1/texts/${text_id}/contents`, {
+    const { data } = await axiosInstance.get(`/api/v1/texts/${text_id}/contents`, {
       params: {
         language,
         limit: 10,
@@ -18,23 +20,26 @@ const fetchTextContent = async (text_id) => {
     });
     return data;
   } catch (error) {
+    console.error("Error fetching text content:", error);
     return null;
   }
 };
 
 const Content = () => {
   const [expandedSections, setExpandedSections] = useState({});
-  const textid = "9b603059-d8b4-42b2-9211-60d058c33480";
-
-  const { data: apiData, isLoading } = useQuery(
-    ["texts", textid],
-    () => fetchTextContent(textid),
+  const { id } = useParams();
+  const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
+  const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
+  const { data: apiData, isLoading, error } = useQuery(
+    ["texts", id],
+    () => fetchTextContent(id),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20,
       retry: 1,
     }
   );
+  
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -72,15 +77,25 @@ const Content = () => {
   };
 
   if (isLoading) return <div>Loading content...</div>;
+  
+  if (error) return <div className="no-content listtitle">Error loading content: {error.message}</div>;
 
-  if (!apiData || apiData.length === 0) {
-    return <div className="no-content listtitle ">No content found</div>;
+  if (!apiData || !apiData.segments || apiData.segments.length === 0) {
+    return <div className="no-content listtitle">No content found</div>;
   }
+  const totalsegment = apiData?.segments.length || 0;
+  const totalPages = Math.ceil(totalsegment / pagination.limit);
+  const handlePageChange = (pageNumber) => {
+    setPagination(prev => ({ ...prev, currentPage: pageNumber }));
+  };
 
+  const handleLimitChange = (e) => {
+    setPagination({ currentPage: 1, limit: Number(e.target.value) });
+  };
   return (
     <div>
       <div className="listtitle">
-        {apiData?.segments.map((segment, segmentIndex) => {
+        {apiData.segments.map((segment, segmentIndex) => {
           const hasChildren = segment.sections && segment.sections.length > 0;
 
           return (
@@ -108,6 +123,13 @@ const Content = () => {
           );
         })}
       </div>
+      {apiData.segments.length > 0 &&
+        <PaginationComponent
+          pagination={pagination}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          setPagination={setPagination}
+        />}
     </div>
   );
 };

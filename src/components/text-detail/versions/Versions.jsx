@@ -12,7 +12,7 @@ export const fetchVersions = async (id, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 
-  const {data} = await axiosInstance.get(`api/v1/texts/${id}/versions`, {
+  const {data} = await axiosInstance.get(`/api/v1/texts/${id}/versions`, {
     params: {
       language,
       limit,

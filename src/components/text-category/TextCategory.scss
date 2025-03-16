@@ -59,6 +59,15 @@
       }
 
       .text-item {
+        .text-link {
+          text-decoration: none;
+          cursor: pointer;
+          transition: color 0.2s ease;
+          &:hover {
+            color: #666666;
+            text-decoration: underline;
+          }
+        }
         p {
           cursor: pointer;
           width: fit-content;

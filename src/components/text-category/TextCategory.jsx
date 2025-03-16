@@ -4,7 +4,7 @@ import { LANGUAGE, mapLanguageCode } from "../../utils/Constants.js";
 import './TextCategory.scss';
 import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useParams,Link } from 'react-router-dom';
 
 const fetchTextCategory = async (categoryid, limit = 10, skip = 0) => {
   try {
@@ -68,7 +68,7 @@ const TextCategory = () => {
   
   const rootTexts = textsByType["root_text"] || [];
   const commentaryTexts = textsByType["commentary"] || [];
-  
+   console.log(rootTexts)
   return (
     <div className="main-container listtitle">
       <div className="text-category-container">
@@ -85,8 +85,10 @@ const TextCategory = () => {
               <div className="section-divider"></div>
               <div className="text-list">
                 {rootTexts.map((text,i) => (
-                  <div key={i} className="text-item">
+                  <div key={i} className="text-item ">
+                    <Link to={`/text-detail/${text.id}`} className="text-link">
                     <p>{text.title}</p>
+                    </Link>
                   </div>
                 ))}
               </div>
@@ -100,7 +102,9 @@ const TextCategory = () => {
               <div className="text-list">
                 {commentaryTexts.map((text,i) => (
                   <div key={i} className="text-item">
+                   <Link to={`/text-detail/${text.id}`} className="text-link">
                     <p>{text.title}</p>
+                    </Link>
                   </div>
                 ))}
               </div>
