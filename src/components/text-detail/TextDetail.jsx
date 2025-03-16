@@ -9,7 +9,7 @@ import axiosInstance from '../../config/axios-config.js';
 import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 
-const fetchTextDetail = async (text_id, skip, limit) => {
+export const fetchTextDetail = async (text_id, skip, limit) => {
   try {
     const { data } = await axiosInstance.get(`/api/v1/texts/${text_id}/versions`, {
       params: {
