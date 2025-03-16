@@ -33,7 +33,7 @@ describe("Topics Component", () => {
   };
 
   beforeEach(() => {
-    vi.restoreAllMocks(); // Ensure no mock contamination between tests
+    vi.restoreAllMocks();
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockTopicsData,
       isLoading: false,
