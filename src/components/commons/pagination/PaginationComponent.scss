@@ -1,5 +1,5 @@
 $primary-color: hsl(42, 49%, 46%);
-$hover-color: darken($primary-color, 20%);
+$hover-color: $primary-color;
 $border-radius: 6px;
 $transition-speed: 0.2s;
 

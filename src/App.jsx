@@ -118,7 +118,7 @@ function App() {
                 <Route path="/topics" element={<Topics/>}/>
                 <Route path="/topics/:id" element={<Topics />} />
                 <Route path="/community" element={ <CommunityPage /> } />
-                <Route path="/text-detail" element={ <TextDetail /> } />
+                <Route path="/text-detail/:id" element={ <TextDetail /> } />
                 <Route path="/texts/text-category/:id" element={ <TextCategory /> } />
                 <Route path="*" element={ <HomePage /> } />
             </Routes>

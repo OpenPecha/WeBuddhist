@@ -118,7 +118,7 @@ describe("Versions Component", () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockVersionsData });
     const result = await fetchVersions("123", 10, 0);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/texts/123/versions", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/texts/123/versions", {
       params: {
         language: "en",
         limit: 10,

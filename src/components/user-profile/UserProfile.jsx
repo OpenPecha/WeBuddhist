@@ -13,7 +13,6 @@ import { useMemo, useState } from "react";
 export const fetchsheet = async (userid, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
-  console.log(language)
   const { data } = await axiosInstance.get("api/v1/sheets", {
     params: {
       language,
@@ -156,7 +155,6 @@ const UserProfile = () => {
     () => fetchsheet("123", limit, skip), 
     { refetchOnWindowFocus: false }
   );
-  console.log(sheetsData)
   return (
     <>
       { !userInfoIsLoading ?

@@ -9,7 +9,7 @@ import axiosInstance from '../../config/axios-config.js';
 import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 
-const fetchTextDetail = async (text_id="1212",skip,limit) => {
+export const fetchTextDetail = async (text_id, skip, limit) => {
   try {
     const { data } = await axiosInstance.get(`/api/v1/texts/${text_id}/versions`, {
       params: {
@@ -28,11 +28,11 @@ const TextDetail = () => {
   const [selectedVersion, setSelectedVersion] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('');
   const { t } = useTranslate();
-  const text_id= "ttt";
+  const { id } = useParams();
 
   const { data: textDetail, isLoading } = useQuery(
-    ["textDetail", text_id],
-    () => fetchTextDetail(text_id),
+    ["textDetail", id],
+    () => fetchTextDetail(id),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20,
@@ -41,7 +41,7 @@ const TextDetail = () => {
       }
     }
   );
-  console.log(textDetail)
+  
   return (
     <div className="pecha-app">
       <main className="main-content">
@@ -54,10 +54,10 @@ const TextDetail = () => {
 
           <Tabs defaultActiveKey="contents" id="text-tabs" className="custom-tabs">
             <Tab eventKey="contents" title={t("text.contents")}>
-              <Content/>
+              <Content />
             </Tab>
             <Tab eventKey="versions" title={t("common.version")}>
-              <Versions/>
+              <Versions />
             </Tab>
           </Tabs>
         </div>
