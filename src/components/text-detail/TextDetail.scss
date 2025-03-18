@@ -92,12 +92,9 @@ $white-color: white;
 
     .sidebar {
       width: 300px;
-
+      background-color: $background-light;
       .download-panel {
-        border: 1px solid $border-color;
-        border-radius: 4px;
         padding: 1.5rem;
-
         .select-group {
           margin-bottom: 1.5rem;
 
