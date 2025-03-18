@@ -1,0 +1,57 @@
+.tibetan-text-container {
+  background-color: #f9f9f9;
+  font-family: 'Monlam-bodyig-semi-bold-ttf';
+}
+
+.tibetan-text {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  text-align: justify;
+  background-color: inherit;
+  margin: 0 auto;
+  max-width: 760px;
+  position: relative;
+  padding: 0 30px;
+}
+
+/* Style for citation text */
+.text-citation-style {
+  background-color: #fff58a;
+  font-weight: bold;
+}
+
+/* Style for quotation text */
+.text-quotation-style {
+  background-color: #fff58a;
+  font-style: italic;
+}
+
+/* Optional: Add line indicators like in the UI */
+.text-segment {
+  position: relative;
+  padding-left: 20px;
+}
+
+.text-segment:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  height: 6px;
+  width: 6px;
+  background-color: #ccc;
+  border-radius: 50%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tibetan-text-container {
+    padding: 15px 20px;
+  }
+
+  .tibetan-text {
+    font-size: 1rem;
+  }
+}

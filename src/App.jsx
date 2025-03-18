@@ -20,6 +20,7 @@ import Topics from "./components/topics/Topics.jsx";
 import CommunityPage from "./components/community/CommunityPage.jsx";
 import TextCategory from "./components/text-category/TextCategory.jsx";
 import TextDetail from "./components/text-detail/TextDetail.jsx";
+import TextDetails from "./components/text-details/textDetails.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 
@@ -120,6 +121,7 @@ function App() {
                 <Route path="/community" element={ <CommunityPage /> } />
                 <Route path="/text-detail/:id" element={ <TextDetail /> } />
                 <Route path="/texts/text-category/:id" element={ <TextCategory /> } />
+                <Route path="/texts/text-details" element={ <TextDetails /> } />
                 <Route path="*" element={ <HomePage /> } />
             </Routes>
         </>
