@@ -1,6 +1,17 @@
+.container-fluid {
+  display: flex;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+  position: relative;
+}
+
 .tibetan-text-container {
+  flex: 1;
   background-color: #f9f9f9;
   font-family: 'Monlam-bodyig-semi-bold-ttf';
+  overflow-y: auto;
+  padding: 20px 50px;
+  transition: width 0.3s ease-in-out;
 }
 
 .tibetan-text {
@@ -14,6 +25,80 @@
   max-width: 760px;
   position: relative;
   padding: 0 30px;
+}
+
+.right-panel {
+  width: 0;
+  background-color: #fff;
+  border-left: 1px solid #e0e0e0;
+  transition: width 0.3s ease-in-out;
+  overflow: auto;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  
+  &.show {
+    width: 400px;
+  }
+
+  .headerthing{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0f0f0;
+  }
+  .close-icon {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    color: #333;
+    margin-right: 10px;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: #e0e0e0;
+      transform: scale(1.1);
+    }
+  }
+
+  .panel-content {
+    text-align: start;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    
+    .textgreat{
+      color: #828282;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    h3 {
+      margin-bottom: 20px;
+      color: #333;
+      font-weight: 600;
+    }
+    
+    p {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      margin: 0;
+      color: #444;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:not(.textgreat):hover {
+        color: #7b7b7b;
+        background-color: #f8f9fa;
+      }
+
+     
+    }
+
+    
+  }
+  
+  &.show .panel-content {
+    opacity: 1;
+  }
 }
 
 /* Style for citation text */
@@ -30,8 +115,16 @@
 
 /* Optional: Add line indicators like in the UI */
 .text-segment {
+  cursor: pointer;
+  width: fit-content;
+  margin: auto;
   position: relative;
   padding-left: 20px;
+  border-radius: 10px;
+  
+  &:hover {
+    background-color: #f0f0f0;
+  }
 }
 
 .text-segment:before {
@@ -53,5 +146,8 @@
 
   .tibetan-text {
     font-size: 1rem;
+  }
+  .right-panel.show {
+    width: 320px;
   }
 }

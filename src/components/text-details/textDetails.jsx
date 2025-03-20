@@ -3,14 +3,43 @@ import { Container, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './textDetails.scss';
 import axiosInstance from "../../config/axios-config.js";
+import { IoMdClose } from 'react-icons/io';
+import { useTranslate } from '@tolgee/react';
+import { LANGUAGE, mapLanguageCode, menuItems } from '../../utils/Constants.js';
+import { IoLanguage, IoNewspaperOutline } from "react-icons/io5";
+import { BsWindowFullscreen } from "react-icons/bs";
+import { FiInfo, FiList } from "react-icons/fi";
+import { BiBook, BiSearch } from 'react-icons/bi';
+import { useQuery } from 'react-query';
 
+export const fetchTextsInfo = async (text_id) => {
+    const storedLanguage = localStorage.getItem(LANGUAGE);
+    const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
+    const { data } = await axiosInstance.get(`api/v1//texts/${text_id}/infos`, {
+      params: {
+        language,
+        text_id
+      }
+    });
+    return data;
+  }
 const TextDetails = () => {
     const [segments, setSegments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
+    const [showPanel, setShowPanel] = useState(false);
     const containerRef = useRef(null);
-
+    const id="12" //will be coming as a param
+    const { data: sidetextData } = useQuery(
+        ["texts", id],
+        () => fetchTextsInfo(id),
+        {
+          refetchOnWindowFocus: false,
+          staleTime: 1000 * 60 * 20
+        }
+      );
+    const { t } = useTranslate();
     // This could be your API endpoint
     const fetchData = async (pageNum) => {
         try {
@@ -137,26 +166,98 @@ const TextDetails = () => {
         };
     }, [page, loading, hasMore]);
 
+
+    const renderSidePanel = () => {
+        return (
+            <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
+                <div>
+                    <div className="headerthing">
+                        <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
+                        <IoMdClose 
+                            size={24} 
+                            onClick={() => setShowPanel(false)}
+                            className="close-icon"
+                        />
+                    </div>
+                    <div className="panel-content p-3">
+                        <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
+                        <p><FiList className='m-2'/>{t("text.table_of_contents")}</p>
+                        <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
+                        
+                        {sidetextData?.translations > 0 && (
+                            <p>
+                                <IoLanguage className="m-2"/>
+                                {`${t("connection_pannel.translations")} (${sidetextData.translations})`}
+                            </p>
+                        )}
+                        
+                        {sidetextData?.related_texts?.length > 0 && (
+                            <>
+                                <p className='textgreat'>{t("text.related_texts")}</p>
+                                <p>
+                                    {sidetextData.related_texts.map((data, index) => (
+                                        <span key={index}>
+                                            <BiBook className="m-2"/>
+                                            {`${data.title} (${data.count})`}
+                                        </span>
+                                    ))}
+                                </p>
+                            </>
+                        )}
+                        
+                        {sidetextData?.sheets > 0 && (
+                            <>
+                                <p className='textgreat'>{t("panel.resources")}</p>
+                                <p>
+                                    <IoNewspaperOutline className="m-2"/>
+                                    {` ${t("common.sheets")} (${sidetextData.sheets})`}
+                                </p>
+                            </>
+                        )}
+
+                        {sidetextData?.web_pages > 0 && (
+                            <p>
+                                <BsWindowFullscreen className="m-2"/>
+                                {` ${t("text.web_pages")} (${sidetextData.web_pages})`}
+                            </p>
+                        )}
+
+                        {menuItems.map((item) => (
+                            <div 
+                                key={item.label}
+                                className={item.isHeader ? 'textgreat' : ' '}
+                            >
+                                <p>
+                                    {item.icon && <item.icon className='m-2' />}
+                                    {t(`${item.label}`)}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <Container fluid className="p-0">
             <div
                 ref={ containerRef }
                 className="tibetan-text-container"
-                style={ {
-                    height: 'calc(100vh - 100px)',
-                    overflowY: 'auto',
-                    padding: '20px 50px'
-                } }
             >
-                { segments.map((segment) => (
-                    <div key={ segment.id } className="text-segment mb-4">
+                {segments.map((segment) => (
+                    <div 
+                        key={segment.id} 
+                        className="text-segment mb-4"
+                        onClick={() => setShowPanel(true)}
+                    >
                         <div
                             className="tibetan-text"
-                            dangerouslySetInnerHTML={ { __html: segment.content } }
+                            dangerouslySetInnerHTML={{ __html: segment.content }}
                         />
                     </div>
-                )) }
-
+                ))}
+                
                 { loading && (
                     <div className="text-center my-4">
                         <Spinner animation="border" role="output">
@@ -171,6 +272,7 @@ const TextDetails = () => {
                     </div>
                 ) }
             </div>
+            {renderSidePanel()}
         </Container>
     );
 };
