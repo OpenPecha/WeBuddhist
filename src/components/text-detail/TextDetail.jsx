@@ -6,7 +6,7 @@ import { useTranslate } from '@tolgee/react';
 import Versions from "./versions/Versions.jsx";
 import Content from "./content/Content.jsx";
 import axiosInstance from '../../config/axios-config.js';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 
 export const fetchTextDetail = async (text_id, skip, limit) => {
@@ -47,12 +47,25 @@ const TextDetail = () => {
       <main className="main-content">
         <div className="content-area">
           <div className="text-header">
-            <h1 className="title">{textDetail?.text?.title|| ""}</h1>
-            <div className="navbaritems subcom">{textDetail?.text?.type || ""}</div>
-            <button className="continue-button navbaritems">{t("text.button.continue_reading")}</button>
+            <h1 className="title">{textDetail?.text?.title || ""}</h1>
+            <div className="navbaritems subcom">
+              {textDetail?.text?.type || ""}
+            </div>
+            <Link
+              to={`/texts/text-details?text_id=${id}&content_id=${
+                textDetail?.contents?.[0]?.id || ""
+              }`}
+              className="continue-button navbaritems"
+            >
+              {t("text.button.continue_reading")}
+            </Link>
           </div>
 
-          <Tabs defaultActiveKey="contents" id="text-tabs" className="custom-tabs">
+          <Tabs
+            defaultActiveKey="contents"
+            id="text-tabs"
+            className="custom-tabs"
+          >
             <Tab eventKey="contents" title={t("text.contents")}>
               <Content />
             </Tab>
@@ -72,7 +85,9 @@ const TextDetail = () => {
                   value={selectedVersion}
                   onChange={(e) => setSelectedVersion(e.target.value)}
                 >
-                  <option value="" disabled>{t("side_nav.download_text.select_version")}</option>
+                  <option value="" disabled>
+                    {t("side_nav.download_text.select_version")}
+                  </option>
                   <option value="version1">Dummy</option>
                 </select>
                 <FiChevronDown size={16} />
@@ -86,10 +101,18 @@ const TextDetail = () => {
                   value={selectedFormat}
                   onChange={(e) => setSelectedFormat(e.target.value)}
                 >
-                  <option value="" disabled>{t("side_nav.download_text.select_format")}</option>
-                  <option value="textwithtag">{t("side_nav.download_text.text_with_tag")}</option>
-                  <option value="textwithouttag">{t("side_nav.download_text.text_without_tag")}</option>
-                  <option value="epub">{t("side_nav.download_text.json")}</option>
+                  <option value="" disabled>
+                    {t("side_nav.download_text.select_format")}
+                  </option>
+                  <option value="textwithtag">
+                    {t("side_nav.download_text.text_with_tag")}
+                  </option>
+                  <option value="textwithouttag">
+                    {t("side_nav.download_text.text_without_tag")}
+                  </option>
+                  <option value="epub">
+                    {t("side_nav.download_text.json")}
+                  </option>
                   <option value="csv">{t("side_nav.download_text.csv")}</option>
                 </select>
                 <FiChevronDown size={16} />

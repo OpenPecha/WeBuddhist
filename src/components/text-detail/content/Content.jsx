@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import './Content.scss';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { LANGUAGE, mapLanguageCode } from '../../../utils/Constants';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 
 export const fetchTextContent = async (text_id) => {
@@ -40,6 +40,17 @@ const Content = () => {
     }
   );
   
+  useEffect(() => {
+    if (apiData && apiData.contents && apiData.contents.length > 0) {
+      const initialExpandedState = {};
+            apiData.contents.forEach(segment => {
+        initialExpandedState[segment.id] = true;
+      });
+      
+      setExpandedSections(initialExpandedState);
+    }
+  }, [apiData]);
+  
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -62,7 +73,15 @@ const Content = () => {
               <FiChevronDown size={16} className="toggle-icon" /> : 
               <FiChevronRight size={16} className="toggle-icon" />
           ) : <span className="empty-icon"></span>}
-          <span>{section.title}</span>
+          <Link 
+            to={`/texts/text-details?text_id=${id}&content_id=${section.id}`}
+            className="section-title"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            {section.title}
+          </Link>
         </div>
 
         {isExpanded && hasChildren && (
@@ -111,7 +130,15 @@ const Content = () => {
                     <FiChevronDown size={16} className="toggle-icon" /> : 
                     <FiChevronRight size={16} className="toggle-icon" />
                 ) : <span className="empty-icon"></span>}
-                <span>{segment.title}</span>
+                <Link 
+                  to={`/texts/text-details?text_id=${id}&content_id=${segment.id}`}
+                  className="section-title"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  {segment.title}
+                </Link>
               </div>
 
               {expandedSections[segment.id] && hasChildren && (
