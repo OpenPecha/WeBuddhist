@@ -80,12 +80,10 @@ const Content = () => {
   
   if (error) return <div className="no-content listtitle">Error loading content: {error.message}</div>;
 
-  if (!apiData || !apiData.contents || !apiData.contents[0] || !apiData.contents[0].segments || apiData.contents[0].segments.length === 0) {
+  if (!apiData || !apiData.segments || apiData.segments.length === 0) {
     return <div className="no-content listtitle">No content found</div>;
   }
-
-  const content = apiData.contents[0];
-  const totalsegment = content.segments.length || 0;
+  const totalsegment = apiData?.segments.length || 0;
   const totalPages = Math.ceil(totalsegment / pagination.limit);
   const handlePageChange = (pageNumber) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
@@ -97,7 +95,7 @@ const Content = () => {
   return (
     <div>
       <div className="listtitle">
-        {content.segments.map((segment, segmentIndex) => {
+        {apiData.segments.map((segment, segmentIndex) => {
           const hasChildren = segment.sections && segment.sections.length > 0;
 
           return (
@@ -125,7 +123,7 @@ const Content = () => {
           );
         })}
       </div>
-      {content.segments.length > 0 &&
+      {apiData.segments.length > 0 &&
         <PaginationComponent
           pagination={pagination}
           totalPages={totalPages}

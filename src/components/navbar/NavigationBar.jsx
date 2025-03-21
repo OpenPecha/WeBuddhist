@@ -7,7 +7,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/Constants.js";
 import { useTolgee, useTranslate } from "@tolgee/react";
 import { setFontVariables } from "../../config/commonConfigs.js";
-import {useQueryClient} from "react-query";
+import { useQueryClient } from "react-query";
 import { useState } from 'react';
 
 export const invalidateQueries = async (queryClient) => {
@@ -122,6 +122,9 @@ const NavigationBar = () => {
            </Nav.Link>
            <Nav.Link as={Link} to="/community" onClick={handleNavClick}>
              {t("header.community")}
+           </Nav.Link>
+           <Nav.Link as={ Link } to="/texts/text-details" onClick={ handleNavClick }>
+             Dummy
            </Nav.Link>
          </Nav>
 
