@@ -48,6 +48,8 @@ $white-color: white;
           padding: 0.5rem 1rem;
           border-radius: 4px;
           cursor: pointer;
+          display: inline-block;
+  text-decoration: none;
 
           &:hover {
             background-color: rgba($primary-color, 0.9);
