@@ -15,7 +15,7 @@ import { useQuery } from 'react-query';
 export const fetchTextsInfo = async (text_id) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-    const { data } = await axiosInstance.get(`api/v1//texts/${ text_id }/infos`, {
+    const { data } = await axiosInstance.get(`api/v1/texts/${ text_id }/infos`, {
         params: {
             language,
             text_id
@@ -24,7 +24,7 @@ export const fetchTextsInfo = async (text_id) => {
     return data;
 };
 export const fetchTextDetails = async (text_id, content_id, skip, limit) => {
-    const { data } = await axiosInstance.get(`/api/v1//texts/${ text_id }/contents/${ content_id }/details?skip=${ skip }&limit=${ limit }`, {});
+    const { data } = await axiosInstance.get(`/api/v1/texts/${ text_id }/contents/${ content_id }/details?skip=${ skip }&limit=${ limit }`, {});
     return data;
 }
 const TextDetails = () => {
