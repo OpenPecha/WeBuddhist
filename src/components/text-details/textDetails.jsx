@@ -7,7 +7,7 @@ import { IoMdCheckmark, IoMdClose } from 'react-icons/io';
 import { useTranslate } from '@tolgee/react';
 import { LANGUAGE, mapLanguageCode, menuItems } from '../../utils/Constants.js';
 import { IoCopy, IoLanguage, IoNewspaperOutline } from "react-icons/io5";
-import { BsFacebook, BsTwitter, BsWindowFullscreen } from "react-icons/bs";
+import { BsFacebook, BsTwitter, BsWindowFullscreen ,BsBookmark} from "react-icons/bs";
 import { FiInfo, FiList } from "react-icons/fi";
 import { BiBook, BiSearch } from 'react-icons/bi';
 import { useQuery } from 'react-query';
@@ -220,18 +220,35 @@ const TextDetails = () => {
         );
     };
 
+    const HeaderOverlay = () => {
+        return (
+          <div className="header-overlay">
+            <div/>
+            
+            <div className="text-container">
+              The short path of Samantabhadra the lamp that illuminates with light, A brief
+            </div>
+            
+            <button className="bookmark-button">
+              <BsBookmark size={20} />
+            </button>
+          </div>
+        );
+      };
+
     const renderContent = (item) => {
         return (
-            <div key={ item.id } className="section">
+            <div key={ item.id } className="section navbaritems ">
                 <h2>{ item.title }</h2>
 
                 { item?.segments?.map(segment => (
                     <div
                         key={ segment.id }
-                        className="text-segment mb-4"
+                        className="text-segment listtitle mb-4"
                         onClick={ () => setShowPanel(true) }
                     >
                         <div key={ segment.segment_id } className="segment">
+                            <span className="segment-number">{segment.segment_number}</span>
                             <div dangerouslySetInnerHTML={ { __html: segment.content } } />
                         </div>
                     </div>
@@ -263,7 +280,11 @@ const TextDetails = () => {
     };
 
     return (
+        <>
+          <HeaderOverlay />
+       
         <Container fluid className="p-0">
+          
             <div
                 ref={ containerRef }
                 className="tibetan-text-container"
@@ -289,6 +310,7 @@ const TextDetails = () => {
             </div>
             { renderSidePanel() }
         </Container>
+        </>
     );
 };
 
