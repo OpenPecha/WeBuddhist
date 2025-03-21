@@ -67,7 +67,7 @@ const HomePage = () => {
             <Col key={index} md={10} lg={6} className={`part ${index === 0 ? 'part-left' : 'part-right'}`}>
               <div className={`${index === 0 ? 'green-line' : 'red-line'} mb-3`} />
               <div className="listtitle part-title">
-                {!term.has_child ? (
+                {term.has_child ? (
                   <Link to={`/texts/text-category/${term.id}`} className="term-link">
                     {term.title}
                   </Link>
@@ -84,7 +84,7 @@ const HomePage = () => {
             <Col key={index} md={10} lg={6} className="part  part-left ">
               <div className="red-line  mb-3"/>
               <div className="listtitle part-title">
-                {!term.has_child ? (
+                {term.has_child ? (
                   <Link to={`/texts/text-category/${term.id}`} className="term-link">
                     {term.title}
                   </Link>

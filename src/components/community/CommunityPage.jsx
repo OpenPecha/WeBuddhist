@@ -36,7 +36,6 @@ const CommunityPage = () => {
     () => fetchsheet("tenzin_tsering.7233", limit, skip), 
     { refetchOnWindowFocus: false }
   );
-  console.log(sheetsData)
   return (
     <div className='container-community'>
       <div className='sheet-community'>
