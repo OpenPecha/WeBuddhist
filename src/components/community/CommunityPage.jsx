@@ -33,10 +33,9 @@ const CommunityPage = () => {
     isLoading: sheetsIsLoading 
   } = useQuery(
     ["sheets", currentPage, limit], 
-    () => fetchsheet("123", limit, skip), 
+    () => fetchsheet("tenzin_tsering.7233", limit, skip), 
     { refetchOnWindowFocus: false }
   );
-
   return (
     <div className='container-community'>
       <div className='sheet-community'>
@@ -61,7 +60,7 @@ const CommunityPage = () => {
                          </div>
                          )}
                          <span className="sheet-dot">·</span>
-                         <span className="sheet-date ">{sheet.published_time}</span>
+                         <span className="sheet-date ">{sheet.time_passed}</span>
                         </div>
                           </div>
                         </div>
