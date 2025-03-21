@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import './Content.scss';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { LANGUAGE, mapLanguageCode } from '../../../utils/Constants';
@@ -39,6 +39,17 @@ const Content = () => {
       retry: 1,
     }
   );
+  
+  useEffect(() => {
+    if (apiData && apiData.contents && apiData.contents.length > 0) {
+      const initialExpandedState = {};
+            apiData.contents.forEach(segment => {
+        initialExpandedState[segment.id] = true;
+      });
+      
+      setExpandedSections(initialExpandedState);
+    }
+  }, [apiData]);
   
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
