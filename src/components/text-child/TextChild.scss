@@ -1,133 +1,129 @@
 .notfound {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100%;
-}
-
-.main-container {
-  display: flex;
-  width: 100%;
-  height: 100vh;
-  background-color: white;
-}
-
-.text-child-container {
-  flex: 1;
-  padding: 4rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: start;
-  color: #333;
-  overflow-y: auto;
-
-  .category-header {
-    margin-bottom: 2rem;
-
-    h1 {
-      font-size: 1.8rem;
-      font-weight: 400;
-      letter-spacing: 0.05rem;
-    }
-  }
-
-  .text-sections {
     display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
   }
-
-  .text-section {
-    .section-title {
-      font-size: 1rem;
-      font-weight: 500;
-      color: #555;
-      margin-bottom: 0.5rem;
-      letter-spacing: 0.05rem;
-    }
-
-    .section-divider {
-      height: 1px;
-      background-color: #e0e0e0;
-      margin-bottom: 1.5rem;
-    }
-
-    .text-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    .text-item {
-      text-decoration: none;
+  
+  .main-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    background-color: white;
+  }
+  
+  .text-child-container {
+    flex: 1;
+    padding: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: start;
+    color: #333;
+    overflow-y: auto;
+  
+    .category-header {
+      margin-bottom: 2rem;
       
-      p {
-        cursor: pointer;
-        width:  250px;
-        line-height: 1.4;
-        color: #333;
-        padding-top: 1rem;
+      h1 {
+        font-size: 1.8rem;
         font-weight: 400;
-
-        &:hover {
-          color: #666666;
-          text-decoration: underline;
+        letter-spacing: 0.05rem;
+      }
+    }
+  
+    .text-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+  
+    .text-section {
+      .section-title {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.05rem;
+      }
+  
+      .section-divider {
+        height: 1px;
+        background-color: #e0e0e0;
+        margin-bottom: 1.5rem;
+      }
+  
+      .text-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+      }
+  
+      .text-item {
+        text-decoration: none;
+        padding: 0.5rem;
+        p {
+          cursor: pointer;
+          width: 100%;
+          line-height: 1.4;
+          color: #333;
+          padding-top: 1rem;
+          font-weight: 400;
+          
+          &:hover {
+            color: #666666;
+            text-decoration: underline;
+          }
         }
       }
     }
   }
-}
-
-.sidebar {
-  width: 380px;
-  background-color: #f7f7f7;
-  border-left: 1px solid #e0e0e0;
-  position: relative;
-
-  .about-title {
-    padding: 2rem;
-    font-size: 1.5rem;
-    font-weight: 400;
-    color: #555;
-  }
-
-  .divider {
-    height: 1px;
-    background-color: #e0e0e0;
-    margin: 0 2rem;
-  }
-}
-
-@media (max-width: 767px) {
-  .text-child-container {
-    padding: 1rem;
-
-    .category-header h1 {
-      font-size: 1.5rem;
-    }
-
-    .text-section {
-      .text-list {
-        grid-template-columns: 1fr;
-      }
-
-      .text-item p {
-        font-size: 1rem;
-      }
-    }
-  }
-
+  
   .sidebar {
-    display: none;
+    width: 380px;
+    background-color: #f7f7f7;
+    border-left: 1px solid #e0e0e0;
+    position: relative;
+  
+    .about-title {
+      padding: 2rem;
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: #555;
+    }
+  
+    .divider {
+      height: 1px;
+      background-color: #e0e0e0;
+      margin: 0 2rem;
+    }
   }
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-size: 18px;
-  color: #666;
-}
+  
+  @media (max-width: 767px) {
+    .text-child-container {
+      padding: 1rem;
+  
+      
+  
+      .text-section {
+        .text-list {
+          grid-template-columns: 1fr;
+        }
+  
+      
+      }
+    }
+  
+    .sidebar {
+      display: none;
+    }
+  }
+  
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 18px;
+    color: #666;
+  }

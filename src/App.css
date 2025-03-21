@@ -15,6 +15,8 @@
   --listsubtitle-font-family: 'list-subtitle-font',"Roboto";
   --navbaritems-font-size: 16px;
   --navbaritems-font-family: 'navbar-items-font',"Roboto";
+  --overalltext-font-size: 22px;
+  --overalltext-font-family: 'overall-text-font',"Roboto";
 }
 
 @font-face {
@@ -61,7 +63,10 @@
   font-size: var(--listtitle-font-size);
   font-family: var(--listtitle-font-family);
 }
-
+.overalltext{
+  font-size: var(--overalltext-font-size);
+  font-family: var(--overalltext-font-family);
+}
 .listsubtitle{
   font-size: var(--listsubtitle-font-size);
   font-family: var(--listsubtitle-font-family);
