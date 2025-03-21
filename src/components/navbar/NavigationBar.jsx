@@ -123,9 +123,6 @@ const NavigationBar = () => {
            <Nav.Link as={Link} to="/community" onClick={handleNavClick}>
              {t("header.community")}
            </Nav.Link>
-           <Nav.Link as={ Link } to="/texts/text-details" onClick={ handleNavClick }>
-             Dummy
-           </Nav.Link>
          </Nav>
 
 

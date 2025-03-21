@@ -28,6 +28,10 @@ const fontConfig = {
       fontSize: "16px",
       fontFamily: "Roboto",
     },
+    overalltext: {
+      fontSize: "22px",
+      fontFamily: "Roboto",
+    },
   },
   "bo-IN": {
     title: {
@@ -56,6 +60,10 @@ const fontConfig = {
     },
     navbaritems: {
       fontSize: "16px",
+      fontFamily: "Monlam-uni-ouchan2-ttf",
+    },
+    overalltext: {
+      fontSize: "22px",
       fontFamily: "Monlam-uni-ouchan2-ttf",
     },
   },

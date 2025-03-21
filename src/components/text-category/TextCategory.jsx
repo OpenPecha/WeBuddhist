@@ -73,14 +73,11 @@ const TextCategory = () => {
       <div className="text-category-container">
         <div className="category-header">
           <h1>{categoryTextData.category?.title || "Text Category"}</h1>
-          {categoryTextData.category?.description && (
-            <p className="category-description">{categoryTextData.category.description}</p>
-          )}
         </div>
         <div className="text-sections">
           {rootTexts.length > 0 && (
             <div className="text-section">
-              <h2 className="section-title">{t("text.type.root_text", "Root Texts")}</h2>
+              <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>
               <div className="section-divider"></div>
               <div className="text-list">
                 {rootTexts.map((text,i) => (
@@ -96,7 +93,7 @@ const TextCategory = () => {
           
           {commentaryTexts.length > 0 && (
             <div className="text-section">
-              <h2 className="section-title">{t("text.type.commentary")}</h2>
+              <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>
               <div className="section-divider"></div>
               <div className="text-list">
                 {commentaryTexts.map((text,i) => (
