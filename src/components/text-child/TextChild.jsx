@@ -47,7 +47,7 @@ const TextChild = () => {
             <div className="section-divider"></div>
             <div className="text-list">
               {textChildData?.terms?.map((term) => (
-                <Link key={term.id} to={`/texts/text-category/${term.id}`} className="text-item subtitle">
+                <Link key={term.id} to={`/texts/text-category/${term.id}`} className="text-item ">
                   <p>{term.title}</p>
                 </Link>
               ))}

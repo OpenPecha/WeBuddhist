@@ -73,9 +73,6 @@ const TextCategory = () => {
       <div className="text-category-container">
         <div className="category-header">
           <h1>{categoryTextData.category?.title || "Text Category"}</h1>
-          {categoryTextData.category?.description && (
-            <p className="category-description">{categoryTextData.category.description}</p>
-          )}
         </div>
         <div className="text-sections">
           {rootTexts.length > 0 && (
