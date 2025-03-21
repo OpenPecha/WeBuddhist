@@ -32,7 +32,7 @@ const TextCategory = () => {
   
   const { data: categoryTextData, isLoading, error } = useQuery(
     ["texts", categoryid],
-    () => fetchTextCategory(categoryid || "67b9a7b0ff90db7fb4ac8207"),
+    () => fetchTextCategory(categoryid || "67dd22a8d9f06ab28feedc90"),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20,
