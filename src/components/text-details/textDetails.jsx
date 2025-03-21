@@ -6,10 +6,11 @@ import axiosInstance from "../../config/axios-config.js";
 import { IoMdClose } from 'react-icons/io';
 import { useTranslate } from '@tolgee/react';
 import { LANGUAGE, mapLanguageCode, menuItems } from '../../utils/Constants.js';
-import { IoLanguage, IoNewspaperOutline } from "react-icons/io5";
-import { BsWindowFullscreen } from "react-icons/bs";
+import { IoCopy, IoLanguage, IoNewspaperOutline } from "react-icons/io5";
+import { BsFacebook, BsTwitter, BsWindowFullscreen } from "react-icons/bs";
 import { FiInfo, FiList } from "react-icons/fi";
 import { BiBook, BiSearch } from 'react-icons/bi';
+import { IoMdCheckmark } from 'react-icons/io';
 import { useQuery } from 'react-query';
 
 export const fetchTextsInfo = async (text_id) => {
@@ -29,6 +30,8 @@ const TextDetails = () => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [showPanel, setShowPanel] = useState(false);
+    const [isShareView, setIsShareView] = useState(false);
+    const [copied, setCopied] = useState(false);
     const containerRef = useRef(null);
     const id="12" //will be coming as a param
     const { data: sidetextData } = useQuery(
@@ -166,74 +169,124 @@ const TextDetails = () => {
         };
     }, [page, loading, hasMore]);
 
+    const renderShareView = () => {
+        return (
+            <div >
+                <div className="headerthing">
+                    <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
+                    <IoMdClose 
+                        size={24}
+                        onClick={() => setIsShareView(false)}
+                        className="close-icon"
+                    />
+                </div>
+                <div className="share-content p-3">
+                    <p className="mb-3 textgreat ">{t('text.share_link')}</p>
+                    <div className="share-url-container p-3 mb-3">
+                        <p className="share-url text-truncate">{sidetextData?.short_url}</p>
+                        <button 
+                            className="copy-button"
+                            onClick={() => {
+                                navigator.clipboard.writeText(sidetextData?.short_url);
+                                setCopied(true);
+                                setTimeout(() => {
+                                    setCopied(false);
+                                }, 3000);
+                            }}
+                        >
+                            {copied ? <IoMdCheckmark size={16} /> : <IoCopy size={16} />}
+                        </button>
+                    </div>
+                    <p className="textgreat">{t('text.more_options')}</p>
+                        <div className="social-share-buttons">
+                            <p className="social-button"> 
+                                <BsFacebook className="social-icon"/>{t('common.share_on_fb')}
+                            </p>
+                            <p className="social-button"> 
+                                <BsTwitter className="social-icon"/>{t('common.share_on_x')}
+                            </p>
+                        </div>
+                </div>
+            </div>
+        );
+    };
 
     const renderSidePanel = () => {
         return (
             <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
                 <div>
-                    <div className="headerthing">
-                        <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
-                        <IoMdClose 
-                            size={24} 
-                            onClick={() => setShowPanel(false)}
-                            className="close-icon"
-                        />
-                    </div>
-                    <div className="panel-content p-3">
-                        <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
-                        <p><FiList className='m-2'/>{t("text.table_of_contents")}</p>
-                        <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
-                        
-                        {sidetextData?.translations > 0 && (
-                            <p>
-                                <IoLanguage className="m-2"/>
-                                {`${t("connection_pannel.translations")} (${sidetextData.translations})`}
-                            </p>
-                        )}
-                        
-                        {sidetextData?.related_texts?.length > 0 && (
-                            <>
-                                <p className='textgreat'>{t("text.related_texts")}</p>
-                                <p>
-                                    {sidetextData.related_texts.map((data, index) => (
-                                        <span key={index}>
-                                            <BiBook className="m-2"/>
-                                            {`${data.title} (${data.count})`}
-                                        </span>
-                                    ))}
-                                </p>
-                            </>
-                        )}
-                        
-                        {sidetextData?.sheets > 0 && (
-                            <>
-                                <p className='textgreat'>{t("panel.resources")}</p>
-                                <p>
-                                    <IoNewspaperOutline className="m-2"/>
-                                    {` ${t("common.sheets")} (${sidetextData.sheets})`}
-                                </p>
-                            </>
-                        )}
-
-                        {sidetextData?.web_pages > 0 && (
-                            <p>
-                                <BsWindowFullscreen className="m-2"/>
-                                {` ${t("text.web_pages")} (${sidetextData.web_pages})`}
-                            </p>
-                        )}
-
-                        {menuItems.map((item) => (
-                            <div 
-                                key={item.label}
-                                className={item.isHeader ? 'textgreat' : ' '}
-                            >
-                                <p>
-                                    {item.icon && <item.icon className='m-2' />}
-                                    {t(`${item.label}`)}
-                                </p>
+                    {isShareView ? renderShareView() : (
+                        <>
+                            <div className="headerthing">
+                                <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
+                                <IoMdClose 
+                                    size={24} 
+                                    onClick={() => setShowPanel(false)}
+                                    className="close-icon"
+                                />
                             </div>
-                        ))}
-                    </div>
+                            <div className="panel-content p-3">
+                                <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
+                                <p><FiList className='m-2'/>{t("text.table_of_contents")}</p>
+                                <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
+                                
+                                {sidetextData?.translations > 0 && (
+                                    <p>
+                                        <IoLanguage className="m-2"/>
+                                        {`${t("connection_pannel.translations")} (${sidetextData.translations})`}
+                                    </p>
+                                )}
+                                
+                                {sidetextData?.related_texts?.length > 0 && (
+                                    <>
+                                        <p className='textgreat'>{t("text.related_texts")}</p>
+                                        <p>
+                                            {sidetextData.related_texts.map((data, index) => (
+                                                <span key={index}>
+                                                    <BiBook className="m-2"/>
+                                                    {`${data.title} (${data.count})`}
+                                                </span>
+                                            ))}
+                                        </p>
+                                    </>
+                                )}
+                                
+                                {sidetextData?.sheets > 0 && (
+                                    <>
+                                        <p className='textgreat'>{t("panel.resources")}</p>
+                                        <p>
+                                            <IoNewspaperOutline className="m-2"/>
+                                            {` ${t("common.sheets")} (${sidetextData.sheets})`}
+                                        </p>
+                                    </>
+                                )}
+
+                                {sidetextData?.web_pages > 0 && (
+                                    <p>
+                                        <BsWindowFullscreen className="m-2"/>
+                                        {` ${t("text.web_pages")} (${sidetextData.web_pages})`}
+                                    </p>
+                                )}
+
+                                {menuItems.map((item) => (
+                                    <div 
+                                        key={item.label}
+                                        className={item.isHeader ? 'textgreat' : ' '}
+                                        onClick={() => {
+                                            if (item.label === 'common.share') {
+                                                setIsShareView(true);
+                                            }
+                                        }}
+                                    >
+                                        <p>
+                                            {item.icon && <item.icon className='m-2' />}
+                                            {t(`${item.label}`)}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         );
