@@ -229,7 +229,7 @@ const UserProfile = () => {
                             <div className="sheet-metadata content">
                               <span className="sheet-views">{sheet.views}  { t("sheet.view_count") }</span>
                               <span className="sheet-dot">·</span>
-                              <span className="sheet-date">{sheet.date}</span>
+                              <span className="sheet-date">{sheet.published_date?.split(' ')[0]}</span>
                               <span className="sheet-dot">·</span>
                               <span className="sheet-topics ">
                                 {sheet.topics?.join(', ') || 'No topics'}
