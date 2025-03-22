@@ -7,11 +7,29 @@ import { IoMdCheckmark, IoMdClose } from 'react-icons/io';
 import { useTranslate } from '@tolgee/react';
 import { LANGUAGE, mapLanguageCode, menuItems } from '../../utils/Constants.js';
 import { IoCopy, IoLanguage, IoNewspaperOutline } from "react-icons/io5";
-import { BsFacebook, BsTwitter, BsWindowFullscreen ,BsBookmark} from "react-icons/bs";
+import { BsFacebook, BsTwitter, BsWindowFullscreen, BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { FiInfo, FiList } from "react-icons/fi";
 import { BiBook, BiSearch } from 'react-icons/bi';
 import { useQuery } from 'react-query';
 
+//temporary keep this for the header
+export const fetchTextDetail = async (text_id, skip, limit) => {
+    try {
+      const { data } = await axiosInstance.get(`/api/v1/texts/${text_id}/versions`, {
+        params: {
+          text_id,
+          skip,
+          limit
+        }
+      });
+      return data;
+    } catch (error) {
+      console.error("Error fetching text details:", error);
+      return { title: "", type: "" }; 
+    }
+  };
+
+//this is for the side panel
 export const fetchTextsInfo = async (text_id) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -23,6 +41,8 @@ export const fetchTextsInfo = async (text_id) => {
     });
     return data;
 };
+
+//this is for the main content
 export const fetchTextDetails = async (text_id, content_id, skip, limit) => {
     const { data } = await axiosInstance.get(`/api/v1/texts/${ text_id }/contents/${ content_id }/details?skip=${ skip }&limit=${ limit }`, {});
     return data;
@@ -36,6 +56,7 @@ const TextDetails = () => {
     const [showPanel, setShowPanel] = useState(false);
     const [isShareView, setIsShareView] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(false);
     const containerRef = useRef(null);
     const id = "12" //will be coming as a param
     const { data: sidetextData } = useQuery(
@@ -56,6 +77,17 @@ const TextDetails = () => {
             staleTime: 1000 * 60 * 20
         }
     );
+    const { data: textDetail } = useQuery( //for the header
+        ["textDetail", id],
+        () => fetchTextDetail(id),
+        {
+          refetchOnWindowFocus: false,
+          staleTime: 1000 * 60 * 20,
+          onError: (err) => {
+            console.error("Query error:", err);
+          }
+        }
+      );
     useEffect(() => {
         if (contents.length) {
             setContents(prevState => {
@@ -225,12 +257,15 @@ const TextDetails = () => {
           <div className="header-overlay">
             <div/>
             
-            <div className="text-container">
-              The short path of Samantabhadra the lamp that illuminates with light, A brief
+            <div className="text-container listtitle">
+            {textDetail?.text?.title || ""}
             </div>
             
-            <button className="bookmark-button">
-              <BsBookmark size={20} />
+            <button 
+              className="bookmark-button"
+              onClick={() => setIsBookmarked(!isBookmarked)}
+            >
+              {isBookmarked ? <BsBookmarkFill size={20} /> : <BsBookmark size={20} />}
             </button>
           </div>
         );
