@@ -35,6 +35,7 @@ export const fetchTextsInfo = async (text_id) => {
     const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
     const { data } = await axiosInstance.get(`/api/v1/texts/${ text_id }/infos`, {
         params: {
+            language,
             text_id
         }
     });
@@ -200,14 +201,14 @@ const TextDetails = () => {
                                 { sidetextData?.text_infos?.related_texts?.length > 0 && (
                                     <>
                                         <p className='textgreat'>{ t("text.related_texts") }</p>
-                                        <p>
+                                        <div className='related-texts-container'>
                                             { sidetextData.text_infos.related_texts.map((data, index) => (
-                                                <span key={ index }>
+                                                <p key={ index } className='related-text-item'>
                                                     <BiBook className="m-2" />
                                                     { `${ data.title } (${ data.count })` }
-                                                </span>
+                                                </p>
                                             )) }
-                                        </p>
+                                        </div>
                                     </>
                                 ) }
 
