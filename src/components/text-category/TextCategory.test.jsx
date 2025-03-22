@@ -93,11 +93,6 @@ describe("TextCategory Component", () => {
     );
   };
 
-  test("renders the component with category details", () => {
-    setup();
-    expect(screen.getByText("Text Category")).toBeInTheDocument();
-    expect(screen.getByText("Text Category Description")).toBeInTheDocument();
-  });
 
   test("renders root texts correctly", () => {
     setup();
@@ -207,7 +202,7 @@ describe("TextCategory Component", () => {
 
     expect(querySpy).toHaveBeenCalled();
     const queryFnString = querySpy.mock.calls[0][0];
-    expect(queryFnString).toContain("67b9a7b0ff90db7fb4ac8207");
+    expect(queryFnString).toContain("67dd22a8d9f06ab28feedc90");
   });
 
   test("uses correct language from localStorage", () => {

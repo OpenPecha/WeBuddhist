@@ -24,7 +24,7 @@ describe("CommunityPage Component", () => {
           name: "Test User",
           image_url: "https://example.com/image.jpg"
         },
-        published_time: "2 days ago"
+        time_passed: "2 days ago"
       },
       {
         id: "2",
@@ -34,7 +34,7 @@ describe("CommunityPage Component", () => {
           name: "John Doe",
           image_url: null
         },
-        published_time: "5 hours ago"
+        time_passed: "5 hours ago"
       }
     ]
   };

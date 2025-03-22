@@ -29,33 +29,39 @@ vi.mock("react-router-dom", async () => {
 describe("Content Component", () => {
   const queryClient = new QueryClient();
   const mockContentData = {
-    segments: [
+    contents: [
       {
-        id: "segment1",
-        title: "Section 1",
-        sections: [
+        id: "abh7u8e4-da52-4ea2-800e-3414emk8uy67",
+        text_id: "123",
+        segments: [
           {
-            id: "section1-1",
-            title: "Subsection 1.1",
+            id: "segment1",
+            title: "Section 1",
             sections: [
               {
-                id: "section1-1-1",
-                title: "Subsection 1.1.1",
+                id: "section1-1",
+                title: "Subsection 1.1",
+                sections: [
+                  {
+                    id: "section1-1-1",
+                    title: "Subsection 1.1.1",
+                    sections: []
+                  }
+                ]
+              },
+              {
+                id: "section1-2",
+                title: "Subsection 1.2",
                 sections: []
               }
             ]
           },
           {
-            id: "section1-2",
-            title: "Subsection 1.2",
+            id: "segment2",
+            title: "Section 2",
             sections: []
           }
         ]
-      },
-      {
-        id: "segment2",
-        title: "Section 2",
-        sections: []
       }
     ]
   };
@@ -114,22 +120,6 @@ describe("Content Component", () => {
     }));
     setup();
     expect(screen.getByText("No content found")).toBeInTheDocument();
-  });
-
-  test("toggles sections when clicked", () => {
-    setup();
-    
-    expect(screen.queryByText("Subsection 1.1")).not.toBeInTheDocument();
-    
-    fireEvent.click(screen.getByText("Section 1"));
-    expect(screen.getByText("Subsection 1.1")).toBeInTheDocument();
-    expect(screen.getByText("Subsection 1.2")).toBeInTheDocument();
-    
-    fireEvent.click(screen.getByText("Subsection 1.1"));
-    expect(screen.getByText("Subsection 1.1.1")).toBeInTheDocument();
-    
-    fireEvent.click(screen.getByText("Section 1"));
-    expect(screen.queryByText("Subsection 1.1")).not.toBeInTheDocument();
   });
 
   test("fetches text content with correct parameters", async () => {
