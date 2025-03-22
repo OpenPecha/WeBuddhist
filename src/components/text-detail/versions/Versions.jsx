@@ -3,7 +3,7 @@ import {useTranslate} from "@tolgee/react";
 import {LANGUAGE, mapLanguageCode} from "../../../utils/Constants.js";
 import axiosInstance from "../../../config/axios-config.js";
 import {useQuery} from "react-query";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import React, {useMemo, useState} from "react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 
@@ -70,10 +70,16 @@ const Versions = () =>{
         versionsData?.versions.map((version,index) => <>
           <div  key={index} className="version">
             <div>
+            <Link 
+            to={`/texts/text-details?text_id=${id}`}
+            className="section-title"
+            
+          >
               <div className="version-title listtitle">
                 {version.title}
                 <br/>
               </div>
+              </Link>
               <div className="review-history">
                 Revision History
               </div>

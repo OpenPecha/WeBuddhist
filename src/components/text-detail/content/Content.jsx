@@ -41,12 +41,12 @@ const Content = () => {
   );
   
   useEffect(() => {
-    if (apiData && apiData.contents && apiData.contents.length > 0) {
+    if (apiData?.contents?.[0]?.segments) {
       const initialExpandedState = {};
-            apiData.contents.forEach(segment => {
+      // Only set the first level segments to expanded
+      apiData.contents[0].segments.forEach(segment => {
         initialExpandedState[segment.id] = true;
       });
-      
       setExpandedSections(initialExpandedState);
     }
   }, [apiData]);
