@@ -9,7 +9,7 @@
   .main-container {
     display: flex;
     max-width: 1280px;
-    min-height: 100vh;
+    height: fit-content;
     margin: auto;
     background-color: white;
   }
@@ -63,7 +63,7 @@
       .text-item {
         text-decoration: none;
         border-top: 1px solid #e0e0e0;
-        padding: 0.5rem;
+        padding: 0.5rem 0px;
         p {
           cursor: pointer;
           width: 100%;
@@ -82,13 +82,14 @@
   }
   
   .sidebar {
-    width: 380px;
-    background-color: #f7f7f7;
-    border-left: 1px solid #e0e0e0;
+    border: none;
+    height: 600px;
+    width: 420px;
+    background-color: #FBFBFA;
     position: relative;
-  
+    padding: 2rem;
     .about-title {
-      padding: 2rem;
+      text-align: start;
       font-size: 1.5rem;
       font-weight: 400;
       color: #555;
@@ -97,7 +98,6 @@
     .divider {
       height: 1px;
       background-color: #e0e0e0;
-      margin: 0 2rem;
     }
   }
   
