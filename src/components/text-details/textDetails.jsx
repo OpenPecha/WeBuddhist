@@ -297,10 +297,11 @@ const TextDetails = () => {
                         { section?.segments?.map(segment => (
                             <div
                                 key={ segment.id }
-                                className="text-segment mb-4"
+                                className="text-segment listtitle mb-4"
                                 onClick={ () => setShowPanel(true) }
                             >
                                 <div key={ segment.segment_id } className="segment">
+                                <span className="segment-number">{segment.segment_number}</span>
                                     <div dangerouslySetInnerHTML={ { __html: segment.content } } />
                                 </div>
                             </div>
