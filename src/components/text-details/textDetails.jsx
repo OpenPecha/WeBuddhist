@@ -33,9 +33,8 @@ export const fetchTextDetail = async (text_id, skip, limit) => {
 export const fetchTextsInfo = async (text_id) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-    const { data } = await axiosInstance.get(`api/v1/texts/${ text_id }/infos`, {
+    const { data } = await axiosInstance.get(`/api/v1/texts/${ text_id }/infos`, {
         params: {
-            language,
             text_id
         }
     });
@@ -67,6 +66,7 @@ const TextDetails = () => {
             staleTime: 1000 * 60 * 20
         }
     );
+    console.log(sidetextData)
     const textId = "test";
     const { data: textDetails } = useQuery(
         ["textsDetails", textId, page],
@@ -143,11 +143,11 @@ const TextDetails = () => {
                 <div className="share-content p-3">
                     <p className="mb-3 textgreat ">{ t('text.share_link') }</p>
                     <div className="share-url-container p-3 mb-3">
-                        <p className="share-url text-truncate">{ sidetextData?.short_url }</p>
+                        <p className="share-url text-truncate">{ sidetextData?.text_infos?.short_url }</p>
                         <button
                             className="copy-button"
                             onClick={ () => {
-                                navigator.clipboard.writeText(sidetextData?.short_url);
+                                navigator.clipboard.writeText(sidetextData?.text_infos?.short_url);
                                 setCopied(true);
                                 setTimeout(() => {
                                     setCopied(false);
@@ -190,18 +190,18 @@ const TextDetails = () => {
                                 <p><FiList className='m-2' />{ t("text.table_of_contents") }</p>
                                 <p><BiSearch className='m-2' />{ t("connection_panel.search_in_this_text") }</p>
 
-                                { sidetextData?.translations > 0 && (
+                                { sidetextData?.text_infos?.translations > 0 && (
                                     <p>
                                         <IoLanguage className="m-2" />
-                                        { `${ t("connection_pannel.translations") } (${ sidetextData.translations })` }
+                                        { `${ t("connection_pannel.translations") } (${ sidetextData.text_infos.translations })` }
                                     </p>
                                 ) }
 
-                                { sidetextData?.related_texts?.length > 0 && (
+                                { sidetextData?.text_infos?.related_texts?.length > 0 && (
                                     <>
                                         <p className='textgreat'>{ t("text.related_texts") }</p>
                                         <p>
-                                            { sidetextData.related_texts.map((data, index) => (
+                                            { sidetextData.text_infos.related_texts.map((data, index) => (
                                                 <span key={ index }>
                                                     <BiBook className="m-2" />
                                                     { `${ data.title } (${ data.count })` }
@@ -211,20 +211,20 @@ const TextDetails = () => {
                                     </>
                                 ) }
 
-                                { sidetextData?.sheets > 0 && (
+                                { sidetextData?.text_infos?.sheets > 0 && (
                                     <>
                                         <p className='textgreat'>{ t("panel.resources") }</p>
                                         <p>
                                             <IoNewspaperOutline className="m-2" />
-                                            { ` ${ t("common.sheets") } (${ sidetextData.sheets })` }
+                                            { ` ${ t("common.sheets") } (${ sidetextData.text_infos.sheets })` }
                                         </p>
                                     </>
                                 ) }
 
-                                { sidetextData?.web_pages > 0 && (
+                                { sidetextData?.text_infos?.web_pages > 0 && (
                                     <p>
                                         <BsWindowFullscreen className="m-2" />
-                                        { ` ${ t("text.web_pages") } (${ sidetextData.web_pages })` }
+                                        { ` ${ t("text.web_pages") } (${ sidetextData.text_infos.web_pages })` }
                                     </p>
                                 ) }
 
