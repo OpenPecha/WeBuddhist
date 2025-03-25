@@ -74,6 +74,11 @@ describe("Content Component", () => {
       isLoading: false,
     }));
     vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo");
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    console.error.mockRestore();
   });
 
   const setup = () => {
@@ -139,7 +144,56 @@ describe("Content Component", () => {
     expect(result).toEqual(mockContentData);
   });
 
+  test("handles error in fetchTextContent and logs error message", async () => {
+    const mockError = new Error("Network error");
+    axiosInstance.get.mockRejectedValueOnce(mockError);
+    
+    const result = await fetchTextContent("123");
+    
+    expect(console.error).toHaveBeenCalledWith(
+      "Error fetching text content:",
+      mockError
+    );
+    
+    expect(result).toEqual({ contents: [] });
+  });
 
+  test("handles different types of errors in fetchTextContent", async () => {
+    const testCases = [
+      new TypeError("Type error"),
+      new Error("Network error"),
+      { message: "API error" },
+      "String error"
+    ];
+
+    for (const error of testCases) {
+      console.error.mockClear();
+      axiosInstance.get.mockRejectedValueOnce(error);
+      
+      const result = await fetchTextContent("123");
+      
+      expect(console.error).toHaveBeenCalledWith(
+        "Error fetching text content:",
+        error
+      );
+      
+      expect(result).toEqual({ contents: [] });
+    }
+  });
+
+  test("handles error in fetchTextContent with missing error message", async () => {
+    const mockError = {};
+    axiosInstance.get.mockRejectedValueOnce(mockError);
+    
+    const result = await fetchTextContent("123");
+    
+    expect(console.error).toHaveBeenCalledWith(
+      "Error fetching text content:",
+      mockError
+    );
+    
+    expect(result).toEqual({ contents: [] });
+  });
 
   test("does not render pagination component when no segments exist", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({

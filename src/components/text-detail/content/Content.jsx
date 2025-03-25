@@ -76,9 +76,6 @@ const Content = () => {
           <Link 
             to={`/texts/text-details?text_id=${id}&content_id=${section.id}`}
             className="section-title"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
           >
             {section.title}
           </Link>
@@ -133,9 +130,6 @@ const Content = () => {
                 <Link 
                   to={`/texts/text-details?text_id=${id}&content_id=${segment.id}`}
                   className="section-title"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
                 >
                   {segment.title}
                 </Link>
