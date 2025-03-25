@@ -82,7 +82,7 @@ const TextCategory = () => {
               <div className="text-list">
                 {rootTexts.map((text,i) => (
                   <div key={i} className="text-item ">
-                    <Link to={`/text-detail/${text.id}`} className="text-link">
+                    <Link to={`/text-detail/${text.id}`} className={`text-link ${text.language=="bo" ? "bo-text" : "en-text"}`}>
                     <p>{text.title}</p>
                     </Link>
                   </div>
@@ -98,7 +98,7 @@ const TextCategory = () => {
               <div className="text-list">
                 {commentaryTexts.map((text,i) => (
                   <div key={i} className="text-item">
-                   <Link to={`/text-detail/${text.id}`} className="text-link">
+                   <Link to={`/text-detail/${text.id}`} className={`text-link ${text.language=="bo" ? "bo-text" : "en-text"}`}>
                     <p>{text.title}</p>
                     </Link>
                   </div>

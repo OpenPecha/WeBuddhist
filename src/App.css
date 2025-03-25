@@ -39,6 +39,12 @@
   src: url("./assets/fonts/Monlam-bodyig Regular.ttf");
 }
 
+.bo-text{
+  font-family: 'Monlam-bodyig-regular-ttf';
+}
+.en-text{
+  font-family: 'Roboto';
+}
 .title {
   font-size: var(--title-font-size);
   font-family: var(--title-font-family);
