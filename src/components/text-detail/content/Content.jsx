@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import './Content.scss';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
-import { LANGUAGE, mapLanguageCode } from '../../../utils/Constants';
+import { LANGUAGE, mapLanguageCode, getLanguageClass } from '../../../utils/Constants';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
 import { useParams, Link } from 'react-router-dom';
@@ -75,7 +75,7 @@ const Content = () => {
           ) : <span className="empty-icon"></span>}
           <Link 
             to={`/texts/text-details?text_id=${id}&content_id=${section.id}`}
-            className="section-title"
+            className={`section-title ${getLanguageClass(section.language)}`}
           >
             {section.title}
           </Link>
@@ -129,7 +129,7 @@ const Content = () => {
                 ) : <span className="empty-icon"></span>}
                 <Link 
                   to={`/texts/text-details?text_id=${id}&content_id=${segment.id}`}
-                  className="section-title"
+                  className={`section-title ${getLanguageClass(segment.language)}`}
                 >
                   {segment.title}
                 </Link>
