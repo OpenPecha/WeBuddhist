@@ -36,35 +36,35 @@ const fontConfig = {
   "bo-IN": {
     title: {
       fontSize: "30px",
-      fontFamily: "Monlam-uni-ouchan2-ttf",
+      fontFamily: "Monlam-bodyig-regular-woff",
     },
     subtitle: {
       fontSize: "20px",
-      fontFamily: "Monlam-bodyig-semi-bold-italic-ttf",
+      fontFamily: "Monlam-bodyig-regular-woff",
     },
     content: {
       fontSize: "17px",
-      fontFamily: "Monlam-bodyig-semi-bold-ttf",
+      fontFamily: "Monlam-bodyig-regular-woff",
     },
     subcontent: {
       fontSize: "14px",
-      fontFamily: "Monlam-bodyig-regular-ttf",
+      fontFamily: "Monlam-bodyig-regular-woff",
     },
     listtitle: {
       fontSize: "20px",
-      fontFamily: "Monlam-uni-ouchan2-ttf",
+      fontFamily: "Monlam-bodyig-regular-woff",
     },
     listsubtitle: {
       fontSize: "14px",
-      fontFamily: "Monlam-uni-ouchan2-ttf",
+      fontFamily: "Monlam-bodyig-regular-woff",
     },
     navbaritems: {
       fontSize: "16px",
-      fontFamily: "Monlam-uni-ouchan2-ttf",
+      fontFamily: "Monlam-bodyig-regular-woff",
     },
     overalltext: {
       fontSize: "22px",
-      fontFamily: "Monlam-uni-ouchan2-ttf",
+      fontFamily: "Monlam-bodyig-regular-woff",
     },
   },
 };
