@@ -2,31 +2,31 @@
 #root {
   text-align: center;
   --title-font-size: 16px;
-  --title-font-family: 'title-font',"Roboto";
+  --title-font-family: 'title-font',"Poppins";
   --subtitle-font-size: 16px;
-  --subtitle-font-family: 'sub-title-font',"Roboto";
+  --subtitle-font-family: 'sub-title-font',"Poppins";
   --content-font-size: 16px;
-  --content-font-family: 'content-font',"Roboto";
+  --content-font-family: 'content-font',"Poppins";
   --subcontent-font-size: 11px;
-  --subcontent-font-family: 'sub-content-font',"Roboto";
+  --subcontent-font-family: 'sub-content-font',"Poppins";
   --listtitle-font-size: 16px;
-  --listtitle-font-family: 'list-title-font',"Roboto";
+  --listtitle-font-family: 'list-title-font',"Poppins";
   --listsubtitle-font-size: 14px;
-  --listsubtitle-font-family: 'list-subtitle-font',"Roboto";
+  --listsubtitle-font-family: 'list-subtitle-font',"Poppins";
   --navbaritems-font-size: 16px;
-  --navbaritems-font-family: 'navbar-items-font',"Roboto";
+  --navbaritems-font-family: 'navbar-items-font',"Poppins";
   --overalltext-font-size: 22px;
-  --overalltext-font-family: 'overall-text-font',"Roboto";
+  --overalltext-font-family: 'overall-text-font',"Poppins";
 }
 
 @font-face {
-  font-family: 'Monlam-bodyig-regular-woff';
-  src: url("./assets/fonts/Monlam-bodyig Regular.woff") format('woff');
+  font-family: 'MonlamTBslim';
+  src: url("./assets/fonts/MonlamTBslim.woff") format('woff');
 }
 
 @font-face {
-  font-family: 'Roboto';
-  src: url("./assets/fonts/Roboto Regular.woff") format('woff');
+  font-family: 'Poppins';
+  src: url("./assets/fonts/Poppins-Regular.woff") format('woff');
 }
 
 .title {

@@ -2,69 +2,69 @@ const fontConfig = {
   en: {
     title: {
       fontSize: "30px",
-      fontFamily: "Roboto",
+      fontFamily: "Poppins",
     },
     subtitle: {
       fontSize: "20px",
-      fontFamily: "Roboto",
+      fontFamily: "Poppins",
     },
     content: {
       fontSize: "17px",
-      fontFamily: "Roboto",
+      fontFamily: "Poppins",
     },
     subcontent: {
       fontSize: "14px",
-      fontFamily: "Roboto",
+      fontFamily: "Poppins",
     },
     listtitle: {
       fontSize: "20px",
-      fontFamily: "Roboto",
+      fontFamily: "Poppins",
     },
     listsubtitle: {
       fontSize: "14px",
-      fontFamily: "Roboto",
+      fontFamily: "Poppins",
     },
     navbaritems: {
       fontSize: "16px",
-      fontFamily: "Roboto",
+      fontFamily: "Poppins",
     },
     overalltext: {
       fontSize: "22px",
-      fontFamily: "Roboto",
+      fontFamily: "Poppins",
     },
   },
   "bo-IN": {
     title: {
       fontSize: "30px",
-      fontFamily: "Monlam-bodyig-regular-woff",
+      fontFamily: "MonlamTBslim",
     },
     subtitle: {
       fontSize: "20px",
-      fontFamily: "Monlam-bodyig-regular-woff",
+      fontFamily: "MonlamTBslim",
     },
     content: {
       fontSize: "17px",
-      fontFamily: "Monlam-bodyig-regular-woff",
+      fontFamily: "MonlamTBslim",
     },
     subcontent: {
       fontSize: "14px",
-      fontFamily: "Monlam-bodyig-regular-woff",
+      fontFamily: "MonlamTBslim",
     },
     listtitle: {
       fontSize: "20px",
-      fontFamily: "Monlam-bodyig-regular-woff",
+      fontFamily: "MonlamTBslim",
     },
     listsubtitle: {
       fontSize: "14px",
-      fontFamily: "Monlam-bodyig-regular-woff",
+      fontFamily: "MonlamTBslim",
     },
     navbaritems: {
       fontSize: "16px",
-      fontFamily: "Monlam-bodyig-regular-woff",
+      fontFamily: "MonlamTBslim",
     },
     overalltext: {
       fontSize: "22px",
-      fontFamily: "Monlam-bodyig-regular-woff",
+      fontFamily: "MonlamTBslim",
     },
   },
 };

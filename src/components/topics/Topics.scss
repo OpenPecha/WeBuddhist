@@ -149,6 +149,14 @@ $card-shadow:rgba(0, 0, 0, 0.1);
       border: 1px solid $card-border;
       box-shadow: 2px 2px 10px $card-shadow;
       border-radius: 10px;
+      
+      h5 {
+          font-family: var(--listtitle-font-family) !important;
+        }
+      
+        p {
+          font-family: var(--content-font-family) !important;
+        }
     }
   }
 
