@@ -28,7 +28,12 @@
   font-family: 'Poppins';
   src: url("./assets/fonts/Poppins-Regular.woff") format('woff');
 }
-
+.bo-text{
+  font-family: 'MonlamTBslim';
+}
+.en-text{
+  font-family: 'Poppins';
+}
 .title {
   font-size: var(--title-font-size);
   font-family: var(--title-font-family);

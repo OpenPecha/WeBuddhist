@@ -41,3 +41,15 @@ export const menuItems = [
     isHeader: false,
   },
 ];
+
+export const getLanguageClass = (language) => {
+  console.log(language);
+  switch (language) {
+    case "bo":
+      return "bo-text";
+    case "en":
+      return "en-text";
+    default:
+      return "en-text";
+  }
+};

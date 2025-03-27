@@ -1,6 +1,6 @@
 import React from 'react';
 import axiosInstance from '../../config/axios-config';
-import { LANGUAGE, mapLanguageCode } from "../../utils/Constants.js";
+import { LANGUAGE, mapLanguageCode, getLanguageClass } from "../../utils/Constants.js";
 import './TextCategory.scss';
 import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
@@ -82,7 +82,7 @@ const TextCategory = () => {
               <div className="text-list">
                 {rootTexts.map((text,i) => (
                   <div key={i} className="text-item ">
-                    <Link to={`/text-detail/${text.id}`} className="text-link">
+                    <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`}>
                     <p>{text.title}</p>
                     </Link>
                   </div>
@@ -98,7 +98,7 @@ const TextCategory = () => {
               <div className="text-list">
                 {commentaryTexts.map((text,i) => (
                   <div key={i} className="text-item">
-                   <Link to={`/text-detail/${text.id}`} className="text-link">
+                   <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`}>
                     <p>{text.title}</p>
                     </Link>
                   </div>

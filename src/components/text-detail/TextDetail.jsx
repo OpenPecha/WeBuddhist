@@ -8,7 +8,7 @@ import Content from "./content/Content.jsx";
 import axiosInstance from '../../config/axios-config.js';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
-
+import { getLanguageClass } from '../../utils/Constants';
 export const fetchTextDetail = async (text_id, skip, limit) => {
   try {
     const { data } = await axiosInstance.get(`/api/v1/texts/${text_id}/versions`, {
@@ -47,7 +47,7 @@ const TextDetail = () => {
       <main className="main-content">
         <div className="content-area">
           <div className="text-header">
-            <h1 className="title">{textDetail?.text?.title || ""}</h1>
+            <h3 className={` ${getLanguageClass(textDetail?.text?.language)}`}>{textDetail?.text?.title || ""}</h3>
             <div className="navbaritems subcom">
               {textDetail?.text?.type || ""}
             </div>
