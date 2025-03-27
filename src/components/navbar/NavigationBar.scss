@@ -152,3 +152,12 @@ $font-family: Arial, sans-serif;
     min-width: 150px;
   }
 }
+
+.input-group button[type="button"], 
+.input-group button[variant="outline-secondary"] {
+  font-family: var(--navbaritems-font-family) !important;
+}
+
+a.dropdown-item {
+  font-family: var(--navbaritems-font-family) !important;
+}

@@ -214,3 +214,13 @@ $card-shadow:rgba(0, 0, 0, 0.1);
     }
   }
 }
+
+.deep-search-container {
+  .deep-search-button {
+    font-family: var(--listtitle-font-family) !important;
+  }
+
+  p {
+    font-family: var(--content-font-family) !important;
+  }
+}
