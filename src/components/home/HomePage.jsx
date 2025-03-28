@@ -3,7 +3,7 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import "./HomePage.scss";
 import { useTranslate } from "@tolgee/react";
 import axiosInstance from "../../config/axios-config.js";
-import { LANGUAGE, mapLanguageCode } from "../../utils/Constants.js";
+import { LANGUAGE, mapLanguageCode, getLanguageClass } from "../../utils/Constants.js";
 import {useQuery} from "react-query";
 import { useParams, Link } from "react-router-dom";
 
@@ -24,6 +24,8 @@ const HomePage = () => {
   const { id } = useParams();
   const { t } = useTranslate();
   const [parentId, setParentId] = useState(id || "");
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const currentLanguage = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 
   const { data: textData, isLoading } = useQuery(
     ["texts", parentId],
@@ -66,7 +68,7 @@ const HomePage = () => {
           {textsList.terms.slice(0, 2).map((term, index) => (
             <Col key={index} md={10} lg={6} className={`part ${index === 0 ? 'part-left' : 'part-right'}`}>
               <div className={`${index === 0 ? 'green-line' : 'red-line'} mb-3`} />
-              <div className="listtitle part-title">
+              <div className={`listtitle part-title ${getLanguageClass(currentLanguage)}`}>
                 {term.has_child ? (
                   <Link to={`/texts/text-child/${term.id}`} className="term-link">
                     {term.title}
@@ -83,7 +85,7 @@ const HomePage = () => {
           {textsList.terms.slice(2, 3).map((term, index) => (
             <Col key={index} md={10} lg={6} className="part  part-left ">
               <div className="red-line  mb-3"/>
-              <div className="listtitle part-title">
+              <div className={`listtitle part-title ${getLanguageClass(currentLanguage)}`}>
                 {term.has_child ? (
                   <Link to={`/texts/text-child/${term.id}`}  className="term-link">
                     {term.title}

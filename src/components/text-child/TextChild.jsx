@@ -1,5 +1,5 @@
 import React from 'react';
-import { LANGUAGE, mapLanguageCode } from '../../utils/Constants';
+import { LANGUAGE, mapLanguageCode, getLanguageClass } from '../../utils/Constants';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config';
@@ -23,6 +23,8 @@ export const fetchChildTexts = async (parentId) => {
 const TextChild = () => {
   const { id } = useParams();
   const { t } = useTranslate();
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const currentLanguage = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
   const { data: textChildData, isLoading } = useQuery(
     ["texts", id],
     () => fetchChildTexts(id),
@@ -39,14 +41,14 @@ const TextChild = () => {
   return (
     <div className="main-container listtitle">
       <div className="text-child-container">
-        <div className="category-header">
+        <div className={`category-header ${getLanguageClass(currentLanguage)}`}>
           <h1>{textChildData?.parent?.title?.toUpperCase()}</h1>
         </div>
         <div className="text-sections">
           <div className="text-section">
             <div className="text-list ">
               {textChildData?.terms?.map((term) => (
-                <Link key={term.id} to={`/texts/text-category/${term.id}`} className="text-item overalltext">
+                <Link key={term.id} to={`/texts/text-category/${term.id}`} className={`text-item overalltext ${getLanguageClass(currentLanguage)}`}>
                   <p>{term.title}</p>
                 </Link>
               ))}
@@ -55,7 +57,7 @@ const TextChild = () => {
         </div>
       </div>
       <div className="sidebar">
-        <h2 className="about-title">{t('common.about')} {textChildData?.parent?.title}</h2>
+        <h2 className={`about-title ${getLanguageClass(currentLanguage)}`}>{t('common.about')} {textChildData?.parent?.title}</h2>
         <div className="divider"></div>
       </div>
     </div>

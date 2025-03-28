@@ -1,4 +1,4 @@
-import {LANGUAGE, mapLanguageCode} from "../../utils/Constants.js";
+import {LANGUAGE, mapLanguageCode, getLanguageClass} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {useMemo, useState} from "react";
@@ -33,6 +33,8 @@ const Topics = () => {
   const navigate = useNavigate();
   const { t } = useTranslate();
   const location = useLocation();
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const currentLanguage = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 
   const parentId = searchParams.get("id") || null;
   const [searchFilter, setSearchFilter] = useState("");
@@ -90,7 +92,7 @@ const Topics = () => {
               filteredTopics.map((topic, index) => (
                 <Col key={index}>
                   <Card className="topic-card">
-                    <button className="topic-button listtitle" onClick={() => handleTopicClick(topic)}>
+                    <button className={`topic-button listtitle ${getLanguageClass(currentLanguage)}`} onClick={() => handleTopicClick(topic)}>
                       {topic.title}
                     </button>
                   </Card>
@@ -170,7 +172,7 @@ const Topics = () => {
     <Container fluid className="topics-container">
       <Row className="topics-wrapper">
         <Col xs={12} md={7} className="topics-list">
-          <h4 className="topics-title listtitle">{parentId ? topicsData?.parent?.title : t("topic.expore")}</h4>
+          <h4 className={`topics-title listtitle ${getLanguageClass(currentLanguage)}`}>{parentId ? topicsData?.parent?.title : t("topic.expore")}</h4>
           {renderSearchBar()}
           {isLoading ? <p>Loading topics...</p> : renderTopicsList()}
         </Col>
