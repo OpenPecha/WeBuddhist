@@ -39,58 +39,7 @@ const Content = () => {
       retry: 1,
     }
   );
-  
-  useEffect(() => {
-    if (apiData?.contents?.[0]?.segments) {
-      const initialExpandedState = {};
-      // Only set the first level segments to expanded
-      apiData.contents[0].segments.forEach(segment => {
-        initialExpandedState[segment.id] = true;
-      });
-      setExpandedSections(initialExpandedState);
-    }
-  }, [apiData]);
-  
-  const toggleSection = (sectionId) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [sectionId]: !prev[sectionId]
-    }));
-  };
 
-  const renderSection = (section, level = 0) => {
-    const isExpanded = expandedSections[section.id];
-    const hasChildren = section.sections && section.sections.length > 0;
-
-    return (
-      <div key={`section-${section.id}`} className="section-container">
-        <div 
-          className="section-header"
-          onClick={() => toggleSection(section.id)}
-        >
-          {hasChildren ? (
-            isExpanded ? 
-              <FiChevronDown size={16} className="toggle-icon" /> : 
-              <FiChevronRight size={16} className="toggle-icon" />
-          ) : <span className="empty-icon"></span>}
-          <Link 
-            to={`/texts/text-details?text_id=${id}&content_id=${section.id}`}
-            className={`section-title ${getLanguageClass(section.language)}`}
-          >
-            {section.title}
-          </Link>
-        </div>
-
-        {isExpanded && hasChildren && (
-          <div className="nested-content">
-            {section.sections.map((childSection) => 
-              renderSection(childSection, level + 1)
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   if (isLoading) return <div>Loading content...</div>;
   
@@ -100,16 +49,71 @@ const Content = () => {
     return <div className="no-content listtitle">No content found</div>;
   }
 
-  const content = apiData.contents[0];
-  const totalsegment = content.segments.length || 0;
-  const totalPages = Math.ceil(totalsegment / pagination.limit);
+  // useEffect(() => {
+  //   if (apiData?.contents?.[0]?.segments) {
+  //     const initialExpandedState = {};
+  //     // Only set the first level segments to expanded
+  //     apiData.contents[0].segments.forEach(segment => {
+  //       initialExpandedState[segment.id] = true;
+  //     });
+  //     setExpandedSections(initialExpandedState);
+  //   }
+  // }, [apiData]);
+
+  console.log(apiData)
+  const content = apiData?.contents[0];
+  const totalSegment = content?.segments?.length || 0;
+  const totalPages = Math.ceil(totalSegment / pagination.limit);
+
+  const toggleSection = (sectionId) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+  };
+
   const handlePageChange = (pageNumber) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
+  };
+
+  const renderSection = (section, level = 0) => {
+    const isExpanded = expandedSections[section.id];
+    const hasChildren = section.sections && section.sections.length > 0;
+
+    return (
+      <div key={`section-${section.id}`} className="section-container">
+        <div
+          className="section-header"
+          onClick={() => toggleSection(section.id)}
+        >
+          {hasChildren ? (
+            isExpanded ?
+              <FiChevronDown size={16} className="toggle-icon" /> :
+              <FiChevronRight size={16} className="toggle-icon" />
+          ) : <span className="empty-icon"></span>}
+          <Link
+            to={`/texts/text-details?text_id=${id}&content_id=${section.id}`}
+            className={`section-title ${getLanguageClass(section.language)}`}
+          >
+            {section.title}
+          </Link>
+        </div>
+
+        {isExpanded && hasChildren && (
+          <div className="nested-content">
+            {section.sections.map((childSection) =>
+              renderSection(childSection, level + 1)
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   const handleLimitChange = (e) => {
     setPagination({ currentPage: 1, limit: Number(e.target.value) });
   };
+
   return (
     <div>
       <div className="listtitle">

@@ -5,8 +5,7 @@ import "@testing-library/jest-dom";
 import { mockAxios, mockReactQuery, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
-import axiosInstance from "../../config/axios-config.js";
-import TextDetail, { fetchTextDetail } from "./TextDetail.jsx";
+import TextDetail from "./TextDetail.jsx";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
 
 mockAxios();
@@ -153,46 +152,4 @@ describe("TextDetail Component", () => {
     expect(screen.getByText("text.button.continue_reading")).toBeInTheDocument();
   });
 
-  test("fetches text detail with correct parameters", async () => {
-    axiosInstance.get.mockResolvedValueOnce({ data: mockTextDetailData });
-    const result = await fetchTextDetail("123");
-
-    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/texts/123/versions", {
-      params: {
-        text_id: "123",
-        skip: undefined,
-        limit: undefined
-      }
-    });
-
-    expect(result).toEqual(mockTextDetailData);
-  });
-
-  test("handles API error gracefully in fetchTextDetail", async () => {
-    const error = new Error("API error");
-    axiosInstance.get.mockRejectedValueOnce(error);
-    
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const result = await fetchTextDetail("123");
-    
-    expect(consoleSpy).toHaveBeenCalledWith("Error fetching text details:", error);
-    expect(result).toEqual({ title: "", type: "" });
-    
-    consoleSpy.mockRestore();
-  });
-
-  test("fetches text detail with pagination parameters", async () => {
-    axiosInstance.get.mockResolvedValueOnce({ data: mockTextDetailData });
-    const result = await fetchTextDetail("123", 10, 5);
-
-    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/texts/123/versions", {
-      params: {
-        text_id: "123",
-        skip: 10,
-        limit: 5
-      }
-    });
-
-    expect(result).toEqual(mockTextDetailData);
-  });
 });

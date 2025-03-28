@@ -57,7 +57,7 @@ const TextCategory = () => {
       <div className="no-content">No content found</div>
     </div>;
   }
-  
+
   const textsByType = categoryTextData.texts.reduce((acc, text) => {
     if (!acc[text.type]) {
       acc[text.type] = [];
@@ -82,7 +82,7 @@ const TextCategory = () => {
               <div className="text-list">
                 {rootTexts.map((text,i) => (
                   <div key={i} className="text-item ">
-                    <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`}>
+                    <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`} state={{ titleInformation: text }}>
                     <p>{text.title}</p>
                     </Link>
                   </div>
@@ -98,7 +98,7 @@ const TextCategory = () => {
               <div className="text-list">
                 {commentaryTexts.map((text,i) => (
                   <div key={i} className="text-item">
-                   <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`}>
+                   <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`}  state={{ titleInformation: text }} >
                     <p>{text.title}</p>
                     </Link>
                   </div>
