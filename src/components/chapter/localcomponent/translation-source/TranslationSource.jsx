@@ -1,30 +1,30 @@
-import React, { useEffect, useRef } from "react";
-import { Form } from "react-bootstrap";
+import React, {useEffect, useRef} from "react";
+import {Form} from "react-bootstrap";
 import "./TranslationSource.scss";
-import { useTranslate } from "@tolgee/react";
+import {useTranslate} from "@tolgee/react";
 
-const TranslationSource = ({ selectedOption, onOptionChange, onClose }) => {
+const TranslationSource = ({selectedOption, onOptionChange, onClose}) => {
   const panelRef = useRef(null);
-  const {t}=useTranslate()
+  const {t} = useTranslate()
+  const options = [
+    {id: "source", label: "text.reader_option_menu.source"},
+    {id: "translation", label: "text.reader_option_menu.translation"},
+    {id: "sourceWithTranslation", label: "text.reader_option_menu.source_with_translation"},
+  ];
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (panelRef.current && !panelRef.current.contains(event.target)) {
         onClose();
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [onClose]);
-  
-  const options = [
-    { id: "source", label: "text.reader_option_menu.source" },
-    { id: "translation", label: "text.reader_option_menu.translation" },
-    { id: "sourceWithTranslation", label: "text.reader_option_menu.source_with_translation" },
-  ];
-  
+  }, []);
+
   const handleOptionSelect = (optionId) => {
     onOptionChange(optionId);
     onClose();

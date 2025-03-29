@@ -250,8 +250,6 @@ const Chapter = () => {
   const HeaderOverlay = () => {
     return (
       <div className="header-overlay">
-        <div/>
-
         <div className={`text-container ${getLanguageClass(textDetails?.text_detail?.language)}`}>
            {textDetails?.text_detail?.title}
         </div>
