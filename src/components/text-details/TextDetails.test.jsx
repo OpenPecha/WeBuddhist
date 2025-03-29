@@ -5,7 +5,7 @@ import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen, act } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import TextDetails, { fetchTextDetail, fetchTextsInfo, fetchTextDetails } from "./textDetails";
+import TextDetails, { fetchTextsInfo, fetchTextDetails } from "./TextDetails.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -188,21 +188,7 @@ describe("TextDetails Component", () => {
     expect(document.querySelector(".spinner-border")).toBeInTheDocument();
   });
 
-  test("fetchTextDetail makes correct API call", async () => {
-    const textId = "test123";
-    axiosInstance.get.mockResolvedValueOnce({ data: mockTextData });
 
-    const result = await fetchTextDetail(textId, 0, 10);
-
-    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/texts/${textId}/versions`, {
-      params: {
-        text_id: textId,
-        skip: 0,
-        limit: 10
-      }
-    });
-    expect(result).toEqual(mockTextData);
-  });
 
   test("fetchTextsInfo makes correct API call", async () => {
     const textId = "test123";
@@ -233,13 +219,6 @@ describe("TextDetails Component", () => {
     expect(result).toEqual(mockTextDetailsData);
   });
 
-  test("handles error in fetchTextDetail gracefully", async () => {
-    const textId = "test123";
-    axiosInstance.get.mockRejectedValueOnce(new Error("API Error"));
-
-    const result = await fetchTextDetail(textId, 0, 10);
-    expect(result).toEqual({ title: "", type: "" });
-  });
 
   test("renders related texts when available", () => {
     setup();

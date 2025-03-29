@@ -21,7 +21,7 @@ import CommunityPage from "./components/community/CommunityPage.jsx";
 import TextCategory from "./components/text-category/TextCategory.jsx";
 import TextDetail from "./components/text-detail/TextDetail.jsx";
 import TextChild from "./components/text-child/TextChild.jsx";
-import TextDetails from "./components/text-details/textDetails.jsx";
+import TextDetails from "./components/text-details/TextDetails.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 

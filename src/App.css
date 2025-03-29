@@ -30,9 +30,11 @@
 }
 .bo-text{
   font-family: 'MonlamTBslim';
+  font-size: 20px;
 }
 .en-text{
   font-family: 'Poppins';
+  font-size: 20px;
 }
 .title {
   font-size: var(--title-font-size);

@@ -15,7 +15,19 @@ mockReactQuery();
 
 vi.mock("../../../utils/Constants.js", () => ({
   LANGUAGE: "LANGUAGE",
-  mapLanguageCode: () => "bo"
+  mapLanguageCode: () => "bo",
+  getLanguageClass: (language) => {
+    switch (language) {
+      case "bo":
+        return "bo-text";
+      case "en":
+        return "en-text";
+      case "sa":
+        return "bo-text";
+      default:
+        return "en-text";
+    }
+  }
 }));
 
 vi.mock("react-router-dom", async () => {
