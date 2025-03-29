@@ -52,7 +52,6 @@ const Chapter = () => {
   const containerRef = useRef(null);
   const location = useLocation(); // Get the state
   const title = location.state?.titleInformation || "";
-  const id = "12" //will be coming as a param
   const [searchParams] = useSearchParams();
   const {t} = useTranslate();
 
@@ -60,8 +59,8 @@ const Chapter = () => {
   const contentId = searchParams.get("content_id");
   const versionId = searchParams.get("version_id");
   const {data: sidetextData} = useQuery(
-    ["texts", id],
-    () => fetchTextsInfo(id),
+    ["textspanel", textId],
+    () => fetchTextsInfo(textId),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20
