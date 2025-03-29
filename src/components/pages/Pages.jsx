@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Container, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './TextDetails.scss';
+import './Pages.scss';
 import axiosInstance from "../../config/axios-config.js";
 import { IoMdCheckmark, IoMdClose } from 'react-icons/io';
 import { useTranslate } from '@tolgee/react';
@@ -39,7 +39,7 @@ export const fetchTextDetails = async (text_id, content_id, versionId,skip, limi
     });
     return data;
 }
-const TextDetails = () => {
+const Pages = () => {
   const [segments, setSegments] = useState([]);
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -341,4 +341,4 @@ const TextDetails = () => {
   );
 };
 
-export default TextDetails;
+export default Pages;

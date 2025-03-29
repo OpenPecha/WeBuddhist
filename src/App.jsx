@@ -21,7 +21,7 @@ import CommunityPage from "./components/community/CommunityPage.jsx";
 import Book from "./components/book/Book.jsx";
 import Chapter from "./components/chapter/Chapter.jsx";
 import Library from "./components/library/Library.jsx";
-import TextDetails from "./components/text-details/TextDetails.jsx";
+import Pages from "./components/pages/Pages.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 
@@ -123,7 +123,7 @@ function App() {
                 <Route path="/text-detail/:id" element={ <Chapter /> } />
                 <Route path="/texts/text-child/:id" element={ <Library /> } />
                 <Route path="/texts/text-category/:id" element={ <Book /> } />
-                <Route path="/texts/text-details" element={ <TextDetails /> } />
+                <Route path="/texts/text-details" element={ <Pages /> } />
                 <Route path="*" element={ <HomePage /> } />
             </Routes>
         </>

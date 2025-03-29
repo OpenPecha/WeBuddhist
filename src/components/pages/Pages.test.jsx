@@ -5,7 +5,7 @@ import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen, act } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import TextDetails, { fetchTextsInfo, fetchTextDetails } from "./TextDetails.jsx";
+import Pages, { fetchTextsInfo, fetchTextDetails } from "./Pages.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -33,7 +33,7 @@ vi.mock("../../utils/Constants.js", () => ({
   ]
 }));
 
-describe("TextDetails Component", () => {
+describe("Pages Component", () => {
   const queryClient = new QueryClient();
   const mockTextData = {
     text: {
@@ -100,14 +100,14 @@ describe("TextDetails Component", () => {
             fallback={"Loading tolgee..."} 
             tolgee={mockTolgee}
           >
-            <TextDetails />
+            <Pages />
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
     );
   };
 
-  test("renders TextDetails component with header", () => {
+  test("renders Pages component with header", () => {
     setup();
     expect(document.querySelector(".header-overlay")).toBeInTheDocument();
     expect(screen.getByText("Test Title")).toBeInTheDocument();
