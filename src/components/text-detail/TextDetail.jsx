@@ -47,7 +47,7 @@ const TextDetail = () => {
       <main className="main-content">
         <div className="content-area">
           <div className="text-header">
-            <h3 className={` ${getLanguageClass(textDetail?.text?.language)}`}>{textDetail?.text?.title || ""}</h3>
+            <h3 className={`bo-text ${getLanguageClass(textDetail?.text?.language)}`}>{textDetail?.text?.title || ""}</h3>
             <div className="navbaritems subcom">
               {textDetail?.text?.type || ""}
             </div>
