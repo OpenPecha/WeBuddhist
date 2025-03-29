@@ -60,7 +60,6 @@ const Content = () => {
   //   }
   // }, [apiData]);
 
-  console.log(apiData)
   const content = apiData?.contents[0];
   const totalSegment = content?.segments?.length || 0;
   const totalPages = Math.ceil(totalSegment / pagination.limit);
