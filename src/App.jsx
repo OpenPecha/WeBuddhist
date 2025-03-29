@@ -18,9 +18,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
 import Topics from "./components/topics/Topics.jsx";
 import CommunityPage from "./components/community/CommunityPage.jsx";
-import TextCategory from "./components/text-category/TextCategory.jsx";
+import Book from "./components/book/Book.jsx";
 import TextDetail from "./components/text-detail/TextDetail.jsx";
-import TextChild from "./components/text-child/TextChild.jsx";
+import Library from "./components/library/Library.jsx";
 import TextDetails from "./components/text-details/TextDetails.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
@@ -121,8 +121,8 @@ function App() {
                 <Route path="/topics/:id" element={<Topics />} />
                 <Route path="/community" element={ <CommunityPage /> } />
                 <Route path="/text-detail/:id" element={ <TextDetail /> } />
-                <Route path="/texts/text-child/:id" element={ <TextChild /> } />
-                <Route path="/texts/text-category/:id" element={ <TextCategory /> } />
+                <Route path="/texts/text-child/:id" element={ <Library /> } />
+                <Route path="/texts/text-category/:id" element={ <Book /> } />
                 <Route path="/texts/text-details" element={ <TextDetails /> } />
                 <Route path="*" element={ <HomePage /> } />
             </Routes>

@@ -5,7 +5,7 @@ import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
-import TextChild, { fetchChildTexts } from "./TextChild";
+import Library, { fetchChildTexts } from "./Library.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -37,7 +37,7 @@ vi.mock("../../utils/Constants.js", () => ({
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
 }));
 
-describe("TextChild Component", () => {
+describe("Library Component", () => {
   const queryClient = new QueryClient();
   const mockTextChildData = {
     parent: {
@@ -72,14 +72,14 @@ describe("TextChild Component", () => {
             fallback={"Loading tolgee..."} 
             tolgee={mockTolgee}
           >
-            <TextChild />
+            <Library />
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
     );
   };
 
-  test("renders TextChild component", () => {
+  test("renders Library component", () => {
     setup();
     expect(document.querySelector(".main-container")).toBeInTheDocument();
     expect(document.querySelector(".text-child-container")).toBeInTheDocument();

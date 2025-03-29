@@ -10,7 +10,7 @@ import {
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
-import TextCategory from "./TextCategory.jsx";
+import Book from "./Book.jsx";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
 
 mockAxios();
@@ -40,7 +40,7 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-describe("TextCategory Component", () => {
+describe("Book Component", () => {
   const queryClient = new QueryClient();
   const mockTextCategoryData = {
     category: {
@@ -68,7 +68,7 @@ describe("TextCategory Component", () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
-    useParams.mockReturnValue({ categoryid: "text-category-id" });
+    useParams.mockReturnValue({ categoryid: "book-id" });
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockTextCategoryData,
       isLoading: false,
@@ -87,7 +87,7 @@ describe("TextCategory Component", () => {
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
-          <TextCategory />
+          <Book />
         </QueryClientProvider>
       </Router>
     );
@@ -215,7 +215,7 @@ describe("TextCategory Component", () => {
 
     expect(reactQuery.useQuery).toHaveBeenCalled();
     const queryKey = reactQuery.useQuery.mock.calls[0][0];
-    expect(queryKey).toEqual(["texts", "text-category-id"]);
+    expect(queryKey).toEqual(["texts", "book-id"]);
   });
 
   test("uses pagination parameters correctly", () => {

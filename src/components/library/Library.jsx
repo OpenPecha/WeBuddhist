@@ -3,7 +3,7 @@ import { LANGUAGE, mapLanguageCode } from '../../utils/Constants';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config';
-import './TextChild.scss';
+import './Library.scss';
 import { useTranslate } from '@tolgee/react';
 
 export const fetchChildTexts = async (parentId) => {
@@ -20,7 +20,7 @@ export const fetchChildTexts = async (parentId) => {
   return data;
 };
 
-const TextChild = () => {
+const Library = () => {
   const { id } = useParams();
   const { t } = useTranslate();
   const { data: textChildData, isLoading } = useQuery(
@@ -62,4 +62,4 @@ const TextChild = () => {
   );
 };
 
-export default TextChild;
+export default Library;

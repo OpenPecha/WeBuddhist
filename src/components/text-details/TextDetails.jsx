@@ -54,6 +54,7 @@ const TextDetails = () => {
   const title = location.state?.titleInformation || "";
   const id = "12" //will be coming as a param
   const [searchParams] = useSearchParams();
+  const {t} = useTranslate();
 
   const textId = searchParams.get("text_id");
   const contentId = searchParams.get("content_id");
@@ -93,18 +94,6 @@ const TextDetails = () => {
     setLoading(false);
   }, [textDetails]);
 
-  const {t} = useTranslate();
-
-  const handleScroll = () => {
-    if (!containerRef.current) return;
-    const {scrollTop, scrollHeight, clientHeight} = containerRef.current;
-    const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
-    if (scrollPosition >= 0.75 && !loading && hasMore) {
-      setLoading(true);
-      setPage(prevState => prevState + 1);
-    }
-  };
-
   useEffect(() => {
     const currentContainer = containerRef.current;
     if (currentContainer) {
@@ -117,6 +106,18 @@ const TextDetails = () => {
       }
     };
   }, [page, loading]);
+
+
+  // helper function
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    const {scrollTop, scrollHeight, clientHeight} = containerRef.current;
+    const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
+    if (scrollPosition >= 0.75 && !loading && hasMore) {
+      setLoading(true);
+      setPage(prevState => prevState + 1);
+    }
+  };
 
   const renderShareView = () => {
     return (
@@ -304,6 +305,7 @@ const TextDetails = () => {
     );
   };
 
+  // main rendere
   return (
     <>
       <HeaderOverlay/>
