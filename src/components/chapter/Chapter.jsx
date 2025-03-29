@@ -5,13 +5,15 @@ import './Chapter.scss';
 import axiosInstance from "../../config/axios-config.js";
 import { IoMdCheckmark, IoMdClose } from 'react-icons/io';
 import { useTranslate } from '@tolgee/react';
-import { LANGUAGE, mapLanguageCode, menuItems } from '../../utils/Constants.js';
+import { getLanguageClass, LANGUAGE, mapLanguageCode, menuItems } from '../../utils/Constants.js';
 import { IoCopy, IoLanguage, IoNewspaperOutline } from "react-icons/io5";
 import { BsFacebook, BsTwitter, BsWindowFullscreen, BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import { MdOutlineVerticalSplit } from "react-icons/md";
 import { FiInfo, FiList } from "react-icons/fi";
 import { BiBook, BiSearch } from 'react-icons/bi';
 import { useQuery } from 'react-query';
 import {useLocation, useSearchParams} from "react-router-dom";
+import TranslationSource from './localcomponent/translation-source/TranslationSource.jsx';
 
 //this is for the side panel
 export const fetchTextsInfo = async (text_id) => {
@@ -49,9 +51,9 @@ const Chapter = () => {
   const [isShareView, setIsShareView] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showTranslationSource, setShowTranslationSource] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('sourceWithTranslation');
   const containerRef = useRef(null);
-  const location = useLocation(); // Get the state
-  const title = location.state?.titleInformation || "";
   const [searchParams] = useSearchParams();
   const {t} = useTranslate();
 
@@ -116,6 +118,10 @@ const Chapter = () => {
       setLoading(true);
       setPage(prevState => prevState + 1);
     }
+  };
+
+  const handleOptionChange = (option) => {
+    setSelectedOption(option);
   };
 
   const renderShareView = () => {
@@ -240,22 +246,43 @@ const Chapter = () => {
       </div>
     );
   };
-
+ 
   const HeaderOverlay = () => {
     return (
       <div className="header-overlay">
         <div/>
 
-        <div className="text-container listtitle">
-          {title?.text}
+        <div className={`text-container ${getLanguageClass(textDetails?.text_detail?.language)}`}>
+           {textDetails?.text_detail?.title}
         </div>
 
-        <button
-          className="bookmark-button"
-          onClick={() => setIsBookmarked(!isBookmarked)}
-        >
-          {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
-        </button>
+        <div className="d-flex align-items-center">
+          <button
+            className="bookmark-button mr-3"
+            onClick={() => setIsBookmarked(!isBookmarked)}
+          >
+            {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
+          </button>
+
+          <div style={{ position: 'relative' }}>
+            <button 
+              className="bookmark-button"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowTranslationSource(!showTranslationSource);
+              }}
+            >
+              <MdOutlineVerticalSplit size={20}/>
+            </button>
+            {showTranslationSource && (
+              <TranslationSource 
+                selectedOption={selectedOption} 
+                onOptionChange={handleOptionChange} 
+                onClose={() => setShowTranslationSource(false)} 
+              />
+            )}
+          </div>
+        </div>
       </div>
     );
   };

@@ -17,10 +17,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
+  padding: 16px 50px;
   background-color: #fff;
-  border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  margin: 0 auto;
 
   .close-button, .bookmark-button {
     background: none;

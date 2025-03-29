@@ -1,0 +1,40 @@
+.translation-source-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    z-index: 1000;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 280px;
+    
+    .options-container {
+      border: 1px solid #dee2e6;
+      background: #f7f7f7;
+      border-radius: 0.375rem;
+      padding: 0.75rem 1rem;
+      
+      .option-item {
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        
+        &:has(.form-check-input:checked) {
+          background-color: #C39F48;
+          color: white;
+          
+          .form-check-input:checked {
+            background-color: #C39F48;
+            border-color: white;
+          }
+        }
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+ 
