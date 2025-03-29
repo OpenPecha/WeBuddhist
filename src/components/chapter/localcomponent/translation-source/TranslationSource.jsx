@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { Form } from "react-bootstrap";
 import "./TranslationSource.scss";
+import { useTranslate } from "@tolgee/react";
 
 const TranslationSource = ({ selectedOption, onOptionChange, onClose }) => {
   const panelRef = useRef(null);
-  
+  const {t}=useTranslate()
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (panelRef.current && !panelRef.current.contains(event.target)) {
@@ -19,9 +20,9 @@ const TranslationSource = ({ selectedOption, onOptionChange, onClose }) => {
   }, [onClose]);
   
   const options = [
-    { id: "source", label: "Source" },
-    { id: "translation", label: "Translation" },
-    { id: "sourceWithTranslation", label: "Source with Translation" },
+    { id: "source", label: "text.reader_option_menu.source" },
+    { id: "translation", label: "text.reader_option_menu.translation" },
+    { id: "sourceWithTranslation", label: "text.reader_option_menu.source_with_translation" },
   ];
   
   const handleOptionSelect = (optionId) => {
@@ -41,10 +42,10 @@ const TranslationSource = ({ selectedOption, onOptionChange, onClose }) => {
               type="radio"
               id={option.id}
               name="viewOption"
-              label={option.label}
+              label={t(`${option.label}`)}
               checked={selectedOption === option.id}
               onChange={() => handleOptionSelect(option.id)}
-              className="option-item"
+              className="option-item navbaritems"
             />
           </div>
         ))}
