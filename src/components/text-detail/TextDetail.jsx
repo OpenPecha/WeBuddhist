@@ -38,7 +38,7 @@ const TextDetail = () => {
           <Tabs
             defaultActiveKey="contents"
             id="text-tabs"
-            className="custom-tabs"
+            className="custom-tabs listsubtitle"
           >
             <Tab eventKey="contents" title={t("text.contents")}>
               <Content />
