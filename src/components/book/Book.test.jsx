@@ -155,13 +155,13 @@ describe("Book Component", () => {
     expect(textSections.children.length).toBe(0);
   });
 
-  test("renders correct links to text detail chapter1", () => {
+  test("renders correct links to text detail chapter", () => {
     setup();
     const links = screen.getAllByTestId("router-link");
     expect(links).toHaveLength(3);
-    expect(links[0].getAttribute("href")).toBe("/chapter/text1");
-    expect(links[1].getAttribute("href")).toBe("/chapter/text2");
-    expect(links[2].getAttribute("href")).toBe("/chapter/text3");
+    expect(links[0].getAttribute("href")).toBe("/pages/text1");
+    expect(links[1].getAttribute("href")).toBe("/pages/text2");
+    expect(links[2].getAttribute("href")).toBe("/pages/text3");
   });
 
   test("handles query error gracefully", () => {

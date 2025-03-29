@@ -19,9 +19,9 @@ import { setFontVariables } from "./config/commonConfigs.js";
 import Topics from "./components/topics/Topics.jsx";
 import CommunityPage from "./components/community/CommunityPage.jsx";
 import Book from "./components/book/Book.jsx";
-import Chapter from "./components/chapter/Chapter.jsx";
+import Pages from "./components/pages/Pages.jsx";
 import Library from "./components/library/Library.jsx";
-import Chapter1 from "./components/chapter1/Chapter1.jsx";
+import Chapter from "./components/chapter/Chapter.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 
@@ -120,10 +120,10 @@ function App() {
                 <Route path="/topics" element={<Topics/>}/>
                 <Route path="/topics/:id" element={<Topics />} />
                 <Route path="/community" element={ <CommunityPage /> } />
-                <Route path="/text-detail/:id" element={ <Chapter /> } />
+                <Route path="/text-detail/:id" element={ <Pages /> } />
                 <Route path="/texts/text-child/:id" element={ <Library /> } />
                 <Route path="/texts/text-category/:id" element={ <Book /> } />
-                <Route path="/texts/text-details" element={ <Chapter1 /> } />
+                <Route path="/texts/text-details" element={ <Chapter /> } />
                 <Route path="*" element={ <HomePage /> } />
             </Routes>
         </>
