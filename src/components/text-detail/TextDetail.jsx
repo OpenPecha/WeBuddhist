@@ -5,55 +5,29 @@ import { FiChevronDown } from 'react-icons/fi';
 import { useTranslate } from '@tolgee/react';
 import Versions from "./versions/Versions.jsx";
 import Content from "./content/Content.jsx";
-import axiosInstance from '../../config/axios-config.js';
-import { useParams, Link } from 'react-router-dom';
-import { useQuery } from 'react-query';
+import {useParams, Link, useLocation} from 'react-router-dom';
 import { getLanguageClass } from '../../utils/Constants';
-export const fetchTextDetail = async (text_id, skip, limit) => {
-  try {
-    const { data } = await axiosInstance.get(`/api/v1/texts/${text_id}/versions`, {
-      params: {
-        text_id,
-        skip,
-        limit
-      }
-    });
-    return data;
-  } catch (error) {
-    console.error("Error fetching text details:", error);
-    return { title: "", type: "" }; 
-  }
-};
+
 const TextDetail = () => {
   const [selectedVersion, setSelectedVersion] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('');
+  const location = useLocation();
+  const titleInformation = location.state?.titleInformation || "";
   const { t } = useTranslate();
   const { id } = useParams();
 
-  const { data: textDetail, isLoading } = useQuery(
-    ["textDetail", id],
-    () => fetchTextDetail(id),
-    {
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 20,
-      onError: (err) => {
-        console.error("Query error:", err);
-      }
-    }
-  );
-  
   return (
     <div className="pecha-app">
       <main className="main-content">
         <div className="content-area">
           <div className="text-header">
-            <h3 className={` ${getLanguageClass(textDetail?.text?.language)}`}>{textDetail?.text?.title || ""}</h3>
+            <h3 className={` ${getLanguageClass(titleInformation?.language)}`}>{titleInformation?.title || ""}</h3>
             <div className="navbaritems subcom">
-              {textDetail?.text?.type || ""}
+              {titleInformation?.type || ""}
             </div>
             <Link
               to={`/texts/text-details?text_id=${id}&content_id=${
-                textDetail?.contents?.[0]?.id || ""
+                titleInformation?.id || ""
               }`}
               className="continue-button navbaritems"
             >

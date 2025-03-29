@@ -70,8 +70,8 @@ const Versions = () =>{
         versionsData?.versions.map((version,index) => <>
           <div  key={index} className="version">
             <div>
-            <Link 
-            to={`/texts/text-details?text_id=${id}`}
+            <Link
+            to={`/texts/text-details?text_id=${id}&version_id=${version.id}`}
             className="section-title"
             
           >

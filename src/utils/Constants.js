@@ -43,7 +43,6 @@ export const menuItems = [
 ];
 
 export const getLanguageClass = (language) => {
-  console.log(language);
   switch (language) {
     case "bo":
       return "bo-text";
