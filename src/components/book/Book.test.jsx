@@ -159,9 +159,9 @@ describe("Book Component", () => {
     setup();
     const links = screen.getAllByTestId("router-link");
     expect(links).toHaveLength(3);
-    expect(links[0].getAttribute("href")).toBe("/text-detail/text1");
-    expect(links[1].getAttribute("href")).toBe("/text-detail/text2");
-    expect(links[2].getAttribute("href")).toBe("/text-detail/text3");
+    expect(links[0].getAttribute("href")).toBe("/chapter/text1");
+    expect(links[1].getAttribute("href")).toBe("/chapter/text2");
+    expect(links[2].getAttribute("href")).toBe("/chapter/text3");
   });
 
   test("handles query error gracefully", () => {

@@ -19,7 +19,7 @@ import { setFontVariables } from "./config/commonConfigs.js";
 import Topics from "./components/topics/Topics.jsx";
 import CommunityPage from "./components/community/CommunityPage.jsx";
 import Book from "./components/book/Book.jsx";
-import TextDetail from "./components/text-detail/TextDetail.jsx";
+import Chapter from "./components/chapter/Chapter.jsx";
 import Library from "./components/library/Library.jsx";
 import TextDetails from "./components/text-details/TextDetails.jsx";
 
@@ -120,7 +120,7 @@ function App() {
                 <Route path="/topics" element={<Topics/>}/>
                 <Route path="/topics/:id" element={<Topics />} />
                 <Route path="/community" element={ <CommunityPage /> } />
-                <Route path="/text-detail/:id" element={ <TextDetail /> } />
+                <Route path="/text-detail/:id" element={ <Chapter /> } />
                 <Route path="/texts/text-child/:id" element={ <Library /> } />
                 <Route path="/texts/text-category/:id" element={ <Book /> } />
                 <Route path="/texts/text-details" element={ <TextDetails /> } />

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
-import './TextDetail.scss';
+import './Chapter.scss';
 import { FiChevronDown } from 'react-icons/fi';
 import { useTranslate } from '@tolgee/react';
 import Versions from "./versions/Versions.jsx";
@@ -8,7 +8,7 @@ import Content from "./content/Content.jsx";
 import {useParams, Link, useLocation} from 'react-router-dom';
 import { getLanguageClass } from '../../utils/Constants';
 
-const TextDetail = () => {
+const Chapter = () => {
   const [selectedVersion, setSelectedVersion] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('');
   const location = useLocation();
@@ -101,4 +101,4 @@ const TextDetail = () => {
   );
 };
 
-export default TextDetail;
+export default Chapter;
