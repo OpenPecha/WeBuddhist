@@ -155,7 +155,7 @@ describe("Book Component", () => {
     expect(textSections.children.length).toBe(0);
   });
 
-  test("renders correct links to text detail pages", () => {
+  test("renders correct links to text detail chapter1", () => {
     setup();
     const links = screen.getAllByTestId("router-link");
     expect(links).toHaveLength(3);
