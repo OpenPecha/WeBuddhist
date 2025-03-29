@@ -1,6 +1,6 @@
 import "./Versions.scss"
 import {useTranslate} from "@tolgee/react";
-import {LANGUAGE, mapLanguageCode} from "../../../utils/Constants.js";
+import {getLanguageClass, LANGUAGE, mapLanguageCode} from "../../../utils/Constants.js";
 import axiosInstance from "../../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {Link, useParams} from "react-router-dom";
@@ -67,29 +67,30 @@ const Versions = () =>{
   return (
     <div className="versions-container">
       {
-        versionsData?.versions.map((version,index) => <>
-          <div  key={index} className="version">
-            <div>
-            <Link
-            to={`/texts/text-details?text_id=${id}&version_id=${version.id}`}
-            className="section-title"
-            
-          >
-              <div className="version-title listtitle">
-                {version.title}
-                <br/>
+        versionsData?.versions.map((version,index) => (
+          <React.Fragment key={version.id}>
+            <div className="version">
+              <div>
+                <Link
+                  to={`/texts/text-details?text_id=${id}&version_id=${version.id}`}
+                  className="section-title"
+                >
+                  <div className={`${getLanguageClass(version.language)}`}>
+                    {version.title}
+                    <br/>
+                  </div>
+                </Link>
+                <div className="review-history subtitle">
+                  {t("text.versions.information.review_history")}
+                </div>
               </div>
-              </Link>
-              <div className="review-history">
-                Revision History
+              <div className="version-language subtitle border">
+                <p>{t(languageMap[version.language])}</p>
               </div>
             </div>
-            <div className="version-language">
-              {t(languageMap[version.language])}
-            </div>
-          </div>
-          <hr/>
-        </>)
+            <hr/>
+          </React.Fragment>
+        ))
       }
 
       {versionsData.versions.length > 0 &&

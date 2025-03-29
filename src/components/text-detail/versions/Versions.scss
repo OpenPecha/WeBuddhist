@@ -21,7 +21,11 @@ $primary-color: #666666;
       color: #666666;
       border-radius: 25px;
       font-size: 15px;
-
+      display: flex;
+      align-items: center;
+      p{
+        margin-top: 16px;
+      }
     }
   }
 }
