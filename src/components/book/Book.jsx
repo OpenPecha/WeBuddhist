@@ -14,7 +14,7 @@ const fetchTextCategory = async (bookId, limit = 10, skip = 0) => {
     const { data } = await axiosInstance.get("/api/v1/texts", {
       params: {
         language,
-        category: bookId,
+        term_id: bookId,
         limit,
         skip
       }
@@ -72,7 +72,7 @@ const Book = () => {
     <div className="main-container listtitle">
       <div className="text-category-container">
         <div className="category-header">
-          <h1>{categoryTextData.category?.title || "Text Category"}</h1>
+          <h1>{categoryTextData.term?.title || "Text Category"}</h1>
         </div>
         <div className="text-sections">
           {rootTexts.length > 0 && (

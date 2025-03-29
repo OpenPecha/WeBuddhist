@@ -28,7 +28,7 @@ export const fetchTextsInfo = async (text_id) => {
 
 //this is for the main content
 export const fetchTextDetails = async (text_id, content_id, versionId,skip, limit) => {
-    const { data } = await axiosInstance.post(`/api/v1/texts/${ text_id }/detals`, {
+    const { data } = await axiosInstance.post(`/api/v1/texts/${ text_id }/details`, {
       content_id:content_id ?? "",
       version_id: versionId ?? ""
     },{
