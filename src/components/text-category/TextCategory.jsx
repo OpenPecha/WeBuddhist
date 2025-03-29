@@ -27,12 +27,12 @@ const fetchTextCategory = async (categoryid, limit = 10, skip = 0) => {
 };
 
 const TextCategory = () => {
-  const { categoryid } = useParams();
+  const { id } = useParams();
   const { t } = useTranslate();
   
   const { data: categoryTextData, isLoading, error } = useQuery(
-    ["texts", categoryid],
-    () => fetchTextCategory(categoryid || "67dd22a8d9f06ab28feedc90"),
+    ["texts", id],
+    () => fetchTextCategory(id),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20,
