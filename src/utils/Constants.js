@@ -54,3 +54,9 @@ export const getLanguageClass = (language) => {
       return "en-text";
   }
 };
+
+export const sourceTranslationOptionsMapper = {
+  "source":"SOURCE",
+  "translation":"TRANSLATION",
+  "source_translation":"SOURCE_TRANSLATION"
+}

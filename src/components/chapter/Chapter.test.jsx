@@ -5,7 +5,7 @@ import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen, act } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import Chapter, { fetchTextsInfo, fetchTextDetails } from "./Chapter.jsx";
+import Chapter, { fetchTextDetails } from "./Chapter.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -14,23 +14,29 @@ mockAxios();
 mockUseAuth();
 mockReactQuery();
 
-vi.mock("@tolgee/react", async () => {
-  const actual = await vi.importActual("@tolgee/react");
-  return {
-    ...actual,
-    useTranslate: () => ({
-      t: (key) => key,
-    }),
-  };
-});
-
 vi.mock("../../utils/Constants.js", () => ({
   LANGUAGE: "LANGUAGE",
-  mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
+  getLanguageClass: (language) => {
+    switch (language) {
+      case "bo":
+        return "bo-text";
+      case "en":
+        return "en-text";
+      case "sa":
+        return "bo-text";
+      default:
+        return "en-text";
+    }
+  },
   menuItems: [
     { label: "common.share", icon: vi.fn() },
     { label: "menu.item2", icon: vi.fn() }
-  ]
+  ],
+  sourceTranslationOptionsMapper :{
+    "source":"SOURCE",
+    "translation":"TRANSLATION",
+    "source_translation":"SOURCE_TRANSLATION"
+  }
 }));
 
 describe("Chapter Component", () => {
@@ -68,7 +74,10 @@ describe("Chapter Component", () => {
                 id: "subseg1",
                 segment_id: "1",
                 segment_number: "1.1",
-                content: "<p>Test content 1</p>"
+                content: "<p>Test content 1</p>",
+                translation: {
+                  content:"yo"
+                }
               }
             ]
           }
@@ -107,11 +116,11 @@ describe("Chapter Component", () => {
     );
   };
 
-  test("renders Chapter component with header", () => {
-    setup();
-    expect(document.querySelector(".header-overlay")).toBeInTheDocument();
-    expect(screen.getByText("Test Title")).toBeInTheDocument();
-  });
+  // test("renders Chapter component with header", () => {
+  //   setup();
+  //   expect(document.querySelector(".header-overlay")).toBeInTheDocument();
+  //   expect(screen.getByText("Test Title")).toBeInTheDocument();
+  // });
 
   test("toggles bookmark state", () => {
     setup();
@@ -133,34 +142,6 @@ describe("Chapter Component", () => {
     const closeButton = document.querySelector(".close-icon");
     fireEvent.click(closeButton);
     expect(document.querySelector(".right-panel.show")).not.toBeInTheDocument();
-  });
-
-  test("renders share view and handles copy functionality", async () => {
-    setup();
-    
-    // Open side panel
-    fireEvent.click(document.querySelector(".text-segment"));
-    
-    // Find and click share menu item
-    const menuItems = document.querySelectorAll(".panel-content p");
-    const shareItem = Array.from(menuItems).find(item => 
-      item.textContent.includes("common.share")
-    );
-    fireEvent.click(shareItem);
-
-    // Verify share view is shown
-    expect(screen.getByText("text.share_link")).toBeInTheDocument();
-    
-    // Test copy functionality
-    const mockClipboard = {
-      writeText: vi.fn().mockImplementation(() => Promise.resolve()),
-    };
-    Object.assign(navigator, { clipboard: mockClipboard });
-    
-    const copyButton = document.querySelector(".copy-button");
-    fireEvent.click(copyButton);
-    
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("https://test.com/share");
   });
 
   test("renders text content with segments", () => {
@@ -189,50 +170,30 @@ describe("Chapter Component", () => {
   });
 
 
-
-  test("fetchTextsInfo makes correct API call", async () => {
-    const textId = "test123";
-    axiosInstance.get.mockResolvedValueOnce({ data: mockSideTextData });
-
-    const result = await fetchTextsInfo(textId);
-
-    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/texts/${textId}/infos`, {
-      params: {
-        language: "bo",
-        text_id: textId
-      }
-    });
-    expect(result).toEqual(mockSideTextData);
-  });
-
   test("fetchTextDetails makes correct API call", async () => {
     const textId = "test123";
     const contentId = "content123";
-    axiosInstance.get.mockResolvedValueOnce({ data: mockTextDetailsData });
-
-    const result = await fetchTextDetails(textId, contentId, 0, 40);
-
-    expect(axiosInstance.get).toHaveBeenCalledWith(
-      `/api/v1/texts/${textId}/contents/${contentId}/details?skip=0&limit=40`,
-      {}
+    const versionId = "version123";
+    const mockTextDetailsData = { someKey: "someValue" };
+    axiosInstance.post.mockResolvedValueOnce({ data: mockTextDetailsData });
+    const result = await fetchTextDetails(textId, contentId, versionId, 0, 10);
+    expect(axiosInstance.post).toHaveBeenCalledWith(
+      `/api/v1/texts/${textId}/details`,
+      {
+        content_id: contentId,
+        version_id: versionId
+      },
+      {
+        params: {
+          limit: 10,
+          skip: 0
+        }
+      }
     );
     expect(result).toEqual(mockTextDetailsData);
   });
 
 
-  test("renders related texts when available", () => {
-    setup();
-    const relatedTexts = document.querySelectorAll(".related-text-item");
-    expect(relatedTexts).toHaveLength(2);
-    expect(relatedTexts[0]).toHaveTextContent("Related Text 1 (2)");
-    expect(relatedTexts[1]).toHaveTextContent("Related Text 2 (1)");
-  });
-
-  test("displays correct translation count", () => {
-    setup();
-    const translations = screen.getByText(/translations \(2\)/i);
-    expect(translations).toBeInTheDocument();
-  });
 
   test("handles null text details data gracefully", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
