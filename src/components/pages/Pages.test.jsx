@@ -5,7 +5,7 @@ import "@testing-library/jest-dom";
 import { mockAxios, mockReactQuery, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
-import TextDetail from "./TextDetail.jsx";
+import Pages from "./Pages.jsx";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
 
 mockAxios();
@@ -51,7 +51,7 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-describe("TextDetail Component", () => {
+describe("Pages Component", () => {
   const queryClient = new QueryClient();
   const mockTextDetailData = {
     text: {
@@ -73,7 +73,7 @@ describe("TextDetail Component", () => {
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
-          <TextDetail />
+          <Pages />
         </QueryClientProvider>
       </Router>
     );

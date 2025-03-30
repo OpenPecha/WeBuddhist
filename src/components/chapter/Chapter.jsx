@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { Container, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './TextDetails.scss';
+import './Chapter.scss';
 import axiosInstance from "../../config/axios-config.js";
 import { IoMdCheckmark, IoMdClose } from 'react-icons/io';
 import { useTranslate } from '@tolgee/react';
-import { LANGUAGE, mapLanguageCode, menuItems } from '../../utils/Constants.js';
+import { getLanguageClass, LANGUAGE, mapLanguageCode, menuItems } from '../../utils/Constants.js';
 import { IoCopy, IoLanguage, IoNewspaperOutline } from "react-icons/io5";
 import { BsFacebook, BsTwitter, BsWindowFullscreen, BsBookmark, BsBookmarkFill } from "react-icons/bs";
+import { MdOutlineVerticalSplit } from "react-icons/md";
 import { FiInfo, FiList } from "react-icons/fi";
 import { BiBook, BiSearch } from 'react-icons/bi';
 import { useQuery } from 'react-query';
 import {useLocation, useSearchParams} from "react-router-dom";
+import TranslationSource from './localcomponent/translation-source/TranslationSource.jsx';
 
 //this is for the side panel
 export const fetchTextsInfo = async (text_id) => {
@@ -28,7 +30,7 @@ export const fetchTextsInfo = async (text_id) => {
 
 //this is for the main content
 export const fetchTextDetails = async (text_id, content_id, versionId,skip, limit) => {
-    const { data } = await axiosInstance.post(`/api/v1/texts/${ text_id }/detals`, {
+    const { data } = await axiosInstance.post(`/api/v1/texts/${ text_id }/details`, {
       content_id:content_id ?? "",
       version_id: versionId ?? ""
     },{
@@ -39,7 +41,7 @@ export const fetchTextDetails = async (text_id, content_id, versionId,skip, limi
     });
     return data;
 }
-const TextDetails = () => {
+const Chapter = () => {
   const [segments, setSegments] = useState([]);
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,18 +51,18 @@ const TextDetails = () => {
   const [isShareView, setIsShareView] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showTranslationSource, setShowTranslationSource] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('sourceWithTranslation');
   const containerRef = useRef(null);
-  const location = useLocation(); // Get the state
-  const title = location.state?.titleInformation || "";
-  const id = "12" //will be coming as a param
   const [searchParams] = useSearchParams();
+  const {t} = useTranslate();
 
   const textId = searchParams.get("text_id");
   const contentId = searchParams.get("content_id");
   const versionId = searchParams.get("version_id");
   const {data: sidetextData} = useQuery(
-    ["texts", id],
-    () => fetchTextsInfo(id),
+    ["textspanel", textId],
+    () => fetchTextsInfo(textId),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20
@@ -93,18 +95,6 @@ const TextDetails = () => {
     setLoading(false);
   }, [textDetails]);
 
-  const {t} = useTranslate();
-
-  const handleScroll = () => {
-    if (!containerRef.current) return;
-    const {scrollTop, scrollHeight, clientHeight} = containerRef.current;
-    const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
-    if (scrollPosition >= 0.75 && !loading && hasMore) {
-      setLoading(true);
-      setPage(prevState => prevState + 1);
-    }
-  };
-
   useEffect(() => {
     const currentContainer = containerRef.current;
     if (currentContainer) {
@@ -117,6 +107,22 @@ const TextDetails = () => {
       }
     };
   }, [page, loading]);
+
+
+  // helper function
+  const handleScroll = () => {
+    if (!containerRef.current) return;
+    const {scrollTop, scrollHeight, clientHeight} = containerRef.current;
+    const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
+    if (scrollPosition >= 0.75 && !loading && hasMore) {
+      setLoading(true);
+      setPage(prevState => prevState + 1);
+    }
+  };
+
+  const handleOptionChange = (option) => {
+    setSelectedOption(option);
+  };
 
   const renderShareView = () => {
     return (
@@ -240,22 +246,41 @@ const TextDetails = () => {
       </div>
     );
   };
-
+ 
   const HeaderOverlay = () => {
     return (
       <div className="header-overlay">
-        <div/>
-
-        <div className="text-container listtitle">
-          {title?.text}
+        <div className={`text-container ${getLanguageClass(textDetails?.text_detail?.language)}`}>
+           {textDetails?.text_detail?.title}
         </div>
 
-        <button
-          className="bookmark-button"
-          onClick={() => setIsBookmarked(!isBookmarked)}
-        >
-          {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
-        </button>
+        <div className="d-flex align-items-center">
+          <button
+            className="bookmark-button mr-3"
+            onClick={() => setIsBookmarked(!isBookmarked)}
+          >
+            {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
+          </button>
+
+          <div style={{ position: 'relative' }}>
+            <button 
+              className="bookmark-button"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowTranslationSource(!showTranslationSource);
+              }}
+            >
+              <MdOutlineVerticalSplit size={20}/>
+            </button>
+            {showTranslationSource && (
+              <TranslationSource 
+                selectedOption={selectedOption} 
+                onOptionChange={handleOptionChange} 
+                onClose={() => setShowTranslationSource(false)} 
+              />
+            )}
+          </div>
+        </div>
       </div>
     );
   };
@@ -304,6 +329,7 @@ const TextDetails = () => {
     );
   };
 
+  // main rendere
   return (
     <>
       <HeaderOverlay/>
@@ -339,4 +365,4 @@ const TextDetails = () => {
   );
 };
 
-export default TextDetails;
+export default Chapter;

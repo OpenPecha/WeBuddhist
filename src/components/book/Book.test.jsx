@@ -10,7 +10,7 @@ import {
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
-import TextCategory from "./TextCategory.jsx";
+import Book from "./Book.jsx";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
 
 mockAxios();
@@ -40,7 +40,7 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-describe("TextCategory Component", () => {
+describe("Book Component", () => {
   const queryClient = new QueryClient();
   const mockTextCategoryData = {
     category: {
@@ -68,7 +68,7 @@ describe("TextCategory Component", () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
-    useParams.mockReturnValue({ categoryid: "text-category-id" });
+    useParams.mockReturnValue({ categoryid: "book-id" });
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockTextCategoryData,
       isLoading: false,
@@ -87,7 +87,7 @@ describe("TextCategory Component", () => {
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
-          <TextCategory />
+          <Book />
         </QueryClientProvider>
       </Router>
     );
@@ -155,13 +155,13 @@ describe("TextCategory Component", () => {
     expect(textSections.children.length).toBe(0);
   });
 
-  test("renders correct links to text detail pages", () => {
+  test("renders correct links to text detail chapter", () => {
     setup();
     const links = screen.getAllByTestId("router-link");
     expect(links).toHaveLength(3);
-    expect(links[0].getAttribute("href")).toBe("/text-detail/text1");
-    expect(links[1].getAttribute("href")).toBe("/text-detail/text2");
-    expect(links[2].getAttribute("href")).toBe("/text-detail/text3");
+    expect(links[0].getAttribute("href")).toBe("/pages/text1");
+    expect(links[1].getAttribute("href")).toBe("/pages/text2");
+    expect(links[2].getAttribute("href")).toBe("/pages/text3");
   });
 
   test("handles query error gracefully", () => {
@@ -215,7 +215,7 @@ describe("TextCategory Component", () => {
 
     expect(reactQuery.useQuery).toHaveBeenCalled();
     const queryKey = reactQuery.useQuery.mock.calls[0][0];
-    expect(queryKey).toEqual(["texts", "text-category-id"]);
+    expect(queryKey).toEqual(["texts", "book-id"]);
   });
 
   test("uses pagination parameters correctly", () => {

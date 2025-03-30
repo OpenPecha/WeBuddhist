@@ -1,12 +1,12 @@
 import React from 'react';
 import axiosInstance from '../../config/axios-config';
 import { LANGUAGE, mapLanguageCode, getLanguageClass } from "../../utils/Constants.js";
-import './TextCategory.scss';
+import './Book.scss';
 import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
 import { useParams,Link } from 'react-router-dom';
 
-const fetchTextCategory = async (categoryid, limit = 10, skip = 0) => {
+const fetchTextCategory = async (bookId, limit = 10, skip = 0) => {
   try {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
@@ -14,7 +14,7 @@ const fetchTextCategory = async (categoryid, limit = 10, skip = 0) => {
     const { data } = await axiosInstance.get("/api/v1/texts", {
       params: {
         language,
-        category: categoryid,
+        term_id: bookId,
         limit,
         skip
       }
@@ -26,12 +26,12 @@ const fetchTextCategory = async (categoryid, limit = 10, skip = 0) => {
   }
 };
 
-const TextCategory = () => {
+const Book = () => {
   const { id } = useParams();
   const { t } = useTranslate();
   
   const { data: categoryTextData, isLoading, error } = useQuery(
-    ["texts", id],
+    ["book", id],
     () => fetchTextCategory(id),
     {
       refetchOnWindowFocus: false,
@@ -72,7 +72,7 @@ const TextCategory = () => {
     <div className="main-container listtitle">
       <div className="text-category-container">
         <div className="category-header">
-          <h1>{categoryTextData.category?.title || "Text Category"}</h1>
+          <h1>{categoryTextData.term?.title || "Text Category"}</h1>
         </div>
         <div className="text-sections">
           {rootTexts.length > 0 && (
@@ -113,4 +113,4 @@ const TextCategory = () => {
   );
 };
 
-export default TextCategory;
+export default Book;
