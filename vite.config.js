@@ -9,11 +9,13 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     envDir: "./env",
     server: {
+      host: true,
+      open: true,
       proxy: {
         "/api": {
           target: env.VITE_BACKEND_BASE_URL,
           changeOrigin: true,
-          secure: true
+          secure: true,
         },
       },
     },
@@ -22,7 +24,7 @@ export default defineConfig(({ mode }) => {
       globals: true,
       setupFiles: "./src/test-utils/CommonMocks.js",
       coverage: {
-        provider: 'istanbul',
+        provider: "istanbul",
         reporter: ["text", "json", "html"],
         reportsDirectory: "./coverage",
         exclude: ["**/*.js", "**/*test.jsx"],
@@ -31,9 +33,9 @@ export default defineConfig(({ mode }) => {
     css: {
       preprocessorOptions: {
         scss: {
-          api: 'modern-compiler'
-        }
-      }
-    }
+          api: "modern-compiler",
+        },
+      },
+    },
   };
 });
