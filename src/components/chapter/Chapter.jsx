@@ -51,7 +51,6 @@ const Chapter = () => {
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true); // NOTE : why do we need this state, if we are not setting the state else where
   const [showPanel, setShowPanel] = useState(false);
   const [isShareView, setIsShareView] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -119,7 +118,7 @@ const Chapter = () => {
     if (!containerRef.current) return;
     const {scrollTop, scrollHeight, clientHeight} = containerRef.current;
     const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
-    if (scrollPosition >= 0.75 && !loading && hasMore) {
+    if (scrollPosition >= 0.75 && !loading) {
       setLoading(true);
       setPage(prevState => prevState + 1);
     }
@@ -361,7 +360,7 @@ const Chapter = () => {
             </div>
           )}
 
-          {!hasMore && segments.length > 0 && (
+          {segments.length > 0 && (
             <div className="text-center text-muted my-4">
               End of content
             </div>
