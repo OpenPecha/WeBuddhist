@@ -2,14 +2,15 @@ import React, {useEffect, useRef} from "react";
 import {Form} from "react-bootstrap";
 import "./TranslationSource.scss";
 import {useTranslate} from "@tolgee/react";
+import {sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
 
 const TranslationSource = ({selectedOption, onOptionChange, onClose}) => {
   const panelRef = useRef(null);
   const {t} = useTranslate()
   const options = [
-    {id: "source", label: "text.reader_option_menu.source"},
-    {id: "translation", label: "text.reader_option_menu.translation"},
-    {id: "sourceWithTranslation", label: "text.reader_option_menu.source_with_translation"},
+    {id: sourceTranslationOptionsMapper.source, label: "text.reader_option_menu.source"},
+    {id: sourceTranslationOptionsMapper.translation, label: "text.reader_option_menu.translation"},
+    {id: sourceTranslationOptionsMapper.source_translation, label: "text.reader_option_menu.source_with_translation"},
   ];
 
   useEffect(() => {

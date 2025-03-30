@@ -5,7 +5,7 @@ import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen, act } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import Chapter, { fetchTextsInfo, fetchTextDetails } from "./Chapter.jsx";
+import Chapter, { fetchSidePanelData, fetchTextDetails } from "./Chapter.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -194,7 +194,7 @@ describe("Chapter Component", () => {
     const textId = "test123";
     axiosInstance.get.mockResolvedValueOnce({ data: mockSideTextData });
 
-    const result = await fetchTextsInfo(textId);
+    const result = await fetchSidePanelData(textId);
 
     expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/texts/${textId}/infos`, {
       params: {
