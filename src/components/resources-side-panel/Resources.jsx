@@ -1,4 +1,4 @@
-import {LANGUAGE, mapLanguageCode, menuItems} from "../../utils/Constants.js";
+import {getLanguageClass, LANGUAGE, mapLanguageCode, menuItems} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {IoMdCheckmark, IoMdClose} from "react-icons/io";
@@ -10,7 +10,17 @@ import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
 import "./Resources.scss"
 
-
+export const fetchtranslationdata=async(text_id,segment_id,skip=0,limit=10)=>{
+  const {data} = await axiosInstance.get(`/api/v1/texts/${text_id}/segment/${segment_id}/translations`, {
+    params: {
+      text_id,
+      segment_id,
+      skip,
+      limit
+    }
+  });
+  return data;
+}
 export const fetchSidePanelData = async (text_id) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -22,8 +32,9 @@ export const fetchSidePanelData = async (text_id) => {
   });
   return data;
 };
-const Resources = ({textId, showPanel, setShowPanel}) => {
+const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
   const [isShareView, setIsShareView] = useState(false);
+  const [isTranslationView, setIsTranslationView] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const {t} = useTranslate();
@@ -36,7 +47,14 @@ const Resources = ({textId, showPanel, setShowPanel}) => {
       staleTime: 1000 * 60 * 20
     }
   );
-
+  const {data: sidepaneltranslation} = useQuery(
+    ["sidePaneltranslation", textId,segmentId],
+    () => fetchtranslationdata(textId,segmentId),
+    {
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 20
+    }
+  );
   const renderShareView = () => {
     return (
       <div>
@@ -79,11 +97,60 @@ const Resources = ({textId, showPanel, setShowPanel}) => {
     );
   };
 
+  const languageMap = {
+    "zh": "language.sanskrit",
+    "bo": "language.tibetan",
+    "en": "language.english",
+    "ja": "language.japanese",
+    "ko": "language.korean",
+    "fr": "language.french",
+    "de": "language.german"
+  }
+  const renderTranslationView = () => {
+    const groupedTranslations = sidepaneltranslation?.translations?.reduce((acc, translation) => {
+      if (!acc[translation.language]) {
+        acc[translation.language] = [];
+      }
+      acc[translation.language].push(translation);
+      return acc;
+    }, {});
+    return (
+      <div>
+        <div className="headerthing">
+          <p className='mt-4 px-4 listtitle'>{t('connection_pannel.translations')}</p>
+          <IoMdClose
+            size={24}
+            onClick={() => setIsTranslationView(false)}
+            className="close-icon"
+          />
+        </div>
+        <div className="translation-content p-4">
+          <div className="translations-list">
+            {groupedTranslations && Object.entries(groupedTranslations).map(([language, translations]) => (
+              <div key={language} className="language-group">
+                <h3 className="language-title navbaritems">
+                  {t(languageMap[language])} <span className="translation-count">({translations.length})</span>
+                </h3>
+                {translations.map((translation, index) => (
+                  <div key={index} className="translation-item">
+                    <span className={`translation-content ${getLanguageClass(translation.language)}`}>
+                      {translation.content}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderSidePanel = () => {
     return (
       <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
         <div>
-          {isShareView ? renderShareView() : (
+          {isShareView ? renderShareView() : isTranslationView ? renderTranslationView() : (
             <>
               <div className="headerthing">
                 <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
@@ -99,7 +166,7 @@ const Resources = ({textId, showPanel, setShowPanel}) => {
                 <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
 
                 {sidePanelData?.text_infos?.translations > 0 && (
-                  <p>
+                  <p onClick={() => setIsTranslationView(true)}>
                     <IoLanguage className="m-2"/>
                     {`${t("connection_pannel.translations")} (${sidePanelData.text_infos.translations})`}
                   </p>
