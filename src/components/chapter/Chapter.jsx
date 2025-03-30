@@ -38,7 +38,6 @@ const Chapter = () => {
   const textId = searchParams.get("text_id");
   const contentId = searchParams.get("content_id");
   const versionId = searchParams.get("version_id");
-
   const {data: textDetails} = useQuery(
     ["textsDetails", textId, page],
     () => fetchTextDetails(textId, contentId, versionId, page, 40),
@@ -135,7 +134,7 @@ const Chapter = () => {
   const renderContent = (item) => {
     return (
       <div key={item.id} className="section navbaritems ">
-        <h2>{item.title}</h2>
+        {item.title && <h2>{item.title}</h2>}
 
         {item?.segments?.map(segment => (
           <div
@@ -144,11 +143,15 @@ const Chapter = () => {
             onClick={() => setShowPanel(true)}
           >
             <div key={segment.segment_id} className="segment">
-              {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && <><span
-                className="segment-number">{segment.segment_number}</span>
-                <div dangerouslySetInnerHTML={{__html: segment.content}}/>
-              </>}
-              {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation.content}
+              {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
+                <>
+                  <span className="segment-number">{segment.segment_number}</span>
+                  <div dangerouslySetInnerHTML={{__html: segment.content}}/>
+                </>
+              )}
+              {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
+                <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
+              )}
             </div>
           </div>
         ))}
@@ -164,8 +167,15 @@ const Chapter = () => {
                 onClick={() => setShowPanel(true)}
               >
                 <div key={segment.segment_id} className="segment">
-                  <span className="segment-number">{segment.segment_number}</span>
-                  <div dangerouslySetInnerHTML={{__html: segment.content}}/>
+                  {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
+                    <>
+                      <span className="segment-number">{segment.segment_number}</span>
+                      <div dangerouslySetInnerHTML={{__html: segment.content}}/>
+                    </>
+                  )}
+                  {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
+                    <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
+                  )}
                 </div>
               </div>
             ))}
