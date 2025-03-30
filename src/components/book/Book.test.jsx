@@ -4,7 +4,7 @@ import * as reactQuery from "react-query";
 import "@testing-library/jest-dom";
 import {
   mockAxios,
-  mockReactQuery,
+  mockReactQuery, mockTolgee,
   mockUseAuth,
 } from "../../test-utils/CommonMocks.js";
 import { vi } from "vitest";
@@ -12,20 +12,11 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import Book from "./Book.jsx";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
+import {TolgeeProvider} from "@tolgee/react";
 
 mockAxios();
 mockUseAuth();
 mockReactQuery();
-
-vi.mock("@tolgee/react", async () => {
-  const actual = await vi.importActual("@tolgee/react");
-  return {
-    ...actual,
-    useTranslate: () => ({
-      t: (key) => key,
-    }),
-  };
-});
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
@@ -68,7 +59,7 @@ describe("Book Component", () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
-    useParams.mockReturnValue({ categoryid: "book-id" });
+    useParams.mockReturnValue({ id: "book-id" });
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockTextCategoryData,
       isLoading: false,
@@ -87,7 +78,9 @@ describe("Book Component", () => {
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
           <Book />
+          </TolgeeProvider>
         </QueryClientProvider>
       </Router>
     );
@@ -143,7 +136,7 @@ describe("Book Component", () => {
 
   test("displays empty text sections when texts array is empty", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: { category: { title: "Empty Category" }, texts: [] },
+      data: { term: { title: "Empty Category" }, texts: [] },
       isLoading: false,
       error: null,
     }));
@@ -159,9 +152,9 @@ describe("Book Component", () => {
     setup();
     const links = screen.getAllByTestId("router-link");
     expect(links).toHaveLength(3);
-    expect(links[0].getAttribute("href")).toBe("/pages/text1");
-    expect(links[1].getAttribute("href")).toBe("/pages/text2");
-    expect(links[2].getAttribute("href")).toBe("/pages/text3");
+    expect(links[0].getAttribute("href")).toBe("/text-detail/text1");
+    expect(links[1].getAttribute("href")).toBe("/text-detail/text2");
+    expect(links[2].getAttribute("href")).toBe("/text-detail/text3");
   });
 
   test("handles query error gracefully", () => {
@@ -201,8 +194,6 @@ describe("Book Component", () => {
     setup();
 
     expect(querySpy).toHaveBeenCalled();
-    const queryFnString = querySpy.mock.calls[0][0];
-    expect(queryFnString).toContain("67dd22a8d9f06ab28feedc90");
   });
 
   test("uses correct language from localStorage", () => {
@@ -215,7 +206,7 @@ describe("Book Component", () => {
 
     expect(reactQuery.useQuery).toHaveBeenCalled();
     const queryKey = reactQuery.useQuery.mock.calls[0][0];
-    expect(queryKey).toEqual(["texts", "book-id"]);
+    expect(queryKey).toEqual(["book", "book-id"]);
   });
 
   test("uses pagination parameters correctly", () => {
@@ -371,7 +362,7 @@ describe("Book Component", () => {
 
   test("renders correctly when category has no description", () => {
     const noDescriptionData = {
-      category: {
+      term: {
         title: "No Description Category",
       },
       texts: [{ id: "text1", title: "Root Text 1", type: "root_text" }],
