@@ -22,7 +22,7 @@ export const fetchSidePanelData = async (text_id) => {
   });
   return data;
 };
-const Resources = ({textId, showPanel, setShowPanel}) => {
+const Resources = ({textId, showPanel, setShowPanel, addChapter}) => {
   const [isShareView, setIsShareView] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -94,6 +94,7 @@ const Resources = ({textId, showPanel, setShowPanel}) => {
                 />
               </div>
               <div className="panel-content p-3">
+                <button onClick={addChapter}>open</button>
                 <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
                 <p><FiList className='m-2'/>{t("text.table_of_contents")}</p>
                 <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>

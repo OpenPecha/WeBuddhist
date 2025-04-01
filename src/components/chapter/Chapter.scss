@@ -4,55 +4,75 @@
   overflow: hidden;
   position: relative;
 }
-.section{
-  width: 700px;
-  margin: auto;
-}
-.header-overlay {
-  position: sticky;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 5;
+
+.chapters-container{
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 50px;
-  background-color: #fff;
-  max-width: 900px;
-  margin: 0 auto;
+  .chapter-container{
+    .header-overlay {
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 50px;
+      background-color: #fff;
+      max-width: 900px;
+      margin: 0 auto;
 
-  .close-button, .bookmark-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #333;
-    transition: color 0.2s ease;
+      .close-button, .bookmark-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #333;
+        transition: color 0.2s ease;
 
-    &:hover {
-      color: #666;
+        &:hover {
+          color: #666;
+        }
+      }
+
+      .text-container {
+        flex: 1;
+        text-align: center;
+        margin: 0 20px;
+        color: #333;
+        font-weight: 500;
+      }
+    }
+    .tibetan-text-container {
+      flex: 1;
+      background-color: #f9f9f9;
+      overflow-y: auto;
+      padding: 20px 50px;
+      transition: width 0.3s ease-in-out;
+
+      .section {
+        width: 700px;
+        margin: auto;
+
+        .text-segment {
+          cursor: pointer;
+          width: fit-content;
+          margin: auto;
+          position: relative;
+          padding: 10px;
+          border-radius: 2px;
+
+          &:hover {
+            background-color: #f0f0f0;
+          }
+        }
+      }
+
     }
   }
-
-  .text-container {
-    flex: 1;
-    text-align: center;
-    margin: 0 20px;
-    color: #333;
-    font-weight: 500;
-  }
-}
-
-.tibetan-text-container {
-  flex: 1;
-  background-color: #f9f9f9;
-  overflow-y: auto;
-  padding: 20px 50px;
-  transition: width 0.3s ease-in-out;
 }
 
 .tibetan-text {
@@ -81,22 +101,11 @@
 }
 
 /* Optional: Add line indicators like in the UI */
-.text-segment {
-  cursor: pointer;
-  width: fit-content;
-  margin: auto;
-  position: relative;
-  padding: 10px;
-  border-radius: 2px;
-  
-  &:hover {
-    background-color: #f0f0f0;
-  }
-}
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .section{
+  .section {
     width: 400px;
     margin: auto;
   }
@@ -111,13 +120,13 @@
 
 
 .segment {
-    position: relative;
-    padding-left: 2rem;
-    
-    .segment-number {
-        position: absolute;
-        left: 0;
-        color: #666;
-        font-weight: 500;
-    }
+  position: relative;
+  padding-left: 2rem;
+
+  .segment-number {
+    position: absolute;
+    left: 0;
+    color: #666;
+    font-weight: 500;
+  }
 }

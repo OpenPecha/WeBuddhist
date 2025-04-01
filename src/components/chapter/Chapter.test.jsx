@@ -93,7 +93,7 @@ describe("Chapter Component", () => {
         return { data: mockTextData, isLoading: false };
       } else if (queryKey[0] === "texts") {
         return { data: mockSideTextData, isLoading: false };
-      } else if (queryKey[0] === "textsDetails") {
+      } else if (queryKey[0] === "chapter") {
         return { data: mockTextDetailsData, isLoading: false };
       }
       return { data: null, isLoading: false };

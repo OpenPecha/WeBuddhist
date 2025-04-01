@@ -5,7 +5,7 @@ import './Chapter.scss';
 import axiosInstance from "../../config/axios-config.js";
 import {getLanguageClass, sourceTranslationOptionsMapper} from '../../utils/Constants.js';
 import {BsBookmark, BsBookmarkFill} from "react-icons/bs";
-import {MdOutlineVerticalSplit} from "react-icons/md";
+import {MdOutlineVerticalSplit, MdClose} from "react-icons/md";
 import {useQuery} from 'react-query';
 import {useSearchParams} from "react-router-dom";
 import TranslationSource from './localcomponent/translation-source/TranslationSource.jsx';
@@ -23,11 +23,11 @@ export const fetchTextDetails = async (text_id, content_id, versionId, skip, lim
   });
   return data;
 }
-const Chapter = () => {
+const Chapter = ({addChapter, removeChapter, currentChapter}) => {
   const [segments, setSegments] = useState([]);
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(0);
+  const [skip, setSkip] = useState(0);
   const [showPanel, setShowPanel] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTranslationSource, setShowTranslationSource] = useState(false);
@@ -38,9 +38,10 @@ const Chapter = () => {
   const textId = searchParams.get("text_id");
   const contentId = searchParams.get("content_id");
   const versionId = searchParams.get("version_id");
+  const contentVersionIdRef = useRef({contentId:searchParams.get("content_id"), versionId :searchParams.get("version_id") })
   const {data: textDetails} = useQuery(
-    ["textsDetails", textId, page],
-    () => fetchTextDetails(textId, contentId, versionId, page, 40),
+    ["chapter", textId, skip],
+    () => fetchTextDetails(textId, contentId, versionId, skip, 40),
     {
       refetchOnWindowFocus: false,
       keepPreviousData: true,
@@ -75,7 +76,7 @@ const Chapter = () => {
         currentContainer.removeEventListener('scroll', handleScroll);
       }
     };
-  }, [page, loading]);
+  }, [skip, loading]);
 
 
   // helper function
@@ -85,7 +86,7 @@ const Chapter = () => {
     const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
     if (scrollPosition >= 0.75 && !loading) {
       setLoading(true);
-      setPage(prevState => prevState + 1);
+      setSkip(prevState => prevState + 1);
     }
   };
 
@@ -101,31 +102,24 @@ const Chapter = () => {
         </div>
 
         <div className="d-flex align-items-center">
-          <button
-            className="bookmark-button mr-3"
-            onClick={() => setIsBookmarked(!isBookmarked)}
-          >
+          <button className="bookmark-button mr-3" onClick={() => setIsBookmarked(!isBookmarked)}>
             {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
           </button>
-
-          <div style={{position: 'relative'}}>
-            <button
-              className="bookmark-button"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowTranslationSource(!showTranslationSource);
-              }}
-            >
-              <MdOutlineVerticalSplit size={20}/>
-            </button>
-            {showTranslationSource && (
-              <TranslationSource
-                selectedOption={selectedOption}
-                onOptionChange={handleOptionChange}
-                onClose={() => setShowTranslationSource(false)}
-              />
-            )}
-          </div>
+          <button
+            className="bookmark-button" onClick={(e) => setShowTranslationSource(!showTranslationSource)}>
+            <MdOutlineVerticalSplit size={20}/>
+          </button>
+          {showTranslationSource && (
+            <TranslationSource
+              selectedOption={selectedOption}
+              onOptionChange={handleOptionChange}
+              onClose={() => setShowTranslationSource(false)}
+            />
+          )}
+          <button
+            className="close-chapter" onClick={() => removeChapter(currentChapter)}>
+            <MdClose size={20}/>
+          </button>
         </div>
       </div>
     );
@@ -198,8 +192,8 @@ const Chapter = () => {
           ref={containerRef}
           className="tibetan-text-container"
         >
-          {contents?.map((item) => {
-            return (<div key={item.id}>
+          {contents?.map((item, index) => {
+            return (<div key={index}>
               {item.segments.map(segment => renderContent(segment))}
             </div>)
           })}
@@ -216,10 +210,33 @@ const Chapter = () => {
             </div>
           )}
         </div>
-        <Resources textId={textId} showPanel={showPanel} setShowPanel={setShowPanel}/>
+        <Resources textId={textId} showPanel={showPanel} setShowPanel={setShowPanel} addChapter={addChapter}/>
       </Container>
     </>
   );
 };
 
-export default Chapter;
+const Chapters = () => {
+  const [chapters, setChapters] = useState([1]);
+  const addChapter = () => {
+    setChapters([...chapters, chapters.length + 1]);
+  };
+  const removeChapter = (index) => {
+    setChapters(chapters.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div className="chapters-container">
+        {chapters.map((_, index) => (
+          <div
+            key={index}
+            className=" chapter-container"
+            style={{ width: `${100 / chapters.length}%` }}
+          >
+            <Chapter addChapter={addChapter} removeChapter={removeChapter} currentChapter={index}/>
+          </div>
+        ))}
+    </div>
+  );
+}
+export default Chapters;
