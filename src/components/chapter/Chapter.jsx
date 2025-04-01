@@ -14,12 +14,9 @@ import Resources from "../resources-side-panel/Resources.jsx";
 export const fetchTextDetails = async (text_id, content_id, versionId, skip, limit) => {
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
     content_id: content_id ?? "",
-    version_id: versionId ?? ""
-  }, {
-    params: {
-      limit,
+    version_id: versionId ?? "",
+    limit,
       skip
-    }
   });
   return data;
 }

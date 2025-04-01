@@ -10,10 +10,9 @@ import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
 import "./Resources.scss"
 
-export const fetchtranslationdata=async(text_id,segment_id,skip=0,limit=10)=>{
-  const {data} = await axiosInstance.get(`/api/v1/texts/${text_id}/segment/${segment_id}/translations`, {
+export const fetchtranslationdata=async(segment_id,skip=0,limit=10)=>{
+  const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {
     params: {
-      text_id,
       segment_id,
       skip,
       limit
@@ -48,8 +47,8 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
     }
   );
   const {data: sidepaneltranslation} = useQuery(
-    ["sidePaneltranslation", textId,segmentId],
-    () => fetchtranslationdata(textId,segmentId),
+    ["sidePaneltranslation",segmentId],
+    () => fetchtranslationdata("2353849b-f8fa-43e4-850d-786b623d0130"), //send segmentId later todo
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20
