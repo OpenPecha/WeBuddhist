@@ -45,7 +45,6 @@ const Chapter = () => {
       staleTime: 1000 * 60 * 20
     }
   );
-
   useEffect(() => {
     if (contents.length) {
       setContents(prevState => {
@@ -131,13 +130,13 @@ const Chapter = () => {
 
   const renderContent = (item) => {
     return (
-      <div key={item.id} className="section navbaritems ">
-        {item.title && <h2>{item.title}</h2>}
+      <div key={item.id} className={`section ${getLanguageClass(textDetails?.text_detail?.language)} `}>
+        {item.title && <h4>{item.title}</h4>}
 
         {item?.segments?.map(segment => (
           <div
             key={segment.id}
-            className="text-segment listtitle mb-4"
+            className="text-segment mb-4 "
             onClick={() => {
               setSelectedSegmentId(segment.segment_id);
               setShowPanel(true);
@@ -159,12 +158,11 @@ const Chapter = () => {
 
         {item?.sections?.map(section => (
           <div key={section.id} className="nested-section">
-            <h3>{section.title}</h3>
-
+            <h4>{section.title}</h4>
             {section?.segments?.map(segment => (
               <div
                 key={segment.id}
-                className="text-segment listtitle mb-4"
+                className="text-segment  mb-4"
                 onClick={() => {
                   setSelectedSegmentId(segment.segment_id);
                   setShowPanel(true);
@@ -204,6 +202,7 @@ const Chapter = () => {
         >
           {contents?.map((item) => {
             return (<div key={item.id}>
+              
               {item.segments.map(segment => renderContent(segment))}
             </div>)
           })}
