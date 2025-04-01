@@ -51,12 +51,12 @@ export const getLanguageClass = (language) => {
     case "sa":
       return "bo-text";
     default:
-      return "en-text";
+      return "overalltext";
   }
 };
 
 export const sourceTranslationOptionsMapper = {
-  "source":"SOURCE",
-  "translation":"TRANSLATION",
-  "source_translation":"SOURCE_TRANSLATION"
-}
+  source: "SOURCE",
+  translation: "TRANSLATION",
+  source_translation: "SOURCE_TRANSLATION",
+};
