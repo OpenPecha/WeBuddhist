@@ -127,6 +127,7 @@
 
   }
 
+
   &.show .panel-content {
     opacity: 1;
   }
@@ -136,6 +137,42 @@
     font-size: medium;
     color: black;
     
+    .belowdiv{
+      margin-top: 10px;
+      padding: 1rem;
+      border-radius: 8px;
+      background-color: #f0f0f0;
+      font-size: small;
+
+      p {
+        margin: 0;
+        padding: 4px 0;
+        line-height: 1.4;
+      }
+
+      .linkselect{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        min-height: 40px;
+
+        .linkicons{
+          display: flex;
+          gap: 0px 6px;
+          align-items: center;
+          height: 100%;
+        }
+        .selectss{
+          color: blue;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          height: 100%;
+        }
+      }
+    }
     .textgreat {
       color: #828282;
       border-bottom: 1px solid #f0f0f0;

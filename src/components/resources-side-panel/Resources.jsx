@@ -9,7 +9,7 @@ import {BiBook, BiSearch} from "react-icons/bi";
 import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
 import "./Resources.scss"
-
+import { GoLinkExternal } from "react-icons/go";
 export const fetchtranslationdata=async(segment_id,skip=0,limit=10)=>{
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {
     params: {
@@ -54,6 +54,19 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
       staleTime: 1000 * 60 * 20
     }
   );
+
+  const languageMap = {
+    "zh": "language.sanskrit",
+    "bo": "language.tibetan",
+    "en": "language.english",
+    "ja": "language.japanese",
+    "ko": "language.korean",
+    "fr": "language.french",
+    "de": "language.german",
+    "bhu":"language.bhutanese",
+    "mo":"language.mongolian",
+    "sp":"language.spanish"
+  }
   const renderShareView = () => {
     return (
       <div>
@@ -96,15 +109,6 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
     );
   };
 
-  const languageMap = {
-    "zh": "language.sanskrit",
-    "bo": "language.tibetan",
-    "en": "language.english",
-    "ja": "language.japanese",
-    "ko": "language.korean",
-    "fr": "language.french",
-    "de": "language.german"
-  }
   const renderTranslationView = () => {
     const groupedTranslations = sidepaneltranslation?.translations?.reduce((acc, translation) => {
       if (!acc[translation.language]) {
@@ -133,8 +137,20 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
                 {translations.map((translation, index) => (
                   <div key={index} className="translation-item">
                     <span className={`translation-content ${getLanguageClass(translation.language)}`}>
-                      {translation.content}
+                      <div dangerouslySetInnerHTML={{__html: translation.content}} />
                     </span>
+                    <div className={` belowdiv navbaritems ${getLanguageClass(translation.language)}`}>                    
+                    <p> {translation?.title ? translation.title : ""}</p>                 
+                     <p> {t("connection_panel.menuscript.source")}:  {translation?.source ? translation.source : ""}</p>
+                       <p>{t("text.versions.information.review_history")}</p> 
+                        <div className=" linkselect">
+                          <div className="linkicons">
+                          <GoLinkExternal/>
+                          {t("text.translation.open_text")}
+                          </div>
+                          <p className="selectss">{t("common.select")}</p>
+                        </div>
+                    </div>
                   </div>
                 ))}
               </div>
