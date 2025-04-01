@@ -14,12 +14,9 @@ import Resources from "../resources-side-panel/Resources.jsx";
 export const fetchTextDetails = async (text_id, content_id, versionId, skip, limit) => {
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
     content_id: content_id ?? "",
-    version_id: versionId ?? ""
-  }, {
-    params: {
-      limit,
+    version_id: versionId ?? "",
+    limit,
       skip
-    }
   });
   return data;
 }
@@ -29,6 +26,7 @@ const Chapter = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [showPanel, setShowPanel] = useState(false);
+  const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTranslationSource, setShowTranslationSource] = useState(false);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
@@ -140,7 +138,10 @@ const Chapter = () => {
           <div
             key={segment.id}
             className="text-segment listtitle mb-4"
-            onClick={() => setShowPanel(true)}
+            onClick={() => {
+              setSelectedSegmentId(segment.segment_id);
+              setShowPanel(true);
+            }}
           >
             <div key={segment.segment_id} className="segment">
               {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
@@ -164,7 +165,10 @@ const Chapter = () => {
               <div
                 key={segment.id}
                 className="text-segment listtitle mb-4"
-                onClick={() => setShowPanel(true)}
+                onClick={() => {
+                  setSelectedSegmentId(segment.segment_id);
+                  setShowPanel(true);
+                }}
               >
                 <div key={segment.segment_id} className="segment">
                   {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
@@ -216,7 +220,12 @@ const Chapter = () => {
             </div>
           )}
         </div>
-        <Resources textId={textId} showPanel={showPanel} setShowPanel={setShowPanel}/>
+        <Resources 
+          textId={textId} 
+          segmentId={selectedSegmentId}
+          showPanel={showPanel} 
+          setShowPanel={setShowPanel}
+        />
       </Container>
     </>
   );
