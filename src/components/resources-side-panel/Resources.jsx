@@ -31,10 +31,11 @@ export const fetchSidePanelData = async (text_id) => {
   });
   return data;
 };
-const Resources = ({textId, segmentId, showPanel, setShowPanel,setVersionId}) => {
+const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
   const [isShareView, setIsShareView] = useState(false);
   const [isTranslationView, setIsTranslationView] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [expandedTranslations, setExpandedTranslations] = useState({});
 
   const {t} = useTranslate();
 
@@ -134,25 +135,44 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel,setVersionId}) =>
                 <h3 className="language-title navbaritems">
                   {t(languageMap[language])} <span className="translation-count">({translations.length})</span>
                 </h3>
-                {translations.map((translation, index) => (
-                  <div key={index} className="translation-item">
-                    <span className={`translation-content ${getLanguageClass(translation.language)}`}>
-                      <div dangerouslySetInnerHTML={{__html: translation.content}} />
-                    </span>
-                    <div className={` belowdiv navbaritems ${getLanguageClass(translation.language)}`}>                    
-                    <p> {translation?.title ? translation.title : ""}</p>                 
-                     <p> {t("connection_panel.menuscript.source")}:  {translation?.source ? translation.source : ""}</p>
-                       <p>{t("text.versions.information.review_history")}</p> 
-                        <div className=" linkselect">
-                          <div className="linkicons">
-                          <GoLinkExternal/>
-                          {t("text.translation.open_text")}
+                {translations.map((translation, index) => {
+                  const translationKey = `${language}-${index}`;
+                  const isExpanded = expandedTranslations[translationKey] || false;
+                  
+                  return (
+                    <div key={index} className="translation-item">
+                      <span className={`translation-content ${getLanguageClass(translation.language)}`}>
+                        <div 
+                          className={`translation-text ${isExpanded ? 'expanded' : 'collapsed'}`}
+                          dangerouslySetInnerHTML={{__html: translation.content}} 
+                        />
+                        {translation.content && translation.content.length > 0 && (
+                          <button 
+                            className="expand-button "
+                            onClick={() => setExpandedTranslations(prev => ({
+                              ...prev,
+                              [translationKey]: !isExpanded
+                            }))}
+                          >
+                            {isExpanded ? t('panel.showless') : t('panel.showmore')}
+                          </button>
+                        )}
+                      </span>
+                      <div className={` belowdiv navbaritems ${getLanguageClass(translation.language)}`}>                    
+                      <p> {translation?.title ? translation.title : ""}</p>                 
+                       <p> {t("connection_panel.menuscript.source")}:  {translation?.source ? translation.source : ""}</p>
+                         <p>{t("text.versions.information.review_history")}</p> 
+                          <div className=" linkselect">
+                            <div className="linkicons">
+                            <GoLinkExternal/>
+                            {t("text.translation.open_text")}
+                            </div>
+                            <p className="selectss">{t("common.select")}</p>
                           </div>
-                          <p onClick={()=>setVersionId(translation.text_id)} className="selectss">{t("common.select")}</p>
-                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ))}
           </div>

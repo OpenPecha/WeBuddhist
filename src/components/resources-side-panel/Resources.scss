@@ -137,16 +137,44 @@
     font-size: medium;
     color: black;
     
+    .translation-text {
+      position: relative;
+      
+      &.collapsed {
+        max-height: 6em;
+        overflow: hidden;
+      }
+      
+      &.expanded {
+        max-height: none;
+      }
+    }
+    
+    .expand-button {
+      background: none;
+      border: none;
+      color: #C74444;
+      cursor: pointer;
+      
+      margin-top: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+    
     .belowdiv{
       margin-top: 10px;
       padding: 1rem;
-      border-radius: 8px;
-      background-color: #f0f0f0;
+      border-radius: 6px;
+      background-color: #efefef;
       font-size: small;
 
       p {
         margin: 0;
-        padding: 4px 0;
+        padding: 2px 0;
         line-height: 1.4;
       }
 
@@ -170,10 +198,6 @@
           display: flex;
           align-items: center;
           height: 100%;
-
-          &:hover{
-            cursor: pointer;
-          }
         }
       }
     }
@@ -196,7 +220,7 @@
         margin-bottom: 1rem;
         .language-title {
           padding-bottom: 1rem;
-          border-bottom: #d4d4d4 solid 1px;
+          border-bottom: #C74444 solid 2px;
           margin-bottom: 0.75rem;
           color: #7d7d7d;
 
