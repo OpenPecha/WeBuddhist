@@ -32,12 +32,11 @@ const Chapter = () => {
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
   const [searchParams] = useSearchParams();
-
+  const [versionId, setVersionId] = useState(searchParams.get("version_id") || "");
   const textId = searchParams.get("text_id");
   const contentId = searchParams.get("content_id");
-  const versionId = searchParams.get("version_id");
   const {data: textDetails} = useQuery(
-    ["textsDetails", textId, page],
+    ["textsDetails", textId, page, versionId],
     () => fetchTextDetails(textId, contentId, versionId, page, 40),
     {
       refetchOnWindowFocus: false,
@@ -74,7 +73,7 @@ const Chapter = () => {
     };
   }, [page, loading]);
 
-
+ 
   // helper function
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -224,6 +223,7 @@ const Chapter = () => {
           segmentId={selectedSegmentId}
           showPanel={showPanel} 
           setShowPanel={setShowPanel}
+          setVersionId={setVersionId}
         />
       </Container>
     </>

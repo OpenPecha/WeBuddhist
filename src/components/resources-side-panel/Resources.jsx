@@ -31,7 +31,7 @@ export const fetchSidePanelData = async (text_id) => {
   });
   return data;
 };
-const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
+const Resources = ({textId, segmentId, showPanel, setShowPanel,setVersionId}) => {
   const [isShareView, setIsShareView] = useState(false);
   const [isTranslationView, setIsTranslationView] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -148,7 +148,7 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
                           <GoLinkExternal/>
                           {t("text.translation.open_text")}
                           </div>
-                          <p className="selectss">{t("common.select")}</p>
+                          <p onClick={()=>setVersionId(translation.text_id)} className="selectss">{t("common.select")}</p>
                         </div>
                     </div>
                   </div>
