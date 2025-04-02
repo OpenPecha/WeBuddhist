@@ -5,7 +5,7 @@ import {IoMdCheckmark, IoMdClose} from "react-icons/io";
 import {IoCopy, IoLanguage, IoNewspaperOutline} from "react-icons/io5";
 import {BsFacebook, BsTwitter, BsWindowFullscreen} from "react-icons/bs";
 import {FiInfo, FiList} from "react-icons/fi";
-import {BiBook, BiSearch} from "react-icons/bi";
+import {BiBook, BiSearch, BiBookOpen} from "react-icons/bi";
 import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
 import "./Resources.scss"
@@ -19,6 +19,20 @@ export const fetchtranslationdata=async(segment_id,skip=0,limit=10)=>{
     }
   });
   return data;
+}
+export const fetchCommentaryData = async(segment_id, skip=0, limit=10) => {
+  
+  try {
+    const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/commentaries`, {
+      params: {
+        skip,
+        limit
+      }
+    });
+    return data;
+  } catch (error) {
+    return { commentaries: [] };
+  }
 }
 export const fetchSidePanelData = async (text_id) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -34,6 +48,7 @@ export const fetchSidePanelData = async (text_id) => {
 const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
   const [isShareView, setIsShareView] = useState(false);
   const [isTranslationView, setIsTranslationView] = useState(false);
+  const [isCommentaryView, setIsCommentaryView] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const {t} = useTranslate();
@@ -49,6 +64,14 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
   const {data: sidepaneltranslation} = useQuery(
     ["sidePaneltranslation",segmentId],
     () => fetchtranslationdata("2353849b-f8fa-43e4-850d-786b623d0130"), //send segmentId later todo
+    {
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 20
+    }
+  );
+  const {data: segmentCommentaries} = useQuery(
+    ["sidePanelcommentary", segmentId],
+    () => fetchCommentaryData("a490d77e-6513-430b-87ba-ff26f2b36291"), 
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20
@@ -161,11 +184,58 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
     );
   };
 
+  const renderCommentaryView = () => {
+    return (
+      <div>
+        <div className="headerthing">
+          <p className="mt-4 px-4 listtitle">
+            All Commentary 
+            {segmentCommentaries?.commentaries?.length > 0 ? 
+              ` (${segmentCommentaries.commentaries.length})` : ''}
+          </p>
+          <IoMdClose
+            size={24}
+            onClick={() => setIsCommentaryView(false)}
+            className="close-icon"
+          />
+        </div>
+        <div className="translation-content p-4">
+          <div className="commentaries-list">
+            {(!segmentCommentaries || !segmentCommentaries.commentaries || 
+              segmentCommentaries.commentaries.length === 0) && (
+              <div className="no-commentaries-message p-4 text-center">
+                <p>No commentaries found for this segment.</p>
+              </div>
+            )}
+            
+            {segmentCommentaries && segmentCommentaries.commentaries && 
+             segmentCommentaries.commentaries.length > 0 && (
+              <div className="all-commentaries">
+                {segmentCommentaries.commentaries.map((commentary, index) => (
+                  <div key={commentary.text_id || index} className="commentary-list-item mb-4">
+                    <h4 className={`commentary-title ${getLanguageClass(commentary.language)}`}>
+                      {commentary.title} {commentary.count && `(${commentary.count})`}
+                    </h4>
+                    {commentary.author && (
+                      <p className="commentary-author text-muted">
+                        Composed by {commentary.author}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderSidePanel = () => {
     return (
       <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
         <div>
-          {isShareView ? renderShareView() : isTranslationView ? renderTranslationView() : (
+          {isShareView ? renderShareView() : isTranslationView ? renderTranslationView() : isCommentaryView ? renderCommentaryView() : (
             <>
               <div className="headerthing">
                 <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
@@ -192,8 +262,8 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
                     <p className='textgreat'>{t("text.related_texts")}</p>
                     <div className='related-texts-container'>
                       {sidePanelData.text_infos.related_texts.map((data, index) => (
-                        <p key={index} className='related-text-item'>
-                          <BiBook className="m-2"/>
+                        <p key={index} className='related-text-item' onClick={() => setIsCommentaryView(true)}>
+                          <BiBookOpen className="m-2"/>
                           {`${data.title} (${data.count})`}
                         </p>
                       ))}
