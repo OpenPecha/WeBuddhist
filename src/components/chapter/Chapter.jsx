@@ -24,6 +24,7 @@ const Chapter = () => {
   const [segments, setSegments] = useState([]);
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [versionLoading, setVersionLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [showPanel, setShowPanel] = useState(false);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
@@ -33,6 +34,11 @@ const Chapter = () => {
   const containerRef = useRef(null);
   const [searchParams] = useSearchParams();
   const [versionId, setVersionId] = useState(searchParams.get("version_id") || "");
+  
+  const handleVersionChange = (newVersionId) => {
+    setVersionLoading(true);
+    setVersionId(newVersionId);
+  };
   const textId = searchParams.get("text_id");
   const contentId = searchParams.get("content_id");
   const {data: textDetails} = useQuery(
@@ -45,20 +51,25 @@ const Chapter = () => {
     }
   );
   useEffect(() => {
-    if (contents.length) {
+    if (!textDetails) return;
+    
+    if (versionLoading) {
+      setContents(textDetails.contents);
+      setVersionLoading(false);
+    } else if (contents.length) {
       setContents(prevState => {
         return [
           ...prevState,
           ...textDetails.contents
         ]
-      })
-    } else if (textDetails) {
+      });
+    } else {
       setContents(prevState => {
         return [...prevState, ...textDetails.contents]
-      })
+      });
     }
     setLoading(false);
-  }, [textDetails]);
+  }, [textDetails, versionLoading]);
 
   useEffect(() => {
     const currentContainer = containerRef.current;
@@ -199,6 +210,14 @@ const Chapter = () => {
           ref={containerRef}
           className="tibetan-text-container"
         >
+          {versionLoading && (
+            <div className="version-loading-overlay">
+              <Spinner animation="border" role="status" variant="primary">
+                <span className="visually-hidden">Loading new version...</span>
+              </Spinner>
+              <p className="mt-2">Loading translation...</p>
+            </div>
+          )}
           {contents?.map((item) => {
             return (<div key={item.id}>
               
@@ -223,7 +242,7 @@ const Chapter = () => {
           segmentId={selectedSegmentId}
           showPanel={showPanel} 
           setShowPanel={setShowPanel}
-          setVersionId={setVersionId}
+          setVersionId={handleVersionChange}
         />
       </Container>
     </>
