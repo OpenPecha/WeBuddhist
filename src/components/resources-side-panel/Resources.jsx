@@ -2,10 +2,11 @@ import {getLanguageClass, LANGUAGE, mapLanguageCode, menuItems} from "../../util
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {IoMdCheckmark, IoMdClose} from "react-icons/io";
-import {IoCopy, IoLanguage, IoNewspaperOutline} from "react-icons/io5";
+import {IoCopy, IoLanguage, IoNewspaperOutline, IoAddCircleOutline, IoShareSocialSharp} from "react-icons/io5";
 import {BsFacebook, BsTwitter, BsWindowFullscreen} from "react-icons/bs";
 import {FiInfo, FiList} from "react-icons/fi";
-import {BiBook, BiSearch, BiBookOpen} from "react-icons/bi";
+import {BiSearch, BiBookOpen} from "react-icons/bi";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
 import "./Resources.scss"
@@ -50,6 +51,7 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
   const [isTranslationView, setIsTranslationView] = useState(false);
   const [isCommentaryView, setIsCommentaryView] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [expandedCommentaries, setExpandedCommentaries] = useState({});
 
   const {t} = useTranslate();
 
@@ -71,12 +73,19 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
   );
   const {data: segmentCommentaries} = useQuery(
     ["sidePanelcommentary", segmentId],
-    () => fetchCommentaryData("a490d77e-6513-430b-87ba-ff26f2b36291"), 
+    () => fetchCommentaryData("2353849b-f8fa-43e4-850d-786b623d0130"), 
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20
     }
   );
+  const toggleCommentary = (commentaryId) => {
+    setExpandedCommentaries(prev => ({
+      ...prev,
+      [commentaryId]: !prev[commentaryId]
+    }));
+  };
+
 
   const languageMap = {
     "zh": "language.sanskrit",
@@ -189,7 +198,7 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
       <div>
         <div className="headerthing">
           <p className="mt-4 px-4 listtitle">
-            All Commentary 
+            {t("text.commentary")}
             {segmentCommentaries?.commentaries?.length > 0 ? 
               ` (${segmentCommentaries.commentaries.length})` : ''}
           </p>
@@ -204,25 +213,66 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
             {(!segmentCommentaries || !segmentCommentaries.commentaries || 
               segmentCommentaries.commentaries.length === 0) && (
               <div className="no-commentaries-message p-4 text-center">
-                <p>No commentaries found for this segment.</p>
+                <p>{t("text.no_commentary")}</p>
               </div>
             )}
             
             {segmentCommentaries && segmentCommentaries.commentaries && 
              segmentCommentaries.commentaries.length > 0 && (
               <div className="all-commentaries">
-                {segmentCommentaries.commentaries.map((commentary, index) => (
-                  <div key={commentary.text_id || index} className="commentary-list-item mb-4">
-                    <h4 className={`commentary-title ${getLanguageClass(commentary.language)}`}>
-                      {commentary.title} {commentary.count && `(${commentary.count})`}
-                    </h4>
-                    {commentary.author && (
-                      <p className="commentary-author text-muted">
-                        Composed by {commentary.author}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                {segmentCommentaries.commentaries.map((commentary, index) => {
+                  const commentaryId = commentary.text_id;
+                  const isExpanded = expandedCommentaries[commentaryId];
+                  
+                  return (
+                    <div key={commentaryId} className="commentary-list-item">
+                      <h3 className={`commentary-title ${getLanguageClass(commentary.language)}`}>
+                        {commentary.title} {commentary.count && `(${commentary.count})`}
+                      </h3>
+                      
+                      {commentary.content && (
+                        <div className="commentary-container">
+                          <div 
+                            className={`commentary-content ${getLanguageClass(commentary.language)} ${isExpanded ? '' : 'content-truncated'}`}
+                          >
+                            <div 
+                              dangerouslySetInnerHTML={{ __html: commentary.content }}
+                            />
+                          </div>
+                          
+                          <div className="see-more-container">
+                            <button 
+                              className="see-more-link" 
+                              onClick={() => toggleCommentary(commentaryId)}
+                            >
+                              {isExpanded ? t('panel.showless') : t('panel.showmore')} 
+                              <RiArrowDropDownLine size={18} />
+                            </button>
+                          </div>
+                          
+                          <div className="commentary-actions">
+                            <div className="commentary-buttons">
+                              <div className="commentary-button">
+                                <GoLinkExternal size={14} className="mr-1"/>
+                                <span>{t("text.translation.open_text")}</span>
+                              </div>
+                              
+                              <div className="commentary-button">
+                                <IoAddCircleOutline size={14} className="mr-1"/>
+                                <span>{t("sheet.add_to_sheet")}</span>
+                              </div>
+                              
+                              <div className="commentary-button">
+                                <IoShareSocialSharp size={14} className="mr-1"/>
+                                <span>{t("common.share")}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
