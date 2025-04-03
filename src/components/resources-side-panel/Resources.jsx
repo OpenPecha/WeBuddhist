@@ -28,8 +28,8 @@ export const fetchCommentaryData = async(segment_id, skip=0, limit=10) => {
   }
 }
 
-import ShareView from "./components/shareview/ShareView.jsx";
-import TranslationView from "./components/translationView/TranslationView.jsx";
+import ShareView from "./components/share-view/ShareView.jsx";
+import TranslationView from "./components/translation-view/TranslationView.jsx";
 
 
 export const fetchSidePanelData = async (text_id) => {
