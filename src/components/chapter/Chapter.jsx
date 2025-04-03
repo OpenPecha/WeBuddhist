@@ -214,10 +214,19 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
 };
 
 const Chapters = () => {
-  const [chapters, setChapters] = useState([1]);
+  const [chapters, setChapters] = useState(() => {
+    const savedChapters = localStorage.getItem('chapters');
+    return savedChapters ? JSON.parse(savedChapters) : [1];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('chapters', JSON.stringify(chapters));
+  }, [chapters]);
+
   const addChapter = () => {
     setChapters([...chapters, chapters.length + 1]);
   };
+  
   const removeChapter = (index) => {
     setChapters(chapters.filter((_, i) => i !== index));
   };
