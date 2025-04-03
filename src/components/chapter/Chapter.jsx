@@ -243,6 +243,7 @@ const Chapter = () => {
           showPanel={showPanel} 
           setShowPanel={setShowPanel}
           setVersionId={handleVersionChange}
+          versionId={versionId}
         />
       </Container>
     </>
