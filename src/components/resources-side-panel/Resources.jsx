@@ -6,7 +6,6 @@ import {IoCopy, IoLanguage, IoNewspaperOutline, IoAddCircleOutline, IoShareSocia
 import {BsFacebook, BsTwitter, BsWindowFullscreen} from "react-icons/bs";
 import {FiInfo, FiList} from "react-icons/fi";
 import {BiSearch, BiBookOpen} from "react-icons/bi";
-import { RiArrowDropDownLine } from "react-icons/ri";
 import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
 import "./Resources.scss"
@@ -246,7 +245,6 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel}) => {
                               onClick={() => toggleCommentary(commentaryId)}
                             >
                               {isExpanded ? t('panel.showless') : t('panel.showmore')} 
-                              <RiArrowDropDownLine size={18} />
                             </button>
                           </div>
                           
