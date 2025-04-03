@@ -63,7 +63,6 @@ const Content = () => {
   const content = apiData?.contents[0];
   const totalSegment = content?.segments?.length || 0;
   const totalPages = Math.ceil(totalSegment / pagination.limit);
-
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -92,7 +91,7 @@ const Content = () => {
           ) : <span className="empty-icon"></span>}
           <Link
             to={`/texts/text-details?text_id=${id}&content_id=${section.id}`}
-            className={`section-title ${getLanguageClass(section.language)}`}
+            className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
           >
             {section.title}
           </Link>
@@ -132,7 +131,7 @@ const Content = () => {
                 ) : <span className="empty-icon"></span>}
                 <Link 
                   to={`/texts/text-details?text_id=${id}&content_id=${segment.id}`}
-                  className={`section-title ${getLanguageClass(segment.language)}`}
+                  className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
                 >
                   {segment.title}
                 </Link>

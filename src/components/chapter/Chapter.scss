@@ -7,7 +7,13 @@
 .section{
   width: 700px;
   margin: auto;
+  h4 {
+    line-height: 1.8;
+    font-size: 1.3rem;
+    color: #333;
+  }
 }
+
 .header-overlay {
   position: sticky;
   top: 0;
@@ -53,6 +59,26 @@
   overflow-y: auto;
   padding: 20px 50px;
   transition: width 0.3s ease-in-out;
+  position: relative;
+  
+  .version-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    
+    p {
+      font-weight: 500;
+      color: #333;
+    }
+  }
 }
 
 .tibetan-text {
@@ -88,7 +114,11 @@
   position: relative;
   padding: 10px;
   border-radius: 2px;
-  
+  text-align: start;
+  div,p{
+    line-height: 2;
+    font-size: 1rem;
+  }
   &:hover {
     background-color: #f0f0f0;
   }
