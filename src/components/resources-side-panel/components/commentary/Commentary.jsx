@@ -55,17 +55,10 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
       </div>
       <div className="translation-content p-4">
         <div className="commentaries-list">
-          {(!segmentCommentaries || !segmentCommentaries.commentaries || 
-            segmentCommentaries.commentaries.length === 0) && (
-            <div className="no-commentaries-message p-4 text-center">
-              <p>{t("text.no_commentary")}</p>
-            </div>
-          )}
-          
           {segmentCommentaries && segmentCommentaries.commentaries && 
            segmentCommentaries.commentaries.length > 0 && (
             <div className="all-commentaries">
-              {segmentCommentaries.commentaries.map((commentary, index) => {
+              {segmentCommentaries.commentaries.map((commentary) => {
                 const commentaryId = commentary.text_id;
                 const isExpanded = expandedCommentaries[commentaryId];
                 
