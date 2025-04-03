@@ -25,7 +25,7 @@ export const fetchSidePanelData = async (text_id) => {
   return data;
 };
 
-const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, versionId,addChapter}) => {
+const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, versionId, addChapter}) => {
   const [isShareView, setIsShareView] = useState(false);
   const [isTranslationView, setIsTranslationView] = useState(false);
   const [isCommentaryView, setIsCommentaryView] = useState(false);

@@ -89,7 +89,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
                         
                         <div className="commentary-actions">
                           <div className="commentary-buttons">
-                            <div className="commentary-button" onClick={addChapter}>
+                            <div className="commentary-button" onClick={() => addChapter({contentId:commentary.text_id, versionId: ""})}>
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
                             </div>

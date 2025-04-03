@@ -33,20 +33,14 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
   const containerRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [showPanel, setShowPanel] = useState(false);
-  const [versionId, setVersionId] = useState(searchParams.get("version_id") || ""); // check whether this is really required
-  
-  const handleVersionChange = (newVersionId) => {
-    setVersionLoading(true);
-    setVersionId(newVersionId);
-  };
+  const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
 
-  const handleSidebarToggle = (isOpen) => {
-    setShowPanel(isOpen);
-  };
   const textId = searchParams.get("text_id");
-  const contentId = searchParams.get("content_id");
-  // const versionId = searchParams.get("version_id");
-  const contentVersionIdRef = useRef({contentId:searchParams.get("content_id"), versionId :searchParams.get("version_id") })
+  const contentId = currentChapter.contentId
+  const contentVersionIdRef = useRef({
+    contentId: searchParams.get("content_id"),
+    versionId: searchParams.get("version_id")
+  })
 
   const {data: textDetails} = useQuery(
     ["textsDetails", textId, skip, versionId],
@@ -59,7 +53,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
   );
   useEffect(() => {
     if (!textDetails) return;
-    
+
     if (versionLoading) {
       setContents(textDetails.contents);
       setVersionLoading(false);
@@ -78,11 +72,11 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
     setLoading(false);
   }, [textDetails, versionLoading]);
 
-  useEffect(()=>{
-    return () =>{
+  useEffect(() => {
+    return () => {
       localStorage.removeItem("chapters")
     }
-  },[])
+  }, [])
 
   useEffect(() => {
     const currentContainer = containerRef.current;
@@ -97,8 +91,17 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
     };
   }, [skip, loading]);
 
- 
+
   // helper function
+
+  const handleVersionChange = (newVersionId) => {
+    setVersionLoading(true);
+    setVersionId(newVersionId);
+  };
+
+  const handleSidebarToggle = (isOpen) => {
+    setShowPanel(isOpen);
+  };
   const handleScroll = () => {
     if (!containerRef.current) return;
     const {scrollTop, scrollHeight, clientHeight} = containerRef.current;
@@ -192,7 +195,8 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
                     </>
                   )}
                   {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
-                    <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
+                    <div className="translation-content"
+                         dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
                   )}
                 </div>
               </div>
@@ -242,10 +246,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
             </div>
           )}
         </div>
-        <Resources 
-          textId={textId} 
+        <Resources
+          textId={textId}
           segmentId={selectedSegmentId}
-          showPanel={showPanel} 
+          showPanel={showPanel}
           setShowPanel={handleSidebarToggle}
           setVersionId={handleVersionChange}
           versionId={versionId}
@@ -260,10 +264,10 @@ const Chapters = () => {
   const location = useLocation();
   const [chapters, setChapters] = useState(() => {
     const savedChapters = localStorage.getItem('chapters');
-    return savedChapters ? JSON.parse(savedChapters) : location.state?.chapterInformation || {
+    return savedChapters ? JSON.parse(savedChapters) : [location.state?.chapterInformation] || [{
       contentId: "",
       versionId: ""
-    }
+    }]
   });
 
   useEffect(() => {
@@ -276,26 +280,27 @@ const Chapters = () => {
       chapterInformation
     ]);
   };
-  
+
   const removeChapter = (chapterInformation) => {
     setChapters(prevChapters =>
       prevChapters.filter(chapter =>
-        chapter.contentId !== chapterInformation.contentId || chapter.versionId !== chapterInformation.versionId
+        !(chapter.contentId === chapterInformation.contentId && chapter.versionId === chapterInformation.versionId)
       )
     );
+    console.log(chapters)
   };
 
   return (
     <div className="chapters-container">
-        {chapters.map((_, index) => (
-          <div
-            key={index}
-            className=" chapter-container"
-            style={{ width: `${100 / chapters.length}%` }}
-          >
-            <Chapter addChapter={addChapter} removeChapter={removeChapter} currentChapter={index}/>
-          </div>
-        ))}
+      {chapters.map((chapter, index) => (
+        <div
+          key={index}
+          className=" chapter-container"
+          style={{width: `${100 / chapters.length}%`}}
+        >
+          <Chapter addChapter={addChapter} removeChapter={removeChapter} currentChapter={chapter}/>
+        </div>
+      ))}
     </div>
   );
 }
