@@ -24,20 +24,40 @@ const Chapter = () => {
   const [segments, setSegments] = useState([]);
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [versionLoading, setVersionLoading] = useState(false);
   const [page, setPage] = useState(0);
-  const [showPanel, setShowPanel] = useState(false);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTranslationSource, setShowTranslationSource] = useState(false);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
-  const [searchParams] = useSearchParams();
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [showPanel, setShowPanel] = useState(searchParams.get("sidebar") === "open");
+  const [versionId, setVersionId] = useState(searchParams.get("version_id") || "");
+  
+  const handleVersionChange = (newVersionId) => {
+    setVersionLoading(true);
+    setVersionId(newVersionId);
+  };
+  
+  const updateSidebarInURL = (isOpen) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (isOpen) {
+      newParams.set("sidebar", "open");
+    } else {
+      newParams.delete("sidebar");
+    }
+    setSearchParams(newParams);
+  };
+  
+  const handleSidebarToggle = (isOpen) => {
+    setShowPanel(isOpen);
+    updateSidebarInURL(isOpen);
+  };
   const textId = searchParams.get("text_id");
   const contentId = searchParams.get("content_id");
-  const versionId = searchParams.get("version_id");
   const {data: textDetails} = useQuery(
-    ["textsDetails", textId, page],
+    ["textsDetails", textId, page, versionId],
     () => fetchTextDetails(textId, contentId, versionId, page, 40),
     {
       refetchOnWindowFocus: false,
@@ -46,20 +66,25 @@ const Chapter = () => {
     }
   );
   useEffect(() => {
-    if (contents.length) {
+    if (!textDetails) return;
+    
+    if (versionLoading) {
+      setContents(textDetails.contents);
+      setVersionLoading(false);
+    } else if (contents.length) {
       setContents(prevState => {
         return [
           ...prevState,
           ...textDetails.contents
         ]
-      })
-    } else if (textDetails) {
+      });
+    } else {
       setContents(prevState => {
         return [...prevState, ...textDetails.contents]
-      })
+      });
     }
     setLoading(false);
-  }, [textDetails]);
+  }, [textDetails, versionLoading]);
 
   useEffect(() => {
     const currentContainer = containerRef.current;
@@ -74,7 +99,7 @@ const Chapter = () => {
     };
   }, [page, loading]);
 
-
+ 
   // helper function
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -139,7 +164,7 @@ const Chapter = () => {
             className="text-segment mb-4 "
             onClick={() => {
               setSelectedSegmentId(segment.segment_id);
-              setShowPanel(true);
+              handleSidebarToggle(true);
             }}
           >
             <div key={segment.segment_id} className="segment">
@@ -165,7 +190,7 @@ const Chapter = () => {
                 className="text-segment  mb-4"
                 onClick={() => {
                   setSelectedSegmentId(segment.segment_id);
-                  setShowPanel(true);
+                  handleSidebarToggle(true);
                 }}
               >
                 <div key={segment.segment_id} className="segment">
@@ -200,6 +225,14 @@ const Chapter = () => {
           ref={containerRef}
           className="tibetan-text-container"
         >
+          {versionLoading && (
+            <div className="version-loading-overlay">
+              <Spinner animation="border" role="status" variant="primary">
+                <span className="visually-hidden">Loading new version...</span>
+              </Spinner>
+              <p className="mt-2">Loading translation...</p>
+            </div>
+          )}
           {contents?.map((item) => {
             return (<div key={item.id}>
               
@@ -223,7 +256,9 @@ const Chapter = () => {
           textId={textId} 
           segmentId={selectedSegmentId}
           showPanel={showPanel} 
-          setShowPanel={setShowPanel}
+          setShowPanel={handleSidebarToggle}
+          setVersionId={handleVersionChange}
+          versionId={versionId}
         />
       </Container>
     </>
