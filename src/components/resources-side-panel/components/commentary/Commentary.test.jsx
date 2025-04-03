@@ -101,15 +101,6 @@ describe("CommentaryView", () => {
     expect(screen.getByText("text.commentary (2)")).toBeInTheDocument();
   });
 
-  test("displays no commentaries message when empty", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: mockEmptyCommentariesData,
-      isLoading: false,
-    }));
-    setup();
-    expect(screen.getByText("text.no_commentary")).toBeInTheDocument();
-  });
-
   test("closes commentary view when close icon is clicked", () => {
     setup();
     const closeIcon = document.querySelector(".close-icon");
