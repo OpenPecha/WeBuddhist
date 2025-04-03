@@ -1,0 +1,120 @@
+.headerthing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+
+  .listtitle {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .close-icon {
+    cursor: pointer;
+    color: #666;
+    &:hover {
+      color: #333;
+    }
+  }
+}
+
+.translation-content {
+  text-align: start;
+  font-size: medium;
+  color: black;
+  
+  .textgreat {
+    color: #828282;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 12px;
+  }
+
+  .commentaries-list {
+    .commentary-list-item {
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+    }
+  
+    .commentary-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #333;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #a70c0c;
+      line-height: 1.6;
+    }
+  
+    .commentary-content {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: #504e4e;
+    }
+  
+    .content-truncated {
+      overflow: hidden;
+      position: relative;
+      line-height: 1.6;
+      height: 4.8em;
+      padding-top: 2px;
+      padding-bottom: 0;
+      margin-bottom: 0;
+      display: block;
+    }
+  
+    .see-more-container {
+      text-align: left;
+      margin: 0.1rem 0 0.5rem;
+    }
+  
+    .see-more-link {
+      background: none;
+      border: none;
+      color: #555;
+      padding: 0;
+      cursor: pointer;
+      font-size: 0.875rem;
+      display: inline-block;
+  
+      &:hover {
+        text-decoration: underline;
+        color: #a70c0c;
+      }
+    }
+  
+    .commentary-source {
+      font-size: 0.85rem;
+      color: #666;
+      margin: 0.5rem 0;
+    }
+  
+    .commentary-buttons {
+      display: flex;
+      gap: 1.5rem;
+      margin: 0.75rem 0 0;
+    }
+  
+    .commentary-button {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #555;
+  
+      .mr-1 {
+        margin-right: 4px;
+      }
+  
+      &:hover {
+        color: #a70c0c;
+      }
+    }
+
+    .no-commentaries-message {
+      color: #666;
+      font-style: italic;
+    }
+  }
+}
