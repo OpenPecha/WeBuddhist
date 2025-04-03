@@ -9,8 +9,8 @@ import {BiBook, BiSearch} from "react-icons/bi";
 import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
 import "./Resources.scss";
-import ShareView from "./components/ShareView";
-import TranslationView from "./components/TranslationView";
+import ShareView from "./components/shareview/ShareView.jsx";
+import TranslationView from "./components/translationView/TranslationView.jsx";
 
 export const fetchSidePanelData = async (text_id) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
