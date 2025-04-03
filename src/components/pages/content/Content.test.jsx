@@ -75,7 +75,10 @@ describe("Content Component", () => {
           }
         ]
       }
-    ]
+    ],
+    text_detail: {
+      language : "bo"  
+    }
   };
 
   beforeEach(() => {
@@ -216,5 +219,19 @@ describe("Content Component", () => {
     expect(screen.queryByTestId("pagination-component")).not.toBeInTheDocument();
   });
 
-
+  test("toggles section expansion when section header is clicked", () => {
+    setup();
+    
+    const nestedContent = screen.queryByText("Subsection 1.1");
+    expect(nestedContent).not.toBeInTheDocument();
+    
+    fireEvent.click(screen.getByText("Section 1"));
+    
+    expect(screen.getByText("Subsection 1.1")).toBeInTheDocument();
+    expect(screen.getByText("Subsection 1.2")).toBeInTheDocument();
+    
+    fireEvent.click(screen.getByText("Section 1"));
+    
+    expect(screen.queryByText("Subsection 1.1")).not.toBeInTheDocument();
+  });
 });

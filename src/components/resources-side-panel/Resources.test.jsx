@@ -7,6 +7,7 @@ import {TolgeeProvider} from "@tolgee/react";
 import {mockTolgee} from "../../test-utils/CommonMocks.js";
 import Resources, {fetchSidePanelData} from "./Resources.jsx";
 import axiosInstance from "../../config/axios-config.js";
+import ShareView from "./components/share-view/ShareView.jsx";
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -92,6 +93,110 @@ describe("Resources Side Panel", () => {
     expect(result).toEqual(mockSideTextData);
   });
 
+  test("closes panel when clicking close icon", () => {
+    const mockSetShowPanel = vi.fn();
+    
+    const { container } = render(
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+            <Resources 
+              showPanel={true} 
+              setShowPanel={mockSetShowPanel} 
+              textId={"test123"} 
+            />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
+    );
+    
+    const closeIcon = container.querySelector(".close-icon");
+    expect(closeIcon).not.toBeNull();
+    
+    fireEvent.click(closeIcon);
+    expect(mockSetShowPanel).toHaveBeenCalledWith(false);
+  });
+
+  test("shows translation view when clicking on translations option", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
+      if (queryKey[0] === "sidePanel") {
+        return { 
+          data: {
+            text_infos: {
+              translations: 5
+            }
+          }
+        };
+      }
+      return { data: null, isLoading: false };
+    });
+    
+    const { container } = setup();
+    
+    const translationText = screen.getByText(/connection_pannel\.translations/);
+    fireEvent.click(translationText);
+    expect(screen.queryByText(/side_nav\.about_text/)).not.toBeInTheDocument();
+    expect(screen.getByText("connection_pannel.translations")).toBeInTheDocument();
+    expect(container.querySelector(".translation-content")).toBeInTheDocument();
+    expect(container.querySelector(".translations-list")).toBeInTheDocument();
+  });
+
+  test("shows commentary view when clicking on a related text item", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
+      if (queryKey[0] === "sidePanel") {
+        return { 
+          data: {
+            text_infos: {
+              related_texts: [
+                { title: "Related Text 1", count: 2 }
+              ]
+            }
+          }
+        };
+      }
+      return { data: null, isLoading: false };
+    });
+    
+    const { container } = setup();
+    const relatedTextItem = screen.getByText(/Related Text 1/);
+    fireEvent.click(relatedTextItem);
+    
+    expect(screen.queryByText(/side_nav\.about_text/)).not.toBeInTheDocument();
+  });
+
+  test("shows share view when clicking on share menu item", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
+      if (queryKey[0] === "sidePanel") {
+        return { data: mockSideTextData };
+      }
+      return { data: null, isLoading: false };
+    });
+    
+    const { container } = setup();
+    const shareItems = screen.getAllByText(/common\.share/);
+    fireEvent.click(shareItems[0]);
+    
+    expect(screen.queryByText(/side_nav\.about_text/)).not.toBeInTheDocument();
+    expect(container.querySelector(".share-content")).toBeInTheDocument();
+  });
+
+  test("toggles visibility with showPanel prop", () => {
+    const { rerender } = render(
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+            <Resources 
+              showPanel={false} 
+              setShowPanel={vi.fn()} 
+              textId={"test123"} 
+            />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
+    );
+    let panel = document.querySelector('.right-panel');
+    expect(panel).not.toHaveClass('show');
+  });
   // test("renders share view and handles copy functionality", async () => {
   //   setup();
   //
