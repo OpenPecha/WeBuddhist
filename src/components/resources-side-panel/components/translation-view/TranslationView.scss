@@ -1,0 +1,137 @@
+.translation-content {
+  text-align: start;
+  font-size: medium;
+  line-height: 2;
+  color: black;
+  
+  .translation-text {
+    position: relative;
+    
+    &.collapsed {
+      max-height: 6em;
+      overflow: hidden;
+    }
+    
+    &.expanded {
+      max-height: none;
+    }
+  }
+  
+  .expand-button {
+    background: none;
+    border: none;
+    color: #C74444;
+    cursor: pointer;
+    
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  
+  .belowdiv{
+    margin-top: 10px;
+    padding: 1rem;
+    border-radius: 6px;
+    background-color: #FBFBFA;
+    font-size: small;
+    .titles{
+      font-size: medium;
+      font-weight: 600;
+      line-height: 1;
+    }
+    p, div{
+      font-size: small;
+      margin: 0;
+      padding: 2px 0;
+      line-height: 1;
+    }
+    .review{
+      margin-top: 10px;
+    }
+    .linkselect{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      min-height: 40px;
+
+      .linkicons{
+        display: flex;
+        gap: 0px 6px;
+        align-items: center;
+        height: 100%;
+      }
+      .selectss{
+        color: #0B71E7;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        height: 100%;
+        cursor: pointer;
+      }
+    }
+  }
+  .textgreat {
+    color: #828282;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 12px;
+  }
+
+  .segment-content {
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .translations-list {
+    .language-group {
+      margin-bottom: 1rem;
+      .language-title {
+        padding-bottom: 1rem;
+        border-bottom: #C74444 solid 2px;
+        margin-bottom: 0.75rem;
+        color: #7d7d7d;
+
+        .translation-count {
+          color: #718096;
+          font-size: 0.9rem;
+          margin-left: 0.25rem;
+        }
+      }
+    }
+
+    .translation-item {
+      margin-bottom: 0.5rem;
+      border-radius: 0.375rem;
+    }
+  }
+}
+
+.headerthing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f0f0;
+}
+
+.close-icon {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #333;
+  margin-right: 10px;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.1);
+  }
+}

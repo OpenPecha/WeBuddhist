@@ -52,7 +52,7 @@ describe("Book Component", () => {
       {
         id: "text3",
         title: "Commentary 1",
-        type: "commentary",
+        type: "related-texts",
       },
     ],
   };
@@ -94,9 +94,9 @@ describe("Book Component", () => {
     expect(screen.getByText("Root Text 2")).toBeInTheDocument();
   });
 
-  test("renders commentary texts correctly", () => {
+  test("renders related-texts texts correctly", () => {
     setup();
-    expect(screen.getByText("text.type.commentary")).toBeInTheDocument();
+    expect(screen.getByText("text.type.related-texts")).toBeInTheDocument();
     expect(screen.getByText("Commentary 1")).toBeInTheDocument();
   });
 
@@ -342,7 +342,7 @@ describe("Book Component", () => {
       texts: [
         { id: "text1", title: "Root Text 1", type: "root_text" },
         { id: "text2", title: "Root Text 2", type: "root_text" },
-        { id: "text3", title: "Commentary 1", type: "commentary" },
+        { id: "text3", title: "Commentary 1", type: "related-texts" },
       ],
     };
 
@@ -354,7 +354,7 @@ describe("Book Component", () => {
     const { container } = setup();
 
     expect(screen.getByText("text.type.root_text")).toBeInTheDocument();
-    expect(screen.getByText("text.type.commentary")).toBeInTheDocument();
+    expect(screen.getByText("text.type.related-texts")).toBeInTheDocument();
 
     const textSections = container.querySelectorAll(".text-section");
     expect(textSections.length).toBe(2);

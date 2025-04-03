@@ -50,13 +50,15 @@ export const getLanguageClass = (language) => {
       return "en-text";
     case "sa":
       return "bo-text";
+    case "bhu":
+      return "bo-text";
     default:
-      return "en-text";
+      return "overalltext";
   }
 };
 
 export const sourceTranslationOptionsMapper = {
-  "source":"SOURCE",
-  "translation":"TRANSLATION",
-  "source_translation":"SOURCE_TRANSLATION"
-}
+  source: "SOURCE",
+  translation: "TRANSLATION",
+  source_translation: "SOURCE_TRANSLATION",
+};

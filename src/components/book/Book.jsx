@@ -67,7 +67,7 @@ const Book = () => {
   }, {});
   
   const rootTexts = textsByType["root_text"] || [];
-  const commentaryTexts = textsByType["commentary"] || [];
+  const commentaryTexts = textsByType["related-texts"] || [];
   return (
     <div className="main-container listtitle">
       <div className="text-category-container">
@@ -93,7 +93,7 @@ const Book = () => {
           
           {commentaryTexts.length > 0 && (
             <div className="text-section">
-              <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>
+              <h2 className="section-title overalltext">{t("text.type.related-texts")}</h2>
               <div className="section-divider"></div>
               <div className="text-list">
                 {commentaryTexts.map((text,i) => (

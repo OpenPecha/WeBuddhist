@@ -1,15 +1,17 @@
 import {LANGUAGE, mapLanguageCode, menuItems} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
-import {IoMdCheckmark, IoMdClose} from "react-icons/io";
-import {IoCopy, IoLanguage, IoNewspaperOutline} from "react-icons/io5";
-import {BsFacebook, BsTwitter, BsWindowFullscreen} from "react-icons/bs";
+import {IoMdClose} from "react-icons/io";
+import { IoLanguage, IoNewspaperOutline,} from "react-icons/io5";
+import { BsWindowFullscreen} from "react-icons/bs";
 import {FiInfo, FiList} from "react-icons/fi";
-import {BiBook, BiSearch} from "react-icons/bi";
+import {BiSearch, BiBookOpen} from "react-icons/bi";
 import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
+import ShareView from "./components/share-view/ShareView.jsx";
+import TranslationView from "./components/translation-view/TranslationView.jsx";
+import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import "./Resources.scss"
-
 
 export const fetchSidePanelData = async (text_id) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -22,9 +24,14 @@ export const fetchSidePanelData = async (text_id) => {
   });
   return data;
 };
-const Resources = ({textId, showPanel, setShowPanel, addChapter}) => {
+
+const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, versionId,addChapter}) => {
   const [isShareView, setIsShareView] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [isTranslationView, setIsTranslationView] = useState(false);
+  const [isCommentaryView, setIsCommentaryView] = useState(false);
+  const [expandedCommentaries, setExpandedCommentaries] = useState({});
+  const [expandedTranslations, setExpandedTranslations] = useState({});
+
 
   const {t} = useTranslate();
 
@@ -39,43 +46,36 @@ const Resources = ({textId, showPanel, setShowPanel, addChapter}) => {
 
   const renderShareView = () => {
     return (
-      <div>
-        <div className="headerthing">
-          <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
-          <IoMdClose
-            size={24}
-            onClick={() => setIsShareView(false)}
-            className="close-icon"
-          />
-        </div>
-        <div className="share-content p-3">
-          <p className="mb-3 textgreat ">{t('text.share_link')}</p>
-          <div className="share-url-container p-3 mb-3">
-            <p className="share-url text-truncate">{sidePanelData?.text_infos?.short_url}</p>
-            <button
-              className="copy-button"
-              onClick={() => {
-                navigator.clipboard.writeText(sidePanelData?.text_infos?.short_url);
-                setCopied(true);
-                setTimeout(() => {
-                  setCopied(false);
-                }, 3000);
-              }}
-            >
-              {copied ? <IoMdCheckmark size={16}/> : <IoCopy size={16}/>}
-            </button>
-          </div>
-          <p className="textgreat">{t('text.more_options')}</p>
-          <div className="social-share-buttons">
-            <p className="social-button">
-              <BsFacebook className="social-icon"/>{t('common.share_on_fb')}
-            </p>
-            <p className="social-button">
-              <BsTwitter className="social-icon"/>{t('common.share_on_x')}
-            </p>
-          </div>
-        </div>
-      </div>
+      <ShareView 
+        sidePanelData={sidePanelData} 
+        setIsShareView={setIsShareView} 
+      />
+    );
+  };
+
+  const renderTranslationView = () => {
+    return (
+      <TranslationView 
+        segmentId={segmentId}
+        setIsTranslationView={setIsTranslationView}
+        expandedTranslations={expandedTranslations}
+        setExpandedTranslations={setExpandedTranslations}
+        setVersionId={setVersionId}
+        versionId={versionId}
+        addChapter={addChapter}
+      />
+    );
+  };
+
+  const renderCommentaryView = () => {
+    return (
+      <CommentaryView
+        segmentId={segmentId}
+        setIsCommentaryView={setIsCommentaryView}
+        expandedCommentaries={expandedCommentaries}
+        setExpandedCommentaries={setExpandedCommentaries}
+        addChapter={addChapter}
+      />
     );
   };
 
@@ -83,7 +83,7 @@ const Resources = ({textId, showPanel, setShowPanel, addChapter}) => {
     return (
       <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
         <div>
-          {isShareView ? renderShareView() : (
+          {isShareView ? renderShareView() : isTranslationView ? renderTranslationView() : isCommentaryView ? renderCommentaryView() : (
             <>
               <div className="headerthing">
                 <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
@@ -94,13 +94,12 @@ const Resources = ({textId, showPanel, setShowPanel, addChapter}) => {
                 />
               </div>
               <div className="panel-content p-3">
-                <button onClick={addChapter}>open</button>
                 <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
                 <p><FiList className='m-2'/>{t("text.table_of_contents")}</p>
                 <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
 
                 {sidePanelData?.text_infos?.translations > 0 && (
-                  <p>
+                  <p onClick={() => setIsTranslationView(true)}>
                     <IoLanguage className="m-2"/>
                     {`${t("connection_pannel.translations")} (${sidePanelData.text_infos.translations})`}
                   </p>
@@ -111,8 +110,8 @@ const Resources = ({textId, showPanel, setShowPanel, addChapter}) => {
                     <p className='textgreat'>{t("text.related_texts")}</p>
                     <div className='related-texts-container'>
                       {sidePanelData.text_infos.related_texts.map((data, index) => (
-                        <p key={index} className='related-text-item'>
-                          <BiBook className="m-2"/>
+                        <p key={index} className='related-text-item' onClick={() => setIsCommentaryView(true)}>
+                          <BiBookOpen className="m-2"/>
                           {`${data.title} (${data.count})`}
                         </p>
                       ))}

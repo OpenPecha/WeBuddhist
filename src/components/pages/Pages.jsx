@@ -23,7 +23,7 @@ const Pages = () => {
           <div className="text-header">
             <h3 className={` ${getLanguageClass(titleInformation?.language)}`}>{titleInformation?.title || ""}</h3>
             <div className="navbaritems subcom">
-              {titleInformation?.type || ""}
+              {titleInformation?.type ? t(`text.type.${titleInformation.type}`) : ""}
             </div>
             <Link
               to={`/texts/text-details?text_id=${id}&content_id=${

@@ -7,7 +7,7 @@ import {getLanguageClass, sourceTranslationOptionsMapper} from '../../utils/Cons
 import {BsBookmark, BsBookmarkFill} from "react-icons/bs";
 import {MdOutlineVerticalSplit, MdClose} from "react-icons/md";
 import {useQuery} from 'react-query';
-import {useSearchParams} from "react-router-dom";
+import {useLocation, useSearchParams} from "react-router-dom";
 import TranslationSource from './localcomponent/translation-source/TranslationSource.jsx';
 import Resources from "../resources-side-panel/Resources.jsx";
 
@@ -25,19 +25,31 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [skip, setSkip] = useState(0);
-  const [showPanel, setShowPanel] = useState(false);
+  const [versionLoading, setVersionLoading] = useState(false);
+  const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTranslationSource, setShowTranslationSource] = useState(false);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [showPanel, setShowPanel] = useState(false);
+  const [versionId, setVersionId] = useState(searchParams.get("version_id") || ""); // check whether this is really required
+  
+  const handleVersionChange = (newVersionId) => {
+    setVersionLoading(true);
+    setVersionId(newVersionId);
+  };
 
+  const handleSidebarToggle = (isOpen) => {
+    setShowPanel(isOpen);
+  };
   const textId = searchParams.get("text_id");
   const contentId = searchParams.get("content_id");
-  const versionId = searchParams.get("version_id");
+  // const versionId = searchParams.get("version_id");
   const contentVersionIdRef = useRef({contentId:searchParams.get("content_id"), versionId :searchParams.get("version_id") })
+
   const {data: textDetails} = useQuery(
-    ["chapter", textId, skip],
+    ["textsDetails", textId, skip, versionId],
     () => fetchTextDetails(textId, contentId, versionId, skip, 40),
     {
       refetchOnWindowFocus: false,
@@ -45,22 +57,32 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
       staleTime: 1000 * 60 * 20
     }
   );
-
   useEffect(() => {
-    if (contents.length) {
+    if (!textDetails) return;
+    
+    if (versionLoading) {
+      setContents(textDetails.contents);
+      setVersionLoading(false);
+    } else if (contents.length) {
       setContents(prevState => {
         return [
           ...prevState,
           ...textDetails.contents
         ]
-      })
-    } else if (textDetails) {
+      });
+    } else {
       setContents(prevState => {
         return [...prevState, ...textDetails.contents]
-      })
+      });
     }
     setLoading(false);
-  }, [textDetails]);
+  }, [textDetails, versionLoading]);
+
+  useEffect(()=>{
+    return () =>{
+      localStorage.removeItem("chapters")
+    }
+  },[])
 
   useEffect(() => {
     const currentContainer = containerRef.current;
@@ -75,7 +97,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
     };
   }, [skip, loading]);
 
-
+ 
   // helper function
   const handleScroll = () => {
     if (!containerRef.current) return;
@@ -124,14 +146,17 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
 
   const renderContent = (item) => {
     return (
-      <div key={item.id} className="section navbaritems ">
-        {item.title && <h2>{item.title}</h2>}
+      <div key={item.id} className={`section ${getLanguageClass(textDetails?.text_detail?.language)} `}>
+        {item.title && <h4>{item.title}</h4>}
 
         {item?.segments?.map(segment => (
           <div
             key={segment.id}
-            className="text-segment listtitle mb-4"
-            onClick={() => setShowPanel(true)}
+            className="text-segment mb-4 "
+            onClick={() => {
+              setSelectedSegmentId(segment.segment_id);
+              handleSidebarToggle(true);
+            }}
           >
             <div key={segment.segment_id} className="segment">
               {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
@@ -149,13 +174,15 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
 
         {item?.sections?.map(section => (
           <div key={section.id} className="nested-section">
-            <h3>{section.title}</h3>
-
+            <h4>{section.title}</h4>
             {section?.segments?.map(segment => (
               <div
                 key={segment.id}
-                className="text-segment listtitle mb-4"
-                onClick={() => setShowPanel(true)}
+                className="text-segment  mb-4"
+                onClick={() => {
+                  setSelectedSegmentId(segment.segment_id);
+                  handleSidebarToggle(true);
+                }}
               >
                 <div key={segment.segment_id} className="segment">
                   {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
@@ -189,8 +216,16 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
           ref={containerRef}
           className="tibetan-text-container"
         >
-          {contents?.map((item, index) => {
-            return (<div key={index}>
+          {versionLoading && (
+            <div className="version-loading-overlay">
+              <Spinner animation="border" role="status" variant="primary">
+                <span className="visually-hidden">Loading new version...</span>
+              </Spinner>
+              <p className="mt-2">Loading translation...</p>
+            </div>
+          )}
+          {contents?.map((item) => {
+            return (<div key={item.id}>
               {item.segments.map(segment => renderContent(segment))}
             </div>)
           })}
@@ -207,28 +242,47 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
             </div>
           )}
         </div>
-        <Resources textId={textId} showPanel={showPanel} setShowPanel={setShowPanel} addChapter={addChapter}/>
+        <Resources 
+          textId={textId} 
+          segmentId={selectedSegmentId}
+          showPanel={showPanel} 
+          setShowPanel={handleSidebarToggle}
+          setVersionId={handleVersionChange}
+          versionId={versionId}
+          addChapter={addChapter}
+        />
       </Container>
     </>
   );
 };
 
 const Chapters = () => {
+  const location = useLocation();
   const [chapters, setChapters] = useState(() => {
     const savedChapters = localStorage.getItem('chapters');
-    return savedChapters ? JSON.parse(savedChapters) : [1];
+    return savedChapters ? JSON.parse(savedChapters) : location.state?.chapterInformation || {
+      contentId: "",
+      versionId: ""
+    }
   });
 
   useEffect(() => {
     localStorage.setItem('chapters', JSON.stringify(chapters));
   }, [chapters]);
 
-  const addChapter = () => {
-    setChapters([...chapters, chapters.length + 1]);
+  const addChapter = (chapterInformation) => {
+    setChapters(prevChapters => [
+      ...prevChapters,
+      chapterInformation
+    ]);
   };
   
-  const removeChapter = (index) => {
-    setChapters(chapters.filter((_, i) => i !== index));
+  const removeChapter = (chapterInformation) => {
+    setChapters(prevChapters =>
+      prevChapters.filter(chapter =>
+        chapter.contentId !== chapterInformation.contentId || chapter.versionId !== chapterInformation.versionId
+      )
+    );
   };
 
   return (
