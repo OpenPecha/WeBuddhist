@@ -135,6 +135,7 @@
   .translation-content {
     text-align: start;
     font-size: medium;
+    line-height: 2;
     color: black;
     
     .translation-text {
@@ -169,15 +170,22 @@
       margin-top: 10px;
       padding: 1rem;
       border-radius: 6px;
-      background-color: #efefef;
+      background-color: #FBFBFA;
       font-size: small;
-
-      p {
+      .titles{
+        font-size: medium;
+        font-weight: 600;
+        line-height: 1;
+      }
+      p ,div{
+        font-size: small;
         margin: 0;
         padding: 2px 0;
-        line-height: 1.4;
+        line-height: 1;
       }
-
+      .review{
+        margin-top: 10px;
+      }
       .linkselect{
         display: flex;
         justify-content: space-between;

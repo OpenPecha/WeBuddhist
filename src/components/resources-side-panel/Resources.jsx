@@ -158,16 +158,17 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, ve
                           </button>
                         )}
                       </span>
-                      <div className={` belowdiv navbaritems ${getLanguageClass(translation.language)}`}>                    
-                      <p> {translation?.title ? translation.title : ""}</p>                 
-                       <p> {t("connection_panel.menuscript.source")}:  {translation?.source ? translation.source : ""}</p>
-                         <p>{t("text.versions.information.review_history")}</p> 
-                          <div className=" linkselect">
-                            <div className="linkicons">
+                      <div className={` belowdiv ${getLanguageClass(translation.language)}`}>                    
+                      <p className=" titles"> {translation?.title ? translation.title : ""}</p>                 
+                     {translation.source && <p className="navbaritems"> {t("connection_panel.menuscript.source")}: { translation.source}</p> }   
+                         
+                         <p className="textgreat review navbaritems">{t("text.versions.information.review_history")}</p> 
+                          <div className=" linkselect navbaritems">
+                            <div className="linkicons ">
                             <GoLinkExternal/>
                             {t("text.translation.open_text")}
                             </div>
-                            <p onClick={()=>setVersionId(translation.text_id)} className="selectss">
+                            <p onClick={()=>setVersionId(translation.text_id)} className="selectss navbaritems">
                               {translation.text_id === versionId ? t("text.translation.current_selected") : t("common.select")}
                             </p>
                           </div>
