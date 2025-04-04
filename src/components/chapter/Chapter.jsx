@@ -126,7 +126,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
           )}
           {totalChapters > 1 && (
             <button
-              className="close-chapter" onClick={() => removeChapter(currentChapter)}>
+              className="close-chapter bookmark-button" onClick={() => removeChapter(currentChapter)}>
               <MdClose size={20}/>
             </button>
           )}
@@ -256,10 +256,15 @@ const Chapters = () => {
   }, [chapters]);
 
   const addChapter = (chapterInformation) => {
-    setChapters(prevChapters => [
-      ...prevChapters,
-      chapterInformation
-    ]);
+    setChapters(prevChapters => {
+      if (prevChapters.length >= 3) {
+        return prevChapters;
+      }
+      return [
+        ...prevChapters,
+        chapterInformation
+      ];
+    });
   };
 
   const removeChapter = (chapterInformation) => {
