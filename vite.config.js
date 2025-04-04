@@ -27,7 +27,13 @@ export default defineConfig(({ mode }) => {
         provider: "istanbul",
         reporter: ["text", "json", "html"],
         reportsDirectory: "./coverage",
-        exclude: ["**/*.js", "**/*test.jsx"],
+        exclude: [
+          "**/*.js",
+          "**/*test.jsx",
+          "src/config/**",
+          "src/main.jsx",
+          "src/App.jsx",
+        ],
       },
     },
     css: {

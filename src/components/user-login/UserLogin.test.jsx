@@ -96,4 +96,19 @@ describe("UserLogin Component", () => {
 
     expect(handleSubmit).not.toHaveBeenCalled();
   });
+  
+  test("toggles password visibility when eye icon is clicked", () => {
+    setup();
+  
+    const passwordInput = screen.getByPlaceholderText("Password");
+    expect(passwordInput).toHaveAttribute("type", "password");
+  
+    const eyeButton = document.querySelector("button.position-absolute");
+    fireEvent.click(eyeButton);
+  
+    expect(passwordInput).toHaveAttribute("type", "text");
+  
+    fireEvent.click(eyeButton);
+    expect(passwordInput).toHaveAttribute("type", "password");
+  });
 });
