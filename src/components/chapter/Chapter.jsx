@@ -21,11 +21,8 @@ export const fetchTextDetails = async (text_id, content_id, versionId, skip, lim
   return data;
 }
 const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => {
-  const [segments, setSegments] = useState([]);
   const [contents, setContents] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [skip, setSkip] = useState(0);
-  const [versionLoading, setVersionLoading] = useState(false);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTranslationSource, setShowTranslationSource] = useState(false);
@@ -37,31 +34,26 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
 
   const textId = searchParams.get("text_id");
   const contentId = currentChapter.contentId
-  const contentVersionIdRef = useRef({
-    contentId: searchParams.get("content_id"),
-    versionId: searchParams.get("version_id")
-  })
 
-  const {data: textDetails} = useQuery(
-    ["textsDetails", textId, skip, versionId],
+  const {data: textDetails, isLoading: chapterContentIsLoading} = useQuery(
+    ["chapter", textId, skip, versionId],
     () => fetchTextDetails(textId, contentId, versionId, skip, 40),
     {
       refetchOnWindowFocus: false,
-      keepPreviousData: true,
       staleTime: 1000 * 60 * 20
     }
   );
   useEffect(() => {
     if (!textDetails) return;
 
-    // Reset contents when version changes
-    setContents(textDetails.contents);
-    setLoading(false);
+    setContents(prevState => {
+      return [...prevState, ...textDetails.contents]
+    });
   }, [textDetails]);
 
   useEffect(() => {
     return () => {
-      localStorage.removeItem("chapters")
+      sessionStorage.removeItem("chapters")
     }
   }, [])
 
@@ -76,7 +68,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
         currentContainer.removeEventListener('scroll', handleScroll);
       }
     };
-  }, [skip, loading]);
+  }, [skip, chapterContentIsLoading]);
 
 
   // helper function
@@ -92,8 +84,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
     if (!containerRef.current) return;
     const {scrollTop, scrollHeight, clientHeight} = containerRef.current;
     const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
-    if (scrollPosition >= 0.75 && !loading) {
-      setLoading(true);
+    if (scrollPosition >= 0.75 && !chapterContentIsLoading) {
       setSkip(prevState => prevState + 1);
     }
   };
@@ -214,16 +205,11 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
               {item.segments.map(segment => renderContent(segment))}
             </div>)
           })}
-          {loading && (
+          {chapterContentIsLoading && (
             <div className="text-center my-4">
               <Spinner animation="border" role="output">
                 <span className="visually-hidden">Loading...</span>
               </Spinner>
-            </div>
-          )}
-          {segments.length > 0 && (
-            <div className="text-center text-muted my-4">
-              End of content
             </div>
           )}
         </div>
@@ -244,7 +230,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
 const Chapters = () => {
   const location = useLocation();
   const [chapters, setChapters] = useState(() => {
-    const savedChapters = localStorage.getItem('chapters');
+    const savedChapters = sessionStorage.getItem('chapters');
     return savedChapters ? JSON.parse(savedChapters) : [location.state?.chapterInformation] || [{
       contentId: "",
       versionId: ""
@@ -252,7 +238,7 @@ const Chapters = () => {
   });
 
   useEffect(() => {
-    localStorage.setItem('chapters', JSON.stringify(chapters));
+    sessionStorage.setItem('chapters', JSON.stringify(chapters));
   }, [chapters]);
 
   const addChapter = (chapterInformation) => {
@@ -273,7 +259,6 @@ const Chapters = () => {
         !(chapter.contentId === chapterInformation.contentId && chapter.versionId === chapterInformation.versionId)
       )
     );
-    console.log(chapters)
   };
 
   return (
