@@ -38,6 +38,12 @@ $rightsection-color: #FBFBFA;
 .left-section {
   flex: 0 0 70% !important;
   max-width: 70% !important;
+
+  @media (max-width: 767px) {
+      flex: 0 0 100% !important;
+      max-width: 100% !important;
+    }
+
   .section-1 {
     display: flex;
     justify-content: space-between;
@@ -129,6 +135,10 @@ $rightsection-color: #FBFBFA;
   flex: 0 0 30% !important;
   max-width: 30% !important;
   max-height: 80%;
+
+  @media (max-width: 767px) {
+      display: none;
+    }
 
   .right-title {
     text-align: start;
