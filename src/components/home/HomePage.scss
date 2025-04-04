@@ -42,6 +42,7 @@ $rightsection-color: #FBFBFA;
   @media (max-width: 767px) {
       flex: 0 0 100% !important;
       max-width: 100% !important;
+      margin-bottom: 0 !important;
     }
 
   .section-1 {
@@ -138,6 +139,10 @@ $rightsection-color: #FBFBFA;
 
   @media (max-width: 767px) {
       display: none;
+      max-width: 0 !important;
+      flex: 0 0 0% !important;
+      overflow: hidden !important;
+      visibility: hidden !important;
     }
 
   .right-title {
