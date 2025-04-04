@@ -45,36 +45,35 @@ describe("UserRegistration Component", () => {
       "/login"
     );
   });
-
-  // test("handles invalid user input correctly", async () => {
-  //   setup();
-  //
-  //   const emailInput = screen.getByPlaceholderText("Email Address");
-  //   const lastNameInput = screen.getByPlaceholderText("Last Name");
-  //   const passwordInput = screen.getByPlaceholderText("Password");
-  //   const confirmPasswordInput = screen.getByPlaceholderText("Confirm password")
-  //
-  //   await userEvent.type(emailInput, "test@example");
-  //   expect(emailInput).toHaveValue("test@example");
-  //
-  //   await userEvent.type(lastNameInput, "Doe");
-  //   expect(lastNameInput).toHaveValue("Doe");
-  //
-  //   await userEvent.type(passwordInput, "pass");
-  //   expect(passwordInput).toHaveValue("pass");
-  //
-  //   await userEvent.type(confirmPasswordInput, "password121");
-  //   expect(confirmPasswordInput).toHaveValue("password121");
-  //
-  //   const submitButton = screen.getByRole("button", { name: "Sign up" });
-  //   fireEvent.submit(submitButton);
-  //
-  //   expect(screen.getByText("Passwords do not match")).toBeInTheDocument()
-  //   expect(screen.getByText("Invalid password")).toBeInTheDocument()
-  //   expect(screen.getByText("Invalid email address")).toBeInTheDocument()
-  //   expect(screen.getByText("Required")).toBeInTheDocument()
-  // });
-
+  
+  test("handles invalid user input correctly", async () => {
+    setup();
+  
+    const emailInput = screen.getByPlaceholderText("Email Address");
+    const lastNameInput = screen.getByPlaceholderText("Last Name");
+    const passwordInput = screen.getByPlaceholderText("Password");
+    const confirmPasswordInput = screen.getByPlaceholderText("common.confirm_password");
+  
+    await userEvent.type(emailInput, "test@example");
+    expect(emailInput).toHaveValue("test@example");
+  
+    await userEvent.type(lastNameInput, "Arisu");
+    expect(lastNameInput).toHaveValue("Arisu");
+  
+    await userEvent.type(passwordInput, "pass");
+    expect(passwordInput).toHaveValue("pass");
+  
+    await userEvent.type(confirmPasswordInput, "password121");
+    expect(confirmPasswordInput).toHaveValue("password121");
+  
+    const submitButton = screen.getByRole("button", { name: "Sign up" });
+    await userEvent.click(submitButton);
+  
+    expect(screen.getByText("user.validation.password_do_not_match")).toBeInTheDocument();
+    expect(screen.getByText("user.validation.invalid_password")).toBeInTheDocument();
+    expect(screen.getByText("user.validation.invalid_email")).toBeInTheDocument();
+    expect(screen.getByText("user.validation.required")).toBeInTheDocument();
+  });
 
   test("displays error if form is submitted with empty fields", async () => {
     setup();
@@ -104,5 +103,38 @@ describe("UserRegistration Component", () => {
     await userEvent.click(toggleButton);
 
     expect(passwordInput).toHaveAttribute("type", "password");
+  });
+
+  test("validates form and prevents submission with invalid data", async () => {
+    setup();
+    
+    await userEvent.type(screen.getByPlaceholderText("Email Address"), "invalid-email");
+    await userEvent.type(screen.getByPlaceholderText("First Name"), "Ryohei");
+    await userEvent.type(screen.getByPlaceholderText("Last Name"), "Arisu");
+    await userEvent.type(screen.getByPlaceholderText("Password"), "pass");
+    await userEvent.type(screen.getByPlaceholderText("common.confirm_password"), "password121");
+    
+    const submitButton = screen.getByRole("button", { name: "Sign up" });
+    await userEvent.click(submitButton);
+
+    expect(screen.getByTestId("signup-title")).toBeInTheDocument();
+  });
+
+  test("confirm password toggle button works correctly", async () => {
+    setup();
+  
+    const confirmPasswordInput = screen.getByPlaceholderText("common.confirm_password");
+    
+    const confirmPasswordGroup = confirmPasswordInput.closest('.position-relative');
+    
+    const confirmToggleButton = confirmPasswordGroup.querySelector('button');
+  
+    expect(confirmPasswordInput).toHaveAttribute("type", "password");
+    
+    await userEvent.click(confirmToggleButton);
+    expect(confirmPasswordInput).toHaveAttribute("type", "text");
+    
+    await userEvent.click(confirmToggleButton);
+    expect(confirmPasswordInput).toHaveAttribute("type", "password");
   });
 });

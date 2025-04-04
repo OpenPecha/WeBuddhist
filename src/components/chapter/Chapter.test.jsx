@@ -116,11 +116,11 @@ describe("Chapter Component", () => {
     );
   };
 
-  // test("renders Chapter component with header", () => {
-  //   setup();
-  //   expect(document.querySelector(".header-overlay")).toBeInTheDocument();
-  //   expect(screen.getByText("Test Title")).toBeInTheDocument();
-  // });
+  test("renders Chapter component with header", () => {
+    setup();
+    const headerOverlay = document.querySelector(".header-overlay");
+    expect(headerOverlay).toBeInTheDocument();
+  });
 
   test("toggles bookmark state", () => {
     setup();
@@ -169,7 +169,6 @@ describe("Chapter Component", () => {
     expect(document.querySelector(".spinner-border")).toBeInTheDocument();
   });
 
-
   test("fetchTextDetails makes correct API call", async () => {
     const textId = "test123";
     const contentId = "content123";
@@ -181,19 +180,13 @@ describe("Chapter Component", () => {
       `/api/v1/texts/${textId}/details`,
       {
         content_id: contentId,
-        version_id: versionId
-      },
-      {
-        params: {
-          limit: 10,
-          skip: 0
-        }
-      }
+        version_id: versionId,
+        limit: 10,
+        skip: 0
+      } 
     );
     expect(result).toEqual(mockTextDetailsData);
   });
-
-
 
   test("handles null text details data gracefully", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
@@ -205,5 +198,31 @@ describe("Chapter Component", () => {
     const container = document.querySelector(".tibetan-text-container");
     expect(container).toBeInTheDocument();
     expect(container).toBeEmpty();
+  });
+
+  test("renders content correctly with segments", () => {
+    setup();
+    const segment = screen.getByText("Test content 1");
+    expect(segment).toBeInTheDocument();
+    const translation = screen.getByText("yo");
+    expect(translation).toBeInTheDocument();
+  });
+
+  test("updates selected segment when segment is clicked", () => {
+    setup();
+    const segment = document.querySelector(".text-segment");
+    fireEvent.click(segment);
+    expect(document.querySelector(".right-panel.show")).toBeInTheDocument();
+  });
+
+  test("shows translation source panel when button is clicked", () => {
+    setup();
+    
+    const buttons = document.querySelectorAll(".bookmark-button");
+    const translationSourceButton = buttons[1];
+    fireEvent.click(translationSourceButton);
+    
+    const panel = document.querySelector(".translation-source-panel");
+    expect(panel).toBeInTheDocument();
   });
 });
