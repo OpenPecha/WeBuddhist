@@ -5,7 +5,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
 import { mockTolgee } from "../../../../test-utils/CommonMocks.js";
-import CommentaryView, { fetchCommentaryData } from "./Commentary.jsx";
+import CommentaryView, { fetchCommentaryData } from "./RelatedTexts.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
 import "@testing-library/jest-dom";
 
@@ -39,7 +39,7 @@ describe("CommentaryView", () => {
   const mockCommentariesData = {
     commentaries: [
       {
-        text_id: "mock-commentary-1",
+        text_id: "mock-RelatedText-1",
         title: "རྩོམ་པ་པོ་དང་པོ། དབུ་མའི་ལྟ་བའི་གསལ་བཤད།",
         language: "bo",
         content:
@@ -47,11 +47,11 @@ describe("CommentaryView", () => {
         count: 2,
       },
       {
-        text_id: "mock-commentary-2",
-        title: "Commentary on Buddhist Philosophy",
+        text_id: "mock-RelatedText-2",
+        title: "RelatedText on Buddhist Philosophy",
         language: "en",
         content:
-          "<p>This is a sample commentary about Buddhist philosophy and its principles.</p><p>Second paragraph.</p>",
+          "<p>This is a sample RelatedText about Buddhist philosophy and its principles.</p><p>Second paragraph.</p>",
         count: 3,
       },
     ],
@@ -61,12 +61,12 @@ describe("CommentaryView", () => {
     commentaries: [],
   };
 
-  let mockSetIsCommentaryView;
+  let mockSetIsRelatedTextView;
   let mockSetExpandedCommentaries;
 
   beforeEach(() => {
     vi.resetAllMocks();
-    mockSetIsCommentaryView = vi.fn();
+    mockSetIsRelatedTextView = vi.fn();
     mockSetExpandedCommentaries = vi.fn();
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
@@ -80,8 +80,8 @@ describe("CommentaryView", () => {
   const setup = (props = {}) => {
     const defaultProps = {
       segmentId: "mock-segment-id",
-      setIsCommentaryView: mockSetIsCommentaryView,
-      expandedCommentaries: { "mock-commentary-1": false, "mock-commentary-2": false },
+      setIsCommentaryView: mockSetIsRelatedTextView,
+      expandedCommentaries: { "mock-RelatedText-1": false, "mock-RelatedText-2": false },
       setExpandedCommentaries: mockSetExpandedCommentaries,
     };
 
@@ -96,16 +96,16 @@ describe("CommentaryView", () => {
     );
   };
 
-  test("renders commentary with correct title and count", () => {
+  test("renders related texts with correct title and count", () => {
     setup();
-    expect(screen.getByText("text.commentary (2)")).toBeInTheDocument();
+    expect(screen.getByText("text.related-texts (2)")).toBeInTheDocument();
   });
 
   test("closes commentary view when close icon is clicked", () => {
     setup();
     const closeIcon = document.querySelector(".close-icon");
     fireEvent.click(closeIcon);
-    expect(mockSetIsCommentaryView).toHaveBeenCalledWith(false);
+    expect(mockSetIsRelatedTextView).toHaveBeenCalledWith(false);
   });
 
   test("toggles commentary expansion when show more button is clicked", () => {

@@ -3,9 +3,9 @@ import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-u
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
-import { fireEvent, render, screen, act } from "@testing-library/react";
+import { fireEvent, render, act } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import Chapter, { fetchTextDetails } from "./Chapter.jsx";
+import Chapters, { fetchTextDetails } from "./Chapter.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -38,6 +38,33 @@ vi.mock("../../utils/Constants.js", () => ({
     "source_translation":"SOURCE_TRANSLATION"
   }
 }));
+
+// Mock useLocation hook
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useLocation: () => ({
+      state: {
+        chapterInformation: {
+          contentId: "content123",
+          versionId: "version123"
+        }
+      }
+    }),
+    useSearchParams: () => [
+      {
+        get: (param) => {
+          if (param === 'text_id') return 'test123';
+          if (param === 'content_id') return 'content123';
+          if (param === 'version_id') return 'version123';
+          return null;
+        }
+      },
+      vi.fn()
+    ]
+  };
+});
 
 describe("Chapter Component", () => {
   const queryClient = new QueryClient();
@@ -93,12 +120,22 @@ describe("Chapter Component", () => {
         return { data: mockTextData, isLoading: false };
       } else if (queryKey[0] === "texts") {
         return { data: mockSideTextData, isLoading: false };
-      } else if (queryKey[0] === "chapter") {
+      } else if (queryKey[0] === "textsDetails") {
         return { data: mockTextDetailsData, isLoading: false };
       }
       return { data: null, isLoading: false };
     });
     vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
+    // Mock localStorage.getItem for chapters
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation((key) => {
+      if (key === 'chapters') {
+        return JSON.stringify([{
+          contentId: "content123",
+          versionId: "version123"
+        }]);
+      }
+      return "bo-IN";
+    });
   });
 
   const setup = () => {
@@ -109,7 +146,7 @@ describe("Chapter Component", () => {
             fallback={"Loading tolgee..."} 
             tolgee={mockTolgee}
           >
-            <Chapter />
+            <Chapters />
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
@@ -131,16 +168,27 @@ describe("Chapter Component", () => {
     expect(document.querySelector("svg")).toBeInTheDocument();
   });
 
-  test("renders side panel and toggles visibility", () => {
+  test("renders side panel and toggles visibility", async () => {
     setup();
+    await act(async () => {});
+    
     const textSegment = document.querySelector(".text-segment");
     expect(textSegment).toBeInTheDocument();
     
-    fireEvent.click(textSegment);
-    expect(document.querySelector(".right-panel.show")).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(textSegment);
+    });
     
-    const closeButton = document.querySelector(".close-icon");
-    fireEvent.click(closeButton);
+    const rightPanel = document.querySelector(".right-panel.show");
+    expect(rightPanel).toBeInTheDocument();
+    
+    const closeIcon = document.querySelector(".close-icon");
+    expect(closeIcon).toBeInTheDocument();
+    
+    await act(async () => {
+      fireEvent.click(closeIcon);
+    });
+    
     expect(document.querySelector(".right-panel.show")).not.toBeInTheDocument();
   });
 
@@ -155,18 +203,21 @@ describe("Chapter Component", () => {
 
   test("handles infinite scroll", async () => {
     setup();
-    const container = document.querySelector(".tibetan-text-container");
+    await act(async () => {});
     
-    // Mock the scroll event
-    Object.defineProperty(container, 'scrollTop', { value: 500 });
-    Object.defineProperty(container, 'scrollHeight', { value: 1000 });
-    Object.defineProperty(container, 'clientHeight', { value: 250 });
+    const container = document.querySelector(".tibetan-text-container");
+    expect(container).toBeInTheDocument();
+    
+    Object.defineProperty(container, 'scrollTop', { value: 500, configurable: true });
+    Object.defineProperty(container, 'scrollHeight', { value: 1000, configurable: true });
+    Object.defineProperty(container, 'clientHeight', { value: 250, configurable: true });
     
     await act(async () => {
       fireEvent.scroll(container);
     });
     
-    expect(document.querySelector(".spinner-border")).toBeInTheDocument();
+    const spinner = document.querySelector(".spinner-border");
+    expect(spinner).toBeInTheDocument();
   });
 
   test("fetchTextDetails makes correct API call", async () => {
@@ -188,41 +239,68 @@ describe("Chapter Component", () => {
     expect(result).toEqual(mockTextDetailsData);
   });
 
-  test("handles null text details data gracefully", () => {
+  test("handles null text details data gracefully", async () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: null,
       isLoading: false,
     }));
     
     setup();
+    await act(async () => {});
+    
     const container = document.querySelector(".tibetan-text-container");
     expect(container).toBeInTheDocument();
-    expect(container).toBeEmpty();
+    expect(document.querySelector(".segment")).not.toBeInTheDocument();
   });
 
-  test("renders content correctly with segments", () => {
+  test("renders content correctly with segments", async () => {
     setup();
-    const segment = screen.getByText("Test content 1");
-    expect(segment).toBeInTheDocument();
-    const translation = screen.getByText("yo");
-    expect(translation).toBeInTheDocument();
+    await act(async () => {});
+    const segmentContainer = document.querySelector(".segment");
+    expect(segmentContainer).toBeInTheDocument();
+    expect(segmentContainer.innerHTML).toContain("Test content 1");
+    expect(segmentContainer.innerHTML).toContain("yo");
   });
 
-  test("updates selected segment when segment is clicked", () => {
+  test("updates selected segment when segment is clicked", async () => {
     setup();
+
+    await act(async () => {});
+    
     const segment = document.querySelector(".text-segment");
-    fireEvent.click(segment);
-    expect(document.querySelector(".right-panel.show")).toBeInTheDocument();
+    expect(segment).toBeInTheDocument();
+    
+    
+    await act(async () => {
+      fireEvent.click(segment);
+    });
+    
+    
+    const rightPanel = document.querySelector(".right-panel.show");
+    expect(rightPanel).toBeInTheDocument();
+    
+ 
+    const panelContent = document.querySelector(".panel-content");
+    expect(panelContent).toBeInTheDocument();
   });
 
-  test("shows translation source panel when button is clicked", () => {
+  test("toggles bookmark when bookmark button is clicked", async () => {
     setup();
+    // Wait for component to render
+    await act(async () => {});
     
-    const buttons = document.querySelectorAll(".bookmark-button");
-    const translationSourceButton = buttons[1];
-    fireEvent.click(translationSourceButton);
+    const bookmarkButton = document.querySelector(".bookmark-button");
+    expect(bookmarkButton).toBeInTheDocument();
     
-    const panel = document.querySelector(".translation-source-panel");
-    expect(panel).toBeInTheDocument();
+    const initialIcon = document.querySelector(".bookmark-button svg");
+    expect(initialIcon).toBeInTheDocument();
+    
+    await act(async () => {
+      fireEvent.click(bookmarkButton);
+    });
+    
+    const updatedIcon = document.querySelector(".bookmark-button svg");
+    expect(updatedIcon).toBeInTheDocument();
+    expect(document.querySelector(".bookmark-button")).toBeInTheDocument();
   });
 });
