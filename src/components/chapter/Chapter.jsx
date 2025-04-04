@@ -54,23 +54,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
   useEffect(() => {
     if (!textDetails) return;
 
-    if (versionLoading) {
-      setContents(textDetails.contents);
-      setVersionLoading(false);
-    } else if (contents.length) {
-      setContents(prevState => {
-        return [
-          ...prevState,
-          ...textDetails.contents
-        ]
-      });
-    } else {
-      setContents(prevState => {
-        return [...prevState, ...textDetails.contents]
-      });
-    }
+    // Reset contents when version changes
+    setContents(textDetails.contents);
     setLoading(false);
-  }, [textDetails, versionLoading]);
+  }, [textDetails]);
 
   useEffect(() => {
     return () => {
@@ -95,7 +82,6 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
   // helper function
 
   const handleVersionChange = (newVersionId) => {
-    setVersionLoading(true);
     setVersionId(newVersionId);
   };
 
@@ -220,14 +206,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
           ref={containerRef}
           className="tibetan-text-container"
         >
-          {versionLoading && (
-            <div className="version-loading-overlay">
-              <Spinner animation="border" role="status" variant="primary">
-                <span className="visually-hidden">Loading new version...</span>
-              </Spinner>
-              <p className="mt-2">Loading translation...</p>
-            </div>
-          )}
+          {/* Version loading spinner removed */}
           {contents?.map((item) => {
             return (<div key={item.id}>
               {item.segments.map(segment => renderContent(segment))}
