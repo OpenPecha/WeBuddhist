@@ -20,7 +20,7 @@ export const fetchTextDetails = async (text_id, content_id, versionId, skip, lim
   });
   return data;
 }
-const Chapter = ({addChapter, removeChapter, currentChapter}) => {
+const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => {
   const [segments, setSegments] = useState([]);
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -124,10 +124,12 @@ const Chapter = ({addChapter, removeChapter, currentChapter}) => {
               onClose={() => setShowTranslationSource(false)}
             />
           )}
-          <button
-            className="close-chapter" onClick={() => removeChapter(currentChapter)}>
-            <MdClose size={20}/>
-          </button>
+          {totalChapters > 1 && (
+            <button
+              className="close-chapter" onClick={() => removeChapter(currentChapter)}>
+              <MdClose size={20}/>
+            </button>
+          )}
         </div>
       </div>
     );
@@ -277,7 +279,7 @@ const Chapters = () => {
           className=" chapter-container"
           style={{width: `${100 / chapters.length}%`}}
         >
-          <Chapter addChapter={addChapter} removeChapter={removeChapter} currentChapter={chapter}/>
+          <Chapter addChapter={addChapter} removeChapter={removeChapter} currentChapter={chapter} totalChapters={chapters.length}/>
         </div>
       ))}
     </div>
