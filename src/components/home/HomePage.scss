@@ -163,6 +163,10 @@ $rightsection-color: #FBFBFA;
 }
 
 @media (max-width: 767px) {
+  .homepage-container {
+    overflow-y: auto;
+    height: auto !important;
+  }
 
   .left-section {
     width: 100% !important;
@@ -176,5 +180,6 @@ $rightsection-color: #FBFBFA;
     flex: 0 0 100% !important;
     max-width: 100% !important;
     order: 2 !important;
+    max-height: none !important;
   }
 }
