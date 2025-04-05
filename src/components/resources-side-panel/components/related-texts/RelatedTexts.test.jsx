@@ -98,7 +98,7 @@ describe("CommentaryView", () => {
 
   test("renders related texts with correct title and count", () => {
     setup();
-    expect(screen.getByText("text.related-texts (2)")).toBeInTheDocument();
+    expect(screen.getByText("text.commentary (2)")).toBeInTheDocument();
   });
 
   test("closes commentary view when close icon is clicked", () => {
@@ -133,5 +133,41 @@ describe("CommentaryView", () => {
       }
     );
     expect(result).toEqual(mockCommentariesData);
+  });
+
+  test("fetchCommentaryData handles errors gracefully", async () => {
+    const segmentId = "mock-segment-id";
+    axiosInstance.get.mockRejectedValueOnce(new Error("API Error"));
+
+    const result = await fetchCommentaryData(segmentId);
+
+    expect(result).toEqual({ commentaries: [] });
+  });
+
+  test("clicking on 'open text' button calls addChapter", () => {
+    const mockAddChapter = vi.fn();
+    setup({ addChapter: mockAddChapter });
+
+    const openTextButtons = document.querySelectorAll(".commentary-button");
+    // The first button is the 'open text' button
+    fireEvent.click(openTextButtons[0]);
+
+    expect(mockAddChapter).toHaveBeenCalledWith({
+      contentId: "",
+      versionId: "mock-RelatedText-1"
+    });
+  });
+
+  test("renders correctly with empty commentaries", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementationOnce(() => ({
+      data: { commentaries: [] },
+      isLoading: false
+    }));
+
+    setup();
+    
+    // Should not display any count when there are no commentaries
+    expect(screen.getByText("text.commentary")).toBeInTheDocument();
+    expect(screen.queryByText(/\(\d+\)/)).not.toBeInTheDocument();
   });
 });
