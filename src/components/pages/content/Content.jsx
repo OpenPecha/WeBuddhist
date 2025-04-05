@@ -90,8 +90,9 @@ const Content = () => {
               <FiChevronRight size={16} className="toggle-icon" />
           ) : <span className="empty-icon"></span>}
           <Link
-            to={`/texts/text-details?text_id=${id}&content_id=${section.id}`}
+            to={`/texts/text-details?text_id=${id}`}
             className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
+            state={{chapterInformation: {contentId: section.id, versionId: ""}}}
           >
             {section.title}
           </Link>
