@@ -43,11 +43,22 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
       staleTime: 1000 * 60 * 20
     }
   );
+  // Reset skip when versionId changes
+  useEffect(() => {
+    setSkip(0);
+    setContents([]);
+  }, [versionId]);
+
   useEffect(() => {
     if (!textDetails) return;
-    setContents(textDetails.contents);
-    
-  }, [textDetails]);
+    if (skip === 0) {
+      setContents(textDetails.contents);
+    } else {
+      setContents(prevState => {
+        return [...prevState, ...textDetails.contents]
+      });
+    }
+  }, [textDetails, skip]);
 
   useEffect(() => {
     return () => {
