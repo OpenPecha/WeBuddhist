@@ -4,7 +4,7 @@ import { GoLinkExternal } from "react-icons/go";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
 import axiosInstance from "../../../../config/axios-config.js";
-import "./Commentary.scss";
+import "./RelatedTexts.scss";
 import { getLanguageClass } from "../../../../utils/Constants.js";
 
 export const fetchCommentaryData = async(segment_id, skip=0, limit=10) => {
@@ -21,7 +21,7 @@ export const fetchCommentaryData = async(segment_id, skip=0, limit=10) => {
       return { commentaries: [] };
     }
   }
-const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries }) => {
+const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries, addChapter }) => {
   const { t } = useTranslate();
 
   const {data: segmentCommentaries} = useQuery(
@@ -89,7 +89,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
                         
                         <div className="commentary-actions">
                           <div className="commentary-buttons">
-                            <div className="commentary-button">
+                            <div className="commentary-button" onClick={() => addChapter({contentId: "", versionId: commentary.text_id})}>
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
                             </div>

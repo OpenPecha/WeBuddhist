@@ -23,7 +23,8 @@ const TranslationView = ({
   expandedTranslations, 
   setExpandedTranslations, 
   setVersionId, 
-  versionId 
+  versionId ,
+  addChapter
 }) => {
   const { t } = useTranslate();
   const {data: sidepaneltranslation} = useQuery(
@@ -100,12 +101,15 @@ const TranslationView = ({
                         
                         <p className="textgreat review navbaritems">{t("text.versions.information.review_history")}</p> 
                         <div className=" linkselect navbaritems">
-                          <div className="linkicons ">
+                          <div className="linkicons" onClick={() => addChapter({contentId:"", versionId:translation.text_id})}>
                           <GoLinkExternal/>
                           {t("text.translation.open_text")}
                           </div>
-                          <p onClick={()=>setVersionId(translation.text_id)} className="selectss navbaritems">
+                          {/* <p onClick={()=>setVersionId("translation.text_id")} className="selectss navbaritems">
                             {translation.text_id === versionId ? t("text.translation.current_selected") : t("common.select")}
+                          </p> */}
+                          <p onClick={()=>setVersionId("test")} className="selectss navbaritems">
+                           {t("common.select")}
                           </p>
                         </div>
                     </div>

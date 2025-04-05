@@ -70,7 +70,7 @@ describe("Resources Side Panel", () => {
             fallback={"Loading tolgee..."}
             tolgee={mockTolgee}
           >
-            <Resources showPanel={true} setShowPanel={() => vi.fn()} textId={"test123"} />
+            <Resources showPanel={true} setShowPanel={() => vi.fn()} textId={"test123"} addChapter={() => vi.fn()}/>
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>

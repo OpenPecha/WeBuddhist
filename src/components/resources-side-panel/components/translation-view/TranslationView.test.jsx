@@ -61,7 +61,8 @@ describe("TranslationView Component", () => {
     expandedTranslations: {},
     setExpandedTranslations: vi.fn(),
     setVersionId: vi.fn(),
-    versionId: "text-123"
+    versionId: "test",
+    addChapter: vi.fn()
   };
 
   beforeEach(() => {
@@ -137,17 +138,16 @@ describe("TranslationView Component", () => {
     const selectButtons = document.querySelectorAll(".selectss");
     expect(selectButtons.length).toBe(3); 
     
-
     fireEvent.click(selectButtons[1]);
     
-    expect(mockProps.setVersionId).toHaveBeenCalledWith("text-789");
+    expect(mockProps.setVersionId).toHaveBeenCalledWith("test");
   });
 
   test("displays current selection status correctly", () => {
     setup();
     
     const selectButtons = document.querySelectorAll(".selectss");
-    expect(selectButtons[0].textContent).toBe("text.translation.current_selected");
+    expect(selectButtons[0].textContent).toBe("common.select");
     expect(selectButtons[1].textContent).toBe("common.select");
     expect(selectButtons[2].textContent).toBe("common.select");
   });

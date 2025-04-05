@@ -72,8 +72,10 @@ const Versions = () =>{
             <div className="version">
               <div>
                 <Link
-                  to={`/texts/text-details?text_id=${id}&version_id=${version.id}`}
+                  // TODO to={`/texts/text-details?text_id=${id}&version_id=${version.id}`}
+                  to={`/texts/text-details?text_id=${id}`}
                   className="section-title"
+                  state={{chapterInformation: {contentId: "", versionId: version.id}}}
                 >
                   <div className={`${getLanguageClass(version.language)}`}>
                     {version.title}

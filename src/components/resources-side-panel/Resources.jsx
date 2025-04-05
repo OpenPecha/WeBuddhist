@@ -10,7 +10,7 @@ import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
 import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
-import CommentaryView from "./components/commentary/Commentary.jsx";
+import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import "./Resources.scss"
 
 export const fetchSidePanelData = async (text_id) => {
@@ -24,7 +24,8 @@ export const fetchSidePanelData = async (text_id) => {
   });
   return data;
 };
-const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, versionId}) => {
+
+const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, versionId, addChapter}) => {
   const [isShareView, setIsShareView] = useState(false);
   const [isTranslationView, setIsTranslationView] = useState(false);
   const [isCommentaryView, setIsCommentaryView] = useState(false);
@@ -42,7 +43,6 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, ve
       staleTime: 1000 * 60 * 20
     }
   );
-
 
   const renderShareView = () => {
     return (
@@ -62,6 +62,7 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, ve
         setExpandedTranslations={setExpandedTranslations}
         setVersionId={setVersionId}
         versionId={versionId}
+        addChapter={addChapter}
       />
     );
   };
@@ -73,6 +74,7 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, ve
         setIsCommentaryView={setIsCommentaryView}
         expandedCommentaries={expandedCommentaries}
         setExpandedCommentaries={setExpandedCommentaries}
+        addChapter={addChapter}
       />
     );
   };
