@@ -16,8 +16,8 @@ $rightsection-color: #FBFBFA;
   @media (max-width: 1200px) {
    margin: 0 2rem !important; 
  }
-  @media (max-width: 768px) {
-    margin: 0 1rem !important;
+  @media (max-width: 767px) {
+    margin: 0 !important;
   }
 }
 
@@ -38,6 +38,7 @@ $rightsection-color: #FBFBFA;
 .left-section {
   flex: 0 0 70% !important;
   max-width: 70% !important;
+
   .section-1 {
     display: flex;
     justify-content: space-between;
@@ -158,5 +159,27 @@ $rightsection-color: #FBFBFA;
         text-decoration: underline;
       }
     }
+  }
+}
+
+@media (max-width: 767px) {
+  .homepage-container {
+    overflow-y: auto;
+    height: auto !important;
+  }
+
+  .left-section {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    order: 1 !important;
+  }
+
+  .right-section {
+    display: block;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    order: 2 !important;
+    max-height: none !important;
   }
 }
