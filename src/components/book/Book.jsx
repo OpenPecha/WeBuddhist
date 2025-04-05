@@ -52,11 +52,6 @@ const Book = () => {
     </div>;
   }
   
-  if (!categoryTextData || !categoryTextData.texts) {
-    return <div className="notfound listtitle">
-      <div className="no-content">No content found</div>
-    </div>;
-  }
 
   const textsByType = categoryTextData.texts.reduce((acc, text) => {
     if (!acc[text.type]) {
@@ -75,36 +70,44 @@ const Book = () => {
           <h1>{categoryTextData.term?.title || "Text Category"}</h1>
         </div>
         <div className="text-sections">
-          {rootTexts.length > 0 && (
+          {(!categoryTextData.texts || categoryTextData.texts.length === 0) ? (
             <div className="text-section">
-              <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>
-              <div className="section-divider"></div>
-              <div className="text-list">
-                {rootTexts.map((text,i) => (
-                  <div key={i} className="text-item ">
-                    <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`} state={{ titleInformation: text }}>
-                    <p>{text.title}</p>
-                    </Link>
-                  </div>
-                ))}
-              </div>
+              <div className="no-content">No text found</div>
             </div>
-          )}
-          
-          {commentaryTexts.length > 0 && (
-            <div className="text-section">
-              <h2 className="section-title overalltext">{t("text.type.related-texts")}</h2>
-              <div className="section-divider"></div>
-              <div className="text-list">
-                {commentaryTexts.map((text,i) => (
-                  <div key={i} className="text-item">
-                   <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`}  state={{ titleInformation: text }} >
-                    <p>{text.title}</p>
-                    </Link>
+          ) : (
+            <>
+              {rootTexts.length > 0 && (
+                <div className="text-section">
+                  <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>
+                  <div className="section-divider"></div>
+                  <div className="text-list">
+                    {rootTexts.map((text,i) => (
+                      <div key={i} className="text-item ">
+                        <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`} state={{ titleInformation: text }}>
+                        <p>{text.title}</p>
+                        </Link>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
+              )}
+              
+              {commentaryTexts.length > 0 && (
+                <div className="text-section">
+                  <h2 className="section-title overalltext">{t("text.type.related-texts")}</h2>
+                  <div className="section-divider"></div>
+                  <div className="text-list">
+                    {commentaryTexts.map((text,i) => (
+                      <div key={i} className="text-item">
+                       <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`}  state={{ titleInformation: text }} >
+                        <p>{text.title}</p>
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
