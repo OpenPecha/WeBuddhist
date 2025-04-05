@@ -43,7 +43,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
     <div>
       <div className="headerthing">
         <p className="mt-4 px-4 listtitle">
-          {t("text.related-texts")}
+          {t("text.commentary")}
           {segmentCommentaries?.commentaries?.length > 0 ? 
             ` (${segmentCommentaries.commentaries.length})` : ''}
         </p>

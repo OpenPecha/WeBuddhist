@@ -45,10 +45,8 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   );
   useEffect(() => {
     if (!textDetails) return;
-
-    setContents(prevState => {
-      return [...prevState, ...textDetails.contents]
-    });
+    setContents(textDetails.contents);
+    
   }, [textDetails]);
 
   useEffect(() => {

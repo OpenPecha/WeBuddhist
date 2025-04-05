@@ -108,7 +108,7 @@ const TranslationView = ({
                           {/* <p onClick={()=>setVersionId("translation.text_id")} className="selectss navbaritems">
                             {translation.text_id === versionId ? t("text.translation.current_selected") : t("common.select")}
                           </p> */}
-                          <p onClick={()=>setVersionId(translation.text_id)} className="selectss navbaritems">
+                          <p onClick={()=>setVersionId("test")} className="selectss navbaritems">
                            {t("common.select")}
                           </p>
                         </div>
