@@ -231,7 +231,8 @@ const Chapters = () => {
     const savedChapters = sessionStorage.getItem('chapters');
     return savedChapters ? JSON.parse(savedChapters) : [location.state?.chapterInformation] || [{
       contentId: "",
-      versionId: ""
+      versionId: "",
+      uniqueId: Date.now()
     }]
   });
 
@@ -244,18 +245,26 @@ const Chapters = () => {
       if (prevChapters.length >= 3) {
         return prevChapters;
       }
+      const newChapter = {
+        ...chapterInformation,
+        uniqueId: chapterInformation.uniqueId || Date.now()
+      };
       return [
         ...prevChapters,
-        chapterInformation
+        newChapter
       ];
     });
   };
 
   const removeChapter = (chapterInformation) => {
     setChapters(prevChapters =>
-      prevChapters.filter(chapter =>
-        !(chapter.contentId === chapterInformation.contentId && chapter.versionId === chapterInformation.versionId)
-      )
+      prevChapters.filter(chapter => {
+        if (chapter.uniqueId && chapterInformation.uniqueId) {
+          return chapter.uniqueId !== chapterInformation.uniqueId;
+        }
+        return !(chapter.contentId === chapterInformation.contentId && 
+                chapter.versionId === chapterInformation.versionId);
+      })
     );
   };
 

@@ -101,7 +101,7 @@ const TranslationView = ({
                         
                         <p className="textgreat review navbaritems">{t("text.versions.information.review_history")}</p> 
                         <div className=" linkselect navbaritems">
-                          <div className="linkicons" onClick={() => addChapter({contentId:"", versionId:translation.text_id})}>
+                          <div className="linkicons" onClick={() => addChapter({contentId:"", versionId:translation.text_id, uniqueId: Date.now()})}>
                           <GoLinkExternal/>
                           {t("text.translation.open_text")}
                           </div>
