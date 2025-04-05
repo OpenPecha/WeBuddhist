@@ -8,21 +8,16 @@ import { useParams, Link } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 
 export const fetchTextContent = async (text_id) => {
-  try {
-    const storedLanguage = localStorage.getItem(LANGUAGE);
-    const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-    const { data } = await axiosInstance.get(`/api/v1/texts/${text_id}/contents`, {
-      params: {
-        language,
-        limit: 10,
-        skip: 0
-      }
-    });
-    return data;
-  } catch (error) {
-    console.error("Error fetching text content:", error);
-    return { contents: [] };
-  }
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
+  const {data} = await axiosInstance.get(`/api/v1/texts/${text_id}/contents`, {
+    params: {
+      language,
+      limit: 10,
+      skip: 0
+    }
+  });
+  return data;
 };
 
 const Content = () => {

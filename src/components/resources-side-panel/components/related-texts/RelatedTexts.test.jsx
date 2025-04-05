@@ -70,7 +70,7 @@ describe("CommentaryView", () => {
     mockSetExpandedCommentaries = vi.fn();
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
-      if (queryKey[0] === "sidePanelcommentary") {
+      if (queryKey[0] === "relatedTexts") {
         return { data: mockCommentariesData, isLoading: false };
       }
       return { data: null, isLoading: false };

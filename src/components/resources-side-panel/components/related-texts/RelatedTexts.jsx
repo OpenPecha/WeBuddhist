@@ -7,25 +7,20 @@ import axiosInstance from "../../../../config/axios-config.js";
 import "./RelatedTexts.scss";
 import { getLanguageClass } from "../../../../utils/Constants.js";
 
-export const fetchCommentaryData = async(segment_id, skip=0, limit=10) => {
-  
-    try {
-      const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/commentaries`, {
-        params: {
-          skip,
-          limit
-        }
-      });
-      return data;
-    } catch (error) {
-      return { commentaries: [] };
+export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
+  const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/commentaries`, {
+    params: {
+      skip,
+      limit
     }
-  }
+  });
+  return data;
+}
 const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries, addChapter }) => {
   const { t } = useTranslate();
 
   const {data: segmentCommentaries} = useQuery(
-    ["sidePanelcommentary", segmentId],
+    ["relatedTexts", segmentId],
     () => fetchCommentaryData("2353849b-f8fa-43e4-850d-786b623d0130"),  //use segmentid later todo
     {
       refetchOnWindowFocus: false,

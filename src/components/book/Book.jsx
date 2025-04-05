@@ -7,23 +7,18 @@ import { useQuery } from 'react-query';
 import { useParams,Link } from 'react-router-dom';
 
 const fetchTextCategory = async (bookId, limit = 10, skip = 0) => {
-  try {
-    const storedLanguage = localStorage.getItem(LANGUAGE);
-    const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
-    
-    const { data } = await axiosInstance.get("/api/v1/texts", {
-      params: {
-        language,
-        term_id: bookId,
-        limit,
-        skip
-      }
-    });
-    return data;
-  } catch (error) {
-    console.error("API call error:", error.response || error);
-    throw error;
-  }
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+
+  const {data} = await axiosInstance.get("/api/v1/texts", {
+    params: {
+      language,
+      term_id: bookId,
+      limit,
+      skip
+    }
+  });
+  return data;
 };
 
 const Book = () => {
