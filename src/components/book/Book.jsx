@@ -66,7 +66,7 @@ const Book = () => {
         <div className="text-sections">
           {(!categoryTextData.texts || categoryTextData.texts.length === 0) ? (
             <div className="text-section">
-              <div className="no-content">No text found</div>
+              <div className="no-content">{t("text_category.message.notfound")}</div>
             </div>
           ) : (
             <>

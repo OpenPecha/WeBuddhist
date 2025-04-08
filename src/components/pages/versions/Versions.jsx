@@ -77,9 +77,8 @@ const Versions = () =>{
                   className="section-title"
                   state={{chapterInformation: {contentId: "", versionId: version.id}}}
                 >
-                  <div className={`${getLanguageClass(version.language)}`}>
+                  <div className={`${getLanguageClass(version.language)} titleversion`}>
                     {version.title}
-                    <br/>
                   </div>
                 </Link>
                 <div className="review-history subtitle">
