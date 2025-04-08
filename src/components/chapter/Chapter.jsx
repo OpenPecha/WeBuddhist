@@ -110,7 +110,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
         </div>
 
         <div className="d-flex align-items-center">
-          <button className="bookmark-button mr-3" onClick={() => setIsBookmarked(!isBookmarked)}>
+          <button className="bookmark-button mr-2" onClick={() => setIsBookmarked(!isBookmarked)}>
             {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
           </button>
           <button
@@ -137,13 +137,13 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
 
   const renderContent = (item) => {
     return (
-      <div key={item.id} className={`section ${getLanguageClass(textDetails?.text_detail?.language)} `}>
-        {item.title && <h4>{item.title}</h4>}
+      <div key={item.id} className={`section ${getLanguageClass(textDetails?.text_detail?.language)}`}>
+        {item.title && <h4 className="section-title">{item.title}</h4>}
 
         {item?.segments?.map(segment => (
           <div
             key={segment.id}
-            className="text-segment mb-4 "
+            className="text-segment mb-3 mb-md-4"
             onClick={() => {
               setSelectedSegmentId(segment.segment_id);
               handleSidebarToggle(true);
@@ -165,11 +165,11 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
 
         {item?.sections?.map(section => (
           <div key={section.id} className="nested-section">
-            <h4>{section.title}</h4>
+            <h4 className="section-title">{section.title}</h4>
             {section?.segments?.map(segment => (
               <div
                 key={segment.id}
-                className="text-segment  mb-4"
+                className="text-segment mb-3 mb-md-4"
                 onClick={() => {
                   setSelectedSegmentId(segment.segment_id);
                   handleSidebarToggle(true);
@@ -210,13 +210,13 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
         >
           {/* Version loading spinner removed */}
           {contents?.map((item) => {
-            return (<div key={item.id}>
+            return (<div key={item.id} className="content-item">
               {item.segments.map(segment => renderContent(segment))}
             </div>)
           })}
           {chapterContentIsLoading && (
-            <div className="text-center my-4">
-              <Spinner animation="border" role="output">
+            <div className="text-center my-3 my-md-4">
+              <Spinner animation="border" role="output" size="sm">
                 <span className="visually-hidden">Loading...</span>
               </Spinner>
             </div>
@@ -284,7 +284,7 @@ const Chapters = () => {
       {chapters.map((chapter, index) => (
         <div
           key={index}
-          className=" chapter-container"
+          className="chapter-container"
           style={{width: `${100 / chapters.length}%`}}
         >
           <Chapter addChapter={addChapter} removeChapter={removeChapter} currentChapter={chapter} totalChapters={chapters.length}/>

@@ -81,8 +81,11 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, ve
 
   const renderSidePanel = () => {
     return (
-      <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
-        <div>
+      <>
+        {/* Backdrop overlay for mobile */}
+        {showPanel && <div className="panel-backdrop" onClick={() => setShowPanel(false)}></div>}
+        <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
+          <div>
           {isShareView ? renderShareView() : isTranslationView ? renderTranslationView() : isCommentaryView ? renderCommentaryView() : (
             <>
               <div className="headerthing">
@@ -157,6 +160,7 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, ve
           )}
         </div>
       </div>
+      </>
     );
   };
   return(
