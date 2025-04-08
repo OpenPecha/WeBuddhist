@@ -103,19 +103,30 @@
     }
   }
   
+  @media (min-width: 768px) and (max-width: 991px) {
+    .sidebar {
+      width: 320px;
+    }
+  }
+  
   @media (max-width: 767px) {
     .text-child-container {
-      padding: 1rem;
-  
-      
-  
+      padding: 2rem;
+      .category-header{
+        h1 {
+          font-size: 20px;
+        }
+      }
       .text-section {
         .text-list {
           grid-template-columns: 1fr;
         }
-  
+        .text-item {
+          font-size: 16px;
+        }
       
       }
+    
     }
   
     .sidebar {
