@@ -61,7 +61,7 @@ const Book = () => {
     <div className="main-container listtitle">
       <div className="text-category-container">
         <div className="category-header">
-          <h1 className="overalltext">{categoryTextData.term?.title}</h1>
+          <h2 className="overalltext">{categoryTextData.term?.title}</h2>
         </div>
         <div className="text-sections">
           {(!categoryTextData.texts || categoryTextData.texts.length === 0) ? (

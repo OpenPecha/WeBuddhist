@@ -54,6 +54,7 @@ $rightsection-color: #FBFBFA;
     }
 
     .browse-library-text {
+      font-size: 24px;
       font-weight: 600;
       align-items: flex-start;
       word-wrap: break-word;
@@ -65,7 +66,7 @@ $rightsection-color: #FBFBFA;
       border: none;
       padding: 0.5rem 1rem;
       white-space: nowrap;
-      font-size: 17px !important; 
+      font-size: 16px !important; 
       font-family: "MonlamTBslim" !important;
     }
   }
@@ -92,7 +93,7 @@ $rightsection-color: #FBFBFA;
       }
 
       .part-title {
-        font-size: 24px;
+        font-size: 20px;
         text-align: left;
         margin: 0 0 3px 0;
         word-break: break-word;
@@ -113,6 +114,7 @@ $rightsection-color: #FBFBFA;
 
 
       .part-subtitle {
+        font-size: 16px;
         text-align: left;
         color: $primary-color;
         margin: 0;
@@ -132,6 +134,7 @@ $rightsection-color: #FBFBFA;
   max-height: 80%;
 
   .right-title {
+    font-size: 24px;
     text-align: start;
     color: $primary-color;
     margin: 1rem;
@@ -146,8 +149,9 @@ $rightsection-color: #FBFBFA;
   }
 
   .right-paragraph {
+    font-size: 16px;
     text-align: start;
-    line-height: 1.5;
+    line-height: 2;
     color: $primary-color;
     margin: 1rem;
     word-wrap: break-word;
