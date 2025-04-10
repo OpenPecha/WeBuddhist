@@ -99,7 +99,7 @@
 
         .text-segment {
           cursor: pointer;
-          width: fit-content;
+          width: 100%;
           margin: auto;
           position: relative;
           padding: 10px;
@@ -136,6 +136,40 @@
   max-width: 760px;
   position: relative;
   padding: 0 30px;
+}
+
+/* Footnote styles */
+.footnote-marker {
+  cursor: pointer;
+  color: #007bff;
+  font-weight: bold;
+  vertical-align: super;
+  font-size: smaller;
+  position: relative;
+  z-index: 2;
+  user-select: none;
+  -webkit-user-select: none;
+  padding: 0 2px;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #0056b3;
+  }
+}
+
+.footnote {
+  display: none;
+  font-style: italic;
+  color: #8a8a8a;
+  margin-left: 4px;
+  font-size: 0.9em;
+  background-color: #f0f0f0;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.footnote.active {
+  display: inline;
 }
 
 

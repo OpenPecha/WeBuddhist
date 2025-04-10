@@ -31,6 +31,21 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   const [searchParams, setSearchParams] = useSearchParams();
   const [showPanel, setShowPanel] = useState(false);
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
+  
+  const handleDocumentClick = (event) => {
+    if (event.target.classList && event.target.classList.contains('footnote-marker')) {
+      event.stopPropagation();
+      event.preventDefault();
+      const footnoteMarker = event.target;
+      const footnote = footnoteMarker.nextElementSibling;
+      
+      if (footnote && footnote.classList.contains('footnote')) {
+        footnote.classList.toggle('active');
+      }
+      
+      return false;
+    }
+  };
 
   const textId = searchParams.get("text_id");
   const contentId = currentChapter.contentId
@@ -78,6 +93,18 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
       }
     };
   }, [skip, chapterContentIsLoading]);
+  
+  useEffect(() => {
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('click', handleDocumentClick);
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener('click', handleDocumentClick);
+      }
+    };
+  }, []);
 
 
   // helper function
@@ -144,9 +171,13 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
           <div
             key={segment.id}
             className="text-segment mb-3 mb-md-4"
-            onClick={() => {
-              setSelectedSegmentId(segment.segment_id);
-              handleSidebarToggle(true);
+            onClick={(e) => {
+              if (!e.target.classList || 
+                  (!e.target.classList.contains('footnote-marker') && 
+                   !e.target.classList.contains('footnote'))) {
+                setSelectedSegmentId(segment.segment_id);
+                handleSidebarToggle(true);
+              }
             }}
           >
             <div key={segment.segment_id} className="segment">
@@ -170,9 +201,13 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
               <div
                 key={segment.id}
                 className="text-segment mb-3 mb-md-4"
-                onClick={() => {
-                  setSelectedSegmentId(segment.segment_id);
-                  handleSidebarToggle(true);
+                onClick={(e) => {
+                  if (!e.target.classList || 
+                      (!e.target.classList.contains('footnote-marker') && 
+                       !e.target.classList.contains('footnote'))) {
+                    setSelectedSegmentId(segment.segment_id);
+                    handleSidebarToggle(true);
+                  }
                 }}
               >
                 <div key={segment.segment_id} className="segment">
