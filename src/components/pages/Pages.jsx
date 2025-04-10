@@ -15,7 +15,6 @@ const Pages = () => {
   const titleInformation = location.state?.titleInformation || "";
   const { t } = useTranslate();
   const { id } = useParams();
-
   return (
     <div className="pecha-app">
       <main className="main-content">

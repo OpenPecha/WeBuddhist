@@ -36,7 +36,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   const contentId = currentChapter.contentId
 
   const {data: textDetails, isLoading: chapterContentIsLoading} = useQuery(
-    ["chapter", textId, skip, versionId],
+    ["chapter", textId, contentId, skip, versionId],
     () => fetchTextDetails(textId, contentId, versionId, skip, 40),
     {
       refetchOnWindowFocus: false,
@@ -47,7 +47,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   useEffect(() => {
     setSkip(0);
     setContents([]);
-  }, [versionId]);
+  }, [versionId, contentId]);
 
   useEffect(() => {
     if (!textDetails) return;
@@ -211,7 +211,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
           {/* Version loading spinner removed */}
           {contents?.map((item) => {
             return (<div key={item.id} className="content-item">
-              {item.segments.map(segment => renderContent(segment))}
+              {item.sections.map(segment => renderContent(segment))}
             </div>)
           })}
           {chapterContentIsLoading && (

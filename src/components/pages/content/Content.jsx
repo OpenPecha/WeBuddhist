@@ -40,7 +40,7 @@ const Content = () => {
   
   if (error) return <div className="no-content listtitle">Error loading content: {error.message}</div>;
 
-  if (!apiData || !apiData.contents || !apiData.contents[0] || !apiData.contents[0].segments || apiData.contents[0].segments.length === 0) {
+  if (!apiData || !apiData.contents || apiData.contents.length === 0) {
     return <div className="no-content listtitle">No content found</div>;
   }
 
@@ -55,9 +55,11 @@ const Content = () => {
   //   }
   // }, [apiData]);
 
-  const content = apiData?.contents[0];
-  const totalSegment = content?.segments?.length || 0;
-  const totalPages = Math.ceil(totalSegment / pagination.limit);
+  const contents = apiData?.contents;
+  const totalSections = contents.reduce((total, content) => {
+    return total + (content?.sections?.length || 0);
+  }, 0);
+  const totalPages = Math.ceil(totalSections / pagination.limit);
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -75,6 +77,7 @@ const Content = () => {
 
     return (
       <div key={`section-${section.id}`} className="section-container">
+     
         <div
           className="section-header"
           onClick={() => toggleSection(section.id)}
@@ -111,43 +114,43 @@ const Content = () => {
   return (
     <div>
       <div className="listtitle">
-        {content.segments.map((segment, segmentIndex) => {
-          const hasChildren = segment.sections && segment.sections.length > 0;
+        {contents.map((content, contentIndex) => (
+          content.sections && content.sections.map((segment, segmentIndex) => {
+            const hasChildren = segment.sections && segment.sections.length > 0;
 
-          return (
-            <div key={`segment-${segment.id}-${segmentIndex}`} className="section-container">
-              <div 
-                className="section-header"
-                onClick={() => toggleSection(segment.id)}
-              >
-                {hasChildren ? (
-                  expandedSections[segment.id] ? 
-                    <FiChevronDown size={16} className="toggle-icon" /> : 
-                    <FiChevronRight size={16} className="toggle-icon" />
-                ) : <span className="empty-icon"></span>}
-                <Link 
-                  // TODO to={`/texts/text-details?text_id=${id}&content_id=${segment.id}`}
-                  to={`/texts/text-details?text_id=${id}`}
-                  className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-                  state={{chapterInformation: {contentId: segment.id, versionId: ""}}}
-
+            return (
+              <div key={`content-${contentIndex}-segment-${segment.id}-${segmentIndex}`} className="section-container">
+                <div 
+                  className="section-header"
+                  onClick={() => toggleSection(segment.id)}
                 >
-                  {segment.title}
-                </Link>
-              </div>
-
-              {expandedSections[segment.id] && hasChildren && (
-                <div className="nested-content">
-                  {segment.sections.map((section) => 
-                    renderSection(section, 1)
-                  )}
+                  {hasChildren ? (
+                    expandedSections[segment.id] ? 
+                      <FiChevronDown size={16} className="toggle-icon" /> : 
+                      <FiChevronRight size={16} className="toggle-icon" />
+                  ) : <span className="empty-icon"></span>}
+                  <Link 
+                    to={`/texts/text-details?text_id=${id}`}
+                    className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
+                    state={{chapterInformation: {contentId: content.id, versionId: ""}}}
+                  >
+                    {segment.title}
+                  </Link>
                 </div>
-              )}
-            </div>
-          );
-        })}
+
+                {expandedSections[segment.id] && hasChildren && (
+                  <div className="nested-content">
+                    {segment.sections.map((section) => 
+                      renderSection(section, 1)
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        ))}
       </div>
-      {content.segments.length > 0 &&
+      {totalSections > 0 &&
         <PaginationComponent
           pagination={pagination}
           totalPages={totalPages}
