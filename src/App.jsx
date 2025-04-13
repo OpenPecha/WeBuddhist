@@ -1,13 +1,8 @@
 import "./App.css";
-import UserRegistration from "./components/user-registration/UserRegistration.jsx";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import HomePage from "./components/home/HomePage.jsx";
-import UserLogin from "./components/user-login/UserLogin.jsx";
 import NavigationBar from "./components/navbar/NavigationBar.jsx";
 import { useMutation } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.jsx";
-import ResetPassword from "./components/reset-password/ResetPassword.jsx";
-import ForgotPassword from "./components/forgot-password/ForgotPassword.jsx";
 import { useEffect, useState } from "react";
 import axiosInstance from "./config/axios-config.js";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "./utils/Constants.js";
@@ -16,14 +11,22 @@ import EditUserProfile from "./components/edit-user-profile/EditUserProfile.jsx"
 import UserProfile from "./components/user-profile/UserProfile.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
-import Topics from "./components/topics/Topics.jsx";
-import CommunityPage from "./components/community/CommunityPage.jsx";
-import Book from "./components/book/Book.jsx";
-import Pages from "./components/pages/Pages.jsx";
-import Library from "./components/library/Library.jsx";
-import Chapters from "./components/chapter/Chapter.jsx";
+
+import { Suspense, lazy } from "react";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
+const HomePage = lazy(() => import("./components/home/HomePage.jsx"));
+const UserLogin = lazy(() => import("./components/user-login/UserLogin.jsx"));
+const UserRegistration = lazy(() => import("./components/user-registration/UserRegistration.jsx"));
+const Topics = lazy(() => import("./components/topics/Topics.jsx"));
+const CommunityPage = lazy(() => import("./components/community/CommunityPage.jsx"));
+const Pages = lazy(() => import("./components/pages/Pages.jsx"));
+const Book = lazy(() => import("./components/book/Book.jsx"));
+const Library = lazy(() => import("./components/library/Library.jsx"));
+const Chapters = lazy(() => import("./components/chapter/Chapters.jsx"));
+const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword.jsx"));
+const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword.jsx"));
+
 
 function App() {
     const navigate = useNavigate();
@@ -106,27 +109,27 @@ function App() {
     }, []);
 
     return (
-        <>
-            <NavigationBar />
-            <Routes>
-                <Route path="/" element={ <HomePage /> } />
-                <Route path="/texts" element={ <HomePage /> } />
-                <Route path="/profile" element={ <AuthenticationGuard component={ UserProfile } /> } />
-                <Route path="/edit-profile" element={ <AuthenticationGuard component={ EditUserProfile } /> } />
-                <Route path="/reset-password" element={ < ResetPassword /> } />
-                <Route path="/forgot-password" element={ <ForgotPassword /> } />
-                <Route path="/register" element={ <UserRegistration /> } />
-                <Route path="/login" element={ <UserLogin /> } />
-                <Route path="/topics" element={<Topics/>}/>
-                <Route path="/topics/:id" element={<Topics />} />
-                <Route path="/community" element={ <CommunityPage /> } />
-                <Route path="/text-detail/:id" element={ <Pages /> } />
-                <Route path="/texts/text-child/:id" element={ <Library /> } />
-                <Route path="/texts/text-category/:id" element={ <Book /> } />
-                <Route path="/texts/text-details" element={ <Chapters /> } />
-                <Route path="*" element={ <HomePage /> } />
-            </Routes>
-        </>
+      <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+          <NavigationBar/>
+          <Routes>
+              <Route path="/" element={<HomePage/>}/>
+              <Route path="/texts" element={<HomePage/>}/>
+              <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
+              <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
+              <Route path="/reset-password" element={<ResetPassword/>}/>
+              <Route path="/forgot-password" element={<ForgotPassword/>}/>
+              <Route path="/register" element={<UserRegistration/>}/>
+              <Route path="/login" element={<UserLogin/>}/>
+              <Route path="/topics" element={<Topics/>}/>
+              <Route path="/topics/:id" element={<Topics/>}/>
+              <Route path="/community" element={<CommunityPage/>}/>
+              <Route path="/text-detail/:id" element={<Pages/>}/>
+              <Route path="/texts/text-child/:id" element={<Library/>}/>
+              <Route path="/texts/text-category/:id" element={<Book/>}/>
+              <Route path="/texts/text-details" element={<Chapters/>}/>
+              <Route path="*" element={<HomePage/>}/>
+          </Routes>
+      </Suspense>
     );
 }
 

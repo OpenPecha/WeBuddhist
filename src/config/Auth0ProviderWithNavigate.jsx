@@ -19,7 +19,7 @@ export const Auth0ProviderWithNavigate = ({children}) => {
       refetchOnWindowFocus: false,
       retry: false,
       onError: () => {
-        navigate("/homepage");
+        navigate("/");
       },
     }
   );

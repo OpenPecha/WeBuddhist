@@ -4,7 +4,7 @@ import {QueryClient, QueryClientProvider} from "react-query";
 import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render, screen} from "@testing-library/react";
-import TranslationView, {fetchtranslationdata} from "./TranslationView.jsx";
+import TranslationView, {fetchTranslationsData} from "./TranslationView.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../../../config/axios-config.js";
@@ -156,7 +156,7 @@ describe("TranslationView Component", () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockTranslationData });
     
     const segmentId = "test-segment-id";
-    const result = await fetchtranslationdata(segmentId);
+    const result = await fetchTranslationsData(segmentId);
     
     expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/segments/test-segment-id/translations", {
       params: {

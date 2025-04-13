@@ -1,15 +1,12 @@
-import {useEffect, useRef, useState} from 'react';
-import {Container, Spinner} from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './Chapter.scss';
-import axiosInstance from "../../config/axios-config.js";
-import {getLanguageClass, sourceTranslationOptionsMapper} from '../../utils/Constants.js';
-import {BsBookmark, BsBookmarkFill} from "react-icons/bs";
-import {MdOutlineVerticalSplit, MdClose} from "react-icons/md";
-import {useQuery} from 'react-query';
-import {useLocation, useSearchParams} from "react-router-dom";
-import TranslationSource from './localcomponent/translation-source/TranslationSource.jsx';
-import Resources from "../resources-side-panel/Resources.jsx";
+import {useEffect, useRef, useState} from "react";
+import {getLanguageClass, sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
+import {useSearchParams} from "react-router-dom";
+import {useQuery} from "react-query";
+import {Container, Spinner} from "react-bootstrap";
+import Resources from "../../../resources-side-panel/Resources.jsx";
+import axiosInstance from "../../../../config/axios-config.js";
+import "./Chapter.scss"
+import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 
 export const fetchTextDetails = async (text_id, content_id, versionId, skip, limit) => {
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
@@ -24,25 +21,23 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   const [contents, setContents] = useState([]);
   const [skip, setSkip] = useState(0);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [showTranslationSource, setShowTranslationSource] = useState(false);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [showPanel, setShowPanel] = useState(false);
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
-  
+  const isLoadingRef = useRef(false);
+
   const handleDocumentClick = (event) => {
     if (event.target.classList && event.target.classList.contains('footnote-marker')) {
       event.stopPropagation();
       event.preventDefault();
       const footnoteMarker = event.target;
       const footnote = footnoteMarker.nextElementSibling;
-      
+
       if (footnote && footnote.classList.contains('footnote')) {
         footnote.classList.toggle('active');
       }
-      
       return false;
     }
   };
@@ -52,7 +47,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
 
   const {data: textDetails, isLoading: chapterContentIsLoading} = useQuery(
     ["chapter", textId, contentId, skip, versionId],
-    () => fetchTextDetails(textId, contentId, versionId, skip, 40),
+    () => fetchTextDetails(textId, contentId, versionId, skip, 5),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20
@@ -81,19 +76,31 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
     }
   }, [])
 
+
+  useEffect(() => {
+    isLoadingRef.current = chapterContentIsLoading;
+  }, [chapterContentIsLoading]);
+
   useEffect(() => {
     const currentContainer = containerRef.current;
-    if (currentContainer) {
-      currentContainer.addEventListener('scroll', handleScroll);
-    }
+    if (!currentContainer) return;
 
-    return () => {
-      if (currentContainer) {
-        currentContainer.removeEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      const {scrollTop, scrollHeight, clientHeight} = currentContainer;
+      const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
+
+      if (scrollPosition > 0.9 && !isLoadingRef.current) {
+        isLoadingRef.current = true;
+        setSkip(prev => prev + 1);
       }
     };
-  }, [skip, chapterContentIsLoading]);
-  
+
+    currentContainer.addEventListener('scroll', handleScroll);
+    return () => {
+      currentContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
@@ -120,46 +127,9 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
     if (!containerRef.current) return;
     const {scrollTop, scrollHeight, clientHeight} = containerRef.current;
     const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
-    if (scrollPosition >= 0.75 && !chapterContentIsLoading) {
+    if (scrollPosition > 0.9 && !chapterContentIsLoading) {
       setSkip(prevState => prevState + 1);
     }
-  };
-
-  const handleOptionChange = (option) => {
-    setSelectedOption(option);
-  };
-
-  const HeaderOverlay = () => {
-    return (
-      <div className="header-overlay">
-        <div className={`text-container ${getLanguageClass(textDetails?.text_detail?.language)}`}>
-          {textDetails?.text_detail?.title}
-        </div>
-
-        <div className="d-flex align-items-center">
-          <button className="bookmark-button mr-2" onClick={() => setIsBookmarked(!isBookmarked)}>
-            {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
-          </button>
-          <button
-            className="bookmark-button" onClick={(e) => setShowTranslationSource(!showTranslationSource)}>
-            <MdOutlineVerticalSplit size={20}/>
-          </button>
-          {showTranslationSource && (
-            <TranslationSource
-              selectedOption={selectedOption}
-              onOptionChange={handleOptionChange}
-              onClose={() => setShowTranslationSource(false)}
-            />
-          )}
-          {totalChapters > 1 && (
-            <button
-              className="close-chapter bookmark-button" onClick={() => removeChapter(currentChapter)}>
-              <MdClose size={20}/>
-            </button>
-          )}
-        </div>
-      </div>
-    );
   };
 
   const renderContent = (item) => {
@@ -172,9 +142,9 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
             key={segment.id}
             className="text-segment mb-3 mb-md-4"
             onClick={(e) => {
-              if (!e.target.classList || 
-                  (!e.target.classList.contains('footnote-marker') && 
-                   !e.target.classList.contains('footnote'))) {
+              if (!e.target.classList ||
+                (!e.target.classList.contains('footnote-marker') &&
+                  !e.target.classList.contains('footnote'))) {
                 setSelectedSegmentId(segment.segment_id);
                 handleSidebarToggle(true);
               }
@@ -202,9 +172,9 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
                 key={segment.id}
                 className="text-segment mb-3 mb-md-4"
                 onClick={(e) => {
-                  if (!e.target.classList || 
-                      (!e.target.classList.contains('footnote-marker') && 
-                       !e.target.classList.contains('footnote'))) {
+                  if (!e.target.classList ||
+                    (!e.target.classList.contains('footnote-marker') &&
+                      !e.target.classList.contains('footnote'))) {
                     setSelectedSegmentId(segment.segment_id);
                     handleSidebarToggle(true);
                   }
@@ -236,8 +206,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
 
   // main renderer
   return (
-    <>
-      <HeaderOverlay/>
+    <div className={"chapter"}>
+      <ChapterHeader selectedOption={selectedOption} currentChapter={currentChapter} removeChapter={removeChapter}
+                     setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
+                     totalChapters={totalChapters}/>
       <Container fluid className="p-0">
         <div
           ref={containerRef}
@@ -267,65 +239,8 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
           addChapter={addChapter}
         />
       </Container>
-    </>
+    </div>
   );
 };
 
-const Chapters = () => {
-  const location = useLocation();
-  const [chapters, setChapters] = useState(() => {
-    const savedChapters = sessionStorage.getItem('chapters');
-    return savedChapters ? JSON.parse(savedChapters) : [location.state?.chapterInformation] || [{
-      contentId: "",
-      versionId: "",
-      uniqueId: Date.now()
-    }]
-  });
-
-  useEffect(() => {
-    sessionStorage.setItem('chapters', JSON.stringify(chapters));
-  }, [chapters]);
-
-  const addChapter = (chapterInformation) => {
-    setChapters(prevChapters => {
-      if (prevChapters.length >= 3) {
-        return prevChapters;
-      }
-      const newChapter = {
-        ...chapterInformation,
-        uniqueId: chapterInformation.uniqueId || Date.now()
-      };
-      return [
-        ...prevChapters,
-        newChapter
-      ];
-    });
-  };
-
-  const removeChapter = (chapterInformation) => {
-    setChapters(prevChapters =>
-      prevChapters.filter(chapter => {
-        if (chapter.uniqueId && chapterInformation.uniqueId) {
-          return chapter.uniqueId !== chapterInformation.uniqueId;
-        }
-        return !(chapter.contentId === chapterInformation.contentId && 
-                chapter.versionId === chapterInformation.versionId);
-      })
-    );
-  };
-
-  return (
-    <div className="chapters-container">
-      {chapters.map((chapter, index) => (
-        <div
-          key={index}
-          className="chapter-container"
-          style={{width: `${100 / chapters.length}%`}}
-        >
-          <Chapter addChapter={addChapter} removeChapter={removeChapter} currentChapter={chapter} totalChapters={chapters.length}/>
-        </div>
-      ))}
-    </div>
-  );
-}
-export default Chapters;
+export default Chapter;
