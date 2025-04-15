@@ -20,6 +20,7 @@ export const fetchTextDetails = async (text_id, content_id, versionId, skip, lim
 const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => {
   const [contents, setContents] = useState([]);
   const [skip, setSkip] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
@@ -57,16 +58,26 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   useEffect(() => {
     setSkip(0);
     setContents([]);
+    setHasMore(true);
   }, [versionId, contentId]);
 
   useEffect(() => {
     if (!textDetails) return;
+    const PAGE_SIZE = 5;
     if (skip === 0) {
       setContents(textDetails.contents);
     } else {
       setContents(prevState => {
         return [...prevState, ...textDetails.contents]
       });
+    }
+    
+    isLoadingRef.current = false;
+    
+    if (textDetails.total !== undefined) {
+      setHasMore(contents.length < textDetails.total);
+    } else {
+      setHasMore(textDetails.contents && textDetails.contents.length === PAGE_SIZE);
     }
   }, [textDetails, skip]);
 
@@ -78,7 +89,9 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
 
 
   useEffect(() => {
-    isLoadingRef.current = chapterContentIsLoading;
+    if (!chapterContentIsLoading) {
+      isLoadingRef.current = false;
+    }
   }, [chapterContentIsLoading]);
 
   useEffect(() => {
@@ -89,9 +102,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
       const {scrollTop, scrollHeight, clientHeight} = currentContainer;
       const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
 
-      if (scrollPosition > 0.9 && !isLoadingRef.current) {
+      const PAGE_SIZE = 5;
+      if (scrollPosition > 0.99 && !isLoadingRef.current && hasMore) {
         isLoadingRef.current = true;
-        setSkip(prev => prev + 1);
+        setSkip(prev => prev + PAGE_SIZE);
       }
     };
 
@@ -123,14 +137,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   const handleSidebarToggle = (isOpen) => {
     setShowPanel(isOpen);
   };
-  const handleScroll = () => {
-    if (!containerRef.current) return;
-    const {scrollTop, scrollHeight, clientHeight} = containerRef.current;
-    const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
-    if (scrollPosition > 0.9 && !chapterContentIsLoading) {
-      setSkip(prevState => prevState + 1);
-    }
-  };
+
 
   const renderContent = (item) => {
     return (
