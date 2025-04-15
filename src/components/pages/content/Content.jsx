@@ -132,7 +132,7 @@ const Content = () => {
                   <Link 
                     to={`/texts/text-details?text_id=${id}`}
                     className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-                    state={{chapterInformation: {contentId: content.id, versionId: ""}}}
+                    state={{chapterInformation: {contentId: content.id, versionId: "", initialSegmentIndex: segmentIndex}}}
                   >
                     {segment.title}
                   </Link>

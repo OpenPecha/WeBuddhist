@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import {getLanguageClass, sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
-import {useSearchParams} from "react-router-dom";
+import {useSearchParams, useLocation} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
 import Resources from "../../../resources-side-panel/Resources.jsx";
@@ -18,8 +18,10 @@ export const fetchTextDetails = async (text_id, content_id, versionId, skip, lim
   return data;
 }
 const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => {
+  const location = useLocation();
+  const initialSegmentIndex = location.state?.chapterInformation?.initialSegmentIndex || 0;
   const [contents, setContents] = useState([]);
-  const [skip, setSkip] = useState(0);
+  const [skip, setSkip] = useState(initialSegmentIndex);
   const [hasMore, setHasMore] = useState(true);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
@@ -56,10 +58,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   );
   // Reset skip when versionId changes
   useEffect(() => {
-    setSkip(0);
+    setSkip(initialSegmentIndex);
     setContents([]);
     setHasMore(true);
-  }, [versionId, contentId]);
+  }, [versionId, contentId, initialSegmentIndex]);
 
   useEffect(() => {
     if (!textDetails) return;
