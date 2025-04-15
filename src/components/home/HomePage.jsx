@@ -36,18 +36,6 @@ const HomePage = () => {
 
   const textsList = textData || { terms: [], total: 0, skip: 0, limit: 10 };
 
-  if (isLoading) {
-    return (
-      <Container fluid className="homepage-container">
-        <Row className="justify-content-center">
-          <Col xs={12} className="text-center py-5">
-            <p>Loading content...</p>
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
-
   const renderBrowseSection = () => {
     return (
       <div className="section-1 ">

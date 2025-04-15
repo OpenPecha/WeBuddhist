@@ -286,7 +286,7 @@ const UserProfile = () => {
             </div>
           </div>
         </div>
-        : <p>Loading...</p> }
+        : <p className="listsubtitle">{t("common.loading")}</p> }
     </>
   );
 };

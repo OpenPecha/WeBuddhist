@@ -4,9 +4,11 @@ import {LOGGED_IN_VIA} from "../utils/Constants.js";
 import PropTypes from "prop-types";
 import {useQuery} from "react-query";
 import axiosInstance from "./axios-config.js";
+import { useTranslate } from "@tolgee/react";
 
 export const Auth0ProviderWithNavigate = ({children}) => {
   const navigate = useNavigate();
+  const { t } = useTranslate();
   const redirectUri = window.location.origin
 
   const {data: auth0Provider, isLoading: auth0ProvideIsLoading} = useQuery(
@@ -42,7 +44,7 @@ export const Auth0ProviderWithNavigate = ({children}) => {
         cacheLocation={"localstorage"}
       >
         {children}
-      </Auth0Provider> : <p>Loading...</p>}
+      </Auth0Provider> : <p className="listsubtitle">{t("common.loading")}</p>}
     </>
   );
 };

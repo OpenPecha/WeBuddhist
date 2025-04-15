@@ -3,15 +3,16 @@ import { useAuth } from "./AuthContext.jsx";
 import { Navigate } from "react-router-dom";
 import { LOGGED_IN_VIA } from "../utils/Constants.js";
 import PropTypes from "prop-types";
+import { useTranslate } from "@tolgee/react";
 
 export const AuthenticationGuard = ({component}) => {
     const {isLoggedIn} = useAuth();
     const {isAuthenticated} = useAuth0();
-
+    const { t } = useTranslate();
     const ViaSocialLogin = withAuthenticationRequired(component, {
         onRedirecting: () => (
-            <div className="page-layout">
-                Loading... {/* TODO: Create a loading component, mostly a spinner using React suspense */}
+            <div className="page-layout listsubtitle">
+                {t("common.loading")} {/* TODO: Create a loading component, mostly a spinner using React suspense */}
             </div>
         ),
     });

@@ -38,11 +38,11 @@ const Book = () => {
   
   
   if (isLoading) {
-    return <div className="notfound listtitle">Loading content...</div>;
+    return <div className="notfound listtitle"> {t("common.loading")}</div>;
   }
   
   if (error) {
-    return <div className="notfound listtitle">
+    return <div className="notfound">
       <div className="no-content">Error loading content: {error.message}</div>
     </div>;
   }
