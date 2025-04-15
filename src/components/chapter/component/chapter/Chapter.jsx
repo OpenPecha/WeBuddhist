@@ -30,7 +30,6 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   const [showPanel, setShowPanel] = useState(false);
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
-
   const handleDocumentClick = (event) => {
     if (event.target.classList && event.target.classList.contains('footnote-marker')) {
       event.stopPropagation();
@@ -66,20 +65,22 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   useEffect(() => {
     if (!textDetails) return;
     const PAGE_SIZE = 5;
+
+    // Filter out items with empty sections so that in content array empty items are not added
+    const filteredContents = (textDetails.contents || []).filter(
+      item => Array.isArray(item.sections) && item.sections.length > 0
+    );
     if (skip === 0) {
-      setContents(textDetails.contents);
+      setContents(filteredContents);
     } else {
-      setContents(prevState => {
-        return [...prevState, ...textDetails.contents]
-      });
+      setContents(prevState => [...prevState, ...filteredContents]);
     }
-    
+
     isLoadingRef.current = false;
-    
     if (textDetails.total !== undefined) {
-      setHasMore(contents.length < textDetails.total);
+      setHasMore(contents.length + filteredContents.length < textDetails.total);
     } else {
-      setHasMore(textDetails.contents && textDetails.contents.length === PAGE_SIZE);
+      setHasMore(filteredContents.length === PAGE_SIZE);
     }
   }, [textDetails, skip]);
 
