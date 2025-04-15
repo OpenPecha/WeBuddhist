@@ -18,6 +18,8 @@ export const fetchTextDetails = async (text_id, content_id, versionId, skip, lim
   return data;
 }
 const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => {
+
+  const [total, setTotal] = useState(undefined);
   const location = useLocation();
   const initialSegmentIndex = location.state?.chapterInformation?.initialSegmentIndex || 0;
   const [contents, setContents] = useState([]);
@@ -52,7 +54,8 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
     () => fetchTextDetails(textId, contentId, versionId, skip, 5),
     {
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 20
+      staleTime: 1000 * 60 * 20,
+      enabled: typeof total !== 'number' ? true : skip < total
     }
   );
   // Reset skip when versionId changes
@@ -65,6 +68,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   useEffect(() => {
     if (!textDetails) return;
     const PAGE_SIZE = 5;
+
+    if (typeof textDetails.total === 'number') {
+      setTotal(textDetails.total);
+    }
 
     // Filter out items with empty sections so that in content array empty items are not added
     const filteredContents = (textDetails.contents || []).filter(
