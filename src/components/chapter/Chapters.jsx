@@ -55,7 +55,7 @@ const Chapters = () => {
           className="chapter-container"
           style={{width: `${100 / chapters.length}%`}}
         >
-          <Chapter addChapter={addChapter} removeChapter={removeChapter} currentChapter={chapter} totalChapters={chapters.length}/>
+          <Chapter addChapter={addChapter} removeChapter={removeChapter} currentChapter={chapter} totalPages={chapters.length}/>
         </div>
       ))}
     </div>

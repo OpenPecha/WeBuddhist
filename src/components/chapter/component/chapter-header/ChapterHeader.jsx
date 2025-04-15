@@ -5,7 +5,7 @@ import TranslationSource from "../translation-source-option-selector/Translation
 import {useState} from "react";
 
 
-const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalChapters, removeChapter, currentChapter}) => {
+const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPages, removeChapter, currentChapter}) => {
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTranslationSource, setShowTranslationSource] = useState(false);
@@ -35,7 +35,7 @@ const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalCha
             onClose={() => setShowTranslationSource(false)}
           />
         )}
-        {totalChapters > 1 && (
+        {totalPages > 1 && (
           <button
             className="close-chapter bookmark-button" onClick={() => removeChapter(currentChapter)}>
             <MdClose size={20}/>

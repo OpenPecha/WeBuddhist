@@ -1,6 +1,6 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {getLanguageClass, sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
-import {useSearchParams, useLocation} from "react-router-dom";
+import {useSearchParams} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
 import Resources from "../../../resources-side-panel/Resources.jsx";
@@ -17,14 +17,9 @@ export const fetchTextDetails = async (text_id, content_id, versionId, skip, lim
   });
   return data;
 }
-const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => {
-
-  const [total, setTotal] = useState(undefined);
-  const location = useLocation();
-  const initialSegmentIndex = location.state?.chapterInformation?.initialSegmentIndex || 0;
+const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
-  const [skip, setSkip] = useState(initialSegmentIndex);
-  const [hasMore, setHasMore] = useState(true);
+  const [skip, setSkip] = useState(0);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
@@ -32,6 +27,8 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
   const [showPanel, setShowPanel] = useState(false);
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
+  const totalContentRef = useRef(0)
+
   const handleDocumentClick = (event) => {
     if (event.target.classList && event.target.classList.contains('footnote-marker')) {
       event.stopPropagation();
@@ -51,43 +48,30 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
 
   const {data: textDetails, isLoading: chapterContentIsLoading} = useQuery(
     ["chapter", textId, contentId, skip, versionId],
-    () => fetchTextDetails(textId, contentId, versionId, skip, 5),
+    () => fetchTextDetails(textId, contentId, versionId, skip, 1),
     {
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 20,
-      enabled: typeof total !== 'number' ? true : skip < total
+      enabled: totalContentRef.current !== 0 ? (skip) + 1 <= totalContentRef.current: true
     }
   );
   // Reset skip when versionId changes
   useEffect(() => {
-    setSkip(initialSegmentIndex);
+    setSkip(0);
     setContents([]);
-    setHasMore(true);
-  }, [versionId, contentId, initialSegmentIndex]);
+  }, [versionId, contentId]);
 
   useEffect(() => {
     if (!textDetails) return;
-    const PAGE_SIZE = 5;
-
-    if (typeof textDetails.total === 'number') {
-      setTotal(textDetails.total);
-    }
-
-    // Filter out items with empty sections so that in content array empty items are not added
-    const filteredContents = (textDetails.contents || []).filter(
-      item => Array.isArray(item.sections) && item.sections.length > 0
-    );
     if (skip === 0) {
-      setContents(filteredContents);
+      setContents(textDetails.contents);
     } else {
-      setContents(prevState => [...prevState, ...filteredContents]);
+      setContents(prevState => {
+        return [...prevState, ...textDetails.contents]
+      });
     }
 
-    isLoadingRef.current = false;
-    if (textDetails.total !== undefined) {
-      setHasMore(contents.length + filteredContents.length < textDetails.total);
-    } else {
-      setHasMore(filteredContents.length === PAGE_SIZE);
+    if(!totalContentRef.current){
+      totalContentRef.current = textDetails?.total
     }
   }, [textDetails, skip]);
 
@@ -99,9 +83,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
 
 
   useEffect(() => {
-    if (!chapterContentIsLoading) {
-      isLoadingRef.current = false;
-    }
+    isLoadingRef.current = chapterContentIsLoading;
   }, [chapterContentIsLoading]);
 
   useEffect(() => {
@@ -112,10 +94,9 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
       const {scrollTop, scrollHeight, clientHeight} = currentContainer;
       const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
 
-      const PAGE_SIZE = 5;
-      if (scrollPosition > 0.99 && !isLoadingRef.current && hasMore) {
+      if (scrollPosition > 0.99 && !isLoadingRef.current) {
         isLoadingRef.current = true;
-        setSkip(prev => prev + PAGE_SIZE);
+        setSkip(prev => prev + 1);
       }
     };
 
@@ -226,7 +207,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalChapters}) => 
     <div className={"chapter"}>
       <ChapterHeader selectedOption={selectedOption} currentChapter={currentChapter} removeChapter={removeChapter}
                      setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
-                     totalChapters={totalChapters}/>
+                     totalPages={totalPages}/>
       <Container fluid className="p-0">
         <div
           ref={containerRef}
