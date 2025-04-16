@@ -32,7 +32,7 @@ const tolgee = Tolgee()
 createRoot(document.getElementById('root')).render(
   <Router>
     <QueryClientProvider client={ queryClient }>
-      <TolgeeProvider tolgee={ tolgee } fallback={ "Loading Tolgee..." }>
+      <TolgeeProvider tolgee={ tolgee }>
         <Auth0ProviderWithNavigate>
           <PechaAuthProvider>
             <App />

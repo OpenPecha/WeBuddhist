@@ -110,7 +110,7 @@ function App() {
     }, []);
 
     return (
-      <Suspense fallback={<div className="loading-screen listtitle">{t("common.loading")}</div>}>
+      <Suspense>
           <NavigationBar/>
           <Routes>
               <Route path="/" element={<HomePage/>}/>

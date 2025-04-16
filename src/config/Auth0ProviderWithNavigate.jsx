@@ -33,7 +33,7 @@ export const Auth0ProviderWithNavigate = ({children}) => {
 
   return (
     <>
-      {!auth0ProvideIsLoading ? <Auth0Provider
+      {!auth0ProvideIsLoading && <Auth0Provider
         domain={auth0Provider?.domain}
         clientId={auth0Provider?.client_id}
         authorizationParams={{
@@ -44,7 +44,7 @@ export const Auth0ProviderWithNavigate = ({children}) => {
         cacheLocation={"localstorage"}
       >
         {children}
-      </Auth0Provider> : <p className="listsubtitle">{t("common.loading")}</p>}
+      </Auth0Provider>}
     </>
   );
 };
