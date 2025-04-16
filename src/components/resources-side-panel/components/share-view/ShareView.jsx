@@ -15,7 +15,7 @@ const ShareView = ({ sidePanelData, setIsShareView }) => {
         <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
         <IoMdClose
           size={24}
-          onClick={() => setIsShareView(false)}
+          onClick={() => setIsShareView("main")}
           className="close-icon"
         />
       </div>

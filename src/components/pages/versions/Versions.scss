@@ -12,6 +12,13 @@ $primary-color: #666666;
     align-items: center;
     
     .section-title {
+      color: $primary-color !important;
+  &:hover,
+  &:visited,
+  &:active {
+    color: $primary-color !important;
+    text-decoration: underline;
+  }
       .titleversion {
         font-size: 16px;
         font-weight: 500;

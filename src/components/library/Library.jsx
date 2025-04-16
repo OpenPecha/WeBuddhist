@@ -33,7 +33,7 @@ const Library = () => {
   );
 
   if (isLoading) {
-    return <div className="loading">Loading...</div>;
+    return <div className="loading listtitle">{t("common.loading")}</div>;
   }
 
   return (

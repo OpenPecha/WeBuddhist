@@ -2,7 +2,7 @@ import {LANGUAGE, mapLanguageCode} from "../../utils/Constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {useMemo, useState} from "react";
-import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Pagination, Row} from "react-bootstrap";
 import "./Topics.scss"
 import React from "react";
@@ -32,7 +32,6 @@ const Topics = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { t } = useTranslate();
-  const location = useLocation();
 
   const parentId = searchParams.get("id") || null;
   const [searchFilter, setSearchFilter] = useState("");
@@ -76,7 +75,7 @@ const Topics = () => {
   const renderTopicsList = () => {
     const filteredTopics = topicsList.topics.filter((topic) => {
       if (searchFilter) {
-        return topic.title.toLowerCase().includes(searchFilter.toLowerCase())
+        return topic.title.toLowerCase().startsWith(searchFilter.toLowerCase())
       }
       return true;
     });

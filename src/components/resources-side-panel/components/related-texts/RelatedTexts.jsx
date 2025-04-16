@@ -24,7 +24,6 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
     () => fetchCommentaryData("2353849b-f8fa-43e4-850d-786b623d0130"),  //use segmentid later todo
     {
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 20
     }
   );
   const toggleCommentary = (commentaryId) => {
@@ -44,7 +43,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
         </p>
         <IoMdClose
           size={24}
-          onClick={() => setIsCommentaryView(false)}
+          onClick={() => setIsCommentaryView("main")}
           className="close-icon"
         />
       </div>

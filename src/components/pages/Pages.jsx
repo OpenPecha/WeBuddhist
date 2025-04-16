@@ -27,7 +27,7 @@ const Pages = () => {
             <Link
               to={`/texts/text-details?text_id=${id}`}
               className="continue-button navbaritems"
-              state={{chapterInformation: {contentId: titleInformation?.id || "", versionId: ""}}}
+              state={{chapterInformation: {contentId: "78c33db2-e0bf-48b3-9d2e-82e9c84301da" || "", versionId: ""}}}
             >
               {t("text.button.continue_reading")}
             </Link>

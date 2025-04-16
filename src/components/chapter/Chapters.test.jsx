@@ -5,10 +5,11 @@ import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, act } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import Chapters, { fetchTextDetails } from "./Chapter.jsx";
+import Chapters from "./Chapters.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
+import {fetchTextDetails} from "./component/chapter/Chapter.jsx";
 
 mockAxios();
 mockUseAuth();
@@ -505,7 +506,7 @@ describe("Chapter Component", () => {
 
   test("handles source/translation view options", async () => {
     // Create a mock for the TranslationSource component
-    vi.mock('./localcomponent/translation-source/TranslationSource.jsx', () => ({
+    vi.mock('./component/translation-source-option-selector/TranslationSource.jsx', () => ({
       __esModule: true,
       default: ({ onOptionChange }) => {
         // Simple mock that doesn't use useEffect

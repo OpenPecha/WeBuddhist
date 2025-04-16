@@ -6,7 +6,7 @@ import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
 import { useParams, Link } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
-
+import { useTranslate } from "@tolgee/react";
 export const fetchTextContent = async (text_id) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -23,6 +23,7 @@ export const fetchTextContent = async (text_id) => {
 const Content = () => {
   const [expandedSections, setExpandedSections] = useState({});
   const { id } = useParams();
+  const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
   const { data: apiData, isLoading, error } = useQuery(
@@ -36,7 +37,7 @@ const Content = () => {
   );
 
 
-  if (isLoading) return <div>Loading content...</div>;
+  if (isLoading) return <div className="listsubtitle">{t("common.loading")}</div>;
   
   if (error) return <div className="no-content listtitle">Error loading content: {error.message}</div>;
 
@@ -115,11 +116,11 @@ const Content = () => {
     <div>
       <div className="listtitle">
         {contents.map((content, contentIndex) => (
-          content.sections && content.sections.map((segment, segmentIndex) => {
+          content.sections && content.sections.map((segment, index) => {
             const hasChildren = segment.sections && segment.sections.length > 0;
 
             return (
-              <div key={`content-${contentIndex}-segment-${segment.id}-${segmentIndex}`} className="section-container">
+              <div key={`content-${contentIndex}-segment-${segment.id}-${index}`} className="section-container">
                 <div 
                   className="section-header"
                   onClick={() => toggleSection(segment.id)}
@@ -132,7 +133,7 @@ const Content = () => {
                   <Link 
                     to={`/texts/text-details?text_id=${id}`}
                     className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-                    state={{chapterInformation: {contentId: content.id, versionId: ""}}}
+                    state={{chapterInformation: {contentId: content.id, versionId: "", contentindex:index}}}
                   >
                     {segment.title}
                   </Link>
