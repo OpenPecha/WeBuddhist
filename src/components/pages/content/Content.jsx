@@ -20,7 +20,7 @@ export const fetchTextContent = async (text_id) => {
   return data;
 };
 
-const Content = () => {
+const Content = ({ onContentSelect }) => {
   const [expandedSections, setExpandedSections] = useState({});
   const { id } = useParams();
   const { t } = useTranslate();
@@ -33,6 +33,11 @@ const Content = () => {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20,
       retry: 1,
+      onSuccess: (data) => {
+        if (data?.contents && data.contents.length > 0) {
+          onContentSelect(data.contents[0].id);
+        }
+      }
     }
   );
 

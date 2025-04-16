@@ -11,6 +11,7 @@ import { getLanguageClass } from '../../utils/Constants';
 const Pages = () => {
   const [selectedVersion, setSelectedVersion] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('');
+  const [contentId, setContentId] = useState('');
   const location = useLocation();
   const titleInformation = location.state?.titleInformation || "";
   const { t } = useTranslate();
@@ -27,7 +28,7 @@ const Pages = () => {
             <Link
               to={`/texts/text-details?text_id=${id}`}
               className="continue-button navbaritems"
-              state={{chapterInformation: {contentId: "78c33db2-e0bf-48b3-9d2e-82e9c84301da" || "", versionId: ""}}}
+              state={{chapterInformation: {contentId: contentId || "", versionId: ""}}}
             >
               {t("text.button.continue_reading")}
             </Link>
@@ -39,10 +40,10 @@ const Pages = () => {
             className="custom-tabs listsubtitle"
           >
             <Tab eventKey="contents" title={t("text.contents")}>
-              <Content />
+              <Content onContentSelect={setContentId} />
             </Tab>
             <Tab eventKey="versions" title={t("common.version")}>
-              <Versions />
+              <Versions contentId={contentId} />
             </Tab>
           </Tabs>
         </div>

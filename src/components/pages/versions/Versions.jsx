@@ -21,7 +21,7 @@ export const fetchVersions = async (id, limit, skip) => {
   })
   return data
 }
-const Versions = () =>{
+const Versions = ({ contentId }) =>{
   const { id } = useParams();
   const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
@@ -75,7 +75,7 @@ const Versions = () =>{
                   // TODO to={`/texts/text-details?text_id=${id}&version_id=${version.id}`}
                   to={`/texts/text-details?text_id=${id}`}
                   className="section-title"
-                  state={{chapterInformation: {contentId: "", versionId: version.id}}}
+                  state={{chapterInformation: {contentId: contentId, versionId: version.id}}}
                 >
                   <div className={`${getLanguageClass(version.language)} titleversion`}>
                     {version.title}
