@@ -10,6 +10,7 @@ const Chapters = () => {
     const savedChapters = sessionStorage.getItem('chapters');
     return savedChapters ? JSON.parse(savedChapters) : [location.state?.chapterInformation] || [{
       contentId: "",
+      contentindex: 0,
       versionId: "",
       uniqueId: Date.now()
     }]

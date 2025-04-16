@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 import {getLanguageClass, sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
-import {useSearchParams} from "react-router-dom";
+import {useSearchParams, useLocation} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
 import Resources from "../../../resources-side-panel/Resources.jsx";
@@ -19,7 +19,7 @@ export const fetchTextDetails = async (text_id, content_id, versionId, skip, lim
 }
 const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
-  const [skip, setSkip] = useState(0);
+  
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
@@ -28,7 +28,9 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
   const totalContentRef = useRef(0)
-
+  const location = useLocation();
+  const skipnumber=location?.state?.chapterInformation?.contentindex
+  const [skip, setSkip] = useState(skipnumber);
   const handleDocumentClick = (event) => {
     if (event.target.classList && event.target.classList.contains('footnote-marker')) {
       event.stopPropagation();
@@ -45,7 +47,6 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
 
   const textId = searchParams.get("text_id");
   const contentId = currentChapter.contentId
-
   const {data: textDetails, isLoading: chapterContentIsLoading} = useQuery(
     ["chapter", textId, contentId, skip, versionId],
     () => fetchTextDetails(textId, contentId, versionId, skip, 1),
@@ -56,10 +57,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   );
   // Reset skip when versionId changes
   useEffect(() => {
-    setSkip(0);
+    setSkip(skipnumber);
     setContents([]);
   }, [versionId, contentId]);
-
+ 
   useEffect(() => {
     if (!textDetails) return;
     if (skip === 0) {

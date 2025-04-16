@@ -116,11 +116,11 @@ const Content = () => {
     <div>
       <div className="listtitle">
         {contents.map((content, contentIndex) => (
-          content.sections && content.sections.map((segment, segmentIndex) => {
+          content.sections && content.sections.map((segment, index) => {
             const hasChildren = segment.sections && segment.sections.length > 0;
 
             return (
-              <div key={`content-${contentIndex}-segment-${segment.id}-${segmentIndex}`} className="section-container">
+              <div key={`content-${contentIndex}-segment-${segment.id}-${index}`} className="section-container">
                 <div 
                   className="section-header"
                   onClick={() => toggleSection(segment.id)}
@@ -133,7 +133,7 @@ const Content = () => {
                   <Link 
                     to={`/texts/text-details?text_id=${id}`}
                     className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-                    state={{chapterInformation: {contentId: content.id, versionId: "", initialSegmentIndex: segmentIndex}}}
+                    state={{chapterInformation: {contentId: content.id, versionId: "", contentindex:index}}}
                   >
                     {segment.title}
                   </Link>
