@@ -27,10 +27,15 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   const [showPanel, setShowPanel] = useState(false);
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
+  const isLoadingTopRef = useRef(false);
   const totalContentRef = useRef(0)
   const location = useLocation();
   const skipnumber=location?.state?.chapterInformation?.contentindex
   const [skip, setSkip] = useState(skipnumber);
+  const [topSkip, setTopSkip] = useState(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const lastScrollPositionRef = useRef(0);
+  
   const handleDocumentClick = (event) => {
     if (event.target.classList && event.target.classList.contains('footnote-marker')) {
       event.stopPropagation();
@@ -47,6 +52,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
 
   const textId = searchParams.get("text_id");
   const contentId = currentChapter.contentId
+  // Query for fetching content when scrolling down
   const {data: textDetails, isLoading: chapterContentIsLoading} = useQuery(
     ["chapter", textId, contentId, skip, versionId],
     () => fetchTextDetails(textId, contentId, versionId, skip, 1),
@@ -55,9 +61,19 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
       enabled: totalContentRef.current !== 0 ? (skip) + 1 <= totalContentRef.current: true
     }
   );
+  // Query for fetching content when scrolling up
+  const {data: previousTextDetails, isLoading: previousContentIsLoading} = useQuery(
+    ["chapter-previous", textId, contentId, topSkip, versionId],
+    () => fetchTextDetails(textId, contentId, versionId, topSkip, 1),
+    {
+      refetchOnWindowFocus: false,
+      enabled: topSkip !== null && topSkip >= 0
+    }
+  );
   // Reset skip when versionId changes
   useEffect(() => {
     setSkip(skipnumber);
+    setTopSkip(null);
     setContents([]);
   }, [versionId, contentId]);
  
@@ -76,16 +92,45 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
     }
   }, [textDetails, skip]);
 
+
+  //for scroll up data
+  useEffect(() => {
+    if (!previousTextDetails) return;    
+    setContents(prevState => {
+      // Preserve scroll position when adding content to the top
+      const currentContainer = containerRef.current;
+      const currentScrollHeight = currentContainer?.scrollHeight || 0;
+      
+      // main logic (add new one before previous)
+      const newContents = [...previousTextDetails.contents, ...prevState];
+      
+      // After the next render, restore scroll position (if not it shows from the top)
+      setTimeout(() => {
+        if (currentContainer) {
+          const newScrollHeight = currentContainer.scrollHeight;
+          const heightDifference = newScrollHeight - currentScrollHeight;
+          currentContainer.scrollTop = heightDifference + scrollPosition;
+        }
+      }, 0);
+      
+      return newContents;
+    });
+    
+    // Reset topSkip to prevent continuous fetching
+    setTopSkip(null);
+    
+  }, [previousTextDetails]);
+
   useEffect(() => {
     return () => {
       sessionStorage.removeItem("chapters")
     }
   }, [])
 
-
   useEffect(() => {
     isLoadingRef.current = chapterContentIsLoading;
-  }, [chapterContentIsLoading]);
+    isLoadingTopRef.current = previousContentIsLoading;
+  }, [chapterContentIsLoading, previousContentIsLoading]);
 
   useEffect(() => {
     const currentContainer = containerRef.current;
@@ -93,11 +138,30 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
 
     const handleScroll = () => {
       const {scrollTop, scrollHeight, clientHeight} = currentContainer;
-      const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
-
-      if (scrollPosition > 0.99 && !isLoadingRef.current) {
+  
+      // Determine scroll direction using ref for immediate access to previous value
+      const isScrollingUp = scrollTop < lastScrollPositionRef.current;
+  
+      // Store current position for next comparison
+      lastScrollPositionRef.current = scrollTop;
+      setScrollPosition(scrollTop);
+  
+      // Check if scrolled near bottom
+      const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
+      if (bottomScrollPosition > 0.99 && !isLoadingRef.current) {
         isLoadingRef.current = true;
         setSkip(prev => prev + 1);
+      }
+  
+      // Check if scrolled near top - ONLY when scrolling up
+      if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
+        // Only fetch previous content if we're not at the very beginning
+        const firstSectionNumber = contents[0]?.sections[0]?.section_number;
+        if (firstSectionNumber && firstSectionNumber > 1) {
+          isLoadingTopRef.current = true;
+          // Set topSkip to fetch the previous content
+          setTopSkip(Math.max(0, firstSectionNumber - 2)); // -2 to get the previous section
+        }
       }
     };
 
@@ -105,7 +169,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
     return () => {
       currentContainer.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [contents]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -214,7 +278,14 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
           ref={containerRef}
           className="tibetan-text-container"
         >
-          {/* Version loading spinner removed */}
+          {previousContentIsLoading && (
+            <div className="text-center my-3 my-md-4">
+              <Spinner animation="border" role="output" size="sm">
+                <span className="visually-hidden">Loading previous content...</span>
+              </Spinner>
+            </div>
+          )}
+          
           {contents?.map((item) => {
             return (<div key={item.id} className="content-item">
               {item.sections.map(segment => renderContent(segment))}
