@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
 import './Pages.scss';
 import { FiChevronDown } from 'react-icons/fi';
@@ -16,6 +16,28 @@ const Pages = () => {
   const titleInformation = location.state?.titleInformation || "";
   const { t } = useTranslate();
   const { id } = useParams();
+
+  useEffect(() => {
+    if (location.state?.chapterInformation?.contentId) {
+      const newContentId = location.state.chapterInformation.contentId;
+      setContentId(newContentId);
+      localStorage.setItem(`text_${id}_contentId`, newContentId);
+    }
+    else {
+      const savedContentId = localStorage.getItem(`text_${id}_contentId`);
+      if (savedContentId) {
+        setContentId(savedContentId);
+      }
+    }
+  }, [location.state, id]);
+
+  const handleContentSelect = (newContentId) => {
+    if (newContentId) {
+      setContentId(newContentId);
+      localStorage.setItem(`text_${id}_contentId`, newContentId);
+    }
+  };
+
   return (
     <div className="pecha-app">
       <main className="main-content">
@@ -40,10 +62,10 @@ const Pages = () => {
             className="custom-tabs listsubtitle"
           >
             <Tab eventKey="contents" title={t("text.contents")}>
-              <Content onContentSelect={setContentId} />
+              <Content onContentSelect={handleContentSelect} currentContentId={contentId} />
             </Tab>
             <Tab eventKey="versions" title={t("common.version")}>
-              <Versions contentId={contentId} />
+              <Versions contentId={contentId} onContentIdChange={handleContentSelect} />
             </Tab>
           </Tabs>
         </div>

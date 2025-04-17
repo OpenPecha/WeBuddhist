@@ -20,7 +20,7 @@ export const fetchTextContent = async (text_id) => {
   return data;
 };
 
-const Content = ({ onContentSelect }) => {
+const Content = ({ onContentSelect, currentContentId }) => {
   const [expandedSections, setExpandedSections] = useState({});
   const { id } = useParams();
   const { t } = useTranslate();
@@ -35,12 +35,19 @@ const Content = ({ onContentSelect }) => {
       retry: 1,
       onSuccess: (data) => {
         if (data?.contents && data.contents.length > 0) {
-          onContentSelect(data.contents[0].id);
+          // Only set the content ID if it's not already set
+          if (!currentContentId) {
+            const firstContentId = data.contents[0].id;
+            onContentSelect(firstContentId);
+          }
         }
       }
     }
   );
 
+  const handleContentClick = (contentId) => {
+    onContentSelect(contentId);
+  };
 
   if (isLoading) return <div className="listsubtitle">{t("common.loading")}</div>;
   
@@ -77,7 +84,7 @@ const Content = ({ onContentSelect }) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
 
-  const renderSection = (section, level = 0) => {
+  const renderSection = (section, level = 0, contentId) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
 
@@ -86,7 +93,12 @@ const Content = ({ onContentSelect }) => {
      
         <div
           className="section-header"
-          onClick={() => toggleSection(section.id)}
+          onClick={(e) => {
+            // Prevent toggling if clicking the link
+            if (e.target.tagName !== 'A') {
+              toggleSection(section.id);
+            }
+          }}
         >
           {hasChildren ? (
             isExpanded ?
@@ -96,7 +108,11 @@ const Content = ({ onContentSelect }) => {
           <Link
             to={`/texts/text-details?text_id=${id}`}
             className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-            state={{chapterInformation: {contentId: section.id, versionId: ""}}}
+            state={{chapterInformation: {contentId: contentId, versionId: ""}}}
+            onClick={(e) => {
+              e.stopPropagation(); 
+              handleContentClick(contentId);
+            }}
           >
             {section.title}
           </Link>
@@ -105,7 +121,7 @@ const Content = ({ onContentSelect }) => {
         {isExpanded && hasChildren && (
           <div className="nested-content">
             {section.sections.map((childSection) =>
-              renderSection(childSection, level + 1)
+              renderSection(childSection, level + 1, contentId)
             )}
           </div>
         )}
@@ -128,7 +144,11 @@ const Content = ({ onContentSelect }) => {
               <div key={`content-${contentIndex}-segment-${segment.id}-${index}`} className="section-container">
                 <div 
                   className="section-header"
-                  onClick={() => toggleSection(segment.id)}
+                  onClick={(e) => {
+                    if (e.target.tagName !== 'A') {
+                      toggleSection(segment.id);
+                    }
+                  }}
                 >
                   {hasChildren ? (
                     expandedSections[segment.id] ? 
@@ -139,6 +159,10 @@ const Content = ({ onContentSelect }) => {
                     to={`/texts/text-details?text_id=${id}`}
                     className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
                     state={{chapterInformation: {contentId: content.id, versionId: "", contentindex:index}}}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleContentClick(content.id);
+                    }}
                   >
                     {segment.title}
                   </Link>
@@ -147,7 +171,7 @@ const Content = ({ onContentSelect }) => {
                 {expandedSections[segment.id] && hasChildren && (
                   <div className="nested-content">
                     {segment.sections.map((section) => 
-                      renderSection(section, 1)
+                      renderSection(section, 1, content.id)
                     )}
                   </div>
                 )}
