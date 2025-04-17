@@ -57,16 +57,6 @@ const Content = ({ onContentSelect, currentContentId }) => {
     return <div className="no-content listtitle">No content found</div>;
   }
 
-  // useEffect(() => {
-  //   if (apiData?.contents?.[0]?.segments) {
-  //     const initialExpandedState = {};
-  //     // Only set the first level segments to expanded
-  //     apiData.contents[0].segments.forEach(segment => {
-  //       initialExpandedState[segment.id] = true;
-  //     });
-  //     setExpandedSections(initialExpandedState);
-  //   }
-  // }, [apiData]);
 
   const contents = apiData?.contents;
   const totalSections = contents.reduce((total, content) => {
