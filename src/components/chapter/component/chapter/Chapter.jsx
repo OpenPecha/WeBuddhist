@@ -8,12 +8,12 @@ import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 
-export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit) => {
+export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId) => {
 
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
-    ...(contentId && { content_id: contentId }),
+     content_id: contentId || "" ,
     ...(versionId && { version_id: versionId }),
-    // ...(segmentId && { segment_id: segmentId }),
+    ...(segmentId && { segment_id: segmentId }),
     limit,
     skip
   });
@@ -32,16 +32,19 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   const isLoadingTopRef = useRef(false);
   const totalContentRef = useRef(0)
   const location = useLocation();
-  const [skip, setSkip] = useState(location?.state?.chapterInformation?.contentIndex);
+  // Initialize skip with contentIndex from currentChapter or from location state
+  const initialSkip = currentChapter.contentIndex !== undefined ? currentChapter.contentIndex : location?.state?.chapterInformation?.contentIndex || 0;
+  const [skip, setSkip] = useState(initialSkip);
   const [topSkip, setTopSkip] = useState(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const lastScrollPositionRef = useRef(0);
-  const textId = searchParams.get("text_id");
+  const textId = currentChapter.textId || searchParams.get("text_id");
+  const segmentId = currentChapter.segmentId;
   const contentId = currentChapter.contentId
   // Query for fetching content when scrolling down
   const {data: textDetails, isLoading: chapterContentIsLoading} = useQuery(
-    ["chapter", textId, contentId, skip, versionId],
-    () => fetchTextDetails(textId, contentId, versionId, skip, 1),
+    ["chapter", textId, contentId, skip, versionId, segmentId],
+    () => fetchTextDetails(textId, contentId, versionId, skip, 1, segmentId),
     {
       refetchOnWindowFocus: false,
       enabled: totalContentRef.current !== 0 ? (skip) + 1 <= totalContentRef.current: true
@@ -49,8 +52,8 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   );
   // Query for fetching content when scrolling up
   const {data: previousTextDetails, isLoading: previousContentIsLoading} = useQuery(
-    ["chapter-previous", textId, contentId, topSkip, versionId],
-    () => fetchTextDetails(textId, contentId, versionId, topSkip, 1),
+    ["chapter-previous", textId, contentId, topSkip, versionId, segmentId],
+    () => fetchTextDetails(textId, contentId, versionId, topSkip, 1, segmentId),
     {
       refetchOnWindowFocus: false,
       enabled: topSkip !== null && topSkip >= 0
@@ -59,7 +62,8 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   useEffect(() => {
     setTopSkip(null);
     setContents([]);
-  }, [versionId, contentId]);
+    setSkip(initialSkip);
+  }, [versionId, contentId, textId, segmentId, initialSkip]);
  
   useEffect(() => {
     if (!textDetails) return;

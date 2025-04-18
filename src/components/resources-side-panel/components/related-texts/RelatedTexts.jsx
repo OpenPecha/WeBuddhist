@@ -54,6 +54,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
             <div className="all-commentaries">
               {segmentCommentaries.commentaries.map((commentary) => {
                 const commentaryId = commentary.text_id;
+                const segmentId = commentary.segment_id;
                 const isExpanded = expandedCommentaries[commentaryId];
                 
                 return (
@@ -85,7 +86,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
                           <div className="commentary-buttons">
                             {/*<div className="commentary-button" onClick={() => addChapter({contentId: "", versionId: commentary.text_id, uniqueId: Date.now()})}>*/}
                             <div className="commentary-button"
-                                 onClick={() => addChapter({contentId: "", versionId: commentary.text_id})}>
+                                 onClick={() => addChapter({contentId: "", versionId: "", textId: commentaryId , segmentId: segmentId})}>
 
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
