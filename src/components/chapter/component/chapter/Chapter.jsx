@@ -9,15 +9,14 @@ import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 
 export const fetchTextDetails = async (text_id, content_id, versionId, skip, limit) => {
-  const preparedata = {
+
+  const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
     content_id: content_id ?? "",
+    ...(content_id && { content_id: content_id }),
+    ...(versionId && { version_id: versionId }),
     limit,
     skip
-  };
-  if (versionId) {
-    preparedata.version_id = versionId;
-  }
-  const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, preparedata);
+  });
   return data;
 }
 const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
@@ -34,7 +33,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   const totalContentRef = useRef(0)
   const location = useLocation();
   const skipnumber=location?.state?.chapterInformation?.contentindex
-  const [skip, setSkip] = useState(skipnumber);
+  const [skip, setSkip] = useState(location?.state?.chapterInformation?.contentindex);
   const [topSkip, setTopSkip] = useState(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const lastScrollPositionRef = useRef(0);
@@ -74,11 +73,12 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
     }
   );
   // Reset skip when versionId changes
-  useEffect(() => {
-    setSkip(skipnumber);
-    setTopSkip(null);
-    setContents([]);
-  }, [versionId, contentId]);
+
+  // useEffect(() => {
+  //   setSkip(skipnumber);
+  //   setTopSkip(null);
+  //   setContents([]);
+  // }, [versionId, contentId]);
  
   useEffect(() => {
     if (!textDetails) return;
@@ -275,15 +275,14 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
             </div>
           )}
         </div>
-        {/* <Resources
-          textId={textId}
+        {selectedSegmentId && <Resources
           segmentId={selectedSegmentId}
           showPanel={showPanel}
           setShowPanel={handleSidebarToggle}
           setVersionId={handleVersionChange}
           versionId={versionId}
           addChapter={addChapter}
-        /> */}
+        />}
       </Container>
     </div>
   );

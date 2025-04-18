@@ -13,19 +13,19 @@ import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import "./Resources.scss"
 
-export const fetchSidePanelData = async (text_id) => {
+export const fetchSidePanelData = async (segmentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const {data} = await axiosInstance.get(`/api/v1/texts/${text_id}/infos`, {
+  const {data} = await axiosInstance.get(`/api/v1/segments/${segmentId}/infos`, {
     params: {
       language,
-      text_id
+      segmentId
     }
   });
   return data;
 };
 
-const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, versionId, addChapter}) => {
+const Resources = ({segmentId, showPanel, setShowPanel, setVersionId, versionId, addChapter}) => {
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
   const [expandedTranslations, setExpandedTranslations] = useState({});
   const [activeView, setActiveView] = useState("main");
@@ -34,8 +34,8 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, ve
   const {t} = useTranslate();
 
   const {data: sidePanelData} = useQuery(
-    ["sidePanel", textId],
-    () => fetchSidePanelData(textId),
+    ["sidePanel", segmentId],
+    () => fetchSidePanelData(segmentId),
     {
       refetchOnWindowFocus: false,
     }
