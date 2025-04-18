@@ -56,13 +56,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
       enabled: topSkip !== null && topSkip >= 0
     }
   );
-  // Reset skip when versionId changes
-
-  // useEffect(() => {
-  //   setSkip(skipnumber);
-  //   setTopSkip(null);
-  //   setContents([]);
-  // }, [versionId, contentId]);
+  useEffect(() => {
+    setTopSkip(null);
+    setContents([]);
+  }, [versionId, contentId]);
  
   useEffect(() => {
     if (!textDetails) return;
@@ -84,7 +81,6 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   useEffect(() => {
     if (!previousTextDetails) return;    
     setContents(prevState => {
-      // Preserve scroll position when adding content to the top
       const currentContainer = containerRef.current;
       const currentScrollHeight = currentContainer?.scrollHeight || 0;
       
