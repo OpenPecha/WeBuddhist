@@ -13,13 +13,14 @@
     height: fit-content;
     margin: auto;
     background-color: white;
+    position: relative;
   }
   
   .text-child-container {
     flex: 1;
     padding: 4rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 800px;
+    margin: 0 auto 0 0;
     text-align: start;
     color: #333;
     overflow-y: auto;
@@ -86,11 +87,13 @@
   
   .sidebar {
     border: none;
-    height: 600px;
-    width: 420px;
+    height: calc(100vh - 4rem);
+    width: 470px;
     background-color: #FBFBFA;
     position: relative;
     padding: 2rem;
+    position: absolute;
+    right: -9rem;
     .about-title {
       text-align: start;
       font-size: 20px;
