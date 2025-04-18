@@ -21,7 +21,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
 
   const {data: segmentCommentaries} = useQuery(
     ["relatedTexts", segmentId],
-    () => fetchCommentaryData("2353849b-f8fa-43e4-850d-786b623d0130"),  //use segmentid later todo
+    () => fetchCommentaryData(segmentId),
     {
       refetchOnWindowFocus: false,
     }
@@ -80,19 +80,22 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
                             {isExpanded ? t('panel.showless') : t('panel.showmore')} 
                           </button>
                         </div>
-                        
+
                         <div className="commentary-actions">
                           <div className="commentary-buttons">
-                            <div className="commentary-button" onClick={() => addChapter({contentId: "", versionId: commentary.text_id, uniqueId: Date.now()})}>
+                            {/*<div className="commentary-button" onClick={() => addChapter({contentId: "", versionId: commentary.text_id, uniqueId: Date.now()})}>*/}
+                            <div className="commentary-button"
+                                 onClick={() => addChapter({contentId: "", versionId: commentary.text_id})}>
+
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
                             </div>
-                            
+
                             <div className="commentary-button">
                               <IoAddCircleOutline size={14} className="mr-1"/>
                               <span>{t("sheet.add_to_sheet")}</span>
                             </div>
-                            
+
                             <div className="commentary-button">
                               <IoShareSocialSharp size={14} className="mr-1"/>
                               <span>{t("common.share")}</span>
@@ -105,7 +108,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
                 );
               })}
             </div>
-          )}
+            )}
         </div>
       </div>
     </div>

@@ -88,7 +88,7 @@ const Content = ({ setContentId }) => {
           <Link
             to={`/texts/text-details?text_id=${id}`}
             className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-            state={{chapterInformation: {contentId: contentId, versionId: "", contentindex: parentIndex}}}
+            state={{chapterInformation: {contentId: contentId, versionId: "", contentIndex: parentIndex}}}
           >
             {section.title}
           </Link>
@@ -134,7 +134,7 @@ const Content = ({ setContentId }) => {
                   <Link 
                     to={`/texts/text-details?text_id=${id}`}
                     className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-                    state={{chapterInformation: {contentId: content.id, versionId: "", contentindex:index}}}
+                    state={{chapterInformation: {contentId: content.id, versionId: "", contentIndex:index}}}
                   >
                     {segment.title}
                   </Link>

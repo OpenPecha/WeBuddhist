@@ -8,12 +8,12 @@ import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 
-export const fetchTextDetails = async (text_id, content_id, versionId, skip, limit) => {
+export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit) => {
 
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
-    content_id: content_id ?? "",
-    ...(content_id && { content_id: content_id }),
+    ...(contentId && { content_id: contentId }),
     ...(versionId && { version_id: versionId }),
+    // ...(segmentId && { segment_id: segmentId }),
     limit,
     skip
   });
@@ -32,26 +32,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   const isLoadingTopRef = useRef(false);
   const totalContentRef = useRef(0)
   const location = useLocation();
-  const skipnumber=location?.state?.chapterInformation?.contentindex
-  const [skip, setSkip] = useState(location?.state?.chapterInformation?.contentindex);
+  const [skip, setSkip] = useState(location?.state?.chapterInformation?.contentIndex);
   const [topSkip, setTopSkip] = useState(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const lastScrollPositionRef = useRef(0);
-  
-  const handleDocumentClick = (event) => {
-    if (event.target.classList && event.target.classList.contains('footnote-marker')) {
-      event.stopPropagation();
-      event.preventDefault();
-      const footnoteMarker = event.target;
-      const footnote = footnoteMarker.nextElementSibling;
-
-      if (footnote && footnote.classList.contains('footnote')) {
-        footnote.classList.toggle('active');
-      }
-      return false;
-    }
-  };
-
   const textId = searchParams.get("text_id");
   const contentId = currentChapter.contentId
   // Query for fetching content when scrolling down
@@ -187,6 +171,19 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
 
 
   // helper function
+  const handleDocumentClick = (event) => {
+    if (event.target.classList && event.target.classList.contains('footnote-marker')) {
+      event.stopPropagation();
+      event.preventDefault();
+      const footnoteMarker = event.target;
+      const footnote = footnoteMarker.nextElementSibling;
+
+      if (footnote && footnote.classList.contains('footnote')) {
+        footnote.classList.toggle('active');
+      }
+      return false;
+    }
+  };
 
   const handleVersionChange = (newVersionId) => {
     setVersionId(newVersionId);

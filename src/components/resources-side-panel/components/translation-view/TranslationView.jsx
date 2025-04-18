@@ -96,7 +96,9 @@ const TranslationView = ({
           <div className="linkselect navbaritems">
             <div
               className="linkicons"
-              onClick={() => addChapter({ contentId: "", versionId: translation.text_id, uniqueId: Date.now() })}
+              // onClick={() => addChapter({ contentId: "", versionId: translation.text_id, uniqueId: Date.now() })}
+              onClick={() => addChapter({ contentId: "", versionId: translation.text_id })}
+
             >
               <GoLinkExternal />
               {t("text.translation.open_text")}

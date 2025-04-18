@@ -59,26 +59,24 @@ const Resources = ({segmentId, showPanel, setShowPanel, setVersionId, versionId,
         <p><FiList className='m-2'/>{t("text.table_of_contents")}</p>
         <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
 
-        {sidePanelData?.text_infos?.translations > 0 && (
+        {sidePanelData?.segment_infos?.translations > 0 && (
           <p onClick={() => setActiveView("translation")}>
             <IoLanguage className="m-2"/>
-            {`${t("connection_pannel.translations")} (${sidePanelData.text_infos.translations})`}
+            {`${t("connection_pannel.translations")} (${sidePanelData.segment_infos.translations})`}
           </p>
         )}
 
-        {sidePanelData?.text_infos?.related_texts?.length > 0 && (
-          <>
-            <p className='textgreat'>{t("text.related_texts")}</p>
-            <div className='related-texts-container'>
-              {sidePanelData.text_infos.related_texts.map((data, index) => (
-                <p key={index} className='related-text-item' onClick={() => setActiveView("commentary")}>
-                  <BiBookOpen className="m-2"/>
-                  {`${data.title} (${data.count})`}
-                </p>
-              ))}
-            </div>
-          </>
-        )}
+
+        {sidePanelData?.segment_infos.related_text.commentaries > 0 && <>
+          <p className='textgreat'>{t("text.related_texts")}</p>
+          <div className='related-texts-container'>
+            <p className='related-text-item' onClick={() => setActiveView("commentary")}>
+              <BiBookOpen className="m-2"/>
+              {t("text.commentary")} ({sidePanelData?.segment_infos.related_text.commentaries})
+            </p>
+          </div>
+        </>}
+
 
         {sidePanelData?.text_infos?.sheets > 0 && (
           <>
