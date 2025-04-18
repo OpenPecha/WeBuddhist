@@ -9,7 +9,7 @@ import PaginationComponent from "../../commons/pagination/PaginationComponent.js
 
 
 export const fetchVersions = async (id, limit, skip) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const storedLanguage = sessionStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 
   const {data} = await axiosInstance.get(`/api/v1/texts/${id}/versions`, {
@@ -46,7 +46,7 @@ const Versions = ({ contentId, onContentIdChange }) => {
 
   const handleVersionClick = () => {
     if (!contentId) {
-      const savedContentId = localStorage.getItem(`text_${id}_contentId`);
+      const savedContentId = sessionStorage.getItem(`text_${id}_contentId`);
       if (savedContentId) {
         onContentIdChange(savedContentId);
       }
@@ -85,7 +85,7 @@ const Versions = ({ contentId, onContentIdChange }) => {
                   // TODO to={`/texts/text-details?text_id=${id}&version_id=${version.id}`}
                   to={`/texts/text-details?text_id=${id}`}
                   className="section-title"
-                  state={{chapterInformation: {contentId: contentId, versionId: version.id}}}
+                  state={{chapterInformation: {contentId: contentId, versionId: version.id,contentindex:0}}}
                   onClick={handleVersionClick}
                 >
                   <div className={`${getLanguageClass(version.language)} titleversion`}>

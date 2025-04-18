@@ -21,10 +21,10 @@ const Pages = () => {
     if (location.state?.chapterInformation?.contentId) {
       const newContentId = location.state.chapterInformation.contentId;
       setContentId(newContentId);
-      localStorage.setItem(`text_${id}_contentId`, newContentId);
+      sessionStorage.setItem(`text_${id}_contentId`, newContentId);
     }
     else {
-      const savedContentId = localStorage.getItem(`text_${id}_contentId`);
+      const savedContentId = sessionStorage.getItem(`text_${id}_contentId`);
       if (savedContentId) {
         setContentId(savedContentId);
       }
@@ -34,7 +34,7 @@ const Pages = () => {
   const handleContentSelect = (newContentId) => {
     if (newContentId) {
       setContentId(newContentId);
-      localStorage.setItem(`text_${id}_contentId`, newContentId);
+      sessionStorage.setItem(`text_${id}_contentId`, newContentId);
     }
   };
 
