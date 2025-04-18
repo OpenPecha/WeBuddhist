@@ -8,7 +8,7 @@ import { useParams, Link } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { useTranslate } from "@tolgee/react";
 export const fetchTextContent = async (text_id, skip, pagination) => {
-  const storedLanguage = sessionStorage.getItem(LANGUAGE);
+  const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
   const {data} = await axiosInstance.get(`/api/v1/texts/${text_id}/contents`, {
     params: {
