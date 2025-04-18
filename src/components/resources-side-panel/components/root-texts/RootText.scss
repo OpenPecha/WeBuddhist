@@ -1,0 +1,135 @@
+.headerthing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+
+  .listtitle {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .close-icon {
+    cursor: pointer;
+    color: #666;
+    &:hover {
+      color: #333;
+    }
+  }
+}
+
+.translation-content {
+  text-align: start;
+  font-size: medium;
+  color: black;
+  
+  
+  /* Footnote styles */
+  .footnote-marker {
+    cursor: pointer;
+    color: #007bff;
+    font-weight: bold;
+    vertical-align: super;
+    font-size: smaller;
+    position: relative;
+    z-index: 2;
+    user-select: none;
+    -webkit-user-select: none;
+    padding: 0 2px;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #0056b3;
+    }
+  }
+
+  .footnote {
+    display: none;
+    font-style: italic;
+    color: #8a8a8a;
+    margin-left: 4px;
+    font-size: 0.9em;
+    background-color: #f0f0f0;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  .footnote.active {
+    display: inline;
+  }
+
+  .root-texts-list {
+    .root-text-list-item {
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+    }
+  
+    .root-text-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #333;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #a70c0c;
+      line-height: 1.6;
+    }
+  
+    .root-text-content {
+      font-size: 0.85rem;
+      padding-top: 3px;
+      line-height: 1.7;
+      color: #504e4e;
+      position: relative;
+      
+      &.content-truncated {
+        max-height: 4.8em;
+        overflow: hidden;
+      }
+    }
+  
+    .see-more-container {
+      text-align: left;
+      margin: 0.1rem 0 0.5rem;
+    }
+  
+    .see-more-link {
+      background: none;
+      border: none;
+      color: #555;
+      padding: 0;
+      cursor: pointer;
+      font-size: 0.875rem;
+      display: inline-block;
+  
+      &:hover {
+        text-decoration: underline;
+        color: #a70c0c;
+      }
+    }
+  
+    .root-text-buttons {
+      display: flex;
+      gap: 1.5rem;
+      margin: 0.75rem 0 0;
+    }
+  
+    .root-text-button {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #555;
+  
+      .mr-1 {
+        margin-right: 4px;
+      }
+  
+      &:hover {
+        color: #a70c0c;
+      }
+    }
+
+  }
+}

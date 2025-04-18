@@ -10,6 +10,7 @@ import {useTranslate} from "@tolgee/react";
 import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
+import RootTextView from "./components/root-texts/RootText.jsx";
 import "./Resources.scss"
 
 export const fetchSidePanelData = async (segmentId) => {
@@ -27,6 +28,7 @@ export const fetchSidePanelData = async (segmentId) => {
 const Resources = ({segmentId, showPanel, setShowPanel, setVersionId, versionId, addChapter}) => {
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
   const [expandedTranslations, setExpandedTranslations] = useState({});
+  const [expandedRootTexts, setExpandedRootTexts] = useState({});
   const [activeView, setActiveView] = useState("main");
 
 
@@ -76,7 +78,7 @@ const Resources = ({segmentId, showPanel, setShowPanel, setVersionId, versionId,
                 </p>
               )}
               {sidePanelData?.segment_infos?.related_text?.root_text > 0 && (
-                <p className='related-text-item'>
+                <p className='related-text-item' onClick={() => setActiveView("root_text")}>
                   <BiBookOpen className="m-2"/>
                   {`${t("text.root_text")} (${sidePanelData?.segment_infos?.related_text?.root_text})`}
                 </p>
@@ -144,6 +146,16 @@ const Resources = ({segmentId, showPanel, setShowPanel, setVersionId, versionId,
             setIsCommentaryView={setActiveView}
             expandedCommentaries={expandedCommentaries}
             setExpandedCommentaries={setExpandedCommentaries}
+            addChapter={addChapter}
+          />
+        );
+      case "root_text":
+        return (
+          <RootTextView
+            segmentId={segmentId}
+            setIsRootTextView={setActiveView}
+            expandedRootTexts={expandedRootTexts}
+            setExpandedRootTexts={setExpandedRootTexts}
             addChapter={addChapter}
           />
         );
