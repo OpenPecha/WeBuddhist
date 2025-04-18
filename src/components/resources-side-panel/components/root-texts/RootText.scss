@@ -24,19 +24,48 @@
   font-size: medium;
   color: black;
   
-  .textgreat {
-    color: #828282;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 12px;
+  
+  /* Footnote styles */
+  .footnote-marker {
+    cursor: pointer;
+    color: #007bff;
+    font-weight: bold;
+    vertical-align: super;
+    font-size: smaller;
+    position: relative;
+    z-index: 2;
+    user-select: none;
+    -webkit-user-select: none;
+    padding: 0 2px;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #0056b3;
+    }
   }
 
-  .commentaries-list {
-    .commentary-list-item {
+  .footnote {
+    display: none;
+    font-style: italic;
+    color: #8a8a8a;
+    margin-left: 4px;
+    font-size: 0.9em;
+    background-color: #f0f0f0;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+
+  .footnote.active {
+    display: inline;
+  }
+
+  .root-texts-list {
+    .root-text-list-item {
       margin-bottom: 1.25rem;
       padding-bottom: 1rem;
     }
   
-    .commentary-title {
+    .root-text-title {
       font-weight: 600;
       font-size: 1.1rem;
       color: #333;
@@ -47,8 +76,9 @@
       line-height: 1.6;
     }
   
-    .commentary-content {
+    .root-text-content {
       font-size: 0.85rem;
+      padding-top: 3px;
       line-height: 1.7;
       color: #504e4e;
       position: relative;
@@ -79,19 +109,13 @@
       }
     }
   
-    .commentary-source {
-      font-size: 0.85rem;
-      color: #666;
-      margin: 0.5rem 0;
-    }
-  
-    .commentary-buttons {
+    .root-text-buttons {
       display: flex;
       gap: 1.5rem;
       margin: 0.75rem 0 0;
     }
   
-    .commentary-button {
+    .root-text-button {
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -107,9 +131,5 @@
       }
     }
 
-    .no-commentaries-message {
-      color: #666;
-      font-style: italic;
-    }
   }
 }

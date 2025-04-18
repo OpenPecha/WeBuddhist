@@ -10,9 +10,8 @@ const Chapters = () => {
     const savedChapters = sessionStorage.getItem('chapters');
     return savedChapters ? JSON.parse(savedChapters) : [location.state?.chapterInformation] || [{
       contentId: "",
-      contentindex: 0,
-      versionId: "",
-      uniqueId: Date.now()
+      contentIndex: 0,
+      versionId: ""
     }]
   });
 
@@ -27,7 +26,8 @@ const Chapters = () => {
       }
       const newChapter = {
         ...chapterInformation,
-        uniqueId: chapterInformation.uniqueId || Date.now()
+        textId: chapterInformation.textId || "",
+        segmentId: chapterInformation.segmentId || ""
       };
       return [
         ...prevChapters,
@@ -39,9 +39,6 @@ const Chapters = () => {
   const removeChapter = (chapterInformation) => {
     setChapters(prevChapters =>
       prevChapters.filter(chapter => {
-        if (chapter.uniqueId && chapterInformation.uniqueId) {
-          return chapter.uniqueId !== chapterInformation.uniqueId;
-        }
         return !(chapter.contentId === chapterInformation.contentId && 
                 chapter.versionId === chapterInformation.versionId);
       })

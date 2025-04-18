@@ -3,7 +3,6 @@ import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {IoMdClose} from "react-icons/io";
 import { IoLanguage, IoNewspaperOutline,} from "react-icons/io5";
-import { BsWindowFullscreen} from "react-icons/bs";
 import {FiInfo, FiList} from "react-icons/fi";
 import {BiSearch, BiBookOpen} from "react-icons/bi";
 import {useState} from "react";
@@ -11,31 +10,33 @@ import {useTranslate} from "@tolgee/react";
 import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
+import RootTextView from "./components/root-texts/RootText.jsx";
 import "./Resources.scss"
 
-export const fetchSidePanelData = async (text_id) => {
+export const fetchSidePanelData = async (segmentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const {data} = await axiosInstance.get(`/api/v1/texts/${text_id}/infos`, {
+  const {data} = await axiosInstance.get(`/api/v1/segments/${segmentId}/infos`, {
     params: {
       language,
-      text_id
+      segmentId
     }
   });
   return data;
 };
 
-const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, versionId, addChapter}) => {
+const Resources = ({segmentId, showPanel, setShowPanel, setVersionId, versionId, addChapter}) => {
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
   const [expandedTranslations, setExpandedTranslations] = useState({});
+  const [expandedRootTexts, setExpandedRootTexts] = useState({});
   const [activeView, setActiveView] = useState("main");
 
 
   const {t} = useTranslate();
 
   const {data: sidePanelData} = useQuery(
-    ["sidePanel", textId],
-    () => fetchSidePanelData(textId),
+    ["sidePanel", segmentId],
+    () => fetchSidePanelData(segmentId),
     {
       refetchOnWindowFocus: false,
     }
@@ -59,42 +60,41 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, ve
         <p><FiList className='m-2'/>{t("text.table_of_contents")}</p>
         <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
 
-        {sidePanelData?.text_infos?.translations > 0 && (
+        {sidePanelData?.segment_infos?.translations > 0 && (
           <p onClick={() => setActiveView("translation")}>
             <IoLanguage className="m-2"/>
-            {`${t("connection_pannel.translations")} (${sidePanelData.text_infos.translations})`}
+            {`${t("connection_pannel.translations")} (${sidePanelData.segment_infos.translations})`}
           </p>
         )}
 
-        {sidePanelData?.text_infos?.related_texts?.length > 0 && (
+        {sidePanelData?.segment_infos.related_text && (sidePanelData?.segment_infos?.related_text?.commentaries > 0 || sidePanelData?.segment_infos?.related_text?.root_text > 0) && (
           <>
             <p className='textgreat'>{t("text.related_texts")}</p>
             <div className='related-texts-container'>
-              {sidePanelData.text_infos.related_texts.map((data, index) => (
-                <p key={index} className='related-text-item' onClick={() => setActiveView("commentary")}>
+              {sidePanelData?.segment_infos?.related_text?.commentaries > 0 && (
+                <p className='related-text-item' onClick={() => setActiveView("commentary")}>
                   <BiBookOpen className="m-2"/>
-                  {`${data.title} (${data.count})`}
+                  {`${t("text.commentary")} (${sidePanelData?.segment_infos?.related_text?.commentaries})`}
                 </p>
-              ))}
+              )}
+              {sidePanelData?.segment_infos?.related_text?.root_text > 0 && (
+                <p className='related-text-item' onClick={() => setActiveView("root_text")}>
+                  <BiBookOpen className="m-2"/>
+                  {`${t("text.root_text")} (${sidePanelData?.segment_infos?.related_text?.root_text})`}
+                </p>
+              )}
             </div>
           </>
         )}
 
-        {sidePanelData?.text_infos?.sheets > 0 && (
+        {sidePanelData?.segment_infos?.resources?.sheets > 0 && (
           <>
             <p className='textgreat'>{t("panel.resources")}</p>
             <p>
               <IoNewspaperOutline className="m-2"/>
-              {` ${t("common.sheets")} (${sidePanelData.text_infos.sheets})`}
+              {` ${t("common.sheets")} (${sidePanelData?.segment_infos?.resources?.sheets})`}
             </p>
           </>
-        )}
-
-        {sidePanelData?.text_infos?.web_pages > 0 && (
-          <p>
-            <BsWindowFullscreen className="m-2"/>
-            {` ${t("text.web_pages")} (${sidePanelData.text_infos.web_pages})`}
-          </p>
         )}
 
         {menuItems.map((item) => (
@@ -146,6 +146,16 @@ const Resources = ({textId, segmentId, showPanel, setShowPanel, setVersionId, ve
             setIsCommentaryView={setActiveView}
             expandedCommentaries={expandedCommentaries}
             setExpandedCommentaries={setExpandedCommentaries}
+            addChapter={addChapter}
+          />
+        );
+      case "root_text":
+        return (
+          <RootTextView
+            segmentId={segmentId}
+            setIsRootTextView={setActiveView}
+            expandedRootTexts={expandedRootTexts}
+            setExpandedRootTexts={setExpandedRootTexts}
             addChapter={addChapter}
           />
         );

@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {getLanguageClass, sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
 import {useSearchParams, useLocation} from "react-router-dom";
 import {useQuery} from "react-query";
@@ -8,10 +8,12 @@ import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 
-export const fetchTextDetails = async (text_id, content_id, versionId, skip, limit) => {
+export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId) => {
+
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
-    content_id: content_id ?? "",
-    version_id: versionId ?? "",
+     content_id: contentId || "" ,
+    ...(versionId && { version_id: versionId }),
+    ...(segmentId && { segment_id: segmentId }),
     limit,
     skip
   });
@@ -30,32 +32,19 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   const isLoadingTopRef = useRef(false);
   const totalContentRef = useRef(0)
   const location = useLocation();
-  const skipnumber=location?.state?.chapterInformation?.contentindex
-  const [skip, setSkip] = useState(skipnumber);
+  // Initialize skip with contentIndex from currentChapter or from location state
+  const initialSkip = currentChapter.contentIndex !== undefined ? currentChapter.contentIndex : location?.state?.chapterInformation?.contentIndex || 0;
+  const [skip, setSkip] = useState(initialSkip);
   const [topSkip, setTopSkip] = useState(null);
   const [scrollPosition, setScrollPosition] = useState(0);
   const lastScrollPositionRef = useRef(0);
-  
-  const handleDocumentClick = (event) => {
-    if (event.target.classList && event.target.classList.contains('footnote-marker')) {
-      event.stopPropagation();
-      event.preventDefault();
-      const footnoteMarker = event.target;
-      const footnote = footnoteMarker.nextElementSibling;
-
-      if (footnote && footnote.classList.contains('footnote')) {
-        footnote.classList.toggle('active');
-      }
-      return false;
-    }
-  };
-
-  const textId = searchParams.get("text_id");
+  const textId = currentChapter.textId || searchParams.get("text_id");
+  const segmentId = currentChapter.segmentId;
   const contentId = currentChapter.contentId
   // Query for fetching content when scrolling down
   const {data: textDetails, isLoading: chapterContentIsLoading} = useQuery(
-    ["chapter", textId, contentId, skip, versionId],
-    () => fetchTextDetails(textId, contentId, versionId, skip, 1),
+    ["chapter", textId, contentId, skip, versionId, segmentId],
+    () => fetchTextDetails(textId, contentId, versionId, skip, 1, segmentId),
     {
       refetchOnWindowFocus: false,
       enabled: totalContentRef.current !== 0 ? (skip) + 1 <= totalContentRef.current: true
@@ -63,27 +52,26 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   );
   // Query for fetching content when scrolling up
   const {data: previousTextDetails, isLoading: previousContentIsLoading} = useQuery(
-    ["chapter-previous", textId, contentId, topSkip, versionId],
-    () => fetchTextDetails(textId, contentId, versionId, topSkip, 1),
+    ["chapter-previous", textId, contentId, topSkip, versionId, segmentId],
+    () => fetchTextDetails(textId, contentId, versionId, topSkip, 1, segmentId),
     {
       refetchOnWindowFocus: false,
       enabled: topSkip !== null && topSkip >= 0
     }
   );
-  // Reset skip when versionId changes
   useEffect(() => {
-    setSkip(skipnumber);
     setTopSkip(null);
     setContents([]);
-  }, [versionId, contentId]);
+    setSkip(initialSkip);
+  }, [versionId, contentId, textId, segmentId, initialSkip]);
  
   useEffect(() => {
     if (!textDetails) return;
     if (skip === 0) {
-      setContents(textDetails.contents);
+      setContents(textDetails.content.sections);
     } else {
       setContents(prevState => {
-        return [...prevState, ...textDetails.contents]
+        return [...prevState, ...textDetails.content.sections];
       });
     }
 
@@ -97,12 +85,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   useEffect(() => {
     if (!previousTextDetails) return;    
     setContents(prevState => {
-      // Preserve scroll position when adding content to the top
       const currentContainer = containerRef.current;
       const currentScrollHeight = currentContainer?.scrollHeight || 0;
       
-      // main logic (add new one before previous)
-      const newContents = [...previousTextDetails.contents, ...prevState];
+      const newContents = [...previousTextDetails.content.sections, ...prevState];
       
       // After the next render, restore scroll position (if not it shows from the top)
       setTimeout(() => {
@@ -156,7 +142,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
       // Check if scrolled near top - ONLY when scrolling up
       if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
         // Only fetch previous content if we're not at the very beginning
-        const firstSectionNumber = contents[0]?.sections[0]?.section_number;
+        const firstSectionNumber = contents[0]?.section_number;
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
           // Set topSkip to fetch the previous content
@@ -185,6 +171,19 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
 
 
   // helper function
+  const handleDocumentClick = (event) => {
+    if (event.target.classList && event.target.classList.contains('footnote-marker')) {
+      event.stopPropagation();
+      event.preventDefault();
+      const footnoteMarker = event.target;
+      const footnote = footnoteMarker.nextElementSibling;
+
+      if (footnote && footnote.classList.contains('footnote')) {
+        footnote.classList.toggle('active');
+      }
+      return false;
+    }
+  };
 
   const handleVersionChange = (newVersionId) => {
     setVersionId(newVersionId);
@@ -194,82 +193,56 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
     setShowPanel(isOpen);
   };
 
+  const renderSegments = (segments) => {
+    if (!segments || segments.length === 0) return null;
+    
+    return segments.map(segment => (
+      <div
+        key={segment.segment_id}
+        className="text-segment mb-3 mb-md-4"
+        onClick={(e) => {
+          if (!e.target.classList ||
+            (!e.target.classList.contains('footnote-marker') &&
+              !e.target.classList.contains('footnote'))) {
+            setSelectedSegmentId(segment.segment_id);
+            handleSidebarToggle(true);
+          }
+        }}
+      >
+        <div className="segment">
+          {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
+            <>
+              <span className="segment-number">{segment.segment_number}</span>
+              <div dangerouslySetInnerHTML={{__html: segment.content}}/>
+            </>
+          )}
+          {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
+            <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
+          )}
+        </div>
+      </div>
+    ));
+  };
 
-  const renderContent = (item) => {
+  const renderSection = (section) => {
+    if (!section) return null;
+    
     return (
-      <div key={item.id} className={`section ${getLanguageClass(textDetails?.text_detail?.language)}`}>
-        {item.title && <h4 className="section-title">{item.title}</h4>}
-
-        {item?.segments?.map(segment => (
-          <div
-            key={segment.id}
-            className="text-segment mb-3 mb-md-4"
-            onClick={(e) => {
-              if (!e.target.classList ||
-                (!e.target.classList.contains('footnote-marker') &&
-                  !e.target.classList.contains('footnote'))) {
-                setSelectedSegmentId(segment.segment_id);
-                handleSidebarToggle(true);
-              }
-            }}
-          >
-            <div key={segment.segment_id} className="segment">
-              {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
-                <>
-                  <span className="segment-number">{segment.segment_number}</span>
-                  <div dangerouslySetInnerHTML={{__html: segment.content}}/>
-                </>
-              )}
-              {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
-                <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
-              )}
-            </div>
-          </div>
-        ))}
-
-        {item?.sections?.map(section => (
-          <div key={section.id} className="nested-section">
-            <h4 className="section-title">{section.title}</h4>
-            {section?.segments?.map(segment => (
-              <div
-                key={segment.id}
-                className="text-segment mb-3 mb-md-4"
-                onClick={(e) => {
-                  if (!e.target.classList ||
-                    (!e.target.classList.contains('footnote-marker') &&
-                      !e.target.classList.contains('footnote'))) {
-                    setSelectedSegmentId(segment.segment_id);
-                    handleSidebarToggle(true);
-                  }
-                }}
-              >
-                <div key={segment.segment_id} className="segment">
-                  {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
-                    <>
-                      <span className="segment-number">{segment.segment_number}</span>
-                      <div dangerouslySetInnerHTML={{__html: segment.content}}/>
-                    </>
-                  )}
-                  {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
-                    <div className="translation-content"
-                         dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {section?.sections?.map(nestedSection =>
-              renderContent(nestedSection)
-            )}
-          </div>
-        ))}
+      <div key={section.id} className="nested-section">
+        {section.title && <h4 className="section-title">{section.title}</h4>}
+        
+        {renderSegments(section.segments)}
+        
+        {section.sections && section.sections.length > 0 && 
+          section.sections.map(nestedSection => renderSection(nestedSection))
+        }
       </div>
     );
   };
 
   // main renderer
   return (
-    <div className={"chapter"}>
+    <div className="chapter">
       <ChapterHeader selectedOption={selectedOption} currentChapter={currentChapter} removeChapter={removeChapter}
                      setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
                      totalPages={totalPages}/>
@@ -286,11 +259,11 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
             </div>
           )}
           
-          {contents?.map((item) => {
-            return (<div key={item.id} className="content-item">
-              {item.sections.map(segment => renderContent(segment))}
-            </div>)
-          })}
+          {contents?.map(section => (
+            <div key={section.id} className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}>
+              {renderSection(section)}
+            </div>
+          ))}
           {chapterContentIsLoading && (
             <div className="text-center my-3 my-md-4">
               <Spinner animation="border" role="output" size="sm">
@@ -299,15 +272,14 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
             </div>
           )}
         </div>
-        <Resources
-          textId={textId}
+        {selectedSegmentId && <Resources
           segmentId={selectedSegmentId}
           showPanel={showPanel}
           setShowPanel={handleSidebarToggle}
           setVersionId={handleVersionChange}
           versionId={versionId}
           addChapter={addChapter}
-        />
+        />}
       </Container>
     </div>
   );

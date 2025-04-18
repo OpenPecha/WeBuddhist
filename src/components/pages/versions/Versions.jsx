@@ -76,7 +76,7 @@ const Versions = ({ contentId }) => {
                   // TODO to={`/texts/text-details?text_id=${id}&version_id=${version.id}`}
                   to={`/texts/text-details?text_id=${id}`}
                   className="section-title"
-                  state={{chapterInformation: {contentId: contentId, versionId: version.id,contentindex:0}}}
+                  state={{chapterInformation: {contentId: contentId, versionId: version.id,contentIndex:0}}}
                 >
                   <div className={`${getLanguageClass(version.language)} titleversion`}>
                     {version.title}
