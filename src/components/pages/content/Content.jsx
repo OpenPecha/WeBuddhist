@@ -7,14 +7,14 @@ import { useQuery } from 'react-query';
 import { useParams, Link } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { useTranslate } from "@tolgee/react";
-export const fetchTextContent = async (text_id) => {
+export const fetchTextContent = async (text_id, skip, pagination) => {
   const storedLanguage = sessionStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
   const {data} = await axiosInstance.get(`/api/v1/texts/${text_id}/contents`, {
     params: {
       language,
-      limit: 10,
-      skip: 0
+      limit: pagination.limit,
+      skip: skip
     }
   });
   return data;
@@ -27,8 +27,8 @@ const Content = ({ setContentId }) => {
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
   const {data: apiData, isLoading, error} = useQuery(
-    ["texts", id],
-    () => fetchTextContent(id),
+    ["texts", id, skip,pagination],
+    () => fetchTextContent(id,skip,pagination),
     {
       refetchOnWindowFocus: false,
       retry: 1,
