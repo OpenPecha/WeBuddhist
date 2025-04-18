@@ -9,7 +9,7 @@ import PaginationComponent from "../../commons/pagination/PaginationComponent.js
 
 
 export const fetchVersions = async (id, limit, skip) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const storedLanguage = sessionStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 
   const {data} = await axiosInstance.get(`/api/v1/texts/${id}/versions`, {
@@ -21,7 +21,8 @@ export const fetchVersions = async (id, limit, skip) => {
   })
   return data
 }
-const Versions = ({ contentId }) =>{
+
+const Versions = ({ contentId }) => {
   const { id } = useParams();
   const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
@@ -29,11 +30,10 @@ const Versions = ({ contentId }) =>{
 
 
   const { data: versionsData, isLoading } = useQuery(
-    ["texts", id, pagination.currentPage, pagination.limit],
+    ["texts-versions", id, pagination.currentPage, pagination.limit],
     () => fetchVersions(id, pagination.limit, skip),
     {
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 20,
       retry: 1
     }
   );
@@ -42,6 +42,7 @@ const Versions = ({ contentId }) =>{
     "bo":"language.tibetan",
     "en":"language.english"
   }
+
 
   if (isLoading) {
     return <div className="notfound listtitle">Loading versions...</div>;
@@ -75,7 +76,7 @@ const Versions = ({ contentId }) =>{
                   // TODO to={`/texts/text-details?text_id=${id}&version_id=${version.id}`}
                   to={`/texts/text-details?text_id=${id}`}
                   className="section-title"
-                  state={{chapterInformation: {contentId: contentId, versionId: version.id}}}
+                  state={{chapterInformation: {contentId: contentId, versionId: version.id,contentindex:0}}}
                 >
                   <div className={`${getLanguageClass(version.language)} titleversion`}>
                     {version.title}

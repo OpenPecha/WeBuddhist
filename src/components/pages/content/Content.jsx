@@ -7,36 +7,33 @@ import { useQuery } from 'react-query';
 import { useParams, Link } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { useTranslate } from "@tolgee/react";
-export const fetchTextContent = async (text_id) => {
+export const fetchTextContent = async (text_id, skip, pagination) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
   const {data} = await axiosInstance.get(`/api/v1/texts/${text_id}/contents`, {
     params: {
       language,
-      limit: 10,
-      skip: 0
+      limit: pagination.limit,
+      skip: skip
     }
   });
   return data;
 };
 
-const Content = ({ onContentSelect }) => {
+const Content = ({ setContentId }) => {
   const [expandedSections, setExpandedSections] = useState({});
   const { id } = useParams();
   const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
-  const { data: apiData, isLoading, error } = useQuery(
-    ["texts", id],
-    () => fetchTextContent(id),
+  const {data: apiData, isLoading, error} = useQuery(
+    ["texts", id, skip,pagination],
+    () => fetchTextContent(id,skip,pagination),
     {
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 20,
       retry: 1,
       onSuccess: (data) => {
-        if (data?.contents && data.contents.length > 0) {
-          onContentSelect(data.contents[0].id);
-        }
+        setContentId(data.contents[0].id);
       }
     }
   );
@@ -50,16 +47,6 @@ const Content = ({ onContentSelect }) => {
     return <div className="no-content listtitle">No content found</div>;
   }
 
-  // useEffect(() => {
-  //   if (apiData?.contents?.[0]?.segments) {
-  //     const initialExpandedState = {};
-  //     // Only set the first level segments to expanded
-  //     apiData.contents[0].segments.forEach(segment => {
-  //       initialExpandedState[segment.id] = true;
-  //     });
-  //     setExpandedSections(initialExpandedState);
-  //   }
-  // }, [apiData]);
 
   const contents = apiData?.contents;
   const totalSections = contents.reduce((total, content) => {
@@ -77,7 +64,7 @@ const Content = ({ onContentSelect }) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
 
-  const renderSection = (section, level = 0) => {
+  const renderSection = (section, level = 0, contentId) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
 
@@ -86,7 +73,12 @@ const Content = ({ onContentSelect }) => {
      
         <div
           className="section-header"
-          onClick={() => toggleSection(section.id)}
+          onClick={(e) => {
+            // Prevent toggling if clicking the link
+            if (e.target.tagName !== 'A') {
+              toggleSection(section.id);
+            }
+          }}
         >
           {hasChildren ? (
             isExpanded ?
@@ -96,7 +88,7 @@ const Content = ({ onContentSelect }) => {
           <Link
             to={`/texts/text-details?text_id=${id}`}
             className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-            state={{chapterInformation: {contentId: section.id, versionId: ""}}}
+            state={{chapterInformation: {contentId: contentId, versionId: ""}}}
           >
             {section.title}
           </Link>
@@ -105,7 +97,7 @@ const Content = ({ onContentSelect }) => {
         {isExpanded && hasChildren && (
           <div className="nested-content">
             {section.sections.map((childSection) =>
-              renderSection(childSection, level + 1)
+              renderSection(childSection, level + 1, contentId)
             )}
           </div>
         )}
@@ -128,7 +120,11 @@ const Content = ({ onContentSelect }) => {
               <div key={`content-${contentIndex}-segment-${segment.id}-${index}`} className="section-container">
                 <div 
                   className="section-header"
-                  onClick={() => toggleSection(segment.id)}
+                  onClick={(e) => {
+                    if (e.target.tagName !== 'A') {
+                      toggleSection(segment.id);
+                    }
+                  }}
                 >
                   {hasChildren ? (
                     expandedSections[segment.id] ? 
@@ -147,7 +143,7 @@ const Content = ({ onContentSelect }) => {
                 {expandedSections[segment.id] && hasChildren && (
                   <div className="nested-content">
                     {segment.sections.map((section) => 
-                      renderSection(section, 1)
+                      renderSection(section, 1, content.id)
                     )}
                   </div>
                 )}

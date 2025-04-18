@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
 import './Pages.scss';
 import { FiChevronDown } from 'react-icons/fi';
@@ -16,6 +16,7 @@ const Pages = () => {
   const titleInformation = location.state?.titleInformation || "";
   const { t } = useTranslate();
   const { id } = useParams();
+
   return (
     <div className="pecha-app">
       <main className="main-content">
@@ -28,7 +29,7 @@ const Pages = () => {
             <Link
               to={`/texts/text-details?text_id=${id}`}
               className="continue-button navbaritems"
-              state={{chapterInformation: {contentId: contentId || "", versionId: ""}}}
+              state={{chapterInformation: {contentId: contentId || "", versionId: "",contentindex:0}}}
             >
               {t("text.button.continue_reading")}
             </Link>
@@ -40,7 +41,7 @@ const Pages = () => {
             className="custom-tabs listsubtitle"
           >
             <Tab eventKey="contents" title={t("text.contents")}>
-              <Content onContentSelect={setContentId} />
+              <Content setContentId={setContentId}/>
             </Tab>
             <Tab eventKey="versions" title={t("common.version")}>
               <Versions contentId={contentId} />
