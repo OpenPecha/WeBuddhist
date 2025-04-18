@@ -64,7 +64,7 @@ const Content = ({ setContentId }) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
 
-  const renderSection = (section, level = 0, contentId) => {
+  const renderSection = (section, level = 0, contentId, parentIndex) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
 
@@ -88,7 +88,7 @@ const Content = ({ setContentId }) => {
           <Link
             to={`/texts/text-details?text_id=${id}`}
             className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-            state={{chapterInformation: {contentId: contentId, versionId: ""}}}
+            state={{chapterInformation: {contentId: contentId, versionId: "", contentindex: parentIndex}}}
           >
             {section.title}
           </Link>
@@ -97,7 +97,7 @@ const Content = ({ setContentId }) => {
         {isExpanded && hasChildren && (
           <div className="nested-content">
             {section.sections.map((childSection) =>
-              renderSection(childSection, level + 1, contentId)
+              renderSection(childSection, level + 1, contentId, parentIndex)
             )}
           </div>
         )}
@@ -143,7 +143,7 @@ const Content = ({ setContentId }) => {
                 {expandedSections[segment.id] && hasChildren && (
                   <div className="nested-content">
                     {segment.sections.map((section) => 
-                      renderSection(section, 1, content.id)
+                      renderSection(section, 1, content.id, index)
                     )}
                   </div>
                 )}
