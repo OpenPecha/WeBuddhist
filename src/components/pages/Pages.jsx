@@ -17,27 +17,6 @@ const Pages = () => {
   const { t } = useTranslate();
   const { id } = useParams();
 
-  useEffect(() => {
-    if (location.state?.chapterInformation?.contentId) {
-      const newContentId = location.state.chapterInformation.contentId;
-      setContentId(newContentId);
-      sessionStorage.setItem(`text_${id}_contentId`, newContentId);
-    }
-    else {
-      const savedContentId = sessionStorage.getItem(`text_${id}_contentId`);
-      if (savedContentId) {
-        setContentId(savedContentId);
-      }
-    }
-  }, [location.state, id]);
-
-  const handleContentSelect = (newContentId) => {
-    if (newContentId) {
-      setContentId(newContentId);
-      sessionStorage.setItem(`text_${id}_contentId`, newContentId);
-    }
-  };
-
   return (
     <div className="pecha-app">
       <main className="main-content">
@@ -62,10 +41,10 @@ const Pages = () => {
             className="custom-tabs listsubtitle"
           >
             <Tab eventKey="contents" title={t("text.contents")}>
-              <Content onContentSelect={handleContentSelect} currentContentId={contentId} />
+              <Content setContentId={setContentId}/>
             </Tab>
             <Tab eventKey="versions" title={t("common.version")}>
-              <Versions contentId={contentId} onContentIdChange={handleContentSelect} />
+              <Versions contentId={contentId} />
             </Tab>
           </Tabs>
         </div>

@@ -20,34 +20,24 @@ export const fetchTextContent = async (text_id) => {
   return data;
 };
 
-const Content = ({ onContentSelect, currentContentId }) => {
+const Content = ({ setContentId }) => {
   const [expandedSections, setExpandedSections] = useState({});
   const { id } = useParams();
   const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
-  const { data: apiData, isLoading, error } = useQuery(
+  const {data: apiData, isLoading, error} = useQuery(
     ["texts", id],
     () => fetchTextContent(id),
     {
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 20,
       retry: 1,
       onSuccess: (data) => {
-        if (data?.contents && data.contents.length > 0) {
-          // Only set the content ID if it's not already set
-          if (!currentContentId) {
-            const firstContentId = data.contents[0].id;
-            onContentSelect(firstContentId);
-          }
-        }
+        setContentId(data.contents[0].id);
       }
     }
   );
 
-  const handleContentClick = (contentId) => {
-    onContentSelect(contentId);
-  };
 
   if (isLoading) return <div className="listsubtitle">{t("common.loading")}</div>;
   
@@ -99,10 +89,6 @@ const Content = ({ onContentSelect, currentContentId }) => {
             to={`/texts/text-details?text_id=${id}`}
             className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
             state={{chapterInformation: {contentId: contentId, versionId: ""}}}
-            onClick={(e) => {
-              e.stopPropagation(); 
-              handleContentClick(contentId);
-            }}
           >
             {section.title}
           </Link>
@@ -149,10 +135,6 @@ const Content = ({ onContentSelect, currentContentId }) => {
                     to={`/texts/text-details?text_id=${id}`}
                     className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
                     state={{chapterInformation: {contentId: content.id, versionId: "", contentindex:index}}}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleContentClick(content.id);
-                    }}
                   >
                     {segment.title}
                   </Link>

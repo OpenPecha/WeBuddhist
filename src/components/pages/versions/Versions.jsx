@@ -22,7 +22,7 @@ export const fetchVersions = async (id, limit, skip) => {
   return data
 }
 
-const Versions = ({ contentId, onContentIdChange }) => {
+const Versions = ({ contentId }) => {
   const { id } = useParams();
   const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
@@ -34,7 +34,6 @@ const Versions = ({ contentId, onContentIdChange }) => {
     () => fetchVersions(id, pagination.limit, skip),
     {
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 20,
       retry: 1
     }
   );
@@ -44,14 +43,6 @@ const Versions = ({ contentId, onContentIdChange }) => {
     "en":"language.english"
   }
 
-  const handleVersionClick = () => {
-    if (!contentId) {
-      const savedContentId = sessionStorage.getItem(`text_${id}_contentId`);
-      if (savedContentId) {
-        onContentIdChange(savedContentId);
-      }
-    }
-  };
 
   if (isLoading) {
     return <div className="notfound listtitle">Loading versions...</div>;
@@ -86,7 +77,6 @@ const Versions = ({ contentId, onContentIdChange }) => {
                   to={`/texts/text-details?text_id=${id}`}
                   className="section-title"
                   state={{chapterInformation: {contentId: contentId, versionId: version.id,contentindex:0}}}
-                  onClick={handleVersionClick}
                 >
                   <div className={`${getLanguageClass(version.language)} titleversion`}>
                     {version.title}
