@@ -151,11 +151,10 @@ $font-size-content-sm: 14px;
 
 .right-section {
   background-color: $rightsection-color;
-  height: auto;
   padding: 2rem;
   flex: 0 0 30% !important;
   max-width: 30% !important;
-  max-height: 80%;
+  height: calc(100vh - 4rem);
   
   .right-title {
     font-size: $font-size-title;

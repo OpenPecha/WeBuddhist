@@ -13,16 +13,19 @@
     height: fit-content;
     margin: auto;
     background-color: white;
+    position: relative;
+    justify-content: flex-start;
   }
   
   .text-child-container {
     flex: 1;
-    padding: 4rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 4rem 4rem 4rem 0;
+    max-width: 800px;
+    margin: 0 !important;
     text-align: start;
     color: #333;
     overflow-y: auto;
+    transform: translateX(-140px) !important;
   
     .category-header {
       margin-bottom: 2rem;
@@ -86,11 +89,13 @@
   
   .sidebar {
     border: none;
-    height: 600px;
-    width: 420px;
+    height: calc(100vh - 4rem);
+    width: 470px;
     background-color: #FBFBFA;
     position: relative;
     padding: 2rem;
+    position: absolute;
+    right: -9rem;
     .about-title {
       text-align: start;
       font-size: 20px;
@@ -113,6 +118,7 @@
   @media (max-width: 767px) {
     .text-child-container {
       padding: 2rem;
+      transform: translateX(0) !important;
       .category-header{
         h1 {
           font-size: 20px;
