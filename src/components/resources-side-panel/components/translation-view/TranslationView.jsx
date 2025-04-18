@@ -35,7 +35,7 @@ const TranslationView = ({
     }
   );
   const languageMap = {
-    "zh": "language.sanskrit",
+    "sa": "language.sanskrit",
     "bo": "language.tibetan",
     "en": "language.english",
     "ja": "language.japanese",

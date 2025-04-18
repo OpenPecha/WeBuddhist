@@ -3,7 +3,6 @@ import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {IoMdClose} from "react-icons/io";
 import { IoLanguage, IoNewspaperOutline,} from "react-icons/io5";
-import { BsWindowFullscreen} from "react-icons/bs";
 import {FiInfo, FiList} from "react-icons/fi";
 import {BiSearch, BiBookOpen} from "react-icons/bi";
 import {useState} from "react";
@@ -66,33 +65,34 @@ const Resources = ({segmentId, showPanel, setShowPanel, setVersionId, versionId,
           </p>
         )}
 
+        {sidePanelData?.segment_infos.related_text && (sidePanelData?.segment_infos?.related_text?.commentaries > 0 || sidePanelData?.segment_infos?.related_text?.root_text > 0) && (
+          <>
+            <p className='textgreat'>{t("text.related_texts")}</p>
+            <div className='related-texts-container'>
+              {sidePanelData?.segment_infos?.related_text?.commentaries > 0 && (
+                <p className='related-text-item' onClick={() => setActiveView("commentary")}>
+                  <BiBookOpen className="m-2"/>
+                  {`${t("text.commentary")} (${sidePanelData?.segment_infos?.related_text?.commentaries})`}
+                </p>
+              )}
+              {sidePanelData?.segment_infos?.related_text?.root_text > 0 && (
+                <p className='related-text-item'>
+                  <BiBookOpen className="m-2"/>
+                  {`${t("text.root_text")} (${sidePanelData?.segment_infos?.related_text?.root_text})`}
+                </p>
+              )}
+            </div>
+          </>
+        )}
 
-        {sidePanelData?.segment_infos.related_text.commentaries > 0 && <>
-          <p className='textgreat'>{t("text.related_texts")}</p>
-          <div className='related-texts-container'>
-            <p className='related-text-item' onClick={() => setActiveView("commentary")}>
-              <BiBookOpen className="m-2"/>
-              {t("text.commentary")} ({sidePanelData?.segment_infos.related_text.commentaries})
-            </p>
-          </div>
-        </>}
-
-
-        {sidePanelData?.text_infos?.sheets > 0 && (
+        {sidePanelData?.segment_infos?.resources?.sheets > 0 && (
           <>
             <p className='textgreat'>{t("panel.resources")}</p>
             <p>
               <IoNewspaperOutline className="m-2"/>
-              {` ${t("common.sheets")} (${sidePanelData.text_infos.sheets})`}
+              {` ${t("common.sheets")} (${sidePanelData?.segment_infos?.resources?.sheets})`}
             </p>
           </>
-        )}
-
-        {sidePanelData?.text_infos?.web_pages > 0 && (
-          <p>
-            <BsWindowFullscreen className="m-2"/>
-            {` ${t("text.web_pages")} (${sidePanelData.text_infos.web_pages})`}
-          </p>
         )}
 
         {menuItems.map((item) => (
