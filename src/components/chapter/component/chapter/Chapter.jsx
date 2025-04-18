@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {getLanguageClass, sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
 import {useSearchParams, useLocation} from "react-router-dom";
 import {useQuery} from "react-query";
@@ -9,12 +9,15 @@ import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 
 export const fetchTextDetails = async (text_id, content_id, versionId, skip, limit) => {
-  const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
+  const preparedata = {
     content_id: content_id ?? "",
-    version_id: versionId ?? "",
     limit,
     skip
-  });
+  };
+  if (versionId) {
+    preparedata.version_id = versionId;
+  }
+  const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, preparedata);
   return data;
 }
 const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
@@ -80,10 +83,10 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
   useEffect(() => {
     if (!textDetails) return;
     if (skip === 0) {
-      setContents(textDetails.contents);
+      setContents(textDetails.content.sections);
     } else {
       setContents(prevState => {
-        return [...prevState, ...textDetails.contents]
+        return [...prevState, ...textDetails.content.sections];
       });
     }
 
@@ -101,8 +104,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
       const currentContainer = containerRef.current;
       const currentScrollHeight = currentContainer?.scrollHeight || 0;
       
-      // main logic (add new one before previous)
-      const newContents = [...previousTextDetails.contents, ...prevState];
+      const newContents = [...previousTextDetails.content.sections, ...prevState];
       
       // After the next render, restore scroll position (if not it shows from the top)
       setTimeout(() => {
@@ -156,7 +158,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
       // Check if scrolled near top - ONLY when scrolling up
       if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
         // Only fetch previous content if we're not at the very beginning
-        const firstSectionNumber = contents[0]?.sections[0]?.section_number;
+        const firstSectionNumber = contents[0]?.section_number;
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
           // Set topSkip to fetch the previous content
@@ -194,82 +196,56 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
     setShowPanel(isOpen);
   };
 
+  const renderSegments = (segments) => {
+    if (!segments || segments.length === 0) return null;
+    
+    return segments.map(segment => (
+      <div
+        key={segment.segment_id}
+        className="text-segment mb-3 mb-md-4"
+        onClick={(e) => {
+          if (!e.target.classList ||
+            (!e.target.classList.contains('footnote-marker') &&
+              !e.target.classList.contains('footnote'))) {
+            setSelectedSegmentId(segment.segment_id);
+            handleSidebarToggle(true);
+          }
+        }}
+      >
+        <div className="segment">
+          {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
+            <>
+              <span className="segment-number">{segment.segment_number}</span>
+              <div dangerouslySetInnerHTML={{__html: segment.content}}/>
+            </>
+          )}
+          {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
+            <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
+          )}
+        </div>
+      </div>
+    ));
+  };
 
-  const renderContent = (item) => {
+  const renderSection = (section) => {
+    if (!section) return null;
+    
     return (
-      <div key={item.id} className={`section ${getLanguageClass(textDetails?.text_detail?.language)}`}>
-        {item.title && <h4 className="section-title">{item.title}</h4>}
-
-        {item?.segments?.map(segment => (
-          <div
-            key={segment.id}
-            className="text-segment mb-3 mb-md-4"
-            onClick={(e) => {
-              if (!e.target.classList ||
-                (!e.target.classList.contains('footnote-marker') &&
-                  !e.target.classList.contains('footnote'))) {
-                setSelectedSegmentId(segment.segment_id);
-                handleSidebarToggle(true);
-              }
-            }}
-          >
-            <div key={segment.segment_id} className="segment">
-              {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
-                <>
-                  <span className="segment-number">{segment.segment_number}</span>
-                  <div dangerouslySetInnerHTML={{__html: segment.content}}/>
-                </>
-              )}
-              {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
-                <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
-              )}
-            </div>
-          </div>
-        ))}
-
-        {item?.sections?.map(section => (
-          <div key={section.id} className="nested-section">
-            <h4 className="section-title">{section.title}</h4>
-            {section?.segments?.map(segment => (
-              <div
-                key={segment.id}
-                className="text-segment mb-3 mb-md-4"
-                onClick={(e) => {
-                  if (!e.target.classList ||
-                    (!e.target.classList.contains('footnote-marker') &&
-                      !e.target.classList.contains('footnote'))) {
-                    setSelectedSegmentId(segment.segment_id);
-                    handleSidebarToggle(true);
-                  }
-                }}
-              >
-                <div key={segment.segment_id} className="segment">
-                  {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
-                    <>
-                      <span className="segment-number">{segment.segment_number}</span>
-                      <div dangerouslySetInnerHTML={{__html: segment.content}}/>
-                    </>
-                  )}
-                  {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
-                    <div className="translation-content"
-                         dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
-                  )}
-                </div>
-              </div>
-            ))}
-
-            {section?.sections?.map(nestedSection =>
-              renderContent(nestedSection)
-            )}
-          </div>
-        ))}
+      <div key={section.id} className="nested-section">
+        {section.title && <h4 className="section-title">{section.title}</h4>}
+        
+        {renderSegments(section.segments)}
+        
+        {section.sections && section.sections.length > 0 && 
+          section.sections.map(nestedSection => renderSection(nestedSection))
+        }
       </div>
     );
   };
 
   // main renderer
   return (
-    <div className={"chapter"}>
+    <div className="chapter">
       <ChapterHeader selectedOption={selectedOption} currentChapter={currentChapter} removeChapter={removeChapter}
                      setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
                      totalPages={totalPages}/>
@@ -286,11 +262,11 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
             </div>
           )}
           
-          {contents?.map((item) => {
-            return (<div key={item.id} className="content-item">
-              {item.sections.map(segment => renderContent(segment))}
-            </div>)
-          })}
+          {contents?.map(section => (
+            <div key={section.id} className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}>
+              {renderSection(section)}
+            </div>
+          ))}
           {chapterContentIsLoading && (
             <div className="text-center my-3 my-md-4">
               <Spinner animation="border" role="output" size="sm">
@@ -299,7 +275,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
             </div>
           )}
         </div>
-        <Resources
+        {/* <Resources
           textId={textId}
           segmentId={selectedSegmentId}
           showPanel={showPanel}
@@ -307,7 +283,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
           setVersionId={handleVersionChange}
           versionId={versionId}
           addChapter={addChapter}
-        />
+        /> */}
       </Container>
     </div>
   );
