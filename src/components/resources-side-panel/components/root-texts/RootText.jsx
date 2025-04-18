@@ -58,7 +58,6 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
       [rootTextId]: !prev[rootTextId]
     }));
   };
-
   return (
     <div>
       <div className="headerthing">
@@ -81,7 +80,6 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
               {rootTextData.segment_root_mapping.map((rootText) => {
                 const rootTextId = rootText.text_id;
                 const isExpanded = expandedRootTexts[rootTextId];
-                
                 return (
                   <div key={rootTextId} className="root-text-list-item">
                     <h3 className={`root-text-title ${getLanguageClass(rootText.language)}`}>
@@ -110,7 +108,7 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
                         <div className="root-text-actions">
                           <div className="root-text-buttons">
                             <div className="root-text-button"
-                                 onClick={() => addChapter({contentId: "", versionId: rootText.text_id})}>
+                                 onClick={() => addChapter({contentId: "", versionId: "", textId: rootText.text_id, segmentId: rootText.segment_id})}>
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
                             </div>

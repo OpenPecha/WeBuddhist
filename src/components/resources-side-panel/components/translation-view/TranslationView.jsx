@@ -29,7 +29,7 @@ const TranslationView = ({
   const { t } = useTranslate();
   const {data: sidePanelTranslationsData} = useQuery(
     ["sidePanelTranslations",segmentId],
-    () => fetchTranslationsData("2353849b-f8fa-43e4-850d-786b623d0130"), //send segmentId later todo
+    () => fetchTranslationsData(segmentId), //send segmentId later todo
     {
       refetchOnWindowFocus: false,
     }
@@ -58,7 +58,6 @@ const TranslationView = ({
     const translationKey = `${language}-${index}`;
     const isExpanded = expandedTranslations[translationKey] || false;
     const hasContent = !!translation.content?.length;
-
     return (
       <div key={index} className="translation-item">
       <span className={`translation-content ${getLanguageClass(translation.language)}`}>
@@ -97,7 +96,7 @@ const TranslationView = ({
             <div
               className="linkicons"
               // onClick={() => addChapter({ contentId: "", versionId: translation.text_id, uniqueId: Date.now() })}
-              onClick={() => addChapter({ contentId: "", versionId: translation.text_id })}
+              onClick={() => addChapter({ contentId: "", versionId: "", textId: translation.text_id, segmentId: translation.segment_id })}
 
             >
               <GoLinkExternal />
