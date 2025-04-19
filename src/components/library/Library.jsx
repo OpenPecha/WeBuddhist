@@ -37,27 +37,30 @@ const Library = () => {
   }
 
   return (
-    <div className="main-container listtitle">
-      <div className="text-child-container">
-        <div className="category-header">
-          <h1>{textChildData?.parent?.title?.toUpperCase()}</h1>
-        </div>
-        <div className="text-sections">
-          <div className="text-section">
-            <div className="text-list ">
-              {textChildData?.terms?.map((term) => (
-                <Link key={term.id} to={`/texts/text-category/${term.id}`} className="text-item overalltext">
-                  <p>{term.title}</p>
-                </Link>
-              ))}
+    <div className="library-container">
+      <div className="main-container listtitle">
+        <div className="text-child-container">
+          <div className="category-header">
+            <h1>{textChildData?.parent?.title?.toUpperCase()}</h1>
+          </div>
+          <div className="text-sections">
+            <div className="text-section">
+              <div className="text-list ">
+                {textChildData?.terms?.map((term) => (
+                  <Link key={term.id} to={`/texts/text-category/${term.id}`} className="text-item overalltext">
+                    <p>{term.title}</p>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+        <div className="side-container">
+          <h2 className="about-title">{t('common.about')} {textChildData?.parent?.title}</h2>
+          <div className="divider"></div>
+        </div>
       </div>
-      <div className="sidebar">
-        <h2 className="about-title">{t('common.about')} {textChildData?.parent?.title}</h2>
-        <div className="divider"></div>
-      </div>
+
     </div>
   );
 };

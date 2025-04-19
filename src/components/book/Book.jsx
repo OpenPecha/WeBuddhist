@@ -58,54 +58,56 @@ const Book = () => {
   const rootTexts = textsByType["root_text"] || [];
   const commentaryTexts = textsByType["commentary"] || [];
   return (
-    <div className="main-container listtitle">
-      <div className="text-category-container">
-        <div className="category-header">
-          <h2 className="overalltext">{categoryTextData.term?.title}</h2>
-        </div>
-        <div className="text-sections">
-          {(!categoryTextData.texts || categoryTextData.texts.length === 0) ? (
-            <div className="text-section">
-              <div className="no-content">{t("text_category.message.notfound")}</div>
-            </div>
-          ) : (
-            <>
-              {rootTexts.length > 0 && (
-                <div className="text-section">
-                  <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>
-                  <div className="section-divider"></div>
-                  <div className="text-list">
-                    {rootTexts.map((text,i) => (
-                      <div key={i} className="text-item ">
-                        <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`} state={{ titleInformation: text }}>
-                        <p>{text.title}</p>
-                        </Link>
-                      </div>
-                    ))}
+    <div className="book-container">
+      <div className="main-container listtitle">
+        <div className="text-category-container">
+          <div className="category-header">
+            <h2 className="overalltext">{categoryTextData.term?.title}</h2>
+          </div>
+          <div className="text-sections">
+            {(!categoryTextData.texts || categoryTextData.texts.length === 0) ? (
+              <div className="text-section">
+                <div className="no-content">{t("text_category.message.notfound")}</div>
+              </div>
+            ) : (
+              <>
+                {rootTexts.length > 0 && (
+                  <div className="text-section">
+                    <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>
+                    <div className="section-divider"></div>
+                    <div className="text-list">
+                      {rootTexts.map((text,i) => (
+                        <div key={i} className="text-item ">
+                          <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`} state={{ titleInformation: text }}>
+                            <p>{text.title}</p>
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-              
-              {commentaryTexts.length > 0 && (
-                <div className="text-section">
-                  <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>
-                  <div className="section-divider"></div>
-                  <div className="text-list">
-                    {commentaryTexts.map((text,i) => (
-                      <div key={i} className="text-item">
-                       <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`}  state={{ titleInformation: text }} >
-                        <p>{text.title}</p>
-                        </Link>
-                      </div>
-                    ))}
+                )}
+
+                {commentaryTexts.length > 0 && (
+                  <div className="text-section">
+                    <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>
+                    <div className="section-divider"></div>
+                    <div className="text-list">
+                      {commentaryTexts.map((text,i) => (
+                        <div key={i} className="text-item">
+                          <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`}  state={{ titleInformation: text }} >
+                            <p>{text.title}</p>
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </>
-          )}
+                )}
+              </>
+            )}
+          </div>
         </div>
+        <div className="sidebar" />
       </div>
-      <div className="sidebar" />
     </div>
   );
 };
