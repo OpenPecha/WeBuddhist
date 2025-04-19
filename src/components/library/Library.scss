@@ -11,21 +11,22 @@
     display: flex;
     max-width: 1280px;
     height: fit-content;
-    margin: auto;
+    margin-left: 0 !important;
+    margin-right: auto !important;
     background-color: white;
     position: relative;
     justify-content: flex-start;
+    padding: 0;
   }
   
   .text-child-container {
     flex: 1;
-    padding: 4rem 4rem 4rem 0;
+    padding: 4rem 2rem 4rem 0;
     max-width: 800px;
-    margin: 0 !important;
+    margin-left: 5rem !important;
     text-align: start;
     color: #333;
     overflow-y: auto;
-    transform: translateX(-140px) !important;
   
     .category-header {
       margin-bottom: 2rem;
@@ -92,10 +93,11 @@
     height: calc(100vh - 4rem);
     width: 470px;
     background-color: #FBFBFA;
-    position: relative;
     padding: 2rem;
-    position: absolute;
-    right: -9rem;
+    position: fixed;
+    right: 5rem;
+    top: 4rem;
+    margin-left: auto;
     .about-title {
       text-align: start;
       font-size: 20px;
@@ -117,8 +119,8 @@
   
   @media (max-width: 767px) {
     .text-child-container {
-      padding: 2rem;
-      transform: translateX(0) !important;
+      margin-left: 0 !important;
+      padding: 2rem 1rem 2rem 1rem;
       .category-header{
         h1 {
           font-size: 20px;
@@ -134,6 +136,12 @@
       
       }
     
+    }
+
+    .main-container {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100%;
     }
   
     .sidebar {
