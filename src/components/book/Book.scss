@@ -92,20 +92,21 @@
       }
     }
   }
-}
 
-.sidebar {
-  width: 470px;
-  background-color: #FBFBFA;
-  position: relative;
-  padding: 2rem;
-  .sidebar-toggle {
-    position: absolute;
-    top: 160px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #999;
-    font-size: 1.2rem;
+  .sidebar {
+    width: 470px;
+    background-color: #FBFBFA;
+    position: relative;
+    padding: 2rem;
+
+    .sidebar-toggle {
+      position: absolute;
+      top: 160px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #999;
+      font-size: 1.2rem;
+    }
   }
 }
 
