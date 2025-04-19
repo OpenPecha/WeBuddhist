@@ -39,6 +39,10 @@ const Chapters = () => {
   const removeChapter = (chapterInformation) => {
     setChapters(prevChapters =>
       prevChapters.filter(chapter => {
+        if (chapterInformation.segmentId && chapter.segmentId) {
+          return chapter.segmentId !== chapterInformation.segmentId;
+        }
+        // Fall back to the original logic for chapters without segmentId
         return !(chapter.contentId === chapterInformation.contentId && 
                 chapter.versionId === chapterInformation.versionId);
       })
