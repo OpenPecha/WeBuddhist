@@ -110,13 +110,12 @@ const Content = ({ setContentId }) => {
   };
 
   return (
-    <div>
-      <div className="listtitle">
-        {contents.map((content, contentIndex) => (
-          content.sections && content.sections.map((segment, index) => {
-            const hasChildren = segment.sections && segment.sections.length > 0;
+    <>
+      {contents.map((content, contentIndex) => (
+        content.sections && content.sections.map((segment, index) => {
+          const hasChildren = segment.sections && segment.sections.length > 0;
 
-            return (
+          return (
               <div key={`content-${contentIndex}-segment-${segment.id}-${index}`} className="section-container">
                 <div 
                   className="section-header"
@@ -151,7 +150,7 @@ const Content = ({ setContentId }) => {
             );
           })
         ))}
-      </div>
+   
       {totalSections > 0 &&
         <PaginationComponent
           pagination={pagination}
@@ -159,7 +158,7 @@ const Content = ({ setContentId }) => {
           handlePageChange={handlePageChange}
           setPagination={setPagination}
         />}
-    </div>
+    </>
   );
 };
 
