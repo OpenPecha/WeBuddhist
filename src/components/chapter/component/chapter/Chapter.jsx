@@ -47,7 +47,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
     () => fetchTextDetails(textId, contentId, versionId, skip, 1, segmentId),
     {
       refetchOnWindowFocus: false,
-      enabled: totalContentRef.current !== 0 ? (skip) + 1 <= totalContentRef.current: true
+      enabled: segmentId ? skip === initialSkip : (totalContentRef.current !== 0 ? (skip) + 1 <= totalContentRef.current : true)
     }
   );
   // Query for fetching content when scrolling up
@@ -56,7 +56,7 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
     () => fetchTextDetails(textId, contentId, versionId, topSkip, 1, segmentId),
     {
       refetchOnWindowFocus: false,
-      enabled: topSkip !== null && topSkip >= 0
+      enabled: !segmentId && topSkip !== null && topSkip >= 0
     }
   );
   useEffect(() => {
@@ -123,6 +123,8 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
     if (!currentContainer) return;
 
     const handleScroll = () => {
+      if (segmentId) return;
+      
       const {scrollTop, scrollHeight, clientHeight} = currentContainer;
   
       // Determine scroll direction using ref for immediate access to previous value
@@ -151,11 +153,16 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
       }
     };
 
-    currentContainer.addEventListener('scroll', handleScroll);
+    if (!segmentId) {
+      currentContainer.addEventListener('scroll', handleScroll);
+    }
+    
     return () => {
-      currentContainer.removeEventListener('scroll', handleScroll);
+      if (!segmentId) {
+        currentContainer.removeEventListener('scroll', handleScroll);
+      }
     };
-  }, [contents]);
+  }, [segmentId, contents]);
 
   useEffect(() => {
     const container = containerRef.current;
