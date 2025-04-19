@@ -21,7 +21,7 @@ $font-size-content-sm: 14px;
 
 .row {
   --bs-gutter-x: 0;
-  margin: 0 5rem !important;
+  margin: 0 5rem;
   
   @media (max-width: 1200px) {
     margin: 0 2rem !important;
@@ -46,8 +46,8 @@ $font-size-content-sm: 14px;
 }
 
 .left-section {
-  flex: 0 0 70% !important;
-  max-width: 70% !important;
+  flex: 0 0 70%;
+  max-width: 70%;
   
   .section-1 {
     display: flex;
@@ -152,8 +152,8 @@ $font-size-content-sm: 14px;
 .right-section {
   background-color: $rightsection-color;
   padding: 2rem;
-  flex: 0 0 30% !important;
-  max-width: 30% !important;
+  flex: 0 0 30%;
+  max-width: 30%;
   height: calc(100vh - 4rem);
   
   .right-title {
@@ -206,17 +206,17 @@ $font-size-content-sm: 14px;
   }
   
   .left-section {
-    width: 100% !important;
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
-    order: 1 !important;
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+    order: 1;
   }
   
   .right-section {
     display: block;
-    flex: 0 0 100% !important;
-    max-width: 100% !important;
-    order: 2 !important;
-    max-height: none !important;
+    flex: 0 0 100%;
+    max-width: 100%;
+    order: 2;
+    max-height: none;
   }
 }

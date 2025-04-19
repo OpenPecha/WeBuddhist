@@ -14,79 +14,81 @@
   background-color: white;
   max-width: 100%;
   padding-right: 5rem;
-}
 
-.text-category-container {
-  flex: 1;
-  padding: 4rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: start;
-  color: #333;
-  overflow-y: auto;
+  .text-category-container {
+    flex: 1;
+    padding: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: start;
+    color: #333;
+    overflow-y: auto;
 
-  .category-header {
-    margin-bottom: 2rem;
-    h1 {
-      font-size: 1.8rem;
-      font-weight: 400;
-      letter-spacing: 0.05rem;
-    }
-  }
+    .category-header {
+      margin-bottom: 2rem;
 
-  .text-sections {
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-  }
-
-  .text-section {
-    .section-title {
-      font-weight: 500;
-      font-size: 20px;
-      color: #8e8e8e;
-      letter-spacing: 0.05rem;
+      h1 {
+        font-size: 1.8rem;
+        font-weight: 400;
+        letter-spacing: 0.05rem;
+      }
     }
 
-    .section-divider {
-      height: 1px;
-    }
-
-    .no-content {
+    .text-sections {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 3rem 0;
-      font-size: 1.2rem;
-      color: #666;
+      flex-direction: column;
+      gap: 2.5rem;
     }
 
-    .text-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr; 
-      gap: 2rem 3rem;
-    }
-
-    .text-item {
-      .text-link {
-        text-decoration: none;
-        color: #666666;
-        cursor: pointer;
-        transition: color 0.2s ease;
-        &:hover {
-          text-decoration: underline;
-        }
+    .text-section {
+      .section-title {
+        font-weight: 500;
+        font-size: 20px;
+        color: #8e8e8e;
+        letter-spacing: 0.05rem;
       }
 
-      p {
-        cursor: pointer;
-        width: fit-content;
+      .section-divider {
+        height: 1px;
+      }
+
+      .no-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 3rem 0;
         font-size: 1.2rem;
-        line-height: 1.4;
-        color: #333;
-        border-top: 1px solid #e0e0e0;
-        padding-top: 1rem;
-        font-weight: 400;
+        color: #666;
+      }
+
+      .text-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem 3rem;
+      }
+
+      .text-item {
+        .text-link {
+          text-decoration: none;
+          color: #666666;
+          cursor: pointer;
+          transition: color 0.2s ease;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+
+        p {
+          cursor: pointer;
+          width: fit-content;
+          font-size: 1.2rem;
+          line-height: 1.4;
+          color: #333;
+          border-top: 1px solid #e0e0e0;
+          padding-top: 1rem;
+          font-weight: 400;
+        }
       }
     }
   }
