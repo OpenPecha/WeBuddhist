@@ -19,7 +19,7 @@ export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit
   });
   return data;
 }
-const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
+const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
   
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
@@ -79,6 +79,14 @@ const Chapter = ({addChapter, removeChapter, currentChapter, totalPages}) => {
       totalContentRef.current = textDetails?.total
     }
   }, [textDetails, skip]);
+  
+  useEffect(() => {
+    if (!textDetails) return;
+    
+    if (currentChapter.contentId === "" && textDetails.content.id) {
+      updateChapter(currentChapter, { contentId: textDetails.content.id });
+    }
+  }, [textDetails, currentChapter, updateChapter]);
 
 
   //for scroll up data

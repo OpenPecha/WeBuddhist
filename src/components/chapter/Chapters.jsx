@@ -49,6 +49,17 @@ const Chapters = () => {
     );
   };
 
+  const updateChapter = (currentChapter, updatedProperties) => {
+    setChapters(prevChapters =>
+      prevChapters.map(chapter => {
+        if (currentChapter.segmentId && chapter.segmentId === currentChapter.segmentId) {
+          return { ...chapter, ...updatedProperties };
+        }
+        return chapter;
+      })
+    );
+  };
+
   return (
     <div className="chapters-container">
       {chapters.map((chapter, index) => (
@@ -57,7 +68,7 @@ const Chapters = () => {
           className="chapter-container"
           style={{width: `${100 / chapters.length}%`}}
         >
-          <Chapter addChapter={addChapter} removeChapter={removeChapter} currentChapter={chapter} totalPages={chapters.length}/>
+          <Chapter addChapter={addChapter} removeChapter={removeChapter} updateChapter={updateChapter} currentChapter={chapter} totalPages={chapters.length}/>
         </div>
       ))}
     </div>
