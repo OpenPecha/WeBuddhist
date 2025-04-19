@@ -112,6 +112,7 @@
 
 
 @media (max-width: 991px) {
+  .main-container {
   .text-category-container {
     .text-section {
       .text-list {
@@ -120,9 +121,11 @@
     }
   }
 }
+}
 
 
 @media (max-width: 767px) {
+  .main-container {
   .text-category-container {
     padding: 2rem;
     width: 100%;
@@ -150,4 +153,5 @@
   .sidebar {
     display: none;
   }
+}
 }

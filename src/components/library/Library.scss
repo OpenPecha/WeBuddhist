@@ -111,12 +111,19 @@
   }
 }
   @media (min-width: 768px) and (max-width: 991px) {
-    .sidebar {
-      width: 320px;
+    .main-container {
+      .sidebar {
+        width: 320px;
+      }
     }
   }
   
   @media (max-width: 767px) {
+    .main-container {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+
     .text-child-container {
       margin-left: 0 !important;
       padding: 2rem 1rem 2rem 1rem;
@@ -132,21 +139,14 @@
         .text-item {
           font-size: 16px;
         }
-      
       }
-    
-    }
-
-    .main-container {
-      margin: 0;
-      padding: 0;
-      width: 100%;
     }
   
     .sidebar {
       display: none;
     }
   }
+}
   
   .loading {
     display: flex;
