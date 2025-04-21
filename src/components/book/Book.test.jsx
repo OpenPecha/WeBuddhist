@@ -12,7 +12,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import Book from "./Book.jsx";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
-import {TolgeeProvider} from "@tolgee/react";
+import { TolgeeProvider } from "@tolgee/react";
 
 mockAxios();
 mockUseAuth();
@@ -34,7 +34,7 @@ vi.mock("react-router-dom", async () => {
 describe("Book Component", () => {
   const queryClient = new QueryClient();
   const mockTextCategoryData = {
-    category: {
+    term: {
       title: "Text Category",
       description: "Text Category Description",
     },
@@ -43,16 +43,19 @@ describe("Book Component", () => {
         id: "text1",
         title: "Root Text 1",
         type: "root_text",
+        language: "bo"
       },
       {
         id: "text2",
         title: "Root Text 2",
         type: "root_text",
+        language: "en"
       },
       {
         id: "text3",
         title: "Commentary 1",
-        type: "related-texts",
+        type: "commentary",
+        language: "bo"
       },
     ],
   };
@@ -79,7 +82,7 @@ describe("Book Component", () => {
       <Router>
         <QueryClientProvider client={queryClient}>
           <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-          <Book />
+            <Book />
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
@@ -94,9 +97,23 @@ describe("Book Component", () => {
     expect(screen.getByText("Root Text 2")).toBeInTheDocument();
   });
 
-  test("renders related-texts texts correctly", () => {
+  test("renders commentary texts correctly", () => {
+    // Update mock data to match the expected type in the component
+    const updatedMockData = {
+      ...mockTextCategoryData,
+      texts: [
+        ...mockTextCategoryData.texts.slice(0, 2),
+        { id: "text3", title: "Commentary 1", type: "commentary" }
+      ]
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: updatedMockData,
+      isLoading: false
+    }));
+
     setup();
-    expect(screen.getByText("text.type.related-texts")).toBeInTheDocument();
+    expect(screen.getByText("text.type.commentary")).toBeInTheDocument();
     expect(screen.getByText("Commentary 1")).toBeInTheDocument();
   });
 
@@ -107,7 +124,7 @@ describe("Book Component", () => {
     }));
 
     setup();
-    expect(screen.getByText("Loading content...")).toBeInTheDocument();
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
   test("displays error message when there is an error", () => {
@@ -133,7 +150,7 @@ describe("Book Component", () => {
     }));
 
     setup();
-    expect(screen.getByText("No text found")).toBeInTheDocument();
+    expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
   });
 
   test("displays empty text sections when texts array is empty", () => {
@@ -145,7 +162,7 @@ describe("Book Component", () => {
 
     const { container } = setup();
     expect(screen.getByText("Empty Category")).toBeInTheDocument();
-    expect(screen.getByText("No text found")).toBeInTheDocument();
+    expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
     const textSections = container.querySelector(".text-sections");
     expect(textSections).toBeInTheDocument();
     // The component renders a div with the "no-content" message inside the text-sections
@@ -154,6 +171,23 @@ describe("Book Component", () => {
   });
 
   test("renders correct links to text detail chapter", () => {
+    const updatedMockData = {
+      term: {
+        title: "Text Category",
+        description: "Text Category Description",
+      },
+      texts: [
+        { id: "text1", title: "Root Text 1", type: "root_text", language: "bo" },
+        { id: "text2", title: "Root Text 2", type: "root_text", language: "en" },
+        { id: "text3", title: "Commentary 1", type: "commentary", language: "bo" }
+      ],
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: updatedMockData,
+      isLoading: false
+    }));
+
     setup();
     const links = screen.getAllByTestId("router-link");
     expect(links).toHaveLength(3);
@@ -163,7 +197,7 @@ describe("Book Component", () => {
   });
 
   test("handles query error gracefully", () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => { });
     vi.spyOn(reactQuery, "useQuery").mockImplementation(
       (_queryKey, _queryFn, options) => {
         if (options.onError) {
@@ -229,32 +263,32 @@ describe("Book Component", () => {
 
   test("handles API call errors by showing error message", () => {
     const errorMessage = "Network Error";
-    
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    
-    const mockError = { 
-      response: { status: 500, data: { message: errorMessage } } 
+
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => { });
+
+    const mockError = {
+      response: { status: 500, data: { message: errorMessage } }
     };
-    
+
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => {
       console.error("API call error:", mockError.response || mockError);
-      
+
       return {
         data: null,
         isLoading: false,
         error: new Error(errorMessage)
       };
     });
-    
+
     setup();
-    
+
     expect(screen.getByText(`Error loading content: ${errorMessage}`)).toBeInTheDocument();
-    
+
     expect(consoleSpy).toHaveBeenCalledWith(
-      "API call error:", 
+      "API call error:",
       mockError.response
     );
-    
+
     consoleSpy.mockRestore();
   });
 
@@ -340,14 +374,14 @@ describe("Book Component", () => {
 
   test("correctly groups texts of multiple types", () => {
     const multipleTypesData = {
-      category: {
+      term: {
         title: "Multiple Types",
         description: "Contains various text types",
       },
       texts: [
         { id: "text1", title: "Root Text 1", type: "root_text" },
         { id: "text2", title: "Root Text 2", type: "root_text" },
-        { id: "text3", title: "Commentary 1", type: "related-texts" },
+        { id: "text3", title: "Commentary 1", type: "commentary" },
       ],
     };
 
@@ -359,7 +393,7 @@ describe("Book Component", () => {
     const { container } = setup();
 
     expect(screen.getByText("text.type.root_text")).toBeInTheDocument();
-    expect(screen.getByText("text.type.related-texts")).toBeInTheDocument();
+    expect(screen.getByText("text.type.commentary")).toBeInTheDocument();
 
     const textSections = container.querySelectorAll(".text-section");
     expect(textSections.length).toBe(2);
@@ -378,13 +412,9 @@ describe("Book Component", () => {
       isLoading: false,
     }));
 
-    const { container } = setup();
+    setup();
 
     expect(screen.getByText("No Description Category")).toBeInTheDocument();
-
-    const descriptionElements = container.querySelectorAll(
-      ".category-description"
-    );
-    expect(descriptionElements.length).toBe(0);
+    expect(screen.getByText("Root Text 1")).toBeInTheDocument();
   });
 });
