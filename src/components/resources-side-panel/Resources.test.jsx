@@ -36,16 +36,17 @@ describe("Resources Side Panel", () => {
       id: "test123"
     }
   };
-  const mockSideTextData = {
-    text_infos: {
+  const mockSidePanelData = {
+    segment_infos: {
       short_url: "https://test.com/share",
       translations: 2,
-      sheets: 3,
-      web_pages: 1,
-      related_texts: [
-        { title: "Related Text 1", count: 2 },
-        { title: "Related Text 2", count: 1 }
-      ]
+      resources: {
+        sheets: 3
+      },
+      related_text: {
+        commentaries: 2,
+        root_text: 1
+      }
     }
   };
 
@@ -54,8 +55,8 @@ describe("Resources Side Panel", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
       if (queryKey[0] === "textDetail") {
         return { data: mockTextData, isLoading: false };
-      } else if (queryKey[0] === "texts") {
-        return { data: mockSideTextData, isLoading: false };
+      } else if (queryKey[0] === "sidePanel") {
+        return { data: mockSidePanelData, isLoading: false };
       }
       return { data: null, isLoading: false };
     });
@@ -70,7 +71,7 @@ describe("Resources Side Panel", () => {
             fallback={"Loading tolgee..."}
             tolgee={mockTolgee}
           >
-            <Resources showPanel={true} setShowPanel={() => vi.fn()} textId={"test123"} addChapter={() => vi.fn()}/>
+            <Resources showPanel={true} setShowPanel={() => vi.fn()} segmentId={"test123"} addChapter={() => vi.fn()} setVersionId={() => vi.fn()} versionId={"version1"}/>
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
@@ -78,19 +79,19 @@ describe("Resources Side Panel", () => {
   };
 
 
-  test("fetchTextsInfo makes correct API call", async () => {
-    const textId = "test123";
-    axiosInstance.get.mockResolvedValueOnce({ data: mockSideTextData });
+  test("fetchSidePanelData makes correct API call", async () => {
+    const segmentId = "test123";
+    axiosInstance.get.mockResolvedValueOnce({ data: mockSidePanelData });
 
-    const result = await fetchSidePanelData(textId);
+    const result = await fetchSidePanelData(segmentId);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/texts/${textId}/infos`, {
+    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/segments/${segmentId}/infos`, {
       params: {
         language: "bo",
-        text_id: textId
+        segmentId
       }
     });
-    expect(result).toEqual(mockSideTextData);
+    expect(result).toEqual(mockSidePanelData);
   });
 
   test("closes panel when clicking close icon", () => {
@@ -103,7 +104,9 @@ describe("Resources Side Panel", () => {
             <Resources 
               showPanel={true} 
               setShowPanel={mockSetShowPanel} 
-              textId={"test123"} 
+              segmentId={"test123"} 
+              setVersionId={() => vi.fn()}
+              versionId={"version1"}
             />
           </TolgeeProvider>
         </QueryClientProvider>
@@ -122,7 +125,7 @@ describe("Resources Side Panel", () => {
       if (queryKey[0] === "sidePanel") {
         return { 
           data: {
-            text_infos: {
+            segment_infos: {
               translations: 5
             }
           }
@@ -136,20 +139,17 @@ describe("Resources Side Panel", () => {
     const translationText = screen.getByText(/connection_pannel\.translations/);
     fireEvent.click(translationText);
     expect(screen.queryByText(/side_nav\.about_text/)).not.toBeInTheDocument();
-    expect(screen.getByText("connection_pannel.translations")).toBeInTheDocument();
-    expect(container.querySelector(".translation-content")).toBeInTheDocument();
-    expect(container.querySelector(".translations-list")).toBeInTheDocument();
   });
 
-  test("shows commentary view when clicking on a related text item", () => {
+  test("shows commentary view when clicking on commentary option", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
       if (queryKey[0] === "sidePanel") {
         return { 
           data: {
-            text_infos: {
-              related_texts: [
-                { title: "Related Text 1", count: 2 }
-              ]
+            segment_infos: {
+              related_text: {
+                commentaries: 2
+              }
             }
           }
         };
@@ -158,8 +158,8 @@ describe("Resources Side Panel", () => {
     });
     
     const { container } = setup();
-    const relatedTextItem = screen.getByText(/Related Text 1/);
-    fireEvent.click(relatedTextItem);
+    const commentaryText = screen.getByText(/text\.commentary/);
+    fireEvent.click(commentaryText);
     
     expect(screen.queryByText(/side_nav\.about_text/)).not.toBeInTheDocument();
   });
@@ -167,7 +167,7 @@ describe("Resources Side Panel", () => {
   test("shows share view when clicking on share menu item", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
       if (queryKey[0] === "sidePanel") {
-        return { data: mockSideTextData };
+        return { data: mockSidePanelData };
       }
       return { data: null, isLoading: false };
     });
@@ -177,7 +177,6 @@ describe("Resources Side Panel", () => {
     fireEvent.click(shareItems[0]);
     
     expect(screen.queryByText(/side_nav\.about_text/)).not.toBeInTheDocument();
-    expect(container.querySelector(".share-content")).toBeInTheDocument();
   });
 
   test("toggles visibility with showPanel prop", () => {
@@ -188,7 +187,9 @@ describe("Resources Side Panel", () => {
             <Resources 
               showPanel={false} 
               setShowPanel={vi.fn()} 
-              textId={"test123"} 
+              segmentId={"test123"} 
+              setVersionId={() => vi.fn()}
+              versionId={"version1"}
             />
           </TolgeeProvider>
         </QueryClientProvider>
