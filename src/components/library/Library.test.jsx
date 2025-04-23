@@ -83,7 +83,7 @@ describe("Library Component", () => {
     setup();
     expect(document.querySelector(".main-container")).toBeInTheDocument();
     expect(document.querySelector(".text-child-container")).toBeInTheDocument();
-    expect(document.querySelector(".sidebar")).toBeInTheDocument();
+    expect(document.querySelector(".side-container")).toBeInTheDocument();
   });
 
   test("displays loading state when data is being fetched", () => {
@@ -93,7 +93,7 @@ describe("Library Component", () => {
     }));
     
     setup();
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(screen.getByText("common.loading")).toBeInTheDocument();
   });
 
   test("renders the category header with parent title", () => {
@@ -122,9 +122,9 @@ describe("Library Component", () => {
 
   test("renders sidebar with about section", () => {
     setup();
-    const sidebar = document.querySelector(".sidebar");
+    const sidebar = document.querySelector(".side-container");
     expect(sidebar).toBeInTheDocument();
-    expect(sidebar.querySelector("h2").textContent).toBe("common.about Parent Title");
+    expect(sidebar.querySelector(".about-title").textContent).toBe("common.about Parent Title");
   });
 
   test("handles null data gracefully", () => {
@@ -134,7 +134,7 @@ describe("Library Component", () => {
     }));
     
     setup();
-    const container = document.querySelector(".main-container");
+    const container = document.querySelector(".library-container");
     expect(container).toBeInTheDocument();
   });
 
@@ -157,7 +157,7 @@ describe("Library Component", () => {
   });
 
   test("fetchChildTexts handles missing parentId", async () => {
-    window.localStorage.getItem.mockReturnValue("bo-IN");
+    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
     axiosInstance.get.mockResolvedValueOnce({ data: mockTextChildData });
 
     const result = await fetchChildTexts();
@@ -174,7 +174,7 @@ describe("Library Component", () => {
 
   test("fetchChildTexts uses default language when none stored", async () => {
     const parentId = "parent123";
-    window.localStorage.getItem.mockReturnValue(null);
+    vi.spyOn(Storage.prototype, "getItem").mockReturnValue(null);
     axiosInstance.get.mockResolvedValueOnce({ data: mockTextChildData });
 
     const result = await fetchChildTexts(parentId);
