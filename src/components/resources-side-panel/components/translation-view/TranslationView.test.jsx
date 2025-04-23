@@ -36,21 +36,24 @@ describe("TranslationView Component", () => {
         content: "English translation content", 
         title: "English Title",
         source: "English Source",
-        text_id: "text-123"
+        text_id: "text-123",
+        segment_id: "test-segment-id"
       },
       { 
         language: "bo", 
         content: "Tibetan translation content", 
         title: "Tibetan Title",
         source: "Tibetan Source",
-        text_id: "text-456"
+        text_id: "text-456",
+        segment_id: "test-segment-id"
       },
       { 
         language: "en", 
         content: "Another English translation", 
         title: "Another English Title",
         source: "Another English Source",
-        text_id: "text-789"
+        text_id: "text-789",
+        segment_id: "test-segment-id"
       }
     ]
   };
@@ -113,7 +116,7 @@ describe("TranslationView Component", () => {
     expect(closeButton).toBeInTheDocument();
     
     fireEvent.click(closeButton);
-    expect(mockProps.setIsTranslationView).toHaveBeenCalledWith(false);
+    expect(mockProps.setIsTranslationView).toHaveBeenCalledWith("main");
   });
 
   test("toggles translation expansion correctly", () => {
@@ -133,26 +136,49 @@ describe("TranslationView Component", () => {
   });
 
   test("handles version selection", () => {
-    setup();
+    // Mock the implementation to ensure we know exactly what's being rendered
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: {
+        translations: [
+          { language: "bo", text_id: "text-456", segment_id: "test-segment-id", content: "content" }
+        ]
+      },
+      isLoading: false,
+    }));
     
-    const selectButtons = document.querySelectorAll(".selectss");
-    expect(selectButtons.length).toBe(3); 
+    const { container } = setup();
     
-    fireEvent.click(selectButtons[1]);
+    // Find the select button for the Tibetan translation
+    const selectButton = container.querySelector(".selectss");
+    expect(selectButton).toBeInTheDocument();
     
-    expect(mockProps.setVersionId).toHaveBeenCalledWith("test");
+    // Click the select button
+    fireEvent.click(selectButton);
+    
+    // Verify setVersionId was called with the correct text_id
+    expect(mockProps.setVersionId).toHaveBeenCalledWith("text-456");
   });
 
   test("displays current selection status correctly", () => {
-    setup();
+    // Set up with a specific versionId that matches one of our translations
+    render(
+      <QueryClientProvider client={queryClient}>
+        <TolgeeProvider 
+          fallback={"Loading tolgee..."} 
+          tolgee={mockTolgee}
+        >
+          <TranslationView {...mockProps} versionId="text-123" />
+        </TolgeeProvider>
+      </QueryClientProvider>
+    );
     
     const selectButtons = document.querySelectorAll(".selectss");
-    expect(selectButtons[0].textContent).toBe("common.select");
+    expect(selectButtons[0].textContent).toBe("text.translation.current_selected");
     expect(selectButtons[1].textContent).toBe("common.select");
     expect(selectButtons[2].textContent).toBe("common.select");
   });
 
-  test("fetchtranslationdata makes correct API call", async () => {
+  test("fetchTranslationsData makes correct API call", async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockTranslationData });
     
     const segmentId = "test-segment-id";
@@ -181,5 +207,21 @@ describe("TranslationView Component", () => {
     expect(document.querySelector(".translations-list")).toBeInTheDocument();
     const languageGroups = document.querySelectorAll(".language-group");
     expect(languageGroups.length).toBe(0);
+  });
+
+  test("clicking on 'open text' button calls addChapter with correct parameters", () => {
+    setup();
+    
+    const openTextButtons = document.querySelectorAll(".linkicons");
+    expect(openTextButtons.length).toBe(3);
+    
+    fireEvent.click(openTextButtons[0]);
+    
+    expect(mockProps.addChapter).toHaveBeenCalledWith({
+      contentId: "",
+      versionId: "",
+      textId: "text-123",
+      segmentId: "test-segment-id"
+    });
   });
 });

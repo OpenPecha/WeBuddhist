@@ -40,6 +40,7 @@ describe("CommentaryView", () => {
     commentaries: [
       {
         text_id: "mock-RelatedText-1",
+        segment_id: "mock-segment-id",
         title: "རྩོམ་པ་པོ་དང་པོ། དབུ་མའི་ལྟ་བའི་གསལ་བཤད།",
         language: "bo",
         content:
@@ -48,6 +49,7 @@ describe("CommentaryView", () => {
       },
       {
         text_id: "mock-RelatedText-2",
+        segment_id: "mock-segment-id",
         title: "RelatedText on Buddhist Philosophy",
         language: "en",
         content:
@@ -105,7 +107,7 @@ describe("CommentaryView", () => {
     setup();
     const closeIcon = document.querySelector(".close-icon");
     fireEvent.click(closeIcon);
-    expect(mockSetIsRelatedTextView).toHaveBeenCalledWith(false);
+    expect(mockSetIsRelatedTextView).toHaveBeenCalledWith("main");
   });
 
   test("toggles commentary expansion when show more button is clicked", () => {
@@ -139,9 +141,13 @@ describe("CommentaryView", () => {
     const segmentId = "mock-segment-id";
     axiosInstance.get.mockRejectedValueOnce(new Error("API Error"));
 
-    const result = await fetchCommentaryData(segmentId);
-
-    expect(result).toEqual({ commentaries: [] });
+    try {
+      await fetchCommentaryData(segmentId);
+      expect(true).toBe(false); 
+    } catch (error) {
+      expect(error).toBeDefined();
+      expect(error.message).toBe("API Error");
+    }
   });
 
   test("clicking on 'open text' button calls addChapter", () => {
@@ -154,7 +160,9 @@ describe("CommentaryView", () => {
 
     expect(mockAddChapter).toHaveBeenCalledWith({
       contentId: "",
-      versionId: "mock-RelatedText-1"
+      versionId: "",
+      textId: "mock-RelatedText-1",
+      segmentId: "mock-segment-id"
     });
   });
 
