@@ -3,6 +3,9 @@
   background-color: #fff;
   border-left: 1px solid #e0e0e0;
   transition: width 0.3s ease-in-out, right 0.3s ease-in-out;
+  &:not(.show) {
+    transition:none;
+  }
   overflow: auto;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
   height: 100%;

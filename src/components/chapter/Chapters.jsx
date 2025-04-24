@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './Chapters.scss';
 import {useLocation} from "react-router-dom";
 import Chapter from "./component/chapter/Chapter.jsx";
+import { PanelProvider } from "../../context/PanelContext.jsx";
 
 const Chapters = () => {
   const location = useLocation();
@@ -61,17 +62,19 @@ const Chapters = () => {
   };
 
   return (
-    <div className="chapters-container">
-      {chapters.map((chapter, index) => (
-        <div
-          key={index}
-          className="chapter-container"
-          style={{width: `${100 / chapters.length}%`}}
-        >
-          <Chapter addChapter={addChapter} removeChapter={removeChapter} updateChapter={updateChapter} currentChapter={chapter} totalPages={chapters.length}/>
-        </div>
-      ))}
-    </div>
+    <PanelProvider>
+      <div className="chapters-container">
+        {chapters.map((chapter, index) => (
+          <div
+            key={index}
+            className="chapter-container"
+            style={{width: `${100 / chapters.length}%`}}
+          >
+            <Chapter addChapter={addChapter} removeChapter={removeChapter} updateChapter={updateChapter} currentChapter={chapter} totalPages={chapters.length}/>
+          </div>
+        ))}
+      </div>
+    </PanelProvider>
   );
 }
 export default Chapters;

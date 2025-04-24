@@ -3,8 +3,10 @@ import {Form} from "react-bootstrap";
 import "./TranslationSource.scss";
 import {useTranslate} from "@tolgee/react";
 import {sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
+import { usePanelContext } from "../../../../context/PanelContext.jsx";
 
 const TranslationSource = ({selectedOption, onOptionChange, onClose}) => {
+  const { closeResourcesPanel } = usePanelContext();
   const panelRef = useRef(null);
   const {t} = useTranslate()
   const options = [
@@ -14,6 +16,7 @@ const TranslationSource = ({selectedOption, onOptionChange, onClose}) => {
   ];
 
   useEffect(() => {
+    closeResourcesPanel();
     const handleClickOutside = (event) => {
       if (panelRef.current && !panelRef.current.contains(event.target)) {
         onClose();
@@ -24,7 +27,7 @@ const TranslationSource = ({selectedOption, onOptionChange, onClose}) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [closeResourcesPanel]);
 
   const handleOptionSelect = (optionId) => {
     onOptionChange(optionId);
