@@ -5,9 +5,25 @@ import {fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router} from "react-router-dom";
 import {TolgeeProvider} from "@tolgee/react";
 import {mockTolgee} from "../../test-utils/CommonMocks.js";
-import Resources, {fetchSidePanelData} from "./Resources.jsx";
 import axiosInstance from "../../config/axios-config.js";
-import ShareView from "./components/share-view/ShareView.jsx";
+
+const mockContext = {
+  isResourcesPanelOpen: true,
+  isTranslationSourceOpen: false,
+  openResourcesPanel: vi.fn(),
+  closeResourcesPanel: vi.fn(),
+  toggleResourcesPanel: vi.fn(),
+  openTranslationSource: vi.fn(),
+  closeTranslationSource: vi.fn(),
+  toggleTranslationSource: vi.fn()
+};
+
+vi.mock("../../context/PanelContext.jsx", () => ({
+  usePanelContext: () => mockContext,
+  PanelProvider: ({ children }) => children
+}));
+
+import Resources, {fetchSidePanelData} from "./Resources.jsx";
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -71,7 +87,7 @@ describe("Resources Side Panel", () => {
             fallback={"Loading tolgee..."}
             tolgee={mockTolgee}
           >
-            <Resources showPanel={true} setShowPanel={() => vi.fn()} segmentId={"test123"} addChapter={() => vi.fn()} setVersionId={() => vi.fn()} versionId={"version1"}/>
+            <Resources segmentId={"test123"} addChapter={() => vi.fn()} setVersionId={() => vi.fn()} versionId={"version1"}/>
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
@@ -94,31 +110,7 @@ describe("Resources Side Panel", () => {
     expect(result).toEqual(mockSidePanelData);
   });
 
-  test("closes panel when clicking close icon", () => {
-    const mockSetShowPanel = vi.fn();
-    
-    const { container } = render(
-      <Router>
-        <QueryClientProvider client={queryClient}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <Resources 
-              showPanel={true} 
-              setShowPanel={mockSetShowPanel} 
-              segmentId={"test123"} 
-              setVersionId={() => vi.fn()}
-              versionId={"version1"}
-            />
-          </TolgeeProvider>
-        </QueryClientProvider>
-      </Router>
-    );
-    
-    const closeIcon = container.querySelector(".close-icon");
-    expect(closeIcon).not.toBeNull();
-    
-    fireEvent.click(closeIcon);
-    expect(mockSetShowPanel).toHaveBeenCalledWith(false);
-  });
+
 
   test("shows translation view when clicking on translations option", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
@@ -180,13 +172,14 @@ describe("Resources Side Panel", () => {
   });
 
   test("toggles visibility with showPanel prop", () => {
-    const { rerender } = render(
+    const originalIsResourcesPanelOpen = mockContext.isResourcesPanelOpen;
+    mockContext.isResourcesPanelOpen = false;
+    
+    const { container } = render(
       <Router>
         <QueryClientProvider client={queryClient}>
           <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
             <Resources 
-              showPanel={false} 
-              setShowPanel={vi.fn()} 
               segmentId={"test123"} 
               setVersionId={() => vi.fn()}
               versionId={"version1"}
@@ -195,8 +188,10 @@ describe("Resources Side Panel", () => {
         </QueryClientProvider>
       </Router>
     );
-    let panel = document.querySelector('.right-panel');
+    
+    let panel = container.querySelector('.right-panel');
     expect(panel).not.toHaveClass('show');
+    mockContext.isResourcesPanelOpen = originalIsResourcesPanelOpen;
   });
   // test("renders share view and handles copy functionality", async () => {
   //   setup();

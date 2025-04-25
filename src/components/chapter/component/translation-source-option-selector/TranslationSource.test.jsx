@@ -1,10 +1,27 @@
 import { vi } from "vitest";
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import TranslationSource from "./TranslationSource";
 import { mockTolgee } from "../../../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
 import "@testing-library/jest-dom";
+
+const mockContext = {
+  isResourcesPanelOpen: true,
+  isTranslationSourceOpen: false,
+  openResourcesPanel: vi.fn(),
+  closeResourcesPanel: vi.fn(),
+  toggleResourcesPanel: vi.fn(),
+  openTranslationSource: vi.fn(),
+  closeTranslationSource: vi.fn(),
+  toggleTranslationSource: vi.fn()
+};
+
+vi.mock("../../../../context/PanelContext.jsx", () => ({
+  usePanelContext: () => mockContext,
+  PanelProvider: ({ children }) => children
+}));
+
+import TranslationSource from "./TranslationSource";
 
 vi.mock("../../../../utils/Constants.js", () => ({
   sourceTranslationOptionsMapper: {
@@ -71,6 +88,11 @@ describe("TranslationSource", () => {
     };
     map.mousedown(mockEvent);
     expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  test("calls closeResourcesPanel when component mounts", () => {
+    setup();
+    expect(mockContext.closeResourcesPanel).toHaveBeenCalled();
   });
 });
 
