@@ -10,8 +10,8 @@ const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPag
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showTranslationSource, setShowTranslationSource] = useState(false);
 
-  const handleOptionChange = (option) => {
-    setSelectedOption(option);
+  const handleOptionChange = (option, versionId) => {
+    setSelectedOption(option, versionId);
   };
 
   return (

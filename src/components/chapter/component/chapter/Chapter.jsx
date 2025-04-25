@@ -256,8 +256,17 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   // main renderer
   return (
     <div className="chapter">
-      <ChapterHeader selectedOption={selectedOption} currentChapter={currentChapter} removeChapter={removeChapter}
-                     setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
+      <ChapterHeader 
+                     selectedOption={selectedOption} 
+                     currentChapter={currentChapter} 
+                     removeChapter={removeChapter}
+                     setSelectedOption={(option, newTranslationVersionId) => {
+                       setSelectedOption(option);
+                       if (newTranslationVersionId) {
+                         setVersionId(newTranslationVersionId);
+                       }
+                     }} 
+                     textDetails={textDetails?.text_detail}
                      totalPages={totalPages}/>
       <Container fluid className="p-0">
         <div

@@ -27,7 +27,11 @@ const TranslationSource = ({selectedOption, onOptionChange, onClose}) => {
   }, []);
 
   const handleOptionSelect = (optionId) => {
-    onOptionChange(optionId);
+    if (optionId === sourceTranslationOptionsMapper.translation) {
+      onOptionChange(optionId, "59769286-2787-4181-953d-9149cdeef959");
+    } else {
+      onOptionChange(optionId);
+    }
     onClose();
   };
   
