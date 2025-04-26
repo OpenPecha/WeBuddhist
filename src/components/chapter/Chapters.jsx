@@ -64,17 +64,17 @@ const Chapters = () => {
   };
 
   return (
-    <div className="chapters-container">
-      {chapters.map((chapter, index) => (
-        <div
-          key={index}
-          className="chapter-container"
-          style={{width: `${100 / chapters.length}%`}}
-        >
-          <Chapter addChapter={addChapter} removeChapter={removeChapter} updateChapter={updateChapter} currentChapter={chapter} totalPages={chapters.length}/>
-        </div>
-      ))}
-    </div>
+      <div className="chapters-container">
+        {chapters.map((chapter, index) => (
+          <div
+            key={index}
+            className="chapter-container"
+            style={{width: `${100 / chapters.length}%`}}
+          >
+            <Chapter addChapter={addChapter} removeChapter={removeChapter} updateChapter={updateChapter} currentChapter={chapter} totalPages={chapters.length}/>
+          </div>
+        ))}
+      </div>
   );
 }
 export default Chapters;

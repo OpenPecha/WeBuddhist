@@ -7,11 +7,12 @@ import Resources from "../../../resources-side-panel/Resources.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
+import { usePanelContext, PanelProvider } from "../../../../context/PanelContext.jsx";
 
 export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId) => {
 
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
-     content_id: contentId || "" ,
+    ...(contentId && { content_id: contentId }),
     ...(versionId && { version_id: versionId }),
     ...(segmentId && { segment_id: segmentId }),
     limit,
@@ -26,7 +27,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
   const [searchParams] = useSearchParams();
-  const [showPanel, setShowPanel] = useState(false);
+  const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
   const isLoadingTopRef = useRef(false);
@@ -155,14 +156,28 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   };
 
   const handleSidebarToggle = (isOpen) => {
-    setShowPanel(isOpen);
+    if (isOpen) {
+      openResourcesPanel();
+    }
   };
 
   const renderSegments = (segments) => {
     if (!segments || segments.length === 0) return null;
     
-    return segments.map(segment => (
-      <div
+    return segments.map(segment => {
+      const hasTranslation = segment.translation && segment.translation.content;
+      const showTranslation = (selectedOption === sourceTranslationOptionsMapper.translation || 
+                             selectedOption === sourceTranslationOptionsMapper.source_translation) && 
+                             hasTranslation;
+      const showSource = selectedOption === sourceTranslationOptionsMapper.source || 
+                       selectedOption === sourceTranslationOptionsMapper.source_translation;
+
+      if (selectedOption === sourceTranslationOptionsMapper.translation && !hasTranslation) {
+        return null;
+      }
+
+      return (
+        <div
         key={segment.segment_id}
         className="text-segment mb-3 mb-md-4"
         onClick={(e) => {
@@ -175,18 +190,19 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         }}
       >
         <div className="segment">
-          {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
+        <span className="segment-number">{segment.segment_number}</span>
+          {showSource && (
             <>
-              <span className="segment-number">{segment.segment_number}</span>
               <div dangerouslySetInnerHTML={{__html: segment.content}}/>
             </>
           )}
-          {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
+          {showTranslation && (
             <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
           )}
         </div>
       </div>
-    ));
+    );
+  });
   };
 
   const renderSection = (section) => {
@@ -239,8 +255,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         </div>
         {selectedSegmentId && <Resources
           segmentId={selectedSegmentId}
-          showPanel={showPanel}
-          setShowPanel={handleSidebarToggle}
           setVersionId={handleVersionChange}
           versionId={versionId}
           addChapter={addChapter}
@@ -250,4 +264,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   );
 };
 
-export default Chapter;
+const ChapterWithPanelContext = (props) => (
+  <PanelProvider>
+    <Chapter {...props} />
+  </PanelProvider>
+);
+
+export default ChapterWithPanelContext;

@@ -33,6 +33,7 @@ export default defineConfig(({ mode }) => {
           "src/config/**",
           "src/main.jsx",
           "src/App.jsx",
+          "src/context/**",
         ],
       },
     },
