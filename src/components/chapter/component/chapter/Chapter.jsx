@@ -232,7 +232,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           ref={containerRef}
           className="tibetan-text-container"
         >
-          {chapterContentIsLoading && (
+          {chapterContentIsLoading && skipDetails.direction.includes("up") && (
             <div className="text-center my-3 my-md-4">
               <Spinner animation="border" role="output" size="sm">
                 <span className="visually-hidden">Loading...</span>
@@ -245,7 +245,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
               {renderSection(section)}
             </div>
           ))}
-          {chapterContentIsLoading && (
+          {chapterContentIsLoading && skipDetails.direction.includes("down") && (
             <div className="text-center my-3 my-md-4">
               <Spinner animation="border" role="output" size="sm">
                 <span className="visually-hidden">Loading...</span>
