@@ -2,69 +2,69 @@ const fontConfig = {
   en: {
     title: {
       fontSize: "30px",
-      fontFamily: "Poppins",
+      fontFamily: "Inter",
     },
     subtitle: {
       fontSize: "20px",
-      fontFamily: "Poppins",
+      fontFamily: "Inter",
     },
     content: {
       fontSize: "17px",
-      fontFamily: "Poppins",
+      fontFamily: "Inter",
     },
     subcontent: {
       fontSize: "14px",
-      fontFamily: "Poppins",
+      fontFamily: "Inter",
     },
     listtitle: {
       fontSize: "20px",
-      fontFamily: "Poppins",
+      fontFamily: "Inter",
     },
     listsubtitle: {
       fontSize: "14px",
-      fontFamily: "Poppins",
+      fontFamily: "Inter",
     },
     navbaritems: {
       fontSize: "16px",
-      fontFamily: "Poppins",
+      fontFamily: "Inter",
     },
     overalltext: {
       fontSize: "22px",
-      fontFamily: "Poppins",
+      fontFamily: "Inter",
     },
   },
   "bo-IN": {
     title: {
       fontSize: "30px",
-      fontFamily: "MonlamTBslim",
+      fontFamily: "Monlam Uni OuChan2",
     },
     subtitle: {
       fontSize: "20px",
-      fontFamily: "MonlamTBslim",
+      fontFamily: "Monlam Uni OuChan2",
     },
     content: {
       fontSize: "17px",
-      fontFamily: "MonlamTBslim",
+      fontFamily: "Monlam Uni OuChan2",
     },
     subcontent: {
       fontSize: "14px",
-      fontFamily: "MonlamTBslim",
+      fontFamily: "Monlam Uni OuChan2",
     },
     listtitle: {
       fontSize: "20px",
-      fontFamily: "MonlamTBslim",
+      fontFamily: "Monlam Uni OuChan2",
     },
     listsubtitle: {
       fontSize: "14px",
-      fontFamily: "MonlamTBslim",
+      fontFamily: "Monlam Uni OuChan2",
     },
     navbaritems: {
       fontSize: "16px",
-      fontFamily: "MonlamTBslim",
+      fontFamily: "Monlam Uni OuChan2",
     },
     overalltext: {
       fontSize: "22px",
-      fontFamily: "MonlamTBslim",
+      fontFamily: "Monlam Uni OuChan2",
     },
   },
 };

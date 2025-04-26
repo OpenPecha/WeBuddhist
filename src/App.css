@@ -2,38 +2,38 @@
 #root {
   text-align: center;
   --title-font-size: 16px;
-  --title-font-family: 'title-font',"Poppins";
+  --title-font-family: 'title-font',"Inter";
   --subtitle-font-size: 16px;
-  --subtitle-font-family: 'sub-title-font',"Poppins";
+  --subtitle-font-family: 'sub-title-font',"Inter";
   --content-font-size: 16px;
-  --content-font-family: 'content-font',"Poppins";
+  --content-font-family: 'content-font',"Inter";
   --subcontent-font-size: 11px;
-  --subcontent-font-family: 'sub-content-font',"Poppins";
+  --subcontent-font-family: 'sub-content-font',"Inter";
   --listtitle-font-size: 16px;
-  --listtitle-font-family: 'list-title-font',"Poppins";
+  --listtitle-font-family: 'list-title-font',"Inter";
   --listsubtitle-font-size: 14px;
-  --listsubtitle-font-family: 'list-subtitle-font',"Poppins";
+  --listsubtitle-font-family: 'list-subtitle-font',"Inter";
   --navbaritems-font-size: 16px;
-  --navbaritems-font-family: 'navbar-items-font',"Poppins";
+  --navbaritems-font-family: 'navbar-items-font',"Inter";
   --overalltext-font-size: 22px;
-  --overalltext-font-family: 'overall-text-font',"Poppins";
+  --overalltext-font-family: 'overall-text-font',"Inter";
 }
 
 @font-face {
-  font-family: 'MonlamTBslim';
-  src: url("./assets/fonts/MonlamTBslim.woff") format('woff');
+  font-family: 'Monlam Uni OuChan2';
+  src: url("./assets/fonts/Monlam Uni OuChan2.woff") format('woff');
 }
 
 @font-face {
-  font-family: 'Poppins';
-  src: url("./assets/fonts/Poppins-Regular.woff") format('woff');
+  font-family: 'Inter';
+  src: url("./assets/fonts/Inter Regular.woff") format('woff');
 }
 .bo-text{
-  font-family: 'MonlamTBslim';
+  font-family: 'Monlam Uni OuChan2';
   font-size: 20px;
 }
 .en-text{
-  font-family: 'Poppins';
+  font-family: 'Inter';
   font-size: 20px;
 }
 .title {
