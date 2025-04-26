@@ -17,6 +17,9 @@ const Chapters = () => {
 
   useEffect(() => {
     sessionStorage.setItem('chapters', JSON.stringify(chapters));
+    return () => {
+      sessionStorage.removeItem('chapters')
+    }
   }, [chapters]);
 
   const addChapter = (chapterInformation) => {
