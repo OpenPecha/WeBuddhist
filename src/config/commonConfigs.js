@@ -36,35 +36,35 @@ const fontConfig = {
   "bo-IN": {
     title: {
       fontSize: "30px",
-      fontFamily: "Monlam Uni OuChan2",
+      fontFamily: "MonlamUniOuChan2",
     },
     subtitle: {
       fontSize: "20px",
-      fontFamily: "Monlam Uni OuChan2",
+      fontFamily: "MonlamUniOuChan2",
     },
     content: {
       fontSize: "17px",
-      fontFamily: "Monlam Uni OuChan2",
+      fontFamily: "MonlamUniOuChan2",
     },
     subcontent: {
       fontSize: "14px",
-      fontFamily: "Monlam Uni OuChan2",
+      fontFamily: "MonlamUniOuChan2",
     },
     listtitle: {
       fontSize: "20px",
-      fontFamily: "Monlam Uni OuChan2",
+      fontFamily: "MonlamUniOuChan2",
     },
     listsubtitle: {
       fontSize: "14px",
-      fontFamily: "Monlam Uni OuChan2",
+      fontFamily: "MonlamUniOuChan2",
     },
     navbaritems: {
       fontSize: "16px",
-      fontFamily: "Monlam Uni OuChan2",
+      fontFamily: "MonlamUniOuChan2",
     },
     overalltext: {
       fontSize: "22px",
-      fontFamily: "Monlam Uni OuChan2",
+      fontFamily: "MonlamUniOuChan2",
     },
   },
 };

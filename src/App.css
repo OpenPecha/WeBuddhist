@@ -20,16 +20,16 @@
 }
 
 @font-face {
-  font-family: 'Monlam Uni OuChan2';
-  src: url("./assets/fonts/Monlam Uni OuChan2.woff") format('woff');
+  font-family: 'MonlamUniOuChan2';
+  src: url("./assets/fonts/MonlamUniOuChan2.woff") format('woff');
 }
 
 @font-face {
   font-family: 'Inter';
-  src: url("./assets/fonts/Inter Regular.woff") format('woff');
+  src: url("./assets/fonts/InterRegular.woff") format('woff');
 }
 .bo-text{
-  font-family: 'Monlam Uni OuChan2';
+  font-family: 'MonlamUniOuChan2';
   font-size: 20px;
 }
 .en-text{
