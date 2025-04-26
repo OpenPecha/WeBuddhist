@@ -209,8 +209,20 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const renderSegments = (segments) => {
     if (!segments || segments.length === 0) return null;
     
-    return segments.map(segment => (
-      <div
+    return segments.map(segment => {
+      const hasTranslation = segment.translation && segment.translation.content;
+      const showTranslation = (selectedOption === sourceTranslationOptionsMapper.translation || 
+                             selectedOption === sourceTranslationOptionsMapper.source_translation) && 
+                             hasTranslation;
+      const showSource = selectedOption === sourceTranslationOptionsMapper.source || 
+                       selectedOption === sourceTranslationOptionsMapper.source_translation;
+
+      if (selectedOption === sourceTranslationOptionsMapper.translation && !hasTranslation) {
+        return null;
+      }
+
+      return (
+        <div
         key={segment.segment_id}
         className="text-segment mb-3 mb-md-4"
         onClick={(e) => {
@@ -223,18 +235,19 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         }}
       >
         <div className="segment">
-          {(selectedOption === sourceTranslationOptionsMapper.source || selectedOption === sourceTranslationOptionsMapper.source_translation) && (
+        <span className="segment-number">{segment.segment_number}</span>
+          {showSource && (
             <>
-              <span className="segment-number">{segment.segment_number}</span>
               <div dangerouslySetInnerHTML={{__html: segment.content}}/>
             </>
           )}
-          {(selectedOption === sourceTranslationOptionsMapper.translation || selectedOption === sourceTranslationOptionsMapper.source_translation) && segment?.translation?.content && (
+          {showTranslation && (
             <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
           )}
         </div>
       </div>
-    ));
+    );
+  });
   };
 
   const renderSection = (section) => {
