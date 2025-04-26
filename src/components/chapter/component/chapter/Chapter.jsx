@@ -12,7 +12,7 @@ import { usePanelContext } from "../../../../context/PanelContext.jsx";
 export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId) => {
 
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
-     content_id: contentId || "" ,
+    ...(contentId && { content_id: contentId }),
     ...(versionId && { version_id: versionId }),
     ...(segmentId && { segment_id: segmentId }),
     limit,
