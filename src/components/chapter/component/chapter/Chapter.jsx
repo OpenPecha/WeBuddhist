@@ -7,7 +7,7 @@ import Resources from "../../../resources-side-panel/Resources.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
-import { usePanelContext } from "../../../../context/PanelContext.jsx";
+import { usePanelContext, PanelProvider } from "../../../../context/PanelContext.jsx";
 
 export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId) => {
 
@@ -312,4 +312,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   );
 };
 
-export default Chapter;
+const ChapterWithPanelContext = (props) => (
+  <PanelProvider>
+    <Chapter {...props} />
+  </PanelProvider>
+);
+
+export default ChapterWithPanelContext;
