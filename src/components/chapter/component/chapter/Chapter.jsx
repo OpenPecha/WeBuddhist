@@ -218,7 +218,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       if (selectedOption === sourceTranslationOptionsMapper.translation && !hasTranslation) {
         return null;
       }
-
       return (
         <div
           key={segment.segment_id}
@@ -233,9 +232,9 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           }}
         >
           <div className="segment">
+          <span className="segment-number">{segment.segment_number}</span>
             {showSource && (
               <>
-                <span className="segment-number">{segment.segment_number}</span>
                 <div dangerouslySetInnerHTML={{__html: segment.content}}/>
               </>
             )}
