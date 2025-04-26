@@ -7,6 +7,7 @@ import Resources from "../../../resources-side-panel/Resources.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
+import { usePanelContext } from "../../../../context/PanelContext.jsx";
 
 export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId) => {
 
@@ -26,7 +27,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
   const [searchParams] = useSearchParams();
-  const [showPanel, setShowPanel] = useState(false);
+  const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
   const isLoadingTopRef = useRef(false);
@@ -203,7 +204,9 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   };
 
   const handleSidebarToggle = (isOpen) => {
-    setShowPanel(isOpen);
+    if (isOpen) {
+      openResourcesPanel();
+    }
   };
 
   const renderSegments = (segments) => {
@@ -300,8 +303,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         </div>
         {selectedSegmentId && <Resources
           segmentId={selectedSegmentId}
-          showPanel={showPanel}
-          setShowPanel={handleSidebarToggle}
           setVersionId={handleVersionChange}
           versionId={versionId}
           addChapter={addChapter}

@@ -11,6 +11,7 @@ import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import RootTextView from "./components/root-texts/RootText.jsx";
+import { usePanelContext } from "../../context/PanelContext.jsx";
 import "./Resources.scss"
 
 export const fetchSidePanelData = async (segmentId) => {
@@ -25,7 +26,9 @@ export const fetchSidePanelData = async (segmentId) => {
   return data;
 };
 
-const Resources = ({segmentId, showPanel, setShowPanel, setVersionId, versionId, addChapter}) => {
+const Resources = ({segmentId, setVersionId, versionId, addChapter}) => {
+  const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
+  const showPanel = isResourcesPanelOpen;
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
   const [expandedTranslations, setExpandedTranslations] = useState({});
   const [expandedRootTexts, setExpandedRootTexts] = useState({});
@@ -49,7 +52,7 @@ const Resources = ({segmentId, showPanel, setShowPanel, setVersionId, versionId,
         <IoMdClose
           size={24}
           onClick={() => {
-            setShowPanel(false);
+            closeResourcesPanel();
             setActiveView("main");
           }}
           className="close-icon"
@@ -166,7 +169,7 @@ const Resources = ({segmentId, showPanel, setShowPanel, setVersionId, versionId,
 
   return(
     <>
-      {showPanel && <div className="panel-backdrop" onClick={() => setShowPanel(false)}></div>}
+      {showPanel && <div className="panel-backdrop" onClick={() => closeResourcesPanel()}></div>}
       <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
         {renderSidePanel()}
       </div>
