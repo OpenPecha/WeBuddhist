@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import {getLanguageClass, sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
 import {useSearchParams, useLocation} from "react-router-dom";
 import {useQuery} from "react-query";
@@ -37,23 +37,23 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     skip: currentChapter.contentIndex !== undefined ? currentChapter.contentIndex : location?.state?.chapterInformation?.contentIndex || 0,
     direction: 'down'
   });
-  // const [scrollPosition, setScrollPosition] = useState(0);
+  const skipsCoveredRef = useRef(new Set());
+
   const lastScrollPositionRef = useRef(0);
   const textId = currentChapter.textId || searchParams.get("text_id");
   const segmentId = currentChapter.segmentId;
   const contentId = currentChapter.contentId
 
   const { data: textDetails,  isLoading: chapterContentIsLoading } = useQuery(
-    ['chapter', textId, contentId, skipDetails, versionId, segmentId],
+    ['chapter', textId, contentId, skipDetails.skip, versionId, segmentId],
     () => fetchTextDetails(textId, contentId, versionId, skipDetails.skip, 1, segmentId),
     {
       refetchOnWindowFocus: false,
-      enabled: totalContentRef.current !== 0 ? (skipDetails.skip  <= totalContentRef.current) : true,
+      enabled: totalContentRef.current !== 0 ? (skipDetails.skip  < totalContentRef.current) : true,
     }
   );
   useEffect(() => {
     setContents([]);
-    // setSkipDetails(initialSkip);
   }, [versionId, contentId, textId, segmentId]);
   
   useEffect(() => {
@@ -106,18 +106,28 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
       if (bottomScrollPosition > 0.99 && !isLoadingRef.current) {
         isLoadingRef.current = true;
-        setSkipDetails(prevState => ({ skip: prevState.skip + 1, direction: 'down' }));
+        setSkipDetails(prevState => ({
+          skip: skipsCoveredRef.current.has(skipDetails.skip + 1)
+            ? Math.max(...Array.from(skipsCoveredRef.current))+1
+            : prevState.skip + 1,
+          direction: 'down'
+        }));
       }
 
       if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
         const firstSectionNumber = contents[0]?.section_number;
-        console.log(firstSectionNumber)
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
-          setSkipDetails({ skip: Math.max(0, firstSectionNumber - 2), direction: 'up' });
+          setSkipDetails(prevState => ({
+            skip: skipsCoveredRef.current.has(Math.max(0, firstSectionNumber - 2))
+              ? prevState.skip
+              : Math.max(0, firstSectionNumber - 2),
+            direction: 'up'
+          }));
         }
       }
     };
+      skipsCoveredRef.current.add(skipDetails.skip)
    
       currentContainer.addEventListener('scroll', handleScroll);
     return () =>  currentContainer.removeEventListener('scroll', handleScroll);
