@@ -62,3 +62,17 @@ export const sourceTranslationOptionsMapper = {
   translation: "TRANSLATION",
   source_translation: "SOURCE_TRANSLATION",
 };
+
+export const findAndScrollToSegment = (targetId, setSelectedSegmentId) => {
+  setSelectedSegmentId(targetId);
+
+  setTimeout(() => {
+    const segmentElement = document.querySelector(
+      `[data-segment-id="${targetId}"]`
+    );
+    if (segmentElement) {
+      segmentElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      segmentElement.classList.add("highlighted-segment");
+    }
+  }, 500);
+};

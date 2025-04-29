@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {getLanguageClass, sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
+import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment} from "../../../../utils/Constants.js";
 import {useSearchParams, useLocation} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
@@ -61,6 +61,13 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     
     if (currentChapter.contentId === "" && textDetails.content.id) {
       updateChapter(currentChapter, { contentId: textDetails.content.id });
+    }
+    
+    if (textDetails.mapping) {
+      const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id;
+      if (targetId) {
+        findAndScrollToSegment(targetId, setSelectedSegmentId);
+      }
     }
   }, [textDetails, currentChapter, updateChapter]);
 
@@ -179,6 +186,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       return (
         <div
         key={segment.segment_id}
+        data-segment-id={segment.segment_id}
         className="text-segment mb-3 mb-md-4"
         onClick={(e) => {
           if (!e.target.classList ||
