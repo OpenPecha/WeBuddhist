@@ -63,13 +63,35 @@ export const sourceTranslationOptionsMapper = {
   source_translation: "SOURCE_TRANSLATION",
 };
 
-export const findAndScrollToSegment = (targetId, setSelectedSegmentId) => {
+export const findAndScrollToSegment = (
+  targetId,
+  setSelectedSegmentId,
+  currentChapter
+) => {
   setSelectedSegmentId(targetId);
 
   setTimeout(() => {
-    const segmentElement = document.querySelector(
-      `[data-segment-id="${targetId}"]`
-    );
+    const chapterContainers = document.querySelectorAll(".chapter-container");
+    let targetContainer = null;
+
+    for (let i = 0; i < chapterContainers.length; i++) {
+      const container = chapterContainers[i];
+      if (
+        container.getAttribute("data-chapter-id") === currentChapter.segmentId
+      ) {
+        targetContainer = container;
+        break;
+      }
+    }
+
+    if (!targetContainer && chapterContainers.length > 0) {
+      targetContainer = chapterContainers[chapterContainers.length - 1];
+    }
+
+    const segmentElement = targetContainer
+      ? targetContainer.querySelector(`[data-segment-id="${targetId}"]`)
+      : document.querySelector(`[data-segment-id="${targetId}"]`);
+
     if (segmentElement) {
       segmentElement.scrollIntoView({ behavior: "smooth", block: "start" });
       segmentElement.classList.add("highlighted-segment");

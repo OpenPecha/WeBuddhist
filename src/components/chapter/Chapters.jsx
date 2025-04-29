@@ -69,6 +69,7 @@ const Chapters = () => {
           <div
             key={index}
             className="chapter-container"
+            data-chapter-id={chapter.segmentId || `chapter-${index}`}
             style={{width: `${100 / chapters.length}%`}}
           >
             <Chapter addChapter={addChapter} removeChapter={removeChapter} updateChapter={updateChapter} currentChapter={chapter} totalPages={chapters.length}/>

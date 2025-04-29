@@ -66,7 +66,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     if (textDetails.mapping) {
       const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id;
       if (targetId) {
-        findAndScrollToSegment(targetId, setSelectedSegmentId);
+        findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
       }
     }
   }, [textDetails, currentChapter, updateChapter]);
