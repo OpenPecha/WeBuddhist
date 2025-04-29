@@ -53,9 +53,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   );
   useEffect(() => {
     setContents([]);
+    isInitialLoadRef.current = true;
     // setSkipDetails(initialSkip);
   }, [versionId, contentId, textId, segmentId]);
   
+  const isInitialLoadRef = useRef(true);
   useEffect(() => {
     if (!textDetails) return;
     
@@ -63,10 +65,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       updateChapter(currentChapter, { contentId: textDetails.content.id });
     }
     
-    if (textDetails.mapping) {
+    if (textDetails.mapping && isInitialLoadRef.current) {
       const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id;
       if (targetId) {
         findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
+        isInitialLoadRef.current = false;
       }
     }
   }, [textDetails, currentChapter, updateChapter]);
