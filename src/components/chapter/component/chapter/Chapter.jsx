@@ -52,6 +52,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       enabled: totalContentRef.current !== 0 ? (skipDetails.skip  <= totalContentRef.current) : true,
     }
   );
+  console.log(textDetails)
   useEffect(() => {
     setContents([]);
     isInitialLoadRef.current = true;
@@ -221,7 +222,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     if (!section) return null;
     
     return (
-      <div key={section.id} className="nested-section">
+      <div 
+        key={section.id} 
+        className="nested-section"
+        data-section-id={section.id}
+      >
         {section.title && <h4 className="section-title">{section.title}</h4>}
         
         {renderSegments(section.segments)}
@@ -253,7 +258,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           )}
           
           {contents?.map(section => (
-            <div key={section.id} className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}>
+            <div 
+              key={section.id} 
+              className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}
+              data-section-id={section.id}
+            >
               {renderSection(section)}
             </div>
           ))}

@@ -68,33 +68,46 @@ export const findAndScrollToSegment = (
   setSelectedSegmentId,
   currentChapter
 ) => {
-  setSelectedSegmentId(targetId);
+  if (targetId) {
+    setSelectedSegmentId(targetId);
+  }
 
   setTimeout(() => {
     const chapterContainers = document.querySelectorAll(".chapter-container");
     let targetContainer = null;
 
-    for (let i = 0; i < chapterContainers.length; i++) {
-      const container = chapterContainers[i];
-      if (
-        container.getAttribute("data-chapter-id") === currentChapter.segmentId
-      ) {
-        targetContainer = container;
-        break;
-      }
-    }
-
-    if (!targetContainer && chapterContainers.length > 0) {
+    if (chapterContainers.length > 0) {
       targetContainer = chapterContainers[chapterContainers.length - 1];
     }
 
-    const segmentElement = targetContainer
-      ? targetContainer.querySelector(`[data-segment-id="${targetId}"]`)
-      : document.querySelector(`[data-segment-id="${targetId}"]`);
+    // Scenario 1: Looking for a segment
+    if (targetId) {
+      const segmentElement = targetContainer
+        ? targetContainer.querySelector(`[data-segment-id="${targetId}"]`)
+        : document.querySelector(`[data-segment-id="${targetId}"]`);
 
-    if (segmentElement) {
-      segmentElement.scrollIntoView({ behavior: "smooth", block: "start" });
-      segmentElement.classList.add("highlighted-segment");
+      if (segmentElement) {
+        segmentElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        segmentElement.classList.add("highlighted-segment");
+        return;
+      }
+    }
+
+    // Scenario 2: Looking for a section
+    if (currentChapter && currentChapter.sectionId) {
+      const sectionElement = targetContainer
+        ? targetContainer.querySelector(
+            `[data-section-id="${currentChapter.sectionId}"]`
+          )
+        : document.querySelector(
+            `[data-section-id="${currentChapter.sectionId}"]`
+          );
+
+      if (sectionElement) {
+        sectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        sectionElement.classList.add("highlighted-segment");
+        return;
+      }
     }
   }, 500);
 };
