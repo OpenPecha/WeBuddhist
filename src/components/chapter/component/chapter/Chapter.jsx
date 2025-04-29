@@ -39,7 +39,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     direction: 'down'
   });
   const skipsCoveredRef = useRef(new Set());
-
+  const [scrollPosition, setScrollPosition] = useState(0);
   const lastScrollPositionRef = useRef(0);
   const textId = currentChapter.textId || searchParams.get("text_id");
   const segmentId = currentChapter.segmentId;
@@ -87,9 +87,26 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         section => !existingSectionNumbers.has(section.section_number)
       );
 
-      return skipDetails.direction === 'up'
-        ? [...filteredSections, ...prev]
-        : [...prev, ...filteredSections];
+      if(skipDetails.direction === 'up'){
+        const currentContainer = containerRef.current;
+        if (!currentContainer) return;
+
+        const currentScrollHeight = currentContainer?.scrollHeight || 0;
+
+        if (skipDetails.direction === 'up') {
+          setTimeout(() => {
+            if (currentContainer) {
+              const newScrollHeight = currentContainer.scrollHeight;
+              const heightDifference = newScrollHeight - currentScrollHeight;
+              currentContainer.scrollTop = heightDifference + scrollPosition;
+            }
+          }, 0);
+        }
+        return [...filteredSections, ...prev]
+      }else{
+        return  [...prev, ...filteredSections];
+      }
+
     });
     if (!totalContentRef.current) {
       totalContentRef.current = textDetails?.total
@@ -103,27 +120,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     const currentContainer = containerRef.current;
     if (!currentContainer) return;
 
-    // Save the scroll height before content changes
-    const previousScrollHeight = currentContainer.scrollHeight;
-    const previousScrollTop = currentContainer.scrollTop;
-
-    // Wait for DOM to update after contents change
-    if (skipDetails.direction === 'up') {
-      // setTimeout(() => {
-        const newScrollHeight = currentContainer.scrollHeight;
-        const heightDiff = newScrollHeight - previousScrollHeight;
-
-        // Maintain scroll continuity by adjusting scrollTop
-        currentContainer.scrollTop = previousScrollTop + heightDiff;
-      // }, 500); // Use 0 to allow for next tick; adjust only if timing is off
-    }
-  }, [contents]);
-
-
-  useEffect(() => {
-    const currentContainer = containerRef.current;
-    if (!currentContainer) return;
-
     const handleScroll = () => {
       const {scrollTop, scrollHeight, clientHeight} = currentContainer;
   
@@ -132,6 +128,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   
       // Store current position for next comparison
       lastScrollPositionRef.current = scrollTop;
+      setScrollPosition(scrollTop);
 
       // Check if scrolled near bottom
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
