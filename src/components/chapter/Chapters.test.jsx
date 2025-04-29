@@ -62,27 +62,14 @@ vi.mock('./component/chapter/Chapter.jsx', () => ({
   default: (props) => <MockChapter {...props} />
 }));
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useLocation: vi.fn().mockReturnValue({
-      state: {
-        chapterInformation: {
-          contentId: "content123",
-          versionId: "version123",
-          contentIndex: 0
-        }
-      }
-    })
-  };
-});
+// This mock is already defined above
 
 const mockSessionStorage = (() => {
   let store = {};
   return {
     getItem: vi.fn(key => store[key] || null),
     setItem: vi.fn((key, value) => { store[key] = value; }),
+    removeItem: vi.fn(key => { delete store[key]; }),
     clear: () => { store = {}; }
   };
 })();
@@ -93,18 +80,6 @@ Object.defineProperty(window, 'sessionStorage', {
 
 describe("Chapters Component", () => {
   const queryClient = new QueryClient();
-
-  const mockSessionStorage = (() => {
-    let store = {};
-    return {
-      getItem: vi.fn(key => store[key] || null),
-      setItem: vi.fn((key, value) => { store[key] = value; }),
-      clear: () => { store = {}; }
-    };
-  })();
-  Object.defineProperty(window, 'sessionStorage', {
-    value: mockSessionStorage
-  });
 
   beforeEach(() => {
     vi.resetAllMocks();

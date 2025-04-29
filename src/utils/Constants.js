@@ -62,3 +62,52 @@ export const sourceTranslationOptionsMapper = {
   translation: "TRANSLATION",
   source_translation: "SOURCE_TRANSLATION",
 };
+
+export const findAndScrollToSegment = (
+  targetId,
+  setSelectedSegmentId,
+  currentChapter
+) => {
+  if (targetId) {
+    setSelectedSegmentId(targetId);
+  }
+
+  setTimeout(() => {
+    const chapterContainers = document.querySelectorAll(".chapter-container");
+    let targetContainer = null;
+
+    if (chapterContainers.length > 0) {
+      targetContainer = chapterContainers[chapterContainers.length - 1];
+    }
+
+    // Scenario 1: Looking for a segment
+    if (targetId) {
+      const segmentElement = targetContainer
+        ? targetContainer.querySelector(`[data-segment-id="${targetId}"]`)
+        : document.querySelector(`[data-segment-id="${targetId}"]`);
+
+      if (segmentElement) {
+        segmentElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        segmentElement.classList.add("highlighted-segment");
+        return;
+      }
+    }
+
+    // Scenario 2: Looking for a section
+    if (currentChapter && currentChapter.sectionId) {
+      const sectionElement = targetContainer
+        ? targetContainer.querySelector(
+            `[data-section-id="${currentChapter.sectionId}"]`
+          )
+        : document.querySelector(
+            `[data-section-id="${currentChapter.sectionId}"]`
+          );
+
+      if (sectionElement) {
+        sectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        sectionElement.classList.add("highlighted-segment");
+        return;
+      }
+    }
+  }, 500);
+};

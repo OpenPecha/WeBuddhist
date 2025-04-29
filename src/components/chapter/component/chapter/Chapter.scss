@@ -36,7 +36,7 @@
       margin: 0 10px;
       color: #333;
       font-weight: 500;
-      font-size: 1rem;
+      font-size: 1.3rem;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -96,7 +96,7 @@
         text-align: start;
         div, p {
           line-height: 2;
-          font-size: 1rem;
+          font-size: 1.3rem;
         }
 
         .translation-content {
@@ -131,7 +131,7 @@
   color: #007bff;
   font-weight: bold;
   vertical-align: super;
-  font-size: smaller;
+  font-size: 1.1rem;
   position: relative;
   z-index: 2;
   user-select: none;
@@ -149,7 +149,7 @@
   font-style: italic;
   color: #8a8a8a;
   margin-left: 4px;
-  font-size: 0.9em;
+  font-size: 1.1rem;
   background-color: #f0f0f0;
   padding: 2px 5px;
   border-radius: 3px;
@@ -333,4 +333,8 @@
       font-size: 0.85rem;
     }
   }
+}
+
+.highlighted-segment {
+  background-color: #f0f7ff;
 }

@@ -11,7 +11,8 @@ const Chapters = () => {
     return savedChapters ? JSON.parse(savedChapters) : [location.state?.chapterInformation] || [{
       contentId: "",
       contentIndex: 0,
-      versionId: ""
+      versionId: "",
+      sectionId: ""
     }]
   });
 
@@ -69,6 +70,7 @@ const Chapters = () => {
           <div
             key={index}
             className="chapter-container"
+            data-chapter-id={chapter.segmentId || `chapter-${index}`}
             style={{width: `${100 / chapters.length}%`}}
           >
             <Chapter addChapter={addChapter} removeChapter={removeChapter} updateChapter={updateChapter} currentChapter={chapter} totalPages={chapters.length}/>

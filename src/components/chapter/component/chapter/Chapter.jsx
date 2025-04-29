@@ -1,5 +1,5 @@
-import {useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
-import {getLanguageClass, sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
+import {useEffect, useRef, useState} from "react";
+import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment} from "../../../../utils/Constants.js";
 import {useSearchParams, useLocation} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
@@ -9,12 +9,13 @@ import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 import { usePanelContext, PanelProvider } from "../../../../context/PanelContext.jsx";
 
-export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId) => {
+export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId,sectionId) => {
 
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
     ...(contentId && { content_id: contentId }),
     ...(versionId && { version_id: versionId }),
     ...(segmentId && { segment_id: segmentId }),
+    ...(sectionId && { section_id: sectionId }),
     limit,
     skip
   });
@@ -43,10 +44,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const textId = currentChapter.textId || searchParams.get("text_id");
   const segmentId = currentChapter.segmentId;
   const contentId = currentChapter.contentId
-
+  const sectionId = currentChapter.sectionId;
   const { data: textDetails,  isLoading: chapterContentIsLoading } = useQuery(
-    ['chapter', textId, contentId, skipDetails.skip, versionId, segmentId],
-    () => fetchTextDetails(textId, contentId, versionId, skipDetails.skip, 1, segmentId),
+    ['chapter', textId, contentId, skipDetails.skip, versionId, segmentId, sectionId],
+    () => fetchTextDetails(textId, contentId, versionId, skipDetails.skip, 1, segmentId, sectionId),
     {
       refetchOnWindowFocus: false,
       enabled: totalContentRef.current !== 0 ? (skipDetails.skip  < totalContentRef.current) : true,
@@ -54,13 +55,23 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   );
   useEffect(() => {
     setContents([]);
-  }, [versionId, contentId, textId, segmentId]);
-  
+    isInitialLoadRef.current = true;
+  }, [versionId, contentId, textId, segmentId, sectionId]);
+
+  const isInitialLoadRef = useRef(true);
   useEffect(() => {
     if (!textDetails) return;
     
     if (currentChapter.contentId === "" && textDetails.content.id) {
       updateChapter(currentChapter, { contentId: textDetails.content.id });
+    }
+    
+    if (textDetails.mapping && isInitialLoadRef.current) {
+      const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id;
+      if (targetId) {
+        findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
+        isInitialLoadRef.current = false;
+      }
     }
   }, [textDetails, currentChapter, updateChapter]);
 
@@ -189,6 +200,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       return (
         <div
         key={segment.segment_id}
+        data-segment-id={segment.segment_id}
         className="text-segment mb-3 mb-md-4"
         onClick={(e) => {
           if (!e.target.classList ||
@@ -219,7 +231,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     if (!section) return null;
     
     return (
-      <div key={section.id} className="nested-section">
+      <div 
+        key={section.id} 
+        className="nested-section"
+        data-section-id={section.id}
+      >
         {section.title && <h4 className="section-title">{section.title}</h4>}
         
         {renderSegments(section.segments)}
@@ -251,7 +267,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           )}
           
           {contents?.map(section => (
-            <div key={section.id} className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}>
+            <div 
+              key={section.id} 
+              className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}
+              data-section-id={section.id}
+            >
               {renderSection(section)}
             </div>
           ))}
@@ -263,7 +283,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             </div>
           )}
         </div>
-        {selectedSegmentId && <Resources
+        {isResourcesPanelOpen && selectedSegmentId && <Resources
           segmentId={selectedSegmentId}
           setVersionId={handleVersionChange}
           versionId={versionId}
