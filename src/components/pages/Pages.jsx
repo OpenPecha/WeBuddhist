@@ -5,15 +5,21 @@ import { FiChevronDown } from 'react-icons/fi';
 import { useTranslate } from '@tolgee/react';
 import Versions from "./versions/Versions.jsx";
 import Content from "./content/Content.jsx";
-import {useParams, Link, useLocation} from 'react-router-dom';
+import {useParams, Link, useSearchParams} from 'react-router-dom';
 import { getLanguageClass } from '../../utils/Constants';
 
 const Pages = () => {
   const [selectedVersion, setSelectedVersion] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('');
   const [contentId, setContentId] = useState('');
-  const location = useLocation();
-  const titleInformation = location.state?.titleInformation || "";
+  const [searchParams] = useSearchParams();
+  
+  const titleInformation = {
+    title: searchParams.get('title') || "",
+    language: searchParams.get('language') || "",
+    type: searchParams.get('type') || ""
+  };
+  
   const { t } = useTranslate();
   const { id } = useParams();
 

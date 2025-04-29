@@ -35,7 +35,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const totalContentRef = useRef(0)
   const location = useLocation();
   const [skipDetails, setSkipDetails] = useState({
-    skip: currentChapter.contentIndex !== undefined ? currentChapter.contentIndex : location?.state?.chapterInformation?.contentIndex || 0,
+    skip: currentChapter.contentIndex !== undefined ? currentChapter.contentIndex : searchParams.get("contentIndex") || 0,
     direction: 'down'
   });
   const skipsCoveredRef = useRef(new Set());
