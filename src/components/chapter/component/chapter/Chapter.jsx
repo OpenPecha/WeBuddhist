@@ -1,5 +1,5 @@
-import {useEffect, useRef, useState} from "react";
-import {getLanguageClass, sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
+import {useEffect, useLayoutEffect, useRef, useState} from "react";
+import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment} from "../../../../utils/Constants.js";
 import {useSearchParams, useLocation} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
@@ -9,12 +9,13 @@ import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 import { usePanelContext, PanelProvider } from "../../../../context/PanelContext.jsx";
 
-export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId) => {
+export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId,sectionId) => {
 
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
     ...(contentId && { content_id: contentId }),
     ...(versionId && { version_id: versionId }),
     ...(segmentId && { segment_id: segmentId }),
+    ...(sectionId && { section_id: sectionId }),
     limit,
     skip
   });
@@ -33,99 +34,87 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const isLoadingTopRef = useRef(false);
   const totalContentRef = useRef(0)
   const location = useLocation();
-  // Initialize skip with contentIndex from currentChapter or from location state
-  const initialSkip = currentChapter.contentIndex !== undefined ? currentChapter.contentIndex : location?.state?.chapterInformation?.contentIndex || 0;
-  const [skip, setSkip] = useState(initialSkip);
-  const [topSkip, setTopSkip] = useState(null);
+  const [skipDetails, setSkipDetails] = useState({
+    skip: currentChapter.contentIndex !== undefined ? currentChapter.contentIndex : location?.state?.chapterInformation?.contentIndex || 0,
+    direction: 'down'
+  });
+  const skipsCoveredRef = useRef(new Set());
   const [scrollPosition, setScrollPosition] = useState(0);
   const lastScrollPositionRef = useRef(0);
   const textId = currentChapter.textId || searchParams.get("text_id");
   const segmentId = currentChapter.segmentId;
   const contentId = currentChapter.contentId
-  // Query for fetching content when scrolling down
-  const {data: textDetails, isLoading: chapterContentIsLoading} = useQuery(
-    ["chapter", textId, contentId, skip, versionId, segmentId],
-    () => fetchTextDetails(textId, contentId, versionId, skip, 1, segmentId),
+  const sectionId = currentChapter.sectionId;
+  const { data: textDetails,  isLoading: chapterContentIsLoading } = useQuery(
+    ['chapter', textId, contentId, skipDetails.skip, versionId, segmentId, sectionId],
+    () => fetchTextDetails(textId, contentId, versionId, skipDetails.skip, 1, segmentId, sectionId),
     {
       refetchOnWindowFocus: false,
-      enabled: totalContentRef.current !== 0 ? (skip) + 1 <= totalContentRef.current: true    
-    }
-  );
-  // Query for fetching content when scrolling up
-  const {data: previousTextDetails, isLoading: previousContentIsLoading} = useQuery(
-    ["chapter-previous", textId, contentId, topSkip, versionId, segmentId],
-    () => fetchTextDetails(textId, contentId, versionId, topSkip, 1, segmentId),
-    {
-      refetchOnWindowFocus: false,
-      enabled: topSkip !== null && topSkip >= 0    
+      enabled: totalContentRef.current !== 0 ? (skipDetails.skip  < totalContentRef.current) : true,
     }
   );
   useEffect(() => {
-    setTopSkip(null);
     setContents([]);
-    setSkip(initialSkip);
-  }, [versionId, contentId, textId, segmentId, initialSkip]);
- 
-  useEffect(() => {
-    if (!textDetails) return;
-    if (skip === 0) {
-      setContents(textDetails.content.sections);
-    } else {
-      setContents(prevState => {
-        return [...prevState, ...textDetails.content.sections];
-      });
-    }
+    isInitialLoadRef.current = true;
+  }, [versionId, contentId, textId, segmentId, sectionId]);
 
-    if(!totalContentRef.current){
-      totalContentRef.current = textDetails?.total
-    }
-  }, [textDetails, skip]);
-  
+  const isInitialLoadRef = useRef(true);
   useEffect(() => {
     if (!textDetails) return;
     
     if (currentChapter.contentId === "" && textDetails.content.id) {
       updateChapter(currentChapter, { contentId: textDetails.content.id });
     }
+    
+    if (textDetails.mapping && isInitialLoadRef.current) {
+      const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id;
+      if (targetId) {
+        findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
+        isInitialLoadRef.current = false;
+      }
+    }
   }, [textDetails, currentChapter, updateChapter]);
 
 
-  //for scroll up data
   useEffect(() => {
-    if (!previousTextDetails) return;    
-    setContents(prevState => {
-      const currentContainer = containerRef.current;
-      const currentScrollHeight = currentContainer?.scrollHeight || 0;
-      
-      const newContents = [...previousTextDetails.content.sections, ...prevState];
-      
-      // After the next render, restore scroll position (if not it shows from the top)
-      setTimeout(() => {
-        if (currentContainer) {
-          const newScrollHeight = currentContainer.scrollHeight;
-          const heightDifference = newScrollHeight - currentScrollHeight;
-          currentContainer.scrollTop = heightDifference + scrollPosition;
+    if (!textDetails) return;
+
+    setContents(prev => {
+      const incomingSections = textDetails.content.sections;
+      const existingSectionNumbers = new Set(prev.map(section => section.section_number));
+
+      const filteredSections = incomingSections.filter(
+        section => !existingSectionNumbers.has(section.section_number)
+      );
+
+      if(skipDetails.direction === 'up'){
+        const currentContainer = containerRef.current;
+        if (!currentContainer) return;
+
+        const currentScrollHeight = currentContainer?.scrollHeight || 0;
+
+        if (skipDetails.direction === 'up') {
+          setTimeout(() => {
+            if (currentContainer) {
+              const newScrollHeight = currentContainer.scrollHeight;
+              const heightDifference = newScrollHeight - currentScrollHeight;
+              currentContainer.scrollTop = heightDifference + scrollPosition;
+            }
+          }, 0);
         }
-      }, 0);
-      
-      return newContents;
+        return [...filteredSections, ...prev]
+      }else{
+        return  [...prev, ...filteredSections];
+      }
+
     });
-    
-    // Reset topSkip to prevent continuous fetching
-    setTopSkip(null);
-    
-  }, [previousTextDetails]);
-
-  useEffect(() => {
-    return () => {
-      sessionStorage.removeItem("chapters")
+    if (!totalContentRef.current) {
+      totalContentRef.current = textDetails?.total
     }
-  }, [])
 
-  useEffect(() => {
-    isLoadingRef.current = chapterContentIsLoading;
-    isLoadingTopRef.current = previousContentIsLoading;
-  }, [chapterContentIsLoading, previousContentIsLoading]);
+    isLoadingRef.current = false;
+    isLoadingTopRef.current = false;
+  }, [textDetails]);
 
   useEffect(() => {
     const currentContainer = containerRef.current;
@@ -140,35 +129,36 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       // Store current position for next comparison
       lastScrollPositionRef.current = scrollTop;
       setScrollPosition(scrollTop);
-  
+
       // Check if scrolled near bottom
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
       if (bottomScrollPosition > 0.99 && !isLoadingRef.current) {
         isLoadingRef.current = true;
-        setSkip(prev => prev + 1);
+        setSkipDetails(prevState => ({
+          skip: skipsCoveredRef.current.has(skipDetails.skip + 1)
+            ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
+            : prevState.skip + 1,
+          direction: 'down'
+        }));
       }
-  
-      // Check if scrolled near top - ONLY when scrolling up
+
       if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
-        // Only fetch previous content if we're not at the very beginning
         const firstSectionNumber = contents[0]?.section_number;
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
-          // Set topSkip to fetch the previous content
-          setTopSkip(Math.max(0, firstSectionNumber - 2)); // -2 to get the previous section
+          setSkipDetails(prevState => ({
+            skip: skipsCoveredRef.current.has(Math.max(0, firstSectionNumber - 2))
+              ? prevState.skip
+              : Math.max(0, firstSectionNumber - 2),
+            direction: 'up'
+          }));
         }
       }
     };
+    skipsCoveredRef.current.add(skipDetails.skip)
+    currentContainer.addEventListener('scroll', handleScroll);
 
-   
-      currentContainer.addEventListener('scroll', handleScroll);
-    
-    
-    return () => {
-      
-        currentContainer.removeEventListener('scroll', handleScroll);
-      
-    };
+    return () => currentContainer.removeEventListener('scroll', handleScroll);
   }, [contents]);
 
   useEffect(() => {
@@ -227,6 +217,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       return (
         <div
         key={segment.segment_id}
+        data-segment-id={segment.segment_id}
         className="text-segment mb-3 mb-md-4"
         onClick={(e) => {
           if (!e.target.classList ||
@@ -257,7 +248,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     if (!section) return null;
     
     return (
-      <div key={section.id} className="nested-section">
+      <div 
+        key={section.id} 
+        className="nested-section"
+        data-section-id={section.id}
+      >
         {section.title && <h4 className="section-title">{section.title}</h4>}
         
         {renderSegments(section.segments)}
@@ -280,20 +275,24 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           ref={containerRef}
           className="tibetan-text-container"
         >
-          {previousContentIsLoading && (
+          {chapterContentIsLoading && skipDetails.direction.includes("up") && (
             <div className="text-center my-3 my-md-4">
               <Spinner animation="border" role="output" size="sm">
-                <span className="visually-hidden">Loading previous content...</span>
+                <span className="visually-hidden">Loading...</span>
               </Spinner>
             </div>
           )}
           
           {contents?.map(section => (
-            <div key={section.id} className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}>
+            <div 
+              key={section.id} 
+              className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}
+              data-section-id={section.id}
+            >
               {renderSection(section)}
             </div>
           ))}
-          {chapterContentIsLoading && (
+          {chapterContentIsLoading && skipDetails.direction.includes("down") && (
             <div className="text-center my-3 my-md-4">
               <Spinner animation="border" role="output" size="sm">
                 <span className="visually-hidden">Loading...</span>
@@ -301,7 +300,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             </div>
           )}
         </div>
-        {selectedSegmentId && <Resources
+        {isResourcesPanelOpen && selectedSegmentId && <Resources
           segmentId={selectedSegmentId}
           setVersionId={handleVersionChange}
           versionId={versionId}
