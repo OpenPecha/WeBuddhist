@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment} from "../../../../utils/Constants.js";
 import {useSearchParams, useLocation} from "react-router-dom";
 import {useQuery} from "react-query";
@@ -39,7 +39,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     direction: 'down'
   });
   const skipsCoveredRef = useRef(new Set());
-
+  const [scrollPosition, setScrollPosition] = useState(0);
   const lastScrollPositionRef = useRef(0);
   const textId = currentChapter.textId || searchParams.get("text_id");
   const segmentId = currentChapter.segmentId;
@@ -87,9 +87,26 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         section => !existingSectionNumbers.has(section.section_number)
       );
 
-      return skipDetails.direction === 'up'
-        ? [...filteredSections, ...prev]
-        : [...prev, ...filteredSections];
+      if(skipDetails.direction === 'up'){
+        const currentContainer = containerRef.current;
+        if (!currentContainer) return;
+
+        const currentScrollHeight = currentContainer?.scrollHeight || 0;
+
+        if (skipDetails.direction === 'up') {
+          setTimeout(() => {
+            if (currentContainer) {
+              const newScrollHeight = currentContainer.scrollHeight;
+              const heightDifference = newScrollHeight - currentScrollHeight;
+              currentContainer.scrollTop = heightDifference + scrollPosition;
+            }
+          }, 0);
+        }
+        return [...filteredSections, ...prev]
+      }else{
+        return  [...prev, ...filteredSections];
+      }
+
     });
     if (!totalContentRef.current) {
       totalContentRef.current = textDetails?.total
@@ -111,7 +128,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   
       // Store current position for next comparison
       lastScrollPositionRef.current = scrollTop;
-      // setScrollPosition(scrollTop);
+      setScrollPosition(scrollTop);
 
       // Check if scrolled near bottom
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
@@ -119,7 +136,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         isLoadingRef.current = true;
         setSkipDetails(prevState => ({
           skip: skipsCoveredRef.current.has(skipDetails.skip + 1)
-            ? Math.max(...Array.from(skipsCoveredRef.current))+1
+            ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
             : prevState.skip + 1,
           direction: 'down'
         }));
@@ -138,10 +155,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         }
       }
     };
-      skipsCoveredRef.current.add(skipDetails.skip)
-   
-      currentContainer.addEventListener('scroll', handleScroll);
-    return () =>  currentContainer.removeEventListener('scroll', handleScroll);
+    skipsCoveredRef.current.add(skipDetails.skip)
+    currentContainer.addEventListener('scroll', handleScroll);
+
+    return () => currentContainer.removeEventListener('scroll', handleScroll);
   }, [contents]);
 
   useEffect(() => {
