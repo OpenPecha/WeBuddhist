@@ -52,7 +52,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       enabled: totalContentRef.current !== 0 ? (skipDetails.skip  <= totalContentRef.current) : true,
     }
   );
-  console.log(textDetails)
   useEffect(() => {
     setContents([]);
     isInitialLoadRef.current = true;
@@ -123,7 +122,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
       if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
         const firstSectionNumber = contents[0]?.section_number;
-        console.log(firstSectionNumber)
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
           setSkipDetails({ skip: Math.max(0, firstSectionNumber - 2), direction: 'up' });

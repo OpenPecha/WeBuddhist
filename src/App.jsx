@@ -11,7 +11,6 @@ import EditUserProfile from "./components/edit-user-profile/EditUserProfile.jsx"
 import UserProfile from "./components/user-profile/UserProfile.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
-import { useTranslate } from "@tolgee/react";
 import { Suspense, lazy } from "react";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
@@ -33,7 +32,6 @@ function App() {
     const { login, isLoggedIn, logout: pechaLogout } = useAuth();
     const [intervalId, setIntervalId] = useState(null);
     const { getIdTokenClaims, isAuthenticated, logout } = useAuth0();
-    const { t } = useTranslate();
 
     useEffect(() => {
         if (isAuthenticated) {
