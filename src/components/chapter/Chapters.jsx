@@ -11,7 +11,8 @@ const Chapters = () => {
     return savedChapters ? JSON.parse(savedChapters) : [location.state?.chapterInformation] || [{
       contentId: "",
       contentIndex: 0,
-      versionId: ""
+      versionId: "",
+      sectionId: ""
     }]
   });
 

@@ -9,12 +9,13 @@ import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 import { usePanelContext, PanelProvider } from "../../../../context/PanelContext.jsx";
 
-export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId) => {
+export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId,sectionId) => {
 
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
     ...(contentId && { content_id: contentId }),
     ...(versionId && { version_id: versionId }),
     ...(segmentId && { segment_id: segmentId }),
+    ...(sectionId && { section_id: sectionId }),
     limit,
     skip
   });
@@ -42,10 +43,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const textId = currentChapter.textId || searchParams.get("text_id");
   const segmentId = currentChapter.segmentId;
   const contentId = currentChapter.contentId
-
+  const sectionId = currentChapter.sectionId;
   const { data: textDetails,  isLoading: chapterContentIsLoading } = useQuery(
-    ['chapter', textId, contentId, skipDetails, versionId, segmentId],
-    () => fetchTextDetails(textId, contentId, versionId, skipDetails.skip, 1, segmentId),
+    ['chapter', textId, contentId, skipDetails, versionId, segmentId, sectionId],
+    () => fetchTextDetails(textId, contentId, versionId, skipDetails.skip, 1, segmentId, sectionId),
     {
       refetchOnWindowFocus: false,
       enabled: totalContentRef.current !== 0 ? (skipDetails.skip  <= totalContentRef.current) : true,
@@ -55,7 +56,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     setContents([]);
     isInitialLoadRef.current = true;
     // setSkipDetails(initialSkip);
-  }, [versionId, contentId, textId, segmentId]);
+  }, [versionId, contentId, textId, segmentId, sectionId]);
   
   const isInitialLoadRef = useRef(true);
   useEffect(() => {
@@ -264,7 +265,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             </div>
           )}
         </div>
-        {selectedSegmentId && <Resources
+        {isResourcesPanelOpen && selectedSegmentId && <Resources
           segmentId={selectedSegmentId}
           setVersionId={handleVersionChange}
           versionId={versionId}
