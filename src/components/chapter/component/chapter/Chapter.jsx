@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment} from "../../../../utils/Constants.js";
 import {useSearchParams, useLocation} from "react-router-dom";
 import {useQuery} from "react-query";
@@ -103,6 +103,27 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     const currentContainer = containerRef.current;
     if (!currentContainer) return;
 
+    // Save the scroll height before content changes
+    const previousScrollHeight = currentContainer.scrollHeight;
+    const previousScrollTop = currentContainer.scrollTop;
+
+    // Wait for DOM to update after contents change
+    if (skipDetails.direction === 'up') {
+      // setTimeout(() => {
+        const newScrollHeight = currentContainer.scrollHeight;
+        const heightDiff = newScrollHeight - previousScrollHeight;
+
+        // Maintain scroll continuity by adjusting scrollTop
+        currentContainer.scrollTop = previousScrollTop + heightDiff;
+      // }, 500); // Use 0 to allow for next tick; adjust only if timing is off
+    }
+  }, [contents]);
+
+
+  useEffect(() => {
+    const currentContainer = containerRef.current;
+    if (!currentContainer) return;
+
     const handleScroll = () => {
       const {scrollTop, scrollHeight, clientHeight} = currentContainer;
   
@@ -111,7 +132,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   
       // Store current position for next comparison
       lastScrollPositionRef.current = scrollTop;
-      // setScrollPosition(scrollTop);
 
       // Check if scrolled near bottom
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
@@ -119,7 +139,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         isLoadingRef.current = true;
         setSkipDetails(prevState => ({
           skip: skipsCoveredRef.current.has(skipDetails.skip + 1)
-            ? Math.max(...Array.from(skipsCoveredRef.current))+1
+            ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
             : prevState.skip + 1,
           direction: 'down'
         }));
@@ -138,10 +158,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         }
       }
     };
-      skipsCoveredRef.current.add(skipDetails.skip)
-   
-      currentContainer.addEventListener('scroll', handleScroll);
-    return () =>  currentContainer.removeEventListener('scroll', handleScroll);
+    skipsCoveredRef.current.add(skipDetails.skip)
+    currentContainer.addEventListener('scroll', handleScroll);
+
+    return () => currentContainer.removeEventListener('scroll', handleScroll);
   }, [contents]);
 
   useEffect(() => {
