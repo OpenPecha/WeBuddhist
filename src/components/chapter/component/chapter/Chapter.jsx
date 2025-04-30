@@ -1,6 +1,6 @@
-import {useEffect, useLayoutEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment} from "../../../../utils/Constants.js";
-import {useSearchParams, useLocation} from "react-router-dom";
+import {useSearchParams} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
 import Resources from "../../../resources-side-panel/Resources.jsx";
@@ -33,7 +33,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const isLoadingRef = useRef(false);
   const isLoadingTopRef = useRef(false);
   const totalContentRef = useRef(0)
-  const location = useLocation();
   const [skipDetails, setSkipDetails] = useState({
     skip: currentChapter.contentIndex !== undefined ? currentChapter.contentIndex : searchParams.get("contentIndex") || 0,
     direction: 'down'

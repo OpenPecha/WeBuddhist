@@ -1,11 +1,10 @@
 import {useEffect, useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Chapters.scss';
-import {useLocation, useSearchParams} from "react-router-dom";
+import {useSearchParams} from "react-router-dom";
 import Chapter from "./component/chapter/Chapter.jsx";
 
 const Chapters = () => {
-  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [chapters, setChapters] = useState(() => {
     const savedChapters = sessionStorage.getItem('chapters');
@@ -13,14 +12,11 @@ const Chapters = () => {
     if (savedChapters) {
       return JSON.parse(savedChapters);
     }
-    
-    // Get chapter information from URL parameters
     const contentId = searchParams.get('contentId');
     const contentIndex = searchParams.get('contentIndex');
     const versionId = searchParams.get('versionId');
     const sectionId = searchParams.get('sectionId');
     
-    // If we have URL parameters, use them
     if (contentId) {
       return [{
         contentId: contentId || "",
@@ -30,15 +26,8 @@ const Chapters = () => {
       }];
     }
     
-    // Fallback to default empty chapter
-    return [{
-      contentId: "",
-      contentIndex: 0,
-      versionId: "",
-      sectionId: ""
-    }];
   });
-   console.log(chapters)
+
   useEffect(() => {
     sessionStorage.setItem('chapters', JSON.stringify(chapters));
     return () => {
