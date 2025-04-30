@@ -68,7 +68,12 @@ const Chapters = () => {
   const updateChapter = (currentChapter, updatedProperties) => {
     setChapters(prevChapters =>
       prevChapters.map(chapter => {
+        // First check if we can match by segmentId
         if (currentChapter.segmentId && chapter.segmentId === currentChapter.segmentId) {
+          return { ...chapter, ...updatedProperties };
+        }
+        // If no segmentId match, try to match by contentId
+        else if (currentChapter.contentId && chapter.contentId === currentChapter.contentId) {
           return { ...chapter, ...updatedProperties };
         }
         return chapter;

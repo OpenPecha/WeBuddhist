@@ -27,7 +27,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
@@ -115,6 +115,13 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     isLoadingTopRef.current = false;
   }, [textDetails]);
 
+  const updateUrlContentIndex = (newIndex) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('contentIndex', newIndex.toString());
+    setSearchParams(newParams);
+    updateChapter(currentChapter, { contentIndex: newIndex });
+  };
+
   useEffect(() => {
     const currentContainer = containerRef.current;
     if (!currentContainer) return;
@@ -133,24 +140,30 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
       if (bottomScrollPosition > 0.99 && !isLoadingRef.current) {
         isLoadingRef.current = true;
+        const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
+          ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
+          : skipDetails.skip + 1;
+        
         setSkipDetails(prevState => ({
-          skip: skipsCoveredRef.current.has(skipDetails.skip + 1)
-            ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
-            : prevState.skip + 1,
+          skip: newSkip,
           direction: 'down'
         }));
+                updateUrlContentIndex(newSkip);
       }
 
       if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
         const firstSectionNumber = contents[0]?.section_number;
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
+          const newSkip = skipsCoveredRef.current.has(Math.max(0, firstSectionNumber - 2))
+            ? skipDetails.skip
+            : Math.max(0, firstSectionNumber - 2);
+          
           setSkipDetails(prevState => ({
-            skip: skipsCoveredRef.current.has(Math.max(0, firstSectionNumber - 2))
-              ? prevState.skip
-              : Math.max(0, firstSectionNumber - 2),
+            skip: newSkip,
             direction: 'up'
           }));
+          updateUrlContentIndex(newSkip);
         }
       }
     };
