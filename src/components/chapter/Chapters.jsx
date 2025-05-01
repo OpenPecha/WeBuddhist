@@ -43,7 +43,8 @@ const Chapters = () => {
       const newChapter = {
         ...chapterInformation,
         textId: chapterInformation.textId || "",
-        segmentId: chapterInformation.segmentId || ""
+        segmentId: chapterInformation.segmentId || "",
+        contentIndex: chapterInformation.contentIndex !== undefined ? chapterInformation.contentIndex : 0
       };
       return [
         ...prevChapters,

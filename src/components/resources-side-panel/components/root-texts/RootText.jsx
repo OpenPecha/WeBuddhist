@@ -13,7 +13,7 @@ export const fetchRootTextData = async (segment_id) => {
   return data;
 }
 
-const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter }) => {
+const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter, sectionindex }) => {
   const { t } = useTranslate();
 
   const {data: rootTextData} = useQuery(
@@ -108,7 +108,13 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
                         <div className="root-text-actions">
                           <div className="root-text-buttons">
                             <div className="root-text-button"
-                                 onClick={() => addChapter({contentId: "", versionId: "", textId: rootText.text_id, segmentId: rootText.segment_id})}>
+                                 onClick={() => addChapter({
+                                   contentId: "", 
+                                   versionId: "", 
+                                   textId: rootText.text_id, 
+                                   segmentId: rootText.segment_id,
+                                   contentIndex: sectionindex !== null ? sectionindex : 0
+                                 })}>
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
                             </div>

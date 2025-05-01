@@ -23,11 +23,12 @@ export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit
 }
 const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
-  
+
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
+  const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
@@ -80,15 +81,16 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
     setContents(prev => {
       const incomingSections = textDetails.content.sections;
+      const sectionindex = textDetails.current_section - 1;
       const existingSectionNumbers = new Set(prev.map(section => section.section_number));
 
-      const filteredSections = incomingSections.filter(
-        section => !existingSectionNumbers.has(section.section_number)
-      );
+      const filteredSections = incomingSections
+        .filter(section => !existingSectionNumbers.has(section.section_number))
+        .map(section => ({ ...section, sectionindex }));
 
       if(skipDetails.direction === 'up'){
         const currentContainer = containerRef.current;
-        if (!currentContainer) return;
+        if (!currentContainer) return prev;
 
         const currentScrollHeight = currentContainer?.scrollHeight || 0;
 
@@ -101,11 +103,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             }
           }, 0);
         }
-        return [...filteredSections, ...prev]
-      }else{
-        return  [...prev, ...filteredSections];
+        return [...filteredSections, ...prev];
+      } else {
+        return [...prev, ...filteredSections];
       }
-
     });
     if (!totalContentRef.current) {
       totalContentRef.current = textDetails?.total
@@ -115,12 +116,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     isLoadingTopRef.current = false;
   }, [textDetails]);
 
-  const updateUrlContentIndex = (newIndex) => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('contentIndex', newIndex.toString());
-    setSearchParams(newParams);
-    updateChapter(currentChapter, { contentIndex: newIndex });
-  };
+
 
   useEffect(() => {
     const currentContainer = containerRef.current;
@@ -148,7 +144,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           skip: newSkip,
           direction: 'down'
         }));
-                updateUrlContentIndex(newSkip);
       }
 
       if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
@@ -163,7 +158,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             skip: newSkip,
             direction: 'up'
           }));
-          updateUrlContentIndex(newSkip);
         }
       }
     };
@@ -211,7 +205,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     }
   };
 
-  const renderSegments = (segments) => {
+  const renderSegments = (segments, currentSectionIndex) => {
     if (!segments || segments.length === 0) return null;
     
     return segments.map(segment => {
@@ -236,6 +230,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             (!e.target.classList.contains('footnote-marker') &&
               !e.target.classList.contains('footnote'))) {
             setSelectedSegmentId(segment.segment_id);
+            setSelectedSectionIndex(currentSectionIndex);
             handleSidebarToggle(true);
           }
         }}
@@ -259,6 +254,8 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const renderSection = (section) => {
     if (!section) return null;
     
+    const currentSectionIndex = section.sectionindex !== undefined ? section.sectionindex : null;
+    
     return (
       <div 
         key={section.id} 
@@ -267,7 +264,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       >
         {section.title && <h4 className="section-title">{section.title}</h4>}
         
-        {renderSegments(section.segments)}
+        {renderSegments(section.segments, currentSectionIndex)}
         
         {section.sections && section.sections.length > 0 && 
           section.sections.map(nestedSection => renderSection(nestedSection))
@@ -295,7 +292,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             </div>
           )}
           
-          {contents?.map(section => (
+          {contents?.map((section) => (
             <div 
               key={section.id} 
               className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}
@@ -317,6 +314,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           setVersionId={handleVersionChange}
           versionId={versionId}
           addChapter={addChapter}
+          sectionindex={selectedSectionIndex}
         />}
       </Container>
     </div>
