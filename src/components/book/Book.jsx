@@ -78,7 +78,8 @@ const Book = () => {
                     <div className="text-list">
                       {rootTexts.map((text,i) => (
                         <div key={i} className="text-item ">
-                          <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`} state={{ titleInformation: text }}>
+                          <Link to={`/text-detail/${text.id}?title=${encodeURIComponent(text.title)}&language=${encodeURIComponent(text.language)}&type=${encodeURIComponent(text.type)}`} 
+                          className={`text-link ${getLanguageClass(text.language)}`}>
                             <p>{text.title}</p>
                           </Link>
                         </div>
@@ -94,7 +95,8 @@ const Book = () => {
                     <div className="text-list">
                       {commentaryTexts.map((text,i) => (
                         <div key={i} className="text-item">
-                          <Link to={`/text-detail/${text.id}`} className={`text-link ${getLanguageClass(text.language)}`}  state={{ titleInformation: text }} >
+                          <Link to={`/text-detail/${text.id}?title=${encodeURIComponent(text.title)}&language=${encodeURIComponent(text.language)}&type=${encodeURIComponent(text.type)}`} 
+                          className={`text-link ${getLanguageClass(text.language)}`}>
                             <p>{text.title}</p>
                           </Link>
                         </div>

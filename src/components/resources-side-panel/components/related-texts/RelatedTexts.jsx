@@ -16,7 +16,7 @@ export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
   });
   return data;
 }
-const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries, addChapter }) => {
+const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries, addChapter, sectionindex }) => {
   const { t } = useTranslate();
 
   const {data: segmentCommentaries} = useQuery(
@@ -86,7 +86,13 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
                           <div className="commentary-buttons">
                             {/*<div className="commentary-button" onClick={() => addChapter({contentId: "", versionId: commentary.text_id, uniqueId: Date.now()})}>*/}
                             <div className="commentary-button"
-                                 onClick={() => addChapter({contentId: "", versionId: "", textId: commentaryId , segmentId: segmentId})}>
+                                 onClick={() => addChapter({
+                                   contentId: "", 
+                                   versionId: "", 
+                                   textId: commentaryId, 
+                                   segmentId: segmentId,
+                                   contentIndex: sectionindex !== null ? sectionindex : 0
+                                 })}>
 
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>

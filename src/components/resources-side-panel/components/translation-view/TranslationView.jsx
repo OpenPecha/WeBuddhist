@@ -23,8 +23,9 @@ const TranslationView = ({
   expandedTranslations, 
   setExpandedTranslations, 
   setVersionId, 
-  versionId ,
-  addChapter
+  versionId,
+  addChapter,
+  sectionindex
 }) => {
   const { t } = useTranslate();
   const {data: sidePanelTranslationsData} = useQuery(
@@ -95,9 +96,13 @@ const TranslationView = ({
           <div className="linkselect navbaritems">
             <div
               className="linkicons"
-              // onClick={() => addChapter({ contentId: "", versionId: translation.text_id, uniqueId: Date.now() })}
-              onClick={() => addChapter({ contentId: "", versionId: "", textId: translation.text_id, segmentId: translation.segment_id })}
-
+              onClick={() => addChapter({ 
+                contentId: "", 
+                versionId: "", 
+                textId: translation.text_id, 
+                segmentId: translation.segment_id,
+                contentIndex: sectionindex !== null ? sectionindex : 0
+              })}
             >
               <GoLinkExternal />
               {t("text.translation.open_text")}

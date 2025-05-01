@@ -86,9 +86,8 @@ const Content = ({ setContentId }) => {
               <FiChevronRight size={16} className="toggle-icon" />
           ) : <span className="empty-icon"></span>}
           <Link
-            to={`/texts/text-details?text_id=${id}`}
+            to={`/texts/text-details?text_id=${id}&contentId=${contentId}&versionId=&contentIndex=${parentIndex}&sectionId=${section.id}`}
             className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-            state={{chapterInformation: {contentId: contentId, versionId: "", contentIndex: parentIndex, sectionId: section.id}}}
           >
             {section.title}
           </Link>
@@ -131,9 +130,8 @@ const Content = ({ setContentId }) => {
                       <FiChevronRight size={16} className="toggle-icon" />
                   ) : <span className="empty-icon"></span>}
                   <Link 
-                    to={`/texts/text-details?text_id=${id}`}
+                    to={`/texts/text-details?text_id=${id}&contentId=${content.id}&versionId=&contentIndex=${index}`}
                     className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-                    state={{chapterInformation: {contentId: content.id, versionId: "", contentIndex:index}}}
                   >
                     {segment.title}
                   </Link>
