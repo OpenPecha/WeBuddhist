@@ -26,6 +26,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
   const { isLeftPanelOpen, closeLeftPanel } = usePanelContext();
   const showPanel = isLeftPanelOpen;
   const [expandedSections, setExpandedSections] = useState({});
+  const [selectedSectionId, setSelectedSectionId] = useState(null);
   const {t}=useTranslate();
   const [searchParams] = useSearchParams();
   const textId = searchParams.get("text_id");
@@ -47,6 +48,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
   const renderSection = (section, level = 0, contentId, parentIndex) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
+    const isSelected = section.id === selectedSectionId;
 
     return (
       <div key={`section-${section.id}`} className="section-container">
@@ -60,7 +62,11 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
               <FiChevronRight size={16} className="toggle-icon" />
           ) : <span className="empty-icon"></span>}
           <span 
-            className={`section-title ${getLanguageClass(tocData.text_detail.language)}`}
+            className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${isSelected ? 'selected' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedSectionId(section.id);
+            }}
           >
             {section.title}
           </span>
@@ -99,6 +105,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
               {tocData.contents.map((content, contentIndex) => (
                 content.sections && content.sections.map((segment, index) => {
                   const hasChildren = segment.sections && segment.sections.length > 0;
+                  const isSelected = segment.id === selectedSectionId;
 
                   return (
                     <div key={`content-${contentIndex}-segment-${segment.id}-${index}`} className="section-container">
@@ -112,9 +119,10 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
                             <FiChevronRight size={16} className="toggle-icon" />
                         ) : <span className="empty-icon"></span>}
                         <button 
-                          className={`section-title  ${getLanguageClass(tocData.text_detail.language)}`}
+                          className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${isSelected ? 'selected' : ''}`}
                           onClick={(e) => {
                             e.stopPropagation(); 
+                            setSelectedSectionId(segment.id);
                             if (updateChapter && currentChapter) {
                               updateChapter(currentChapter, { 
                                 contentIndex: index,

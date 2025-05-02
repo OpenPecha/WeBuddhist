@@ -66,6 +66,15 @@
             margin: 0;
             padding: 0;
             display: inline;
+            transition: color 0.2s ease;
+            
+            &.selected {
+              color: #4a90e2;
+              font-weight: 500;
+              border-left: 3px solid #4a90e2;
+              padding-left: 8px;
+              border-radius: 5px;
+            }
             
             &:is(button) {
               background: none;
