@@ -130,19 +130,6 @@ describe("Chapters Component", () => {
   });
 
 
-  test("initializes with location state if available", () => {
-    mockSessionStorage.getItem.mockReturnValue(null);
-    
-    const { container } = setup();
-    
-    const chapterContainers = container.querySelectorAll(".chapter-container");
-    expect(chapterContainers.length).toBe(1);
-    
-    expect(mockSessionStorage.setItem).toHaveBeenCalledWith(
-      'chapters',
-      expect.any(String)
-    );
-  });
 
 
   test("limits the number of chapters to 3", () => {

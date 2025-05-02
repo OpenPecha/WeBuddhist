@@ -26,7 +26,7 @@ export const fetchSidePanelData = async (segmentId) => {
   return data;
 };
 
-const Resources = ({segmentId, setVersionId, versionId, addChapter}) => {
+const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex}) => {
   const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
   const showPanel = isResourcesPanelOpen;
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
@@ -140,6 +140,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter}) => {
             setVersionId={setVersionId}
             versionId={versionId}
             addChapter={addChapter}
+            sectionindex={sectionindex}
           />
         );
       case "commentary":
@@ -150,6 +151,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter}) => {
             expandedCommentaries={expandedCommentaries}
             setExpandedCommentaries={setExpandedCommentaries}
             addChapter={addChapter}
+            sectionindex={sectionindex}
           />
         );
       case "root_text":
@@ -160,6 +162,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter}) => {
             expandedRootTexts={expandedRootTexts}
             setExpandedRootTexts={setExpandedRootTexts}
             addChapter={addChapter}
+            sectionindex={sectionindex}
           />
         );
       default:

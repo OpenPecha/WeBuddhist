@@ -1,6 +1,6 @@
-import {useEffect, useLayoutEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment} from "../../../../utils/Constants.js";
-import {useSearchParams, useLocation} from "react-router-dom";
+import {useSearchParams} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
 import Resources from "../../../resources-side-panel/Resources.jsx";
@@ -24,8 +24,9 @@ export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit
 }
 const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
-  
+
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
+  const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const containerRef = useRef(null);
@@ -35,9 +36,8 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const isLoadingRef = useRef(false);
   const isLoadingTopRef = useRef(false);
   const totalContentRef = useRef(0)
-  const location = useLocation();
   const [skipDetails, setSkipDetails] = useState({
-    skip: currentChapter.contentIndex !== undefined ? currentChapter.contentIndex : location?.state?.chapterInformation?.contentIndex || 0,
+    skip: currentChapter.contentIndex !== undefined ? parseInt(currentChapter.contentIndex, 10) : parseInt(searchParams.get("contentIndex") || 0, 10),
     direction: 'down'
   });
   const skipsCoveredRef = useRef(new Set());
@@ -83,15 +83,16 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
     setContents(prev => {
       const incomingSections = textDetails.content.sections;
+      const sectionindex = textDetails.current_section - 1;
       const existingSectionNumbers = new Set(prev.map(section => section.section_number));
 
-      const filteredSections = incomingSections.filter(
-        section => !existingSectionNumbers.has(section.section_number)
-      );
+      const filteredSections = incomingSections
+        .filter(section => !existingSectionNumbers.has(section.section_number))
+        .map(section => ({ ...section, sectionindex }));
 
       if(skipDetails.direction === 'up'){
         const currentContainer = containerRef.current;
-        if (!currentContainer) return;
+        if (!currentContainer) return prev;
 
         const currentScrollHeight = currentContainer?.scrollHeight || 0;
 
@@ -104,11 +105,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             }
           }, 0);
         }
-        return [...filteredSections, ...prev]
-      }else{
-        return  [...prev, ...filteredSections];
+        return [...filteredSections, ...prev];
+      } else {
+        return [...prev, ...filteredSections];
       }
-
     });
     if (!totalContentRef.current) {
       totalContentRef.current = textDetails?.total
@@ -117,6 +117,8 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     isLoadingRef.current = false;
     isLoadingTopRef.current = false;
   }, [textDetails]);
+
+
 
   useEffect(() => {
     const currentContainer = containerRef.current;
@@ -136,10 +138,12 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
       if (bottomScrollPosition > 0.99 && !isLoadingRef.current) {
         isLoadingRef.current = true;
+        const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
+          ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
+          : skipDetails.skip + 1;
+        
         setSkipDetails(prevState => ({
-          skip: skipsCoveredRef.current.has(skipDetails.skip + 1)
-            ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
-            : prevState.skip + 1,
+          skip: newSkip,
           direction: 'down'
         }));
       }
@@ -148,10 +152,12 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         const firstSectionNumber = contents[0]?.section_number;
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
+          const newSkip = skipsCoveredRef.current.has(Math.max(0, firstSectionNumber - 2))
+            ? skipDetails.skip
+            : Math.max(0, firstSectionNumber - 2);
+          
           setSkipDetails(prevState => ({
-            skip: skipsCoveredRef.current.has(Math.max(0, firstSectionNumber - 2))
-              ? prevState.skip
-              : Math.max(0, firstSectionNumber - 2),
+            skip: newSkip,
             direction: 'up'
           }));
         }
@@ -206,71 +212,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     }
   };
 
-  const toggleSidePanel = () => {
-    setIsSidePanelOpen(!isSidePanelOpen);
-    
-    // Update URL hash without page reload
-    if (!isSidePanelOpen) {
-      window.history.replaceState(null, null, `#panel=open`);
-    } else {
-      window.history.replaceState(null, null, `#`);
-    }
-  };
-
-  const renderNestedSections = (nestedSections) => {
-    return (
-      <div className="toc-nested-sections">
-        {nestedSections.map(nestedSection => (
-          <div key={nestedSection.id} className="toc-nested-section">
-            <div 
-              className={`toc-item nested ${selectedSegmentId === nestedSection.id ? 'active' : ''}`}
-              onClick={() => {
-                const nestedSectionElement = document.querySelector(`[data-section-id="${nestedSection.id}"]`);
-                if (nestedSectionElement) {
-                  nestedSectionElement.scrollIntoView({ behavior: 'smooth' });
-                  setSelectedSegmentId(nestedSection.id);
-                }
-              }}
-            >
-              <span className="toc-section-number">{nestedSection.section_number}.</span>
-              {nestedSection.title || `Section ${nestedSection.section_number}`}
-            </div>
-            
-            {nestedSection.segments && nestedSection.segments.length > 0 && (
-              <div className="toc-segments">
-                {nestedSection.segments.map(segment => (
-                  <div 
-                    key={segment.segment_id}
-                    className={`toc-segment ${selectedSegmentId === segment.segment_id ? 'active' : ''}`}
-                    onClick={() => {
-                      const segmentElement = document.querySelector(`[data-segment-id="${segment.segment_id}"]`);
-                      if (segmentElement) {
-                        segmentElement.scrollIntoView({ behavior: 'smooth' });
-                        setSelectedSegmentId(segment.segment_id);
-                      }
-                    }}
-                  >
-                    <span className="toc-segment-number">{segment.segment_number}</span>
-                    {segment.content && (
-                      <span className="toc-segment-preview">
-                        {segment.content.replace(/<[^>]*>/g, '').substring(0, 30)}
-                        {segment.content.replace(/<[^>]*>/g, '').length > 30 ? '...' : ''}
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {nestedSection.sections && nestedSection.sections.length > 0 && 
-              renderNestedSections(nestedSection.sections)}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderSegments = (segments) => {
+  const renderSegments = (segments, currentSectionIndex) => {
     if (!segments || segments.length === 0) return null;
     
     return segments.map(segment => {
@@ -295,6 +237,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             (!e.target.classList.contains('footnote-marker') &&
               !e.target.classList.contains('footnote'))) {
             setSelectedSegmentId(segment.segment_id);
+            setSelectedSectionIndex(currentSectionIndex);
             handleSidebarToggle(true);
           }
         }}
@@ -318,6 +261,8 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const renderSection = (section) => {
     if (!section) return null;
     
+    const currentSectionIndex = section.sectionindex !== undefined ? section.sectionindex : null;
+    
     return (
       <div 
         key={section.id} 
@@ -326,7 +271,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       >
         {section.title && <h4 className="section-title">{section.title}</h4>}
         
-        {renderSegments(section.segments)}
+        {renderSegments(section.segments, currentSectionIndex)}
         
         {section.sections && section.sections.length > 0 && 
           section.sections.map(nestedSection => renderSection(nestedSection))
@@ -426,15 +371,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
               </Spinner>
             </div>
           )}
-
+          
           {contents?.map((section) => (
-            <div
-              key={section.id}
-              className={`section ${
-                textDetails?.text_detail?.language
-                  ? getLanguageClass(textDetails.text_detail.language)
-                  : ""
-              }`}
+            <div 
+              key={section.id} 
+              className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}
               data-section-id={section.id}
             >
               {renderSection(section)}
@@ -449,14 +390,13 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
               </div>
             )}
         </div>
-        {isResourcesPanelOpen && selectedSegmentId && (
-          <Resources
-            segmentId={selectedSegmentId}
-            setVersionId={handleVersionChange}
-            versionId={versionId}
-            addChapter={addChapter}
-          />
-        )}
+        {isResourcesPanelOpen && selectedSegmentId && <Resources
+          segmentId={selectedSegmentId}
+          setVersionId={handleVersionChange}
+          versionId={versionId}
+          addChapter={addChapter}
+          sectionindex={selectedSectionIndex}
+        />}
       </Container>
     </div>
   );
