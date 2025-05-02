@@ -24,7 +24,6 @@ export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit
 }
 const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
-  console.log(contents)
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
