@@ -4,6 +4,7 @@ import {useSearchParams} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
 import Resources from "../../../resources-side-panel/Resources.jsx";
+import LeftSidePanel from "../left-side-panel/LeftSidePanel.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
@@ -29,7 +30,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
   const containerRef = useRef(null);
   const [searchParams] = useSearchParams();
-  const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
+  const { isResourcesPanelOpen, openResourcesPanel, isLeftPanelOpen } = usePanelContext();
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
   const isLoadingTopRef = useRef(false);
@@ -280,6 +281,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
                      setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
                      totalPages={totalPages}/>
       <Container fluid className="p-0">
+      {isLeftPanelOpen && <LeftSidePanel />}
         <div
           ref={containerRef}
           className="tibetan-text-container"

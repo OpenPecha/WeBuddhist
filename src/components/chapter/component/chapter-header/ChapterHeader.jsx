@@ -1,5 +1,6 @@
 import {getLanguageClass} from "../../../../utils/Constants.js";
 import {BsBookmark, BsBookmarkFill} from "react-icons/bs";
+import { FiAlignJustify } from "react-icons/fi";
 import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
 import TranslationSource from "../translation-source-option-selector/TranslationSource.jsx";
 import {useState} from "react";
@@ -9,7 +10,7 @@ import { usePanelContext } from "../../../../context/PanelContext.jsx";
 const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPages, removeChapter, currentChapter}) => {
 
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const { isTranslationSourceOpen, toggleTranslationSource } = usePanelContext();
+  const { isTranslationSourceOpen, toggleTranslationSource, toggleLeftPanel } = usePanelContext();
   const showTranslationSource = isTranslationSourceOpen;
 
   const handleOptionChange = (option) => {
@@ -18,6 +19,7 @@ const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPag
 
   return (
     <div className="header-overlay">
+      <FiAlignJustify size={20} onClick={toggleLeftPanel} style={{ cursor: 'pointer' }}/>
       <div className={`text-container ${getLanguageClass(textDetails?.language)}`}>
         {textDetails?.title}
       </div>

@@ -5,6 +5,7 @@ const PanelContext = createContext();
 export const PanelProvider = ({ children }) => {
   const [isResourcesPanelOpen, setIsResourcesPanelOpen] = useState(false);
   const [isTranslationSourceOpen, setIsTranslationSourceOpen] = useState(false);
+  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false);
 
  
   const openResourcesPanel = () => {
@@ -47,15 +48,34 @@ export const PanelProvider = ({ children }) => {
     });
   };
 
+  const openLeftPanel = () => {
+    setIsLeftPanelOpen(true);
+  };
+
+  const closeLeftPanel = () => {
+    setIsLeftPanelOpen(false);
+  };
+
+  const toggleLeftPanel = () => {
+    setIsLeftPanelOpen(prev => {
+      const newState = !prev;
+      return newState;
+    });
+  };
+
   const value = {
     isResourcesPanelOpen,
     isTranslationSourceOpen,
+    isLeftPanelOpen,
     openResourcesPanel,
     closeResourcesPanel,
     toggleResourcesPanel,
     openTranslationSource,
     closeTranslationSource,
-    toggleTranslationSource
+    toggleTranslationSource,
+    openLeftPanel,
+    closeLeftPanel,
+    toggleLeftPanel
   };
 
   return (
