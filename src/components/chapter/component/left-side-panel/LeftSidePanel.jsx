@@ -29,7 +29,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
   const {t}=useTranslate();
   const [searchParams] = useSearchParams();
   const textId = searchParams.get("text_id");
-  const { data: tocData, isLoading, error } = useQuery(
+  const { data: tocData, isLoading} = useQuery(
     ["toc", textId],
     () => fetchTextContent(textId),
     {
@@ -90,11 +90,10 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
         </div>
         <div className="panel-content p-3">
           {isLoading && <p>{t("common.loading")}</p>}
-          {error && <p>{t("message.there_is_error")}: {error.message}</p>}
-          {!isLoading && !error && tocData && tocData.contents && tocData.contents.length === 0 && (
+          {!isLoading && tocData && tocData.contents && tocData.contents.length === 0 && (
             <p>{t("text_category.message.notfound")}</p>
           )}
-          {!isLoading && !error && tocData && tocData.contents && tocData.contents.length > 0 && (
+          {!isLoading && tocData && tocData.contents && tocData.contents.length > 0 && (
             <div className="toc-container">
               {tocData.contents.map((content, contentIndex) => (
                 content.sections && content.sections.map((segment, index) => {
