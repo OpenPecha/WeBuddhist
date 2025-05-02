@@ -24,7 +24,7 @@ export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit
 }
 const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
-
+  console.log(contents)
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
@@ -57,6 +57,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   useEffect(() => {
     setContents([]);
     isInitialLoadRef.current = true;
+    skipsCoveredRef.current = new Set();
+    isLoadingRef.current = false;
+    isLoadingTopRef.current = false;
+    totalContentRef.current = 0;
     setSkipDetails({
       skip: parseInt(currentChapter.contentIndex, 10),
       direction: 'down'
@@ -113,8 +117,8 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         return [...prev, ...filteredSections];
       }
     });
-    if (!totalContentRef.current) {
-      totalContentRef.current = textDetails?.total
+    if (textDetails?.total) {
+      totalContentRef.current = textDetails.total;
     }
 
     isLoadingRef.current = false;
@@ -139,16 +143,22 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
       // Check if scrolled near bottom
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
-      if (bottomScrollPosition > 0.99 && !isLoadingRef.current) {
-        isLoadingRef.current = true;
-        const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
-          ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
-          : skipDetails.skip + 1;
-        
-        setSkipDetails(prevState => ({
-          skip: newSkip,
-          direction: 'down'
-        }));
+      if (bottomScrollPosition > 0.99 && !isLoadingRef.current && totalContentRef.current > 0) {
+        if (skipDetails.skip < totalContentRef.current - 1) {
+          isLoadingRef.current = true;
+          const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
+            ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
+            : skipDetails.skip + 1;
+          
+          if (newSkip < totalContentRef.current) {
+            setSkipDetails({
+              skip: newSkip,
+              direction: 'down'
+            });
+          } else {
+            isLoadingRef.current = false; 
+          }
+        }
       }
 
       if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
@@ -159,10 +169,14 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             ? skipDetails.skip
             : Math.max(0, firstSectionNumber - 2);
           
-          setSkipDetails(prevState => ({
-            skip: newSkip,
-            direction: 'up'
-          }));
+          if (newSkip >= 0 && !skipsCoveredRef.current.has(newSkip)) {
+            setSkipDetails({
+              skip: newSkip,
+              direction: 'up'
+            });
+          } else {
+            isLoadingTopRef.current = false;
+          }
         }
       }
     };
@@ -170,7 +184,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     currentContainer.addEventListener('scroll', handleScroll);
 
     return () => currentContainer.removeEventListener('scroll', handleScroll);
-  }, [contents]);
+  }, [contents, skipDetails.skip, totalContentRef.current]);
 
   useEffect(() => {
     const container = containerRef.current;
