@@ -59,11 +59,20 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
               <FiChevronDown size={16} className="toggle-icon" /> :
               <FiChevronRight size={16} className="toggle-icon" />
           ) : <span className="empty-icon"></span>}
-          <span 
+          <button 
             className={`section-title ${getLanguageClass(tocData.text_detail.language)}`}
+            onClick={(e) => {
+              e.stopPropagation(); 
+              if (updateChapter && currentChapter) {
+                updateChapter(currentChapter, { 
+                  contentIndex: parentIndex,
+                  sectionId: section.id
+                });
+              }
+            }}
           >
-            {section.title}
-          </span>
+            {section.title} 
+          </button>
         </div>
 
         {isExpanded && hasChildren && (
