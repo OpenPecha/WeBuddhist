@@ -44,6 +44,56 @@
         background-color: #f8f9fa;
       }
     }
+    
+    .toc-container {
+      .section-container {
+        margin-bottom: 0.5rem;
+
+        .section-header {
+          display: flex;
+          align-items: center;
+          padding: 0.5rem 0.75rem;
+          cursor: pointer;
+          border-radius: 4px;
+          transition: background-color 0.2s ease;
+
+          .section-title {
+            width: 100%;
+            font-size: 16px;
+            color: #666;
+            cursor: pointer;
+            line-height: inherit;
+            margin: 0;
+            padding: 0;
+            display: inline;
+          }
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+          }
+
+          .toggle-icon {
+            margin-right: 0.5rem;
+            min-width: 16px;
+            display: flex;
+            align-items: center;
+          }
+
+          .empty-icon {
+            width: 16px;
+            margin-right: 0.5rem;
+          }
+        }
+
+        .nested-content {
+          margin-left: 1.25rem;
+
+          .section-container {
+            margin-top: 0.25rem;
+          }
+        }
+      }
+    }
   }
 
   &.show .panel-content {
