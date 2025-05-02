@@ -8,6 +8,7 @@ import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 import { usePanelContext, PanelProvider } from "../../../../context/PanelContext.jsx";
+import SidePanel from "../side-panel/SidePanel.jsx";
 
 export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId,sectionId) => {
 
@@ -26,6 +27,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const containerRef = useRef(null);
   const [searchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
@@ -173,6 +175,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     };
   }, []);
 
+  useEffect(() => {
+    if (window.location.hash === '#panel=open') {
+      setIsSidePanelOpen(true);
+    }
+  }, []);
 
   // helper function
   const handleDocumentClick = (event) => {
@@ -197,6 +204,70 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     if (isOpen) {
       openResourcesPanel();
     }
+  };
+
+  const toggleSidePanel = () => {
+    setIsSidePanelOpen(!isSidePanelOpen);
+    
+    // Update URL hash without page reload
+    if (!isSidePanelOpen) {
+      window.history.replaceState(null, null, `#panel=open`);
+    } else {
+      window.history.replaceState(null, null, `#`);
+    }
+  };
+
+  const renderNestedSections = (nestedSections) => {
+    return (
+      <div className="toc-nested-sections">
+        {nestedSections.map(nestedSection => (
+          <div key={nestedSection.id} className="toc-nested-section">
+            <div 
+              className={`toc-item nested ${selectedSegmentId === nestedSection.id ? 'active' : ''}`}
+              onClick={() => {
+                const nestedSectionElement = document.querySelector(`[data-section-id="${nestedSection.id}"]`);
+                if (nestedSectionElement) {
+                  nestedSectionElement.scrollIntoView({ behavior: 'smooth' });
+                  setSelectedSegmentId(nestedSection.id);
+                }
+              }}
+            >
+              <span className="toc-section-number">{nestedSection.section_number}.</span>
+              {nestedSection.title || `Section ${nestedSection.section_number}`}
+            </div>
+            
+            {nestedSection.segments && nestedSection.segments.length > 0 && (
+              <div className="toc-segments">
+                {nestedSection.segments.map(segment => (
+                  <div 
+                    key={segment.segment_id}
+                    className={`toc-segment ${selectedSegmentId === segment.segment_id ? 'active' : ''}`}
+                    onClick={() => {
+                      const segmentElement = document.querySelector(`[data-segment-id="${segment.segment_id}"]`);
+                      if (segmentElement) {
+                        segmentElement.scrollIntoView({ behavior: 'smooth' });
+                        setSelectedSegmentId(segment.segment_id);
+                      }
+                    }}
+                  >
+                    <span className="toc-segment-number">{segment.segment_number}</span>
+                    {segment.content && (
+                      <span className="toc-segment-preview">
+                        {segment.content.replace(/<[^>]*>/g, '').substring(0, 30)}
+                        {segment.content.replace(/<[^>]*>/g, '').length > 30 ? '...' : ''}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {nestedSection.sections && nestedSection.sections.length > 0 && 
+              renderNestedSections(nestedSection.sections)}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   const renderSegments = (segments) => {
@@ -267,14 +338,87 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   // main renderer
   return (
     <div className="chapter">
-      <ChapterHeader selectedOption={selectedOption} currentChapter={currentChapter} removeChapter={removeChapter}
-                     setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
-                     totalPages={totalPages}/>
+      <SidePanel isOpen={isSidePanelOpen} togglePanel={toggleSidePanel}>
+        <div className="toc-content">
+          {contents && contents.length > 0 ? (
+            contents.map((section) => (
+              <div key={section.id} className="toc-section">
+                <div
+                  className={`toc-item ${
+                    selectedSegmentId === section.id ? "active" : ""
+                  }`}
+                  onClick={() => {
+                    const sectionElement = document.querySelector(
+                      `[data-section-id="${section.id}"]`
+                    );
+                    if (sectionElement) {
+                      sectionElement.scrollIntoView({ behavior: "smooth" });
+                      setSelectedSegmentId(section.id);
+                    }
+                  }}
+                >
+                  <span className="toc-section-number">
+                    {section.section_number}.
+                  </span>
+                  {section.title || `Section ${section.section_number}`}
+                </div>
+
+                {section.segments && section.segments.length > 0 && (
+                  <div className="toc-segments">
+                    {section.segments.map((segment) => (
+                      <div
+                        key={segment.segment_id}
+                        className={`toc-segment ${
+                          selectedSegmentId === segment.segment_id
+                            ? "active"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          const segmentElement = document.querySelector(
+                            `[data-segment-id="${segment.segment_id}"]`
+                          );
+                          if (segmentElement) {
+                            segmentElement.scrollIntoView({
+                              behavior: "smooth",
+                            });
+                            setSelectedSegmentId(segment.segment_id);
+                          }
+                        }}
+                      >
+                        <span className="toc-segment-number">
+                          {segment.segment_number}
+                        </span>
+                        {segment.content && (
+                          <span className="toc-segment-preview">
+                            {segment.content.replace(/<[^>]*>/g, '').substring(0, 30)}
+                            {segment.content.replace(/<[^>]*>/g, '').length > 30 ? '...' : ''}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {section.sections &&
+                  section.sections.length > 0 &&
+                  renderNestedSections(section.sections)}
+              </div>
+            ))
+          ) : (
+            <p>No table of contents available</p>
+          )}
+        </div>
+      </SidePanel>
+      <ChapterHeader
+        selectedOption={selectedOption}
+        currentChapter={currentChapter}
+        removeChapter={removeChapter}
+        setSelectedOption={setSelectedOption}
+        textDetails={textDetails?.text_detail}
+        totalPages={totalPages}
+      />
       <Container fluid className="p-0">
-        <div
-          ref={containerRef}
-          className="tibetan-text-container"
-        >
+        <div ref={containerRef} className="tibetan-text-container">
           {chapterContentIsLoading && skipDetails.direction.includes("up") && (
             <div className="text-center my-3 my-md-4">
               <Spinner animation="border" role="output" size="sm">
@@ -282,30 +426,37 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
               </Spinner>
             </div>
           )}
-          
-          {contents?.map(section => (
-            <div 
-              key={section.id} 
-              className={`section ${textDetails?.text_detail?.language ? getLanguageClass(textDetails.text_detail.language) : ''}`}
+
+          {contents?.map((section) => (
+            <div
+              key={section.id}
+              className={`section ${
+                textDetails?.text_detail?.language
+                  ? getLanguageClass(textDetails.text_detail.language)
+                  : ""
+              }`}
               data-section-id={section.id}
             >
               {renderSection(section)}
             </div>
           ))}
-          {chapterContentIsLoading && skipDetails.direction.includes("down") && (
-            <div className="text-center my-3 my-md-4">
-              <Spinner animation="border" role="output" size="sm">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-            </div>
-          )}
+          {chapterContentIsLoading &&
+            skipDetails.direction.includes("down") && (
+              <div className="text-center my-3 my-md-4">
+                <Spinner animation="border" role="output" size="sm">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              </div>
+            )}
         </div>
-        {isResourcesPanelOpen && selectedSegmentId && <Resources
-          segmentId={selectedSegmentId}
-          setVersionId={handleVersionChange}
-          versionId={versionId}
-          addChapter={addChapter}
-        />}
+        {isResourcesPanelOpen && selectedSegmentId && (
+          <Resources
+            segmentId={selectedSegmentId}
+            setVersionId={handleVersionChange}
+            versionId={versionId}
+            addChapter={addChapter}
+          />
+        )}
       </Container>
     </div>
   );
