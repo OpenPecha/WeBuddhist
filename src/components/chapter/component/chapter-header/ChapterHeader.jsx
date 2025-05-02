@@ -10,7 +10,7 @@ import { usePanelContext } from "../../../../context/PanelContext.jsx";
 const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPages, removeChapter, currentChapter}) => {
 
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const { isTranslationSourceOpen, toggleTranslationSource, toggleLeftPanel } = usePanelContext();
+  const { isTranslationSourceOpen, toggleTranslationSource, toggleLeftPanel, isLeftPanelOpen } = usePanelContext();
   const showTranslationSource = isTranslationSourceOpen;
 
   const handleOptionChange = (option) => {
@@ -19,7 +19,7 @@ const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPag
 
   return (
     <div className="header-overlay">
-      <FiAlignJustify size={20} onClick={toggleLeftPanel} style={{ cursor: 'pointer' }}/>
+     {!isLeftPanelOpen && <FiAlignJustify size={20} onClick={toggleLeftPanel} style={{ cursor: 'pointer' }}/>}
       <div className={`text-container ${getLanguageClass(textDetails?.language)}`}>
         {textDetails?.title}
       </div>
