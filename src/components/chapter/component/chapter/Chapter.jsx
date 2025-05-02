@@ -57,7 +57,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   useEffect(() => {
     setContents([]);
     isInitialLoadRef.current = true;
-  }, [versionId, contentId, textId, segmentId, sectionId]);
+    setSkipDetails({
+      skip: parseInt(currentChapter.contentIndex, 10),
+      direction: 'down'
+    });
+  }, [versionId, contentId, textId, segmentId, sectionId, currentChapter.contentIndex]);
 
   const isInitialLoadRef = useRef(true);
   useEffect(() => {
@@ -281,7 +285,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
                      setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
                      totalPages={totalPages}/>
       <Container fluid className="p-0">
-      {isLeftPanelOpen && <LeftSidePanel />}
+      {isLeftPanelOpen && <LeftSidePanel updateChapter={updateChapter} currentChapter={currentChapter} />}
         <div
           ref={containerRef}
           className="tibetan-text-container"

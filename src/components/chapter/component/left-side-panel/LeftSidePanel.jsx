@@ -22,7 +22,7 @@ const fetchTextContent = async (textId) => {
   return data;
 };
 
-const LeftSidePanel = () => {
+const LeftSidePanel = ({ updateChapter, currentChapter }) => {
   const { isLeftPanelOpen, closeLeftPanel } = usePanelContext();
   const showPanel = isLeftPanelOpen;
   const [expandedSections, setExpandedSections] = useState({});
@@ -60,7 +60,7 @@ const LeftSidePanel = () => {
               <FiChevronRight size={16} className="toggle-icon" />
           ) : <span className="empty-icon"></span>}
           <span 
-            className={`section-title ${tocData?.text_detail?.language ? getLanguageClass(tocData.text_detail.language) : ''}`}
+            className={`section-title ${getLanguageClass(tocData.text_detail.language)}`}
           >
             {section.title}
           </span>
@@ -111,11 +111,19 @@ const LeftSidePanel = () => {
                             <FiChevronDown size={16} className="toggle-icon" /> : 
                             <FiChevronRight size={16} className="toggle-icon" />
                         ) : <span className="empty-icon"></span>}
-                        <span 
-                          className={`section-title ${tocData.text_detail?.language ? getLanguageClass(tocData.text_detail.language) : ''}`}
+                        <button 
+                          className={`section-title  ${getLanguageClass(tocData.text_detail.language)}`}
+                          onClick={(e) => {
+                            e.stopPropagation(); 
+                            if (updateChapter && currentChapter) {
+                              updateChapter(currentChapter, { 
+                                contentIndex: index,
+                              });
+                            }
+                          }}
                         >
                           {segment.title}
-                        </span>
+                        </button>
                       </div>
 
                       {expandedSections[segment.id] && hasChildren && (
