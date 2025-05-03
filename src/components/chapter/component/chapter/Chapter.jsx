@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState, useCallback} from "react";
-import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment} from "../../../../utils/Constants.js";
+import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment, checkSectionsForTranslation} from "../../../../utils/Constants.js";
 import {useSearchParams} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
@@ -27,7 +27,8 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [contents, setContents] = useState([]);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
-  const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
+  const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source);
+  const [hasTranslation, setHasTranslation] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState(null); 
   const lastActiveSectionIdRef = useRef(null); 
   const containerRef = useRef(null);
@@ -84,6 +85,20 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         isInitialLoadRef.current = false;
       }
     }
+    
+    const checkTranslation = () => {
+      if (textDetails.content && textDetails.content.sections) {
+        const hasAnyTranslation = checkSectionsForTranslation(textDetails.content.sections);
+        setHasTranslation(hasAnyTranslation);
+        if (hasAnyTranslation) {
+          setSelectedOption(sourceTranslationOptionsMapper.source_translation);
+        } else {
+          setSelectedOption(sourceTranslationOptionsMapper.source);
+        }
+      }
+    };
+    
+    checkTranslation();
   }, [textDetails, currentChapter, updateChapter]);
 
   //handle scrolling to section when sectionId changes
@@ -317,7 +332,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       if (selectedOption === sourceTranslationOptionsMapper.translation && !hasTranslation) {
         return null;
       }
-
       return (
         <div
         key={segment.segment_id}
@@ -341,7 +355,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             </>
           )}
           {showTranslation && (
-            <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
+            <div className={`translation-content ${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
           )}
         </div>
       </div>
@@ -376,7 +390,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     <div className="chapter">
       <ChapterHeader selectedOption={selectedOption} currentChapter={currentChapter} removeChapter={removeChapter}
                      setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
-                     totalPages={totalPages}/>
+                     totalPages={totalPages} hasTranslation={hasTranslation}/>
       <Container fluid className="p-0">
         {isLeftPanelOpen && <LeftSidePanel 
           updateChapter={updateChapter} 
