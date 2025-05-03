@@ -25,7 +25,7 @@ const fetchTextContent = async (textId) => {
 const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   const { isLeftPanelOpen, closeLeftPanel } = usePanelContext();
   const showPanel = isLeftPanelOpen;
-  const [expandedSections, setExpandedSections] = useState({});
+  const [sectionHierarchyState, setSectionHierarchyState] = useState({});
   const [selectedSectionId, setSelectedSectionId] = useState(null);
   const {t}=useTranslate();
   const [searchParams] = useSearchParams();
@@ -43,19 +43,19 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
     if (activeSectionId) {
       setSelectedSectionId(activeSectionId);
       
-      const expandParentSections = (sections, targetId, parentIds = []) => {
+      const maintainSectionHierarchy = (sections, targetId, parentIds = []) => {
         for (const section of sections || []) {
           if (section.id === targetId) {
-            const newExpandedState = {...expandedSections};
+            const newExpandedState = {...sectionHierarchyState};
             parentIds.forEach(id => {
               newExpandedState[id] = true;
             });
-            setExpandedSections(newExpandedState);
+            setSectionHierarchyState(newExpandedState);
             return true;
           }
           
           if (section.sections && section.sections.length > 0) {
-            const found = expandParentSections(
+            const found = maintainSectionHierarchy(
               section.sections, 
               targetId, 
               [...parentIds, section.id]
@@ -69,7 +69,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
       if (tocData && tocData.contents) {
         tocData.contents.forEach(content => {
           if (content.sections) {
-            expandParentSections(content.sections, activeSectionId);
+            maintainSectionHierarchy(content.sections, activeSectionId);
           }
         });
       }
@@ -77,7 +77,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   }, [activeSectionId, tocData]);
   
   const toggleSection = (sectionId) => {
-    setExpandedSections(prev => ({
+    setSectionHierarchyState(prev => ({
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
@@ -94,7 +94,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   };
   
   const renderSection = (section, level = 0, contentId, parentIndex) => {
-    const isExpanded = expandedSections[section.id];
+    const isExpanded = sectionHierarchyState[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
     const isSelected = section.id === selectedSectionId;
     const isActive = section.id === activeSectionId;
@@ -163,7 +163,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
                         onClick={() => toggleSection(segment.id)}
                       >
                         {hasChildren ? (
-                          expandedSections[segment.id] ? 
+                          sectionHierarchyState[segment.id] ? 
                             <FiChevronDown size={16} className="toggle-icon" /> : 
                             <FiChevronRight size={16} className="toggle-icon" />
                         ) : <span className="empty-icon"></span>}
@@ -178,7 +178,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
                         </button>
                       </div>
 
-                      {expandedSections[segment.id] && hasChildren && (
+                      {sectionHierarchyState[segment.id] && hasChildren && (
                         <div className="nested-content">
                           {segment.sections.map((section) => 
                             renderSection(section, 1, content.id, index)
