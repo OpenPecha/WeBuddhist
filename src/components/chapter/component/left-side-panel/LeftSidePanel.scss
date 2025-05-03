@@ -12,7 +12,7 @@
   z-index: 10;
 
   &.show {
-    width: 300px;
+    width: 280px;
   }
 
   .panel-content {
@@ -20,68 +20,29 @@
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 
-    .textgreat{
-      color: #828282;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    h3 {
-      margin-bottom: 20px;
-      color: #333;
-      font-weight: 600;
-    }
-
-    p {
-      display: flex;
-      align-items: center;
-      padding: 12px 0;
-      margin: 0;
-      color: #444;
-      cursor: pointer;
-      transition: all 0.2s ease;
-
-      &:not(.textgreat):hover {
-        color: #7b7b7b;
-        background-color: #f8f9fa;
-      }
-    }
-    
     .toc-container {
       .section-container {
-        margin-bottom: 0.5rem;
 
         .section-header {
           display: flex;
           align-items: center;
-          padding: 0.5rem 0.75rem;
           cursor: pointer;
-          border-radius: 4px;
-          transition: background-color 0.2s ease;
-
           .section-title {
+            padding: 0.5rem 0.75rem;
             width: 100%;
             font-size: 16px;
             color: #666;
-            cursor: pointer;
-            line-height: inherit;
-            margin: 0;
-            padding: 0;
-            display: inline;
-            transition: color 0.2s ease, background-color 0.2s ease;
-            
-            &.selected {
-              color: #4a90e2;
-              font-weight: 500;
-              border-left: 3px solid #4a90e2;
-              padding-left: 8px;
-              border-radius: 5px;
-            }
+            cursor: pointer; 
+            // &.selected {
+            //   color: #4a90e2;
+            //   font-weight: 500;
+            //   padding-left: 8px;
+            // }
             
             &.active {
+              background-color: #f0f7ff;
               color: #2c6bbd;
               font-weight: 600;
-              border-left: 4px solid #2c6bbd;
-              padding-left: 8px;
-              border-radius: 5px;
             }
             
             &:is(button) {
@@ -90,12 +51,11 @@
               text-align: left;
               box-shadow: none;
             }
-          }
 
+          }
           &:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: transparent;
           }
-
           .toggle-icon {
             margin-right: 0.5rem;
             min-width: 16px;
@@ -132,6 +92,7 @@
     
     .listtitle {
       font-weight: bold;
+      font-size: 14px;
     }
     
     .close-icon {
