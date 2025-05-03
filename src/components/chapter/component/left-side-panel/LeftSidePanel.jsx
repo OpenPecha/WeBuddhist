@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoMdClose } from "react-icons/io";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
@@ -22,7 +22,7 @@ const fetchTextContent = async (textId) => {
   return data;
 };
 
-const LeftSidePanel = ({ updateChapter, currentChapter }) => {
+const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   const { isLeftPanelOpen, closeLeftPanel } = usePanelContext();
   const showPanel = isLeftPanelOpen;
   const [expandedSections, setExpandedSections] = useState({});
@@ -38,6 +38,44 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
     }
   );
   
+  // Update selectedSectionId when activeSectionId changes from scroll spy
+  useEffect(() => {
+    if (activeSectionId) {
+      setSelectedSectionId(activeSectionId);
+      
+      const expandParentSections = (sections, targetId, parentIds = []) => {
+        for (const section of sections || []) {
+          if (section.id === targetId) {
+            const newExpandedState = {...expandedSections};
+            parentIds.forEach(id => {
+              newExpandedState[id] = true;
+            });
+            setExpandedSections(newExpandedState);
+            return true;
+          }
+          
+          if (section.sections && section.sections.length > 0) {
+            const found = expandParentSections(
+              section.sections, 
+              targetId, 
+              [...parentIds, section.id]
+            );
+            if (found) return true;
+          }
+        }
+        return false;
+      };
+      
+      if (tocData && tocData.contents) {
+        tocData.contents.forEach(content => {
+          if (content.sections) {
+            expandParentSections(content.sections, activeSectionId);
+          }
+        });
+      }
+    }
+  }, [activeSectionId, tocData]);
+  
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -45,10 +83,21 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
     }));
   };
   
+  const handleSectionClick = (sectionId, contentIndex) => {
+    setSelectedSectionId(sectionId);
+    if (updateChapter && currentChapter) {
+      updateChapter(currentChapter, { 
+        contentIndex: contentIndex,
+        sectionId: sectionId 
+      });
+    }
+  };
+  
   const renderSection = (section, level = 0, contentId, parentIndex) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
     const isSelected = section.id === selectedSectionId;
+    const isActive = section.id === activeSectionId;
 
     return (
       <div key={`section-${section.id}`} className="section-container">
@@ -62,10 +111,10 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
               <FiChevronRight size={16} className="toggle-icon" />
           ) : <span className="empty-icon"></span>}
           <span 
-            className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${isSelected ? 'selected' : ''}`}
+            className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${isSelected ? 'selected' : ''} ${isActive ? 'active' : ''}`}
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedSectionId(section.id);
+              handleSectionClick(section.id, parentIndex);
             }}
           >
             {section.title}
@@ -106,6 +155,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
                 content.sections && content.sections.map((segment, index) => {
                   const hasChildren = segment.sections && segment.sections.length > 0;
                   const isSelected = segment.id === selectedSectionId;
+                  const isActive = segment.id === activeSectionId;
 
                   return (
                     <div key={`content-${contentIndex}-segment-${segment.id}-${index}`} className="section-container">
@@ -119,15 +169,10 @@ const LeftSidePanel = ({ updateChapter, currentChapter }) => {
                             <FiChevronRight size={16} className="toggle-icon" />
                         ) : <span className="empty-icon"></span>}
                         <button 
-                          className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${isSelected ? 'selected' : ''}`}
+                          className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${isSelected ? 'selected' : ''} ${isActive ? 'active' : ''}`}
                           onClick={(e) => {
                             e.stopPropagation(); 
-                            setSelectedSectionId(segment.id);
-                            if (updateChapter && currentChapter) {
-                              updateChapter(currentChapter, { 
-                                contentIndex: index,
-                              });
-                            }
+                            handleSectionClick(segment.id, index);
                           }}
                         >
                           {segment.title}
