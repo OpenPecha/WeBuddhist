@@ -29,7 +29,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   const [selectedSectionId, setSelectedSectionId] = useState(null);
   const {t}=useTranslate();
   const [searchParams] = useSearchParams();
-  const textId = searchParams.get("text_id");
+  const textId = currentChapter.textId || searchParams.get("text_id");
   const { data: tocData, isLoading} = useQuery(
     ["toc", textId],
     () => fetchTextContent(textId),
