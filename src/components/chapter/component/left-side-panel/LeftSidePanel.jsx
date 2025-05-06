@@ -137,11 +137,6 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
       <>
         <div className="headerthing">
           <p className='mt-4 px-4 listtitle'>{t("text.table_of_contents")}</p>
-          <IoMdClose
-            size={24}
-            onClick={closeLeftPanel}
-            className="close-icon"
-          />
         </div>
         <div className="panel-content p-3">
           {isLoading && <p>{t("common.loading")}</p>}

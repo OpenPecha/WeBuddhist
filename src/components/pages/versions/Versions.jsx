@@ -3,17 +3,17 @@ import {useTranslate} from "@tolgee/react";
 import {getLanguageClass, LANGUAGE, mapLanguageCode} from "../../../utils/Constants.js";
 import axiosInstance from "../../../config/axios-config.js";
 import {useQuery} from "react-query";
-import {Link, useParams} from "react-router-dom";
+import {Link, useParams, useSearchParams} from "react-router-dom";
 import React, {useMemo, useState} from "react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 
 
-export const fetchVersions = async (id, limit, skip) => {
-  const storedLanguage = sessionStorage.getItem(LANGUAGE);
+export const fetchVersions = async (id,groupId, limit, skip) => {
+  const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
-
   const {data} = await axiosInstance.get(`/api/v1/texts/${id}/versions`, {
     params: {
+      group_id: groupId,
       language,
       limit,
       skip
@@ -24,14 +24,16 @@ export const fetchVersions = async (id, limit, skip) => {
 
 const Versions = ({ contentId }) => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const groupId = searchParams.get('groupId');
   const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
 
 
   const { data: versionsData, isLoading } = useQuery(
-    ["texts-versions", id, pagination.currentPage, pagination.limit],
-    () => fetchVersions(id, pagination.limit, skip),
+    ["texts-versions", id,groupId, pagination.currentPage, pagination.limit],
+    () => fetchVersions(id,groupId, pagination.limit, skip),
     {
       refetchOnWindowFocus: false,
       retry: 1
