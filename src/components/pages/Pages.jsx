@@ -33,9 +33,8 @@ const Pages = () => {
               {titleInformation?.type ? t(`text.type.${titleInformation.type}`) : ""}
             </div>
             <Link
-              to={`/texts/text-details?text_id=${id}`}
+            to={`/texts/text-details?text_id=${id}&contentId=${contentId}&versionId=&contentIndex=${0}`}
               className="continue-button navbaritems"
-              state={{chapterInformation: {contentId: contentId || "", versionId: "",contentIndex:0}}}
             >
               {t("text.button.continue_reading")}
             </Link>

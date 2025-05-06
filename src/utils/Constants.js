@@ -63,6 +63,27 @@ export const sourceTranslationOptionsMapper = {
   source_translation: "SOURCE_TRANSLATION",
 };
 
+export const checkSectionsForTranslation = (sections) => {
+  if (!sections || sections.length === 0) return false;
+  
+  for (const section of sections) {
+    if (section.segments && section.segments.length > 0) {
+      for (const segment of section.segments) {
+        if (segment.translation && segment.translation.content) {
+          return true;
+        }
+      }
+    }
+    
+    if (section.sections && section.sections.length > 0) {
+      const hasTranslationInNestedSections = checkSectionsForTranslation(section.sections);
+      if (hasTranslationInNestedSections) return true;
+    }
+  }
+  
+  return false;
+};
+
 export const findAndScrollToSegment = (
   targetId,
   setSelectedSegmentId,

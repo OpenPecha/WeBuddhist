@@ -1,9 +1,10 @@
-import {useEffect, useRef, useState} from "react";
-import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment} from "../../../../utils/Constants.js";
+import {useEffect, useRef, useState, useCallback} from "react";
+import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment, checkSectionsForTranslation} from "../../../../utils/Constants.js";
 import {useSearchParams} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
 import Resources from "../../../resources-side-panel/Resources.jsx";
+import LeftSidePanel from "../left-side-panel/LeftSidePanel.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
@@ -21,15 +22,18 @@ export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit
   });
   return data;
 }
+
 const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
-
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
-  const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
+  const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source);
+  const [hasTranslation, setHasTranslation] = useState(false);
+  const [activeSectionId, setActiveSectionId] = useState(null); 
+  const lastActiveSectionIdRef = useRef(null); 
   const containerRef = useRef(null);
   const [searchParams] = useSearchParams();
-  const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
+  const { isResourcesPanelOpen, openResourcesPanel, isLeftPanelOpen } = usePanelContext();
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
   const isLoadingTopRef = useRef(false);
@@ -45,6 +49,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const segmentId = currentChapter.segmentId;
   const contentId = currentChapter.contentId
   const sectionId = currentChapter.sectionId;
+  const isInitialLoadRef = useRef(true);
   const { data: textDetails,  isLoading: chapterContentIsLoading } = useQuery(
     ['chapter', textId, contentId, skipDetails.skip, versionId, segmentId, sectionId],
     () => fetchTextDetails(textId, contentId, versionId, skipDetails.skip, 1, segmentId, sectionId),
@@ -56,9 +61,16 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   useEffect(() => {
     setContents([]);
     isInitialLoadRef.current = true;
-  }, [versionId, contentId, textId, segmentId, sectionId]);
+    skipsCoveredRef.current = new Set();
+    isLoadingRef.current = false;
+    isLoadingTopRef.current = false;
+    totalContentRef.current = 0;
+    setSkipDetails({
+      skip: parseInt(currentChapter.contentIndex, 10),
+      direction: 'down'
+    });
+  }, [versionId, contentId, textId, segmentId, sectionId, currentChapter.contentIndex]);
 
-  const isInitialLoadRef = useRef(true);
   useEffect(() => {
     if (!textDetails) return;
     
@@ -73,8 +85,47 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         isInitialLoadRef.current = false;
       }
     }
+    
+    const checkTranslation = () => {
+      if (textDetails.content && textDetails.content.sections) {
+        const hasAnyTranslation = checkSectionsForTranslation(textDetails.content.sections);
+        setHasTranslation(hasAnyTranslation);
+        if (hasAnyTranslation) {
+          setSelectedOption(sourceTranslationOptionsMapper.source_translation);
+        } else {
+          setSelectedOption(sourceTranslationOptionsMapper.source);
+        }
+      }
+    };
+    
+    checkTranslation();
   }, [textDetails, currentChapter, updateChapter]);
 
+  //handle scrolling to section when sectionId changes
+  useEffect(() => {
+    if (!currentChapter.sectionId || !containerRef.current) return;
+    
+    const scrollTimeout = setTimeout(() => {
+      const sectionElement = containerRef.current.querySelector(
+        `[data-section-id="${currentChapter.sectionId}"]`
+      );
+      
+      if (sectionElement) {
+        const container = containerRef.current;
+        
+        const sectionRect = sectionElement.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const offsetTop = sectionRect.top - containerRect.top + container.scrollTop;
+        
+        container.scrollTo({
+          top: offsetTop,
+          behavior: 'smooth'
+        });
+      }
+    }, 300);
+    
+    return () => clearTimeout(scrollTimeout);
+  }, [currentChapter.sectionId]);
 
   useEffect(() => {
     if (!textDetails) return;
@@ -108,15 +159,60 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         return [...prev, ...filteredSections];
       }
     });
-    if (!totalContentRef.current) {
-      totalContentRef.current = textDetails?.total
+    if (textDetails?.total) {
+      totalContentRef.current = textDetails.total;
     }
 
     isLoadingRef.current = false;
     isLoadingTopRef.current = false;
   }, [textDetails]);
 
+  const throttle = useCallback((callback, delay) => {
+    let lastCall = 0;
+    return function(...args) {
+      const now = new Date().getTime();
+      if (now - lastCall >= delay) {
+        lastCall = now;
+        callback(...args);
+      }
+    };
+  }, []);
 
+  // Function to determine which section is in view
+  const determineActiveSectionInView = useCallback(() => {
+    if (!containerRef.current) return;
+
+    const sections = containerRef.current.querySelectorAll('[data-section-id]');
+    if (!sections.length) return;
+
+    if (isLoadingRef.current) return;
+
+    let activeSection = null;
+    let maxVisibleHeight = 0;
+
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      const visibleHeight = Math.min(window.innerHeight, rect.bottom) - Math.max(0, rect.top);
+      
+      if (visibleHeight > maxVisibleHeight && visibleHeight > 0) {
+        maxVisibleHeight = visibleHeight;
+        activeSection = section;
+      }
+    });
+
+    if (activeSection) {
+      const newActiveSectionId = activeSection.getAttribute('data-section-id');
+      if (newActiveSectionId !== lastActiveSectionIdRef.current) {
+        lastActiveSectionIdRef.current = newActiveSectionId;
+        setActiveSectionId(newActiveSectionId);
+      }
+    }
+  }, []);
+
+  const throttledScrollSpy = useCallback(
+    throttle(determineActiveSectionInView, 150),
+    [throttle, determineActiveSectionInView]
+  );
 
   useEffect(() => {
     const currentContainer = containerRef.current;
@@ -134,16 +230,22 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
       // Check if scrolled near bottom
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
-      if (bottomScrollPosition > 0.99 && !isLoadingRef.current) {
-        isLoadingRef.current = true;
-        const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
-          ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
-          : skipDetails.skip + 1;
-        
-        setSkipDetails(prevState => ({
-          skip: newSkip,
-          direction: 'down'
-        }));
+      if (bottomScrollPosition > 0.99 && !isLoadingRef.current && totalContentRef.current > 0) {
+        if (skipDetails.skip < totalContentRef.current - 1) {
+          isLoadingRef.current = true;
+          const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
+            ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
+            : skipDetails.skip + 1;
+          
+          if (newSkip < totalContentRef.current) {
+            setSkipDetails({
+              skip: newSkip,
+              direction: 'down'
+            });
+          } else {
+            isLoadingRef.current = false; 
+          }
+        }
       }
 
       if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
@@ -154,18 +256,30 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             ? skipDetails.skip
             : Math.max(0, firstSectionNumber - 2);
           
-          setSkipDetails(prevState => ({
-            skip: newSkip,
-            direction: 'up'
-          }));
+          if (newSkip >= 0 && !skipsCoveredRef.current.has(newSkip)) {
+            setSkipDetails({
+              skip: newSkip,
+              direction: 'up'
+            });
+          } else {
+            isLoadingTopRef.current = false;
+          }
         }
       }
+      throttledScrollSpy();
     };
-    skipsCoveredRef.current.add(skipDetails.skip)
+    
+    skipsCoveredRef.current.add(skipDetails.skip);
     currentContainer.addEventListener('scroll', handleScroll);
 
-    return () => currentContainer.removeEventListener('scroll', handleScroll);
-  }, [contents]);
+    // Initial check for active section after a short delay
+    const initialCheckTimeout = setTimeout(determineActiveSectionInView, 300);
+
+    return () => {
+      currentContainer.removeEventListener('scroll', handleScroll);
+      clearTimeout(initialCheckTimeout);
+    };
+  }, [contents, skipDetails.skip, totalContentRef.current, throttledScrollSpy]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -178,7 +292,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       }
     };
   }, []);
-
 
   // helper function
   const handleDocumentClick = (event) => {
@@ -219,7 +332,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       if (selectedOption === sourceTranslationOptionsMapper.translation && !hasTranslation) {
         return null;
       }
-
       return (
         <div
         key={segment.segment_id}
@@ -243,7 +355,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             </>
           )}
           {showTranslation && (
-            <div className="translation-content" dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
+            <div className={`translation-content ${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
           )}
         </div>
       </div>
@@ -264,7 +376,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       >
         {section.title && <h4 className="section-title">{section.title}</h4>}
         
-        {renderSegments(section.segments, currentSectionIndex)}
+        {section.segments && section.segments.length > 0 && renderSegments(section.segments, currentSectionIndex)}
         
         {section.sections && section.sections.length > 0 && 
           section.sections.map(nestedSection => renderSection(nestedSection))
@@ -278,8 +390,13 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     <div className="chapter">
       <ChapterHeader selectedOption={selectedOption} currentChapter={currentChapter} removeChapter={removeChapter}
                      setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
-                     totalPages={totalPages}/>
+                     totalPages={totalPages} hasTranslation={hasTranslation}/>
       <Container fluid className="p-0">
+        {isLeftPanelOpen && <LeftSidePanel 
+          updateChapter={updateChapter} 
+          currentChapter={currentChapter} 
+          activeSectionId={activeSectionId} 
+        />}
         <div
           ref={containerRef}
           className="tibetan-text-container"

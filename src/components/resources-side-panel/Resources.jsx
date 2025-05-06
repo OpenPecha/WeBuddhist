@@ -3,7 +3,7 @@ import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {IoMdClose} from "react-icons/io";
 import { IoLanguage, IoNewspaperOutline,} from "react-icons/io5";
-import {FiInfo, FiList} from "react-icons/fi";
+import {FiInfo} from "react-icons/fi";
 import {BiSearch, BiBookOpen} from "react-icons/bi";
 import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
@@ -60,7 +60,6 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
       </div>
       <div className="panel-content p-3">
         <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
-        <p><FiList className='m-2'/>{t("text.table_of_contents")}</p>
         <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
 
         {sidePanelData?.segment_infos?.translations > 0 && (
