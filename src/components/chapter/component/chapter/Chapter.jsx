@@ -376,7 +376,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       >
         {section.title && <h4 className="section-title">{section.title}</h4>}
         
-        {renderSegments(section.segments, currentSectionIndex)}
+        {section.segments && section.segments.length > 0 && renderSegments(section.segments, currentSectionIndex)}
         
         {section.sections && section.sections.length > 0 && 
           section.sections.map(nestedSection => renderSection(nestedSection))
