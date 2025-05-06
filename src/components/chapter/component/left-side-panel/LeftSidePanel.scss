@@ -33,11 +33,11 @@
             font-size: 16px;
             color: #666;
             cursor: pointer; 
-            // &.selected {
-            //   color: #4a90e2;
-            //   font-weight: 500;
-            //   padding-left: 8px;
-            // }
+            &.selected {
+              color: #4a90e2;
+              font-weight: 500;
+              padding-left: 8px;
+            }
             
             &.active {
               background-color: #f0f7ff;
