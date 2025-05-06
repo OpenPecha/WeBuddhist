@@ -40,12 +40,14 @@
               color: #4a90e2;
               font-weight: 500;
               padding-left: 8px;
+              border-left: 3px solid #4a90e2;
             }
             
             &.active {
               background-color: #f0f7ff;
               color: #2c6bbd;
               font-weight: 600;
+              border-left: 3px solid #2c6bbd;
             }
             
             &:is(button) {

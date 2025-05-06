@@ -187,21 +187,22 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
     if (isLoadingRef.current) return;
 
-    let activeSection = null;
-    let maxVisibleHeight = 0;
+    const containerTop = containerRef.current.getBoundingClientRect().top;
 
-    sections.forEach(section => {
+    let closestSection = null;
+    let minDistance = Number.MAX_VALUE;
+
+    sections.forEach((section) => {
       const rect = section.getBoundingClientRect();
-      const visibleHeight = Math.min(window.innerHeight, rect.bottom) - Math.max(0, rect.top);
-      
-      if (visibleHeight > maxVisibleHeight && visibleHeight > 0) {
-        maxVisibleHeight = visibleHeight;
-        activeSection = section;
+      const distance = rect.top - containerTop;
+      if (distance >= 0 && distance < minDistance) {
+        minDistance = distance;
+        closestSection = section;
       }
     });
 
-    if (activeSection) {
-      const newActiveSectionId = activeSection.getAttribute('data-section-id');
+    if (closestSection) {
+      const newActiveSectionId = closestSection.getAttribute('data-section-id');
       if (newActiveSectionId !== lastActiveSectionIdRef.current) {
         lastActiveSectionIdRef.current = newActiveSectionId;
         setActiveSectionId(newActiveSectionId);

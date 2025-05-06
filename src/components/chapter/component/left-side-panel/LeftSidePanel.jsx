@@ -26,6 +26,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   const { isLeftPanelOpen, closeLeftPanel } = usePanelContext();
   const showPanel = isLeftPanelOpen;
   const [sectionHierarchyState, setSectionHierarchyState] = useState({});
+  const [activeSectionPath, setActiveSectionPath] = useState([]);
   const [selectedSectionId, setSelectedSectionId] = useState(null);
   const {t}=useTranslate();
   const [searchParams] = useSearchParams();
@@ -46,11 +47,12 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
       const maintainSectionHierarchy = (sections, targetId, parentIds = []) => {
         for (const section of sections || []) {
           if (section.id === targetId) {
-            const newExpandedState = {...sectionHierarchyState};
+            const newExpandedState = {};
             parentIds.forEach(id => {
               newExpandedState[id] = true;
             });
             setSectionHierarchyState(newExpandedState);
+            setActiveSectionPath([...parentIds, targetId]);
             return true;
           }
           
@@ -97,7 +99,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
     const isExpanded = sectionHierarchyState[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
     const isSelected = section.id === selectedSectionId;
-    const isActive = section.id === activeSectionId;
+    const isActive = section.id === activeSectionId || activeSectionPath.includes(section.id);
 
     return (
       <div key={`section-${section.id}`} className="section-container">
@@ -149,7 +151,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
                 content.sections && content.sections.map((segment, index) => {
                   const hasChildren = segment.sections && segment.sections.length > 0;
                   const isSelected = segment.id === selectedSectionId;
-                  const isActive = segment.id === activeSectionId;
+                  const isActive = segment.id === activeSectionId || activeSectionPath.includes(segment.id);
 
                   return (
                     <div key={`content-${contentIndex}-segment-${segment.id}-${index}`} className="section-container">
