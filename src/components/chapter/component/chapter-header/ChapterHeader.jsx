@@ -1,6 +1,6 @@
 import {getLanguageClass} from "../../../../utils/Constants.js";
 import {BsBookmark, BsBookmarkFill} from "react-icons/bs";
-import { FiAlignJustify } from "react-icons/fi";
+import { LuPanelLeftOpen } from "react-icons/lu";
 import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
 import TranslationSource from "../translation-source-option-selector/TranslationSource.jsx";
 import {useState} from "react";
@@ -18,13 +18,13 @@ const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPag
   };
 
   return (
-    <div className="header-overlay">
-     {!isLeftPanelOpen && <FiAlignJustify size={20} onClick={toggleLeftPanel} style={{ cursor: 'pointer' }}/>}
+    <div className="header-overlay border">
+      <LuPanelLeftOpen size={20} onClick={toggleLeftPanel} style={{ cursor: 'pointer' }}/>
       <div className={`text-container ${getLanguageClass(textDetails?.language)}`}>
         {textDetails?.title}
       </div>
 
-      <div className="d-flex align-items-center">
+      <div className="d-flex align-items-center mr-2">
         <button className="bookmark-button mr-2" onClick={() => setIsBookmarked(!isBookmarked)}>
           {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
         </button>
