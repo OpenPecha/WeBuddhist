@@ -1,6 +1,6 @@
 import {getLanguageClass} from "../../../../utils/Constants.js";
 import {BsBookmark, BsBookmarkFill} from "react-icons/bs";
-import { LuPanelLeftOpen } from "react-icons/lu";
+import { LuPanelLeftClose, LuPanelLeftOpen } from "react-icons/lu";
 import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
 import TranslationSource from "../translation-source-option-selector/TranslationSource.jsx";
 import {useState} from "react";
@@ -16,10 +16,12 @@ const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPag
   const handleOptionChange = (option) => {
     setSelectedOption(option);
   };
-
   return (
     <div className="header-overlay border">
-      <LuPanelLeftOpen size={20} onClick={toggleLeftPanel} style={{ cursor: 'pointer' }}/>
+      {
+        isLeftPanelOpen ? <LuPanelLeftClose size={20} onClick={toggleLeftPanel} style={{ cursor: 'pointer' }}/>
+        : <LuPanelLeftOpen size={20} onClick={toggleLeftPanel} style={{ cursor: 'pointer' }}/>
+      }
       <div className={`text-container ${getLanguageClass(textDetails?.language)}`}>
         {textDetails?.title}
       </div>
