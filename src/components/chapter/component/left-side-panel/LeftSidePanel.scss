@@ -16,6 +16,9 @@
   }
 
   .panel-content {
+    margin-top: 0.5rem;
+    height: calc(100% - 50px);
+    overflow-y: auto;
     text-align: start;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
