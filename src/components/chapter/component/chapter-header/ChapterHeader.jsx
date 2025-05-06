@@ -7,7 +7,7 @@ import {useState} from "react";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 
 
-const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPages, removeChapter, currentChapter}) => {
+const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPages, removeChapter, currentChapter, hasTranslation}) => {
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const { isTranslationSourceOpen, toggleTranslationSource, toggleLeftPanel, isLeftPanelOpen } = usePanelContext();
@@ -37,6 +37,7 @@ const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPag
             selectedOption={selectedOption}
             onOptionChange={handleOptionChange}
             onClose={toggleTranslationSource}
+            hasTranslation={hasTranslation}
           />
         )}
         {totalPages > 1 && (

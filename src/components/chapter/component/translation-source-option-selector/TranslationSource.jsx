@@ -5,14 +5,14 @@ import {useTranslate} from "@tolgee/react";
 import {sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 
-const TranslationSource = ({selectedOption, onOptionChange, onClose}) => {
+const TranslationSource = ({selectedOption, onOptionChange, onClose, hasTranslation = false}) => {
   const { closeResourcesPanel } = usePanelContext();
   const panelRef = useRef(null);
   const {t} = useTranslate()
   const options = [
-    {id: sourceTranslationOptionsMapper.source, label: "text.reader_option_menu.source"},
-    {id: sourceTranslationOptionsMapper.translation, label: "text.reader_option_menu.translation"},
-    {id: sourceTranslationOptionsMapper.source_translation, label: "text.reader_option_menu.source_with_translation"},
+    {id: sourceTranslationOptionsMapper.source, label: "text.reader_option_menu.source", disabled: false},
+    {id: sourceTranslationOptionsMapper.translation, label: "text.reader_option_menu.translation", disabled: !hasTranslation},
+    {id: sourceTranslationOptionsMapper.source_translation, label: "text.reader_option_menu.source_with_translation", disabled: !hasTranslation},
   ];
 
   useEffect(() => {
@@ -30,8 +30,11 @@ const TranslationSource = ({selectedOption, onOptionChange, onClose}) => {
   }, [closeResourcesPanel]);
 
   const handleOptionSelect = (optionId) => {
-    onOptionChange(optionId);
-    onClose();
+    const option = options.find(opt => opt.id === optionId);
+    if (option && !option.disabled) {
+      onOptionChange(optionId);
+      onClose();
+    }
   };
   
   return (
@@ -39,7 +42,7 @@ const TranslationSource = ({selectedOption, onOptionChange, onClose}) => {
       className="translation-source-panel" 
       ref={panelRef}
     >
-      <div className="options-container">
+      <div className="options-container ">
         {options.map((option) => (
           <div key={option.id}>
             <Form.Check
@@ -49,7 +52,8 @@ const TranslationSource = ({selectedOption, onOptionChange, onClose}) => {
               label={t(`${option.label}`)}
               checked={selectedOption === option.id}
               onChange={() => handleOptionSelect(option.id)}
-              className="option-item navbaritems"
+              className={`option-item navbaritems ${option.disabled ? 'disabled-option' : ''}`}
+              disabled={option.disabled}
             />
           </div>
         ))}
