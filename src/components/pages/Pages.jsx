@@ -55,7 +55,7 @@ const Pages = () => {
               {type ? t(`text.type.${type}`) : ""}
             </div>
             <Link
-            to={`/texts/text-details?text_id=${id}&contentId=${contentId}&versionId=&contentIndex=${0}`}
+            to={`/texts/text-details?text_id=${textId}&contentId=${contentId}&versionId=&contentIndex=${0}`}
               className="continue-button navbaritems"
             >
               {t("text.button.continue_reading")}
