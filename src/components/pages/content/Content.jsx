@@ -33,8 +33,9 @@ const Content = ({textId, setContentId}) => {
       refetchOnWindowFocus: false,
       retry: 1,
       onSuccess: (data) => {
-        setContentId(data.contents[0].id);
-      }
+          setContentId(data.contents[0].id);
+      },
+      enabled: !!id
     }
   );
 
