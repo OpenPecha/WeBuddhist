@@ -191,8 +191,8 @@ describe("Book Component", () => {
     setup();
     const links = screen.getAllByTestId("router-link");
     expect(links).toHaveLength(3);
-    expect(links[0].getAttribute("href")).toBe("/text-detail/text1?title=Root%20Text%201&language=bo&type=root_text");
-    expect(links[1].getAttribute("href")).toBe("/text-detail/text2?title=Root%20Text%202&language=en&type=root_text");
+    expect(links[0].getAttribute("href")).toBe("/text-detail/text1?title=Root%20Text%201&language=bo&type=root_text&groupId=undefined");
+    expect(links[1].getAttribute("href")).toBe("/text-detail/text2?title=Root%20Text%202&language=en&type=root_text&groupId=undefined");
     expect(links[2].getAttribute("href")).toBe("/text-detail/text3?title=Commentary%201&language=bo&type=commentary");
   });
 

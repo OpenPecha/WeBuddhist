@@ -44,13 +44,14 @@ vi.mock("../../../resources-side-panel/Resources.jsx", () => ({
 }));
 
 const mockOpenResourcesPanel = vi.fn();
+let mockIsResourcesPanelOpen = false;
 
 vi.mock("../../../../context/PanelContext.jsx", () => ({
-  usePanelContext: () => ({
-    isResourcesPanelOpen: false,
+  usePanelContext: vi.fn().mockImplementation(() => ({
+    isResourcesPanelOpen: mockIsResourcesPanelOpen,
     openResourcesPanel: mockOpenResourcesPanel,
     isLeftPanelOpen: true,
-  }),
+  })),
   PanelProvider: ({ children }) => children,
 }));
 
@@ -70,6 +71,7 @@ vi.mock("../../../../utils/Constants.js", () => ({
     source_translation: "source_translation",
   },
   findAndScrollToSegment: vi.fn(),
+  checkSectionsForTranslation: vi.fn().mockReturnValue(true),
 }));
 
 vi.mock("../../../../config/axios-config.js", () => ({
@@ -204,6 +206,7 @@ describe("Chapter Component", () => {
 
     const scrollContainer = container.querySelector(".tibetan-text-container");
 
+    // Mock the scroll container properties
     Object.defineProperty(scrollContainer, "scrollHeight", {
       value: 1000,
       configurable: true,
@@ -220,6 +223,15 @@ describe("Chapter Component", () => {
       configurable: true,
     });
 
+    // Mock IntersectionObserver
+    const mockIntersectionObserver = vi.fn();
+    mockIntersectionObserver.mockReturnValue({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
+    });
+    window.IntersectionObserver = mockIntersectionObserver;
+
     act(() => {
       scrollContainer.scrollTop = 500;
       fireEvent.scroll(scrollContainer);
@@ -231,6 +243,9 @@ describe("Chapter Component", () => {
   });
 
   test("handles segment click to open resources", async () => {
+    // Set the mock state for this test
+    mockIsResourcesPanelOpen = true;
+    
     setup();
 
     await waitFor(() => {
@@ -241,6 +256,9 @@ describe("Chapter Component", () => {
     fireEvent.click(segment);
 
     expect(mockOpenResourcesPanel).toHaveBeenCalled();
+    
+    // Reset the mock state after the test
+    mockIsResourcesPanelOpen = false;
   });
 
   test("determines active section on scroll", async () => {
@@ -267,6 +285,17 @@ describe("Chapter Component", () => {
       configurable: true,
     });
 
+    // Mock Element.prototype.getBoundingClientRect for all elements
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    Element.prototype.getBoundingClientRect = vi.fn(() => ({
+      top: 0,
+      bottom: 500,
+      height: 500,
+      left: 0,
+      right: 500,
+      width: 500,
+    }));
+
     act(() => {
       fireEvent.scroll(scrollContainer);
     });
@@ -279,5 +308,8 @@ describe("Chapter Component", () => {
       },
       { timeout: 500 }
     );
+    
+    // Restore the original method
+    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
   });
 });

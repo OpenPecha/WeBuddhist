@@ -68,7 +68,7 @@ describe("TranslationSource", () => {
   });
 
   test("calls onOptionChange and onClose when an option is selected", () => {
-    setup();
+    setup({ hasTranslation: true });
     const radioButtons = screen.getAllByRole("radio");
     const translationOption = radioButtons.find(radio => radio.id === "TRANSLATION");
     fireEvent.click(translationOption);
