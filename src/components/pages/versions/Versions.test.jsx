@@ -1,143 +1,177 @@
-
-import {TolgeeProvider} from "@tolgee/react";
-import {render, screen} from "@testing-library/react";
-import * as reactQuery from "react-query";
-import "@testing-library/jest-dom";
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../../test-utils/CommonMocks.js";
+import React from "react";
+import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../../test-utils/CommonMocks.js";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { TolgeeProvider } from "@tolgee/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { BrowserRouter as Router } from "react-router-dom";
+import Versions from "./Versions.jsx";
 import { vi } from "vitest";
-import {QueryClient, QueryClientProvider} from "react-query";
-import axiosInstance from "../../../config/axios-config.js";
-import Versions, {fetchVersions} from "./Versions.jsx";
-import {BrowserRouter as Router, useParams} from "react-router-dom";
+import "@testing-library/jest-dom";
 
 mockAxios();
 mockUseAuth();
 mockReactQuery();
 
-vi.mock("../../../utils/Constants.js", () => ({
-  LANGUAGE: "LANGUAGE",
-  mapLanguageCode: () => "en",
-  getLanguageClass: (language) => {
-    switch (language) {
-      case "bo":
-        return "bo-text";
-      case "en":
-        return "en-text";
-      case "sa":
-        return "bo-text";
-      default:
-        return "en-text";
-    }
-  }
-}));
-
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
+vi.mock("@tolgee/react", async () => {
+  const actual = await vi.importActual("@tolgee/react");
   return {
     ...actual,
-    useParams: vi.fn(),
+    useTranslate: () => ({
+      t: (key) => key,
+    }),
   };
 });
 
+vi.mock("../../../utils/Constants.js", () => ({
+  getLanguageClass: (lang) => `language-${lang}`,
+}));
+
 describe("Versions Component", () => {
-  const queryClient = new QueryClient()
+  const queryClient = new QueryClient();
   const mockVersionsData = {
-    versions : [
+    versions: [
       {
-        "id": "uuid.v4",
-        "title": "शबोधिचर्यावतार[sa]",
-        "parent_id": "d19338e",
-        "priority": 1,
-        "language": "sa",
-        "type": "translation",
-        "is_published": true,
-        "created_date": "2021-09-01T00:00:00.000Z",
-        "updated_date": "2021-09-01T00:00:00.000Z",
-        "published_date": "2021-09-01T00:00:00.000Z",
-        "published_by": "buddhist_tab"
+        id: "version1",
+        title: "Version 1 Title",
+        language: "bo",
+        table_of_contents: ["content1"]
       },
       {
-        "id": "uuid.v4",
-        "title": "བྱང་ཆུབ་སེམས་དཔའི་སྤྱོད་པ་ལ་འཇུག་པ།",
-        "parent_id": "d19338e",
-        "priority": 2,
-        "language": "bo",
-        "type": "translation",
-        "is_published": true,
-        "created_date": "2021-09-01T00:00:00.000Z",
-        "updated_date": "2021-09-01T00:00:00.000Z",
-        "published_date": "2021-09-01T00:00:00.000Z",
-        "published_by": "buddhist_tab"
+        id: "version2",
+        title: "Version 2 Title",
+        language: "en",
+        table_of_contents: ["content2"]
       },
       {
-        "id": "uuid.v4",
-        "title": "The Way of the Bodhisattva Monlam AI Draft",
-        "parent_id": "d19338e",
-        "priority": 3,
-        "language": "en",
-        "type": "translation",
-        "is_published": true,
-        "created_date": "2021-09-01T00:00:00.000Z",
-        "updated_date": "2021-09-01T00:00:00.000Z",
-        "published_date": "2021-09-01T00:00:00.000Z",
-        "published_by": "buddhist_tab"
+        id: "version3",
+        title: "Version 3 Title",
+        language: "sa",
+        table_of_contents: ["content3"]
       }
-    ]
-  }
+    ],
+    total: 3,
+    skip: 0,
+    limit: 10
+  };
+
+  const mockPagination = { currentPage: 1, limit: 10 };
+  const mockSetPagination = vi.fn();
 
   beforeEach(() => {
-    vi.restoreAllMocks();
-    useParams.mockReturnValue({ id: "123" });
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: mockVersionsData,
-      isLoading: false,
-    }));
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en");
+    vi.resetAllMocks();
   });
 
-  const setup = () => {
-    render(
+  const setup = (props = {}) => {
+    const defaultProps = {
+      versionsData: mockVersionsData,
+      pagination: mockPagination,
+      setPagination: mockSetPagination,
+      ...props
+    };
+
+    return render(
       <Router>
         <QueryClientProvider client={queryClient}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <Versions/>
+          <TolgeeProvider 
+            fallback={"Loading tolgee..."} 
+            tolgee={mockTolgee}
+          >
+            <Versions {...defaultProps} />
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
     );
   };
 
-  test("render the component", () =>{
+  test("renders Versions component with version data", () => {
     setup();
-    expect(screen.getByText("शबोधिचर्यावतार[sa]")).toBeInTheDocument()
-    expect(screen.getByText("བྱང་ཆུབ་སེམས་དཔའི་སྤྱོད་པ་ལ་འཇུག་པ།")).toBeInTheDocument()
-    expect(screen.getByText("The Way of the Bodhisattva Monlam AI Draft")).toBeInTheDocument()
-    expect(screen.getByText("Sanskrit")).toBeInTheDocument()
-    expect(screen.getByText("Tibetan")).toBeInTheDocument()
-    expect(screen.getByText("English")).toBeInTheDocument()
-  })
-
-  test("displays loading state when data is being fetched", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: null,
-      isLoading: true,
-    }));
-    setup();
-    expect(screen.getByText("Loading versions...")).toBeInTheDocument();
+    
+    // Check if the versions container is rendered
+    expect(document.querySelector(".versions-container")).toBeInTheDocument();
+    
+    // Check if all versions are rendered
+    const versionElements = document.querySelectorAll(".version");
+    expect(versionElements.length).toBe(3);
+    
+    // Check if version titles are rendered correctly
+    const titleElements = document.querySelectorAll(".titleversion");
+    expect(titleElements[0].textContent).toBe("Version 1 Title");
+    expect(titleElements[1].textContent).toBe("Version 2 Title");
+    expect(titleElements[2].textContent).toBe("Version 3 Title");
+    
+    // Check if language classes are applied correctly
+    expect(titleElements[0].classList.contains("language-bo")).toBe(true);
+    expect(titleElements[1].classList.contains("language-en")).toBe(true);
+    expect(titleElements[2].classList.contains("language-sa")).toBe(true);
   });
 
-  test("fetches versions with correct parameters", async () => {
-    axiosInstance.get.mockResolvedValueOnce({ data: mockVersionsData });
-    const result = await fetchVersions("123", 10, 0);
+  test("displays loading message when versionsData is null", () => {
+    setup({ versionsData: null });
+    
+    const loadingMessage = screen.getByText("Loading versions...");
+    expect(loadingMessage).toBeInTheDocument();
+  });
 
-    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/texts/123/versions", {
-      params: {
-        language: "en",
-        limit: 10,
-        skip: 0,
-      }
+
+  test("displays no content found message when versions is not an array", () => {
+    setup({ 
+      versionsData: { 
+        versions: "not an array" 
+      } 
     });
-
-    expect(result).toEqual(mockVersionsData);
+    
+    const noContentMessage = screen.getByText("No content found");
+    expect(noContentMessage).toBeInTheDocument();
   });
-})
+
+  test("renders pagination component when versions exist", () => {
+    setup();
+    
+    const paginationComponent = document.querySelector(".pagination");
+    expect(paginationComponent).toBeInTheDocument();
+  });
+
+  test("does not render pagination component when no versions exist", () => {
+    setup({ 
+      versionsData: { 
+        versions: [] 
+      } 
+    });
+    
+    const paginationComponent = document.querySelector(".pagination");
+    expect(paginationComponent).not.toBeInTheDocument();
+  });
+
+  test("calls setPagination when page is changed", () => {
+    setup();
+    
+    // Find and click on a page number button
+    const pageButton = document.querySelector(".page-link");
+    fireEvent.click(pageButton);
+    
+    // Check if setPagination was called
+    expect(mockSetPagination).toHaveBeenCalled();
+  });
+
+  test("renders correct links for each version", () => {
+    setup();
+    
+    const links = document.querySelectorAll(".section-title");
+    expect(links.length).toBe(3);
+    
+    expect(links[0].getAttribute("href")).toBe(
+      "/texts/text-details?text_id=version1&contentId=content1&versionId=version1&contentIndex=0"
+    );
+  });
+
+  test("displays correct language for each version", () => {
+    setup();
+    
+    const languageElements = document.querySelectorAll(".version-language p");
+    expect(languageElements.length).toBe(3);
+    
+    expect(languageElements[0].textContent).toBe("language.tibetan");
+    expect(languageElements[1].textContent).toBe("language.english");
+    expect(languageElements[2].textContent).toBe("language.sanskrit");
+  });
+});

@@ -177,9 +177,9 @@ describe("Book Component", () => {
         description: "Text Category Description",
       },
       texts: [
-        { id: "text1", title: "Root Text 1", type: "root_text", language: "bo" },
-        { id: "text2", title: "Root Text 2", type: "root_text", language: "en" },
-        { id: "text3", title: "Commentary 1", type: "commentary", language: "bo" }
+        { id: "text1", title: "Root Text 1", type: "root_text" },
+        { id: "text2", title: "Root Text 2", type: "root_text"},
+        { id: "text3", title: "Commentary 1", type: "commentary" }
       ],
     };
 
@@ -191,9 +191,9 @@ describe("Book Component", () => {
     setup();
     const links = screen.getAllByTestId("router-link");
     expect(links).toHaveLength(3);
-    expect(links[0].getAttribute("href")).toBe("/text-detail/text1?title=Root%20Text%201&language=bo&type=root_text");
-    expect(links[1].getAttribute("href")).toBe("/text-detail/text2?title=Root%20Text%202&language=en&type=root_text");
-    expect(links[2].getAttribute("href")).toBe("/text-detail/text3?title=Commentary%201&language=bo&type=commentary");
+    expect(links[0].getAttribute("href")).toBe("/text-detail/text1?type=root_text");
+    expect(links[1].getAttribute("href")).toBe("/text-detail/text2?type=root_text");
+    expect(links[2].getAttribute("href")).toBe("/text-detail/text3?type=commentary");
   });
 
   test("handles query error gracefully", () => {
