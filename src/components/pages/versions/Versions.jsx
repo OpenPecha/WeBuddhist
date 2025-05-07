@@ -1,12 +1,11 @@
 import "./Versions.scss"
 import {useTranslate} from "@tolgee/react";
 import {getLanguageClass} from "../../../utils/Constants.js";
-import {Link, useParams} from "react-router-dom";
+import {Link} from "react-router-dom";
 import React from "react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 
-const Versions = ({ contentId, versionsData, pagination, setPagination }) => {
-  const { id } = useParams();
+const Versions = ({ versionsData, pagination, setPagination }) => {
   const { t } = useTranslate();
   const languageMap = {
     "sa":"language.sanskrit",
@@ -44,10 +43,8 @@ const Versions = ({ contentId, versionsData, pagination, setPagination }) => {
             <div className="version">
               <div>
                 <Link
-                  // TODO to={`/texts/text-details?text_id=${id}&version_id=${version.id}`}
-                  to={`/texts/text-details?text_id=${id}`}
+                  to={`/texts/text-details?text_id=${version.id}&contentId=${version.table_of_contents[0]}&versionId=${version.id}&contentIndex=0`}
                   className="section-title"
-                  state={{chapterInformation: {contentId: contentId, versionId: version.id,contentIndex:0}}}
                 >
                   <div className={`${getLanguageClass(version.language)} titleversion`}>
                     {version.title}

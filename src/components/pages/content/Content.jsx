@@ -1,10 +1,10 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import './Content.scss';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
 import { LANGUAGE, mapLanguageCode, getLanguageClass } from '../../../utils/Constants';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { useTranslate } from "@tolgee/react";
 export const fetchTextContent = async (text_id, skip, pagination) => {
@@ -20,14 +20,14 @@ export const fetchTextContent = async (text_id, skip, pagination) => {
   return data;
 };
 
-const Content = ({ setContentId }) => {
+const Content = ({textId, setContentId}) => {
   const [expandedSections, setExpandedSections] = useState({});
-  const { id } = useParams();
+  const id = textId;
   const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
   const {data: apiData, isLoading, error} = useQuery(
-    ["texts", id, skip,pagination],
+    ["texts-content", id, skip,pagination],
     () => fetchTextContent(id,skip,pagination),
     {
       refetchOnWindowFocus: false,

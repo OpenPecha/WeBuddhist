@@ -43,6 +43,7 @@ const Pages = () => {
       }
   );
   const { t } = useTranslate();
+  const textId = versionsData?.text?.id;
 
   return (
     <div className="pecha-app">
@@ -67,12 +68,11 @@ const Pages = () => {
             className="custom-tabs listsubtitle"
           >
             <Tab eventKey="contents" title={t("text.contents")}>
-              <Content setContentId={setContentId}/>
+              <Content textId={textId} setContentId={setContentId}/>
             </Tab>
             <Tab eventKey="versions" title={t("common.version")}>
               <Versions 
-                contentId={contentId} 
-                versionsData={versionsData} 
+                versionsData={versionsData}
                 pagination={versionsPagination}
                 setPagination={setVersionsPagination}
               />
