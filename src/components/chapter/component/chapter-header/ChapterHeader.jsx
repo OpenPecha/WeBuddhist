@@ -5,6 +5,7 @@ import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
 import TranslationSource from "../translation-source-option-selector/TranslationSource.jsx";
 import {useState} from "react";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
+import "./ChapterHeader.scss";
 
 
 const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPages, removeChapter, currentChapter, hasTranslation}) => {

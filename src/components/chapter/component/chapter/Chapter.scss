@@ -1,46 +1,5 @@
 
 .chapter{
-  .header-overlay {
-    position: sticky;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 30px;
-    background-color: #fff;
-    width: 100%;
-
-    .close-button, .bookmark-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #333;
-      transition: color 0.2s ease;
-
-      &:hover {
-        color: #666;
-      }
-    }
-
-    .text-container {
-      flex: 1;
-      text-align: center;
-      margin: 0 10px;
-      color: #333;
-      font-weight: 500;
-      font-size: 1.3rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
 
   .tibetan-text-container {
     flex: 1;
@@ -178,14 +137,7 @@
 @media (max-width: 992px) {
   .chapters-container {
     .chapter-container {
-      .header-overlay {
-        padding: 12px 20px;
 
-        .text-container {
-          font-size: 0.9rem;
-          margin: 0 8px;
-        }
-      }
 
       .tibetan-text-container {
         padding: 15px 20px;
@@ -236,18 +188,7 @@
 @media (max-width: 768px) {
   .chapters-container {
     .chapter-container {
-      .header-overlay {
-        padding: 10px 15px;
 
-        .text-container {
-          font-size: 0.85rem;
-          margin: 0 5px;
-        }
-
-        .close-button, .bookmark-button {
-          padding: 5px;
-        }
-      }
 
       .tibetan-text-container {
         padding: 12px 15px;
@@ -285,14 +226,7 @@
 @media (max-width: 576px) {
   .chapters-container {
     .chapter-container {
-      .header-overlay {
-        padding: 8px 10px;
 
-        .text-container {
-          font-size: 0.8rem;
-          margin: 0 3px;
-        }
-      }
 
       .tibetan-text-container {
         padding: 10px;
