@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { IoMdClose } from "react-icons/io";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import { useQuery } from "react-query";
@@ -39,10 +38,51 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
     }
   );
   
+  const panelContentRef = useRef(null);
+  const shouldScrollRef = useRef(false);
+
+ 
+  const findActiveElement = useCallback(() => {
+    if (!panelContentRef.current || !activeSectionId) return null;
+    
+    const elementByDataAttr = panelContentRef.current.querySelector(`button[data-section-id="${activeSectionId}"]`);
+    if (elementByDataAttr) return elementByDataAttr;
+    
+    const activeElements = panelContentRef.current.querySelectorAll('.section-title.active');
+    return activeElements.length > 0 ? activeElements[0] : null;
+  }, [activeSectionId]);
+
+  const scrollActiveElementIntoView = useCallback(() => {
+    if (!panelContentRef.current || !shouldScrollRef.current) return;
+    
+    const activeElement = findActiveElement();
+    if (!activeElement) return;
+    
+    const container = panelContentRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const elementRect = activeElement.getBoundingClientRect();
+    
+    const isVisible = (
+      elementRect.top >= containerRect.top && 
+      elementRect.bottom <= containerRect.bottom
+    );
+    
+    if (!isVisible) {
+      const scrollTop = activeElement.offsetTop - (container.clientHeight / 2) + (activeElement.offsetHeight / 2);
+      container.scrollTo({
+        top: scrollTop,
+        behavior: 'smooth'
+      });
+    }
+    
+    shouldScrollRef.current = false;
+  }, [findActiveElement]);
+
   // Update selectedSectionId when activeSectionId changes from scroll spy
   useEffect(() => {
     if (activeSectionId) {
       setSelectedSectionId(activeSectionId);
+      shouldScrollRef.current = true;
       
       const maintainSectionHierarchy = (sections, targetId, parentIds = []) => {
         for (const section of sections || []) {
@@ -77,6 +117,15 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
       }
     }
   }, [activeSectionId, tocData]);
+  
+  // Handle scrolling after the DOM has updated
+  useEffect(() => {
+    if (shouldScrollRef.current) {
+      requestAnimationFrame(() => {
+        scrollActiveElementIntoView();
+      });
+    }
+  }, [scrollActiveElementIntoView, activeSectionPath]);
   
   const toggleSection = (sectionId) => {
     setSectionHierarchyState(prev => ({
@@ -114,10 +163,16 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
           ) : <span className="empty-icon"></span>}
           <button 
             className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${isSelected ? 'selected' : ''} ${isActive ? 'active' : ''}`}
+            data-section-id={section.id}
             onClick={(e) => {
               e.stopPropagation();
               handleSectionClick(section.id, parentIndex);
             }}
+            ref={isActive ? (el) => {
+              if (el && shouldScrollRef.current) {
+                requestAnimationFrame(() => scrollActiveElementIntoView());
+              }
+            } : null}
           >
             {section.title} 
           </button>
@@ -140,7 +195,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
         <div className="headerthing">
           <p className='mt-4 px-4 listtitle'>{t("text.table_of_contents")}</p>
         </div>
-        <div className="panel-content p-3">
+        <div className="panel-content p-3" ref={panelContentRef}>
           {isLoading && <p>{t("common.loading")}</p>}
           {!isLoading && tocData && tocData.contents && tocData.contents.length === 0 && (
             <p>{t("text_category.message.notfound")}</p>
@@ -166,10 +221,17 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
                         ) : <span className="empty-icon"></span>}
                         <button 
                           className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${isSelected ? 'selected' : ''} ${isActive ? 'active' : ''}`}
+                          data-section-id={segment.id}
                           onClick={(e) => {
                             e.stopPropagation(); 
                             handleSectionClick(segment.id, index);
                           }}
+                          ref={isActive ? (el) => {
+                            // This ensures we can get a reference to the active element
+                            if (el && shouldScrollRef.current) {
+                              requestAnimationFrame(() => scrollActiveElementIntoView());
+                            }
+                          } : null}
                         >
                           {segment.title}
                         </button>
