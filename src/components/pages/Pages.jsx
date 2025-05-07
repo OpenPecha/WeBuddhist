@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
 import './Pages.scss';
 import { FiChevronDown } from 'react-icons/fi';
@@ -7,30 +7,51 @@ import Versions from "./versions/Versions.jsx";
 import Content from "./content/Content.jsx";
 import {useParams, Link, useSearchParams} from 'react-router-dom';
 import { getLanguageClass } from '../../utils/Constants';
+import {LANGUAGE} from '../../utils/Constants';
+import {mapLanguageCode} from '../../utils/Constants';
+import axiosInstance from '../../config/axios-config';
+import { useQuery } from 'react-query';
+
+export const fetchVersions = async (id, limit, skip) => {
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+  const {data} = await axiosInstance.get(`/api/v1/texts/${id}/versions`, {
+    params: {
+      language,
+      limit,
+      skip
+    }
+  })
+  return data
+}
 
 const Pages = () => {
   const [selectedVersion, setSelectedVersion] = useState('');
   const [selectedFormat, setSelectedFormat] = useState('');
   const [contentId, setContentId] = useState('');
+  const [versionsPagination, setVersionsPagination] = useState({ currentPage: 1, limit: 10 });
+  const versionsSkip = (versionsPagination.currentPage - 1) * versionsPagination.limit;
   const [searchParams] = useSearchParams();
-  
-  const titleInformation = {
-    title: searchParams.get('title') || "",
-    language: searchParams.get('language') || "",
-    type: searchParams.get('type') || ""
-  };
-  
-  const { t } = useTranslate();
+  const type = searchParams.get('type') || "";
   const { id } = useParams();
+  const { data: versionsData } = useQuery(
+      ["texts-versions", id, versionsPagination.currentPage, versionsPagination.limit],
+      () => fetchVersions(id, versionsPagination.limit, versionsSkip),
+      {
+        refetchOnWindowFocus: false,
+        retry: 1
+      }
+  );
+  const { t } = useTranslate();
 
   return (
     <div className="pecha-app">
       <main className="main-content">
         <div className="content-area">
           <div className="text-header">
-            <h3 className={` ${getLanguageClass(titleInformation?.language)}`}>{titleInformation?.title || ""}</h3>
+            <h3 className={` ${getLanguageClass(versionsData?.text?.language)}`}>{versionsData?.text?.title || ""}</h3>
             <div className="navbaritems subcom">
-              {titleInformation?.type ? t(`text.type.${titleInformation.type}`) : ""}
+              {type ? t(`text.type.${type}`) : ""}
             </div>
             <Link
             to={`/texts/text-details?text_id=${id}&contentId=${contentId}&versionId=&contentIndex=${0}`}
@@ -49,7 +70,12 @@ const Pages = () => {
               <Content setContentId={setContentId}/>
             </Tab>
             <Tab eventKey="versions" title={t("common.version")}>
-              <Versions contentId={contentId} />
+              <Versions 
+                contentId={contentId} 
+                versionsData={versionsData} 
+                pagination={versionsPagination}
+                setPagination={setVersionsPagination}
+              />
             </Tab>
           </Tabs>
         </div>
