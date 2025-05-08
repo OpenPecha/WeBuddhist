@@ -1,6 +1,5 @@
 .header-overlay {
   position: sticky;
-  top:50px;
   z-index: 15;
   display: flex;
   align-items: center;
@@ -42,7 +41,6 @@
 @media (max-width: 992px) {
   .header-overlay {
     padding: 12px 20px;
-    top:100px;
     .text-container {
       font-size: 0.9rem;
       margin: 0 8px;
@@ -67,7 +65,6 @@
 @media (max-width: 576px) {
   .header-overlay {
     padding: 8px 10px;
-    top:100px;
     .text-container {
       font-size: 0.8rem;
       margin: 0 3px;

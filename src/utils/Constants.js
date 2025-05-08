@@ -65,7 +65,7 @@ export const sourceTranslationOptionsMapper = {
 
 export const checkSectionsForTranslation = (sections) => {
   if (!sections || sections.length === 0) return false;
-  
+
   for (const section of sections) {
     if (section.segments && section.segments.length > 0) {
       for (const segment of section.segments) {
@@ -74,13 +74,15 @@ export const checkSectionsForTranslation = (sections) => {
         }
       }
     }
-    
+
     if (section.sections && section.sections.length > 0) {
-      const hasTranslationInNestedSections = checkSectionsForTranslation(section.sections);
+      const hasTranslationInNestedSections = checkSectionsForTranslation(
+        section.sections
+      );
       if (hasTranslationInNestedSections) return true;
     }
   }
-  
+
   return false;
 };
 
@@ -108,8 +110,14 @@ export const findAndScrollToSegment = (
         : document.querySelector(`[data-segment-id="${targetId}"]`);
 
       if (segmentElement) {
-        segmentElement.scrollIntoView({ behavior: "smooth", block: "start" });
-        segmentElement.classList.add("highlighted-segment");
+        const parentSection = segmentElement.closest(".nested-section");
+        if (parentSection) {
+          parentSection.scrollIntoView({ behavior: "smooth", block: "start" });
+          segmentElement.classList.add("highlighted-segment");
+        } else {
+          segmentElement.scrollIntoView({ behavior: "smooth", block: "start" });
+          segmentElement.classList.add("highlighted-segment");
+        }
         return;
       }
     }
