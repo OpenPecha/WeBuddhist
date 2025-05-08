@@ -47,7 +47,7 @@ const Library = () => {
             <div className="text-section">
               <div className="text-list ">
                 {textChildData?.terms?.map((term) => (
-                  <Link key={term.id} to={`/texts/text-category/${term.id}`} className="text-item overalltext">
+                  <Link key={term.id} to={`/book/${term.id}`} className="text-item overalltext">
                     <p>{term.title}</p>
                   </Link>
                 ))}

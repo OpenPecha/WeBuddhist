@@ -46,7 +46,7 @@ function App() {
                         isLoggedIn && pechaLogout()
                         isAuthenticated && await logout({
                             logoutParams: {
-                                returnTo: window.location.origin + "/texts",
+                                returnTo: window.location.origin + "/libraries",
                             },
                         });
                     } else {
@@ -112,7 +112,7 @@ function App() {
           <NavigationBar/>
           <Routes>
               <Route path="/" element={<HomePage/>}/>
-              <Route path="/texts" element={<HomePage/>}/>
+              <Route path="/libraries" element={<HomePage/>}/>
               <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
               <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
               <Route path="/reset-password" element={<ResetPassword/>}/>
@@ -122,10 +122,10 @@ function App() {
               <Route path="/topics" element={<Topics/>}/>
               <Route path="/topics/:id" element={<Topics/>}/>
               <Route path="/community" element={<CommunityPage/>}/>
-              <Route path="/text-detail/:id" element={<Pages/>}/>
-              <Route path="/texts/text-child/:id" element={<Library/>}/>
-              <Route path="/texts/text-category/:id" element={<Book/>}/>
-              <Route path="/texts/text-details" element={<Chapters/>}/>
+              <Route path="/pages/:id" element={<Pages/>}/>
+              <Route path="/libraries/:id" element={<Library/>}/>
+              <Route path="/book/:id" element={<Book/>}/>
+              <Route path="/chapter" element={<Chapters/>}/>
               <Route path="*" element={<HomePage/>}/>
           </Routes>
       </Suspense>

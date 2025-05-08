@@ -56,7 +56,7 @@ const HomePage = () => {
               <div className={`${index === 0 ? 'green-line' : 'red-line'} mb-3`} />
               <div className="listtitle part-title">
                 {term.has_child ? (
-                  <Link to={`/texts/text-child/${term.id}`} className="term-link">
+                  <Link to={`/libraries/${term.id}`} className="term-link">
                     {term.title}
                   </Link>
                 ) : (
@@ -73,7 +73,7 @@ const HomePage = () => {
               <div className="red-line  mb-3"/>
               <div className="listtitle part-title">
                 {term.has_child ? (
-                  <Link to={`/texts/text-child/${term.id}`}  className="term-link">
+                  <Link to={`/libraries/${term.id}`}  className="term-link">
                     {term.title}
                   </Link>
                 ) : (

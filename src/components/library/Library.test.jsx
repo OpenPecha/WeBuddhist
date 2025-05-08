@@ -116,7 +116,7 @@ describe("Library Component", () => {
     setup();
     const links = document.querySelectorAll(".text-item");
     links.forEach((link, index) => {
-      expect(link).toHaveAttribute("href", `/texts/text-category/${mockTextChildData.terms[index].id}`);
+      expect(link).toHaveAttribute("href", `/book/${mockTextChildData.terms[index].id}`);
     });
   });
 

@@ -21,7 +21,7 @@ const UserLogin = () => {
     const navigate = useNavigate();
 
     if (isLoggedIn || isAuthenticated) {
-        navigate("/texts")
+        navigate("/libraries")
     }
     const loginMutation = useMutation(
         async (loginData) => {
@@ -36,7 +36,7 @@ const UserLogin = () => {
                 const accessToken = data.auth.access_token;
                 const refreshToken = data.auth.refresh_token;
                 login(accessToken, refreshToken);
-                navigate("/texts");
+                navigate("/libraries");
             },
             onError: (error) => {
                 console.error("Login failed", error);
@@ -88,7 +88,7 @@ const UserLogin = () => {
         try {
             await loginWithRedirect({
                 appState: {
-                    returnTo: "/texts",
+                    returnTo: "/libraries",
                 },
             });
         } catch (error) {

@@ -87,7 +87,7 @@ const Content = ({textId, setContentId}) => {
               <FiChevronRight size={16} className="toggle-icon" />
           ) : <span className="empty-icon"></span>}
           <Link
-            to={`/texts/text-details?text_id=${id}&contentId=${contentId}&versionId=&contentIndex=${parentIndex}&sectionId=${section.id}`}
+            to={`/chapter?text_id=${id}&contentId=${contentId}&versionId=&contentIndex=${parentIndex}&sectionId=${section.id}`}
             className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
           >
             {section.title}
@@ -131,7 +131,7 @@ const Content = ({textId, setContentId}) => {
                       <FiChevronRight size={16} className="toggle-icon" />
                   ) : <span className="empty-icon"></span>}
                   <Link 
-                    to={`/texts/text-details?text_id=${id}&contentId=${content.id}&versionId=&contentIndex=${index}`}
+                    to={`/chapter?text_id=${id}&contentId=${content.id}&versionId=&contentIndex=${index}`}
                     className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
                   >
                     {segment.title}

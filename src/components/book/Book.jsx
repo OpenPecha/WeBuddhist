@@ -78,7 +78,7 @@ const Book = () => {
                     <div className="text-list">
                       {rootTexts.map((text,i) => (
                         <div key={i} className="text-item ">
-                          <Link to={`/text-detail/${text.id}?type=${encodeURIComponent(text.type)}`} 
+                          <Link to={`/pages/${text.id}?type=${encodeURIComponent(text.type)}`}
                           className={`text-link ${getLanguageClass(text.language)}`}>
                             <p>{text.title}</p>
                           </Link>
@@ -95,7 +95,7 @@ const Book = () => {
                     <div className="text-list">
                       {commentaryTexts.map((text,i) => (
                         <div key={i} className="text-item">
-                          <Link to={`/text-detail/${text.id}?type=${encodeURIComponent(text.type)}`} 
+                          <Link to={`/pages/${text.id}?type=${encodeURIComponent(text.type)}`}
                           className={`text-link ${getLanguageClass(text.language)}`}>
                             <p>{text.title}</p>
                           </Link>

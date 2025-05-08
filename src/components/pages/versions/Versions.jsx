@@ -43,7 +43,7 @@ const Versions = ({ versionsData, pagination, setPagination }) => {
             <div className="version">
               <div>
                 <Link
-                  to={`/texts/text-details?text_id=${version.id}&contentId=${version.table_of_contents[0]}&versionId=${version.id}&contentIndex=0`}
+                  to={`/chapter?text_id=${version.id}&contentId=${version.table_of_contents[0]}&versionId=${version.id}&contentIndex=0`}
                   className="section-title"
                 >
                   <div className={`${getLanguageClass(version.language)} titleversion`}>

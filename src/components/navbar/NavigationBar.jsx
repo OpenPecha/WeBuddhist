@@ -114,7 +114,7 @@ const NavigationBar = () => {
       
        <Navbar.Collapse id="navbar-links">
          <Nav className="me-auto navbaritems ">
-           <Nav.Link as={Link} to="/texts" onClick={handleNavClick}>
+           <Nav.Link as={Link} to="/libraries" onClick={handleNavClick}>
              {t("header.text")}
            </Nav.Link>
            <Nav.Link as={Link} to="/topics" onClick={handleNavClick}>

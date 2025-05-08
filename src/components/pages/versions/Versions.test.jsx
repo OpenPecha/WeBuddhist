@@ -160,7 +160,7 @@ describe("Versions Component", () => {
     expect(links.length).toBe(3);
     
     expect(links[0].getAttribute("href")).toBe(
-      "/texts/text-details?text_id=version1&contentId=content1&versionId=version1&contentIndex=0"
+      "/chapter?text_id=version1&contentId=content1&versionId=version1&contentIndex=0"
     );
   });
 
