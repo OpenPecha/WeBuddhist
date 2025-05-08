@@ -17,10 +17,9 @@ const Versions = ({ versionsData, pagination, setPagination }) => {
   if (!versionsData) {
     return <div className="notfound listtitle">Loading versions...</div>;
   }
-
-  if (!versionsData || !Array.isArray(versionsData.versions)) {
+  if (versionsData.versions.length === 0) {
     return <div className="notfound listtitle">
-      <div className="no-content">No content found</div>
+      <div className="no-content">{t("text.version.notfound")}</div>
     </div>;
   }
 
