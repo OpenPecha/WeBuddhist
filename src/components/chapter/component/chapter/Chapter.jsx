@@ -337,7 +337,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         <div
         key={segment.segment_id}
         data-segment-id={segment.segment_id}
-        className="text-segment mb-3 mb-md-4"
+        className={`text-segment mb-3 mb-md-4 ${isResourcesPanelOpen && selectedSegmentId === segment.segment_id ? 'selected' : ''}`}
         onClick={(e) => {
           if (!e.target.classList ||
             (!e.target.classList.contains('footnote-marker') &&
