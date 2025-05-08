@@ -6,6 +6,7 @@ import { useQuery } from "react-query";
 import axiosInstance from "../../../../config/axios-config.js";
 import "./RelatedTexts.scss";
 import { getLanguageClass } from "../../../../utils/Constants.js";
+import { usePanelContext } from "../../../../context/PanelContext.jsx";
 
 export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/commentaries`, {
@@ -18,6 +19,7 @@ export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
 }
 const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries, addChapter, sectionindex }) => {
   const { t } = useTranslate();
+  const { closeResourcesPanel } = usePanelContext();
 
   const {data: segmentCommentaries} = useQuery(
     ["relatedTexts", segmentId],
@@ -86,13 +88,16 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
                           <div className="commentary-buttons">
                             {/*<div className="commentary-button" onClick={() => addChapter({contentId: "", versionId: commentary.text_id, uniqueId: Date.now()})}>*/}
                             <div className="commentary-button"
-                                 onClick={() => addChapter({
-                                   contentId: "", 
-                                   versionId: "", 
-                                   textId: commentaryId, 
-                                   segmentId: segmentId,
-                                   contentIndex: sectionindex !== null ? sectionindex : 0
-                                 })}>
+                                 onClick={() => {
+                                   addChapter({
+                                     contentId: "", 
+                                     versionId: "", 
+                                     textId: commentaryId, 
+                                     segmentId: segmentId,
+                                     contentIndex: sectionindex !== null ? sectionindex : 0
+                                   });
+                                   closeResourcesPanel();
+                                 }}>
 
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>

@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import axiosInstance from "../../../../config/axios-config.js";
 import "./RootText.scss";
 import { getLanguageClass } from "../../../../utils/Constants.js";
+import { usePanelContext } from "../../../../context/PanelContext.jsx";
 
 export const fetchRootTextData = async (segment_id) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/root_text`);
@@ -15,7 +16,7 @@ export const fetchRootTextData = async (segment_id) => {
 
 const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter, sectionindex }) => {
   const { t } = useTranslate();
-
+const {closeResourcesPanel} = usePanelContext();
   const {data: rootTextData} = useQuery(
     ["rootTexts", segmentId],
     () => fetchRootTextData(segmentId),
@@ -108,13 +109,16 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
                         <div className="root-text-actions">
                           <div className="root-text-buttons">
                             <div className="root-text-button"
-                                 onClick={() => addChapter({
+                                 onClick={() => {
+                                  addChapter({
                                    contentId: "", 
                                    versionId: "", 
                                    textId: rootText.text_id, 
                                    segmentId: rootText.segment_id,
                                    contentIndex: sectionindex !== null ? sectionindex : 0
-                                 })}>
+                                 })
+                                 closeResourcesPanel();
+                                 }}>
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
                             </div>

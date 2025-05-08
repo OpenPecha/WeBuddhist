@@ -5,6 +5,7 @@ import { GoLinkExternal } from "react-icons/go";
 import "./TranslationView.scss";
 import { useQuery } from "react-query";
 import axiosInstance from "../../../../config/axios-config.js";
+import { usePanelContext } from "../../../../context/PanelContext.jsx";
 
 export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {
@@ -28,6 +29,7 @@ const TranslationView = ({
   sectionindex
 }) => {
   const { t } = useTranslate();
+  const {closeResourcesPanel} = usePanelContext();
   const {data: sidePanelTranslationsData} = useQuery(
     ["sidePanelTranslations",segmentId],
     () => fetchTranslationsData(segmentId), //send segmentId later todo
@@ -96,15 +98,20 @@ const TranslationView = ({
           <div className="linkselect navbaritems">
             <div
               className="linkicons"
-              onClick={() => addChapter({ 
-                contentId: "", 
-                versionId: "", 
-                textId: translation.text_id, 
-                segmentId: translation.segment_id,
-                contentIndex: sectionindex !== null ? sectionindex : 0
-              })}
-            >
+              onClick={() => {
+                addChapter({ 
+                  contentId: "", 
+                  versionId: "", 
+                  textId: translation.text_id, 
+                  segmentId: translation.segment_id,
+                  // contentIndex: sectionindex !== null ? sectionindex : 0
+                  contentIndex: 0 //todo : change this to above when pagination on version is added
+                });
+                closeResourcesPanel();
+              }}
+              >
               <GoLinkExternal />
+              {sectionindex}
               {t("text.translation.open_text")}
             </div>
 
