@@ -63,14 +63,14 @@ const TranslationView = ({
     const hasContent = !!translation.content?.length;
     return (
       <div key={index} className="translation-item">
-      <span className={`translation-content ${getLanguageClass(translation.language)}`}>
+      <span className={`translation-content  ${getLanguageClass(translation.language)}`}>
         <div
           className={`translation-text ${isExpanded ? 'expanded' : 'collapsed'}`}
           dangerouslySetInnerHTML={{ __html: translation.content }}
         />
         {hasContent && (
           <button
-            className="expand-button"
+            className="expand-button navbaritems"
             onClick={() => setExpandedTranslations(prev => ({
               ...prev,
               [translationKey]: !isExpanded,
@@ -87,7 +87,7 @@ const TranslationView = ({
           )}
           {translation.source && (
             <p className="navbaritems">
-              {t("connection_panel.menuscript.source")}: {translation.source}
+              {t("connection_panel.menuscript.source")}:<span className={`${getLanguageClass("en")} source`}> {translation.source}</span>
             </p>
           )}
 
@@ -111,7 +111,6 @@ const TranslationView = ({
               }}
               >
               <GoLinkExternal />
-              {sectionindex}
               {t("text.translation.open_text")}
             </div>
 
