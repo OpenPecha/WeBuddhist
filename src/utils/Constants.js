@@ -99,7 +99,24 @@ export const findAndScrollToSegment = (
     const chapterContainers = document.querySelectorAll(".chapter-container");
     let targetContainer = null;
 
-    if (chapterContainers.length > 0) {
+    if (currentChapter) {
+      const chapterId = currentChapter.segmentId || "";
+
+      for (const container of chapterContainers) {
+        const containerChapterId = container.getAttribute("data-chapter-id");
+        if (
+          containerChapterId === chapterId ||
+          (chapterId === "" &&
+            containerChapterId &&
+            containerChapterId.startsWith("chapter-"))
+        ) {
+          targetContainer = container;
+          break;
+        }
+      }
+    }
+
+    if (!targetContainer && chapterContainers.length > 0) {
       targetContainer = chapterContainers[chapterContainers.length - 1];
     }
 
