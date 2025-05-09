@@ -54,6 +54,25 @@ const Chapters = () => {
   };
 
   const removeChapter = (chapterInformation) => {
+    // Find the index of the chapter to be removed
+    const chapterIndex = chapters.findIndex(chapter => {
+      if (chapterInformation.segmentId && chapter.segmentId) {
+        return chapter.segmentId === chapterInformation.segmentId;
+      }
+      return (chapter.contentId === chapterInformation.contentId && 
+              chapter.versionId === chapterInformation.versionId);
+    });
+    if (chapterIndex !== -1) {
+      const chapterContainers = document.querySelectorAll('.chapter-container');
+      
+      if (chapterIndex < chapterContainers.length) {
+        const highlightedElements = chapterContainers[chapterIndex].querySelectorAll('.highlighted-segment');
+        highlightedElements.forEach(element => {
+          element.classList.remove('highlighted-segment');
+        });
+      }
+    }
+    
     setChapters(prevChapters =>
       prevChapters.filter(chapter => {
         if (chapterInformation.segmentId && chapter.segmentId) {
