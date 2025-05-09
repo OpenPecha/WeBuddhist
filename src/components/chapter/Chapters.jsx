@@ -46,10 +46,9 @@ const Chapters = () => {
         segmentId: chapterInformation.segmentId || "",
         contentIndex: chapterInformation.contentIndex !== undefined ? chapterInformation.contentIndex : 0
       };
-      return [
-        ...prevChapters,
-        newChapter
-      ];
+      const newChapters = [...prevChapters];
+      newChapters.splice(0 + 1, 0, newChapter);
+      return newChapters;
     });
   };
 
