@@ -118,7 +118,7 @@ export const findAndScrollToSegment = (
           const elementTop =
             segmentElement.offsetTop - scrollContainer.offsetTop;
           scrollContainer.scrollTo({
-            top: elementTop - 100,
+            top: elementTop - 50,
             behavior: "smooth",
           });
         }
@@ -141,7 +141,7 @@ export const findAndScrollToSegment = (
           const elementTop =
             sectionElement.offsetTop - scrollContainer.offsetTop;
           scrollContainer.scrollTo({
-            top: elementTop - 100,
+            top: elementTop - 50,
             behavior: "smooth",
           });
         }
