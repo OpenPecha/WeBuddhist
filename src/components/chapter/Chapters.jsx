@@ -67,14 +67,10 @@ const Chapters = () => {
     });
   };
   const removeChapter = (chapterInformation) => {
-    // Find the index of the chapter to be removed
-    const chapterIndex = chapters.findIndex(chapter => {
-      if (chapterInformation.segmentId && chapter.segmentId) {
-        return chapter.segmentId === chapterInformation.segmentId;
-      }
-      return (chapter.contentId === chapterInformation.contentId && 
-              chapter.versionId === chapterInformation.versionId);
-    });
+    const chapterIndex = chapters.findIndex(
+      chapter => chapter.uniqueId === chapterInformation.uniqueId
+    );
+  
     if (chapterIndex !== -1) {
       const chapterContainers = document.querySelectorAll('.chapter-container');
       
@@ -87,14 +83,9 @@ const Chapters = () => {
     }
     
     setChapters(prevChapters =>
-      prevChapters.filter(chapter => {
-        if (chapterInformation.segmentId && chapter.segmentId) {
-          return chapter.segmentId !== chapterInformation.segmentId;
-        }
-        // Fall back to the original logic for chapters without segmentId
-        return !(chapter.contentId === chapterInformation.contentId && 
-                chapter.versionId === chapterInformation.versionId);
-      })
+      prevChapters.filter(chapter => 
+        chapter.uniqueId !== chapterInformation.uniqueId
+      )
     );
   };
 
