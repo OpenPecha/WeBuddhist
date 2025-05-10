@@ -132,12 +132,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
     setContents(prev => {
       const incomingSections = textDetails.content.sections;
-      const sectionindex = textDetails.current_section - 1;
       const existingSectionNumbers = new Set(prev.map(section => section.section_number));
 
       const filteredSections = incomingSections
         .filter(section => !existingSectionNumbers.has(section.section_number))
-        .map(section => ({ ...section, sectionindex }));
+        .map(section => ({ ...section, sectionindex:section.section_number - 1 }));
 
       if(skipDetails.direction === 'up'){
         const currentContainer = containerRef.current;
@@ -364,10 +363,9 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   });
   };
 
-  const renderSection = (section) => {
+  const renderSection = (section, parentSectionIndex = null) => {
     if (!section) return null;
-    
-    const currentSectionIndex = section.sectionindex !== undefined ? section.sectionindex : null;
+    const currentSectionIndex = section.sectionindex !== undefined ? section.sectionindex : parentSectionIndex;
     
     return (
       <div 
@@ -380,7 +378,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         {section.segments && section.segments.length > 0 && renderSegments(section.segments, currentSectionIndex)}
         
         {section.sections && section.sections.length > 0 && 
-          section.sections.map(nestedSection => renderSection(nestedSection))
+          section.sections.map(nestedSection => renderSection(nestedSection, currentSectionIndex))
         }
       </div>
     );
@@ -409,7 +407,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
               </Spinner>
             </div>
           )}
-          
+       
           {contents?.map((section) => (
             <div 
               key={section.id} 

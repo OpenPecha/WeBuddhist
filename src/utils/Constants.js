@@ -100,16 +100,13 @@ export const findAndScrollToSegment = (
     let targetContainer = null;
 
     if (currentChapter) {
-      const chapterId = currentChapter.segmentId || "";
+      const chapterId =
+        currentChapter.segmentId ||
+        `content-${currentChapter.contentId}-version-${currentChapter.versionId}`;
 
       for (const container of chapterContainers) {
         const containerChapterId = container.getAttribute("data-chapter-id");
-        if (
-          containerChapterId === chapterId ||
-          (chapterId === "" &&
-            containerChapterId &&
-            containerChapterId.startsWith("chapter-"))
-        ) {
+        if (containerChapterId === chapterId) {
           targetContainer = container;
           break;
         }

@@ -37,18 +37,19 @@ const Chapters = () => {
 
   const addChapter = (chapterInformation) => {
     setChapters(prevChapters => {
-      if (prevChapters.length >= 3) {
-        return prevChapters;
-      }
+      if (prevChapters.length >= 3) return prevChapters;
+      
       const newChapter = {
         ...chapterInformation,
-        textId: chapterInformation.textId || "",
-        segmentId: chapterInformation.segmentId || "",
-        contentIndex: chapterInformation.contentIndex !== undefined ? chapterInformation.contentIndex : 0
+        uniqueId: chapterInformation.segmentId || 
+                 `content-${chapterInformation.contentId}-version-${chapterInformation.versionId}`
       };
-      const newChapters = [...prevChapters];
-      newChapters.splice(0 + 1, 0, newChapter);
-      return newChapters;
+  
+      return [
+        ...prevChapters.slice(0, 1),
+        newChapter,
+        ...prevChapters.slice(1)
+      ];
     });
   };
 
@@ -102,16 +103,22 @@ const Chapters = () => {
 
   return (
       <div className="chapters-container">
-        {chapters.map((chapter, index) => (
-          <div
-            key={index}
-            className="chapter-container"
-            data-chapter-id={chapter.segmentId || `chapter-${index}`}
-            style={{width: `${100 / chapters.length}%`}}
-          >
-            <Chapter addChapter={addChapter} removeChapter={removeChapter} updateChapter={updateChapter} currentChapter={chapter} totalPages={chapters.length}/>
-          </div>
-        ))}
+       {chapters.map((chapter) => (
+  <div
+    key={chapter.segmentId || `content-${chapter.contentId}-version-${chapter.versionId}`}
+    className="chapter-container"
+    data-chapter-id={chapter.segmentId || `content-${chapter.contentId}-version-${chapter.versionId}`}
+    style={{width: `${100 / chapters.length}%`}}
+  >
+    <Chapter 
+      addChapter={addChapter} 
+      removeChapter={removeChapter} 
+      updateChapter={updateChapter} 
+      currentChapter={chapter} 
+      totalPages={chapters.length}
+    />
+  </div>
+))}
       </div>
   );
 }
