@@ -10,8 +10,13 @@ const Chapters = () => {
     const savedChapters = sessionStorage.getItem('chapters');
     
     if (savedChapters) {
-      return JSON.parse(savedChapters);
+      const parsedChapters = JSON.parse(savedChapters);
+      return parsedChapters.map(chapter => ({
+        ...chapter,
+        uniqueId: chapter.uniqueId || (chapter.segmentId ? chapter.segmentId : `content-${chapter.contentId}-version-${chapter.versionId}`)
+      }));
     }
+  
     const contentId = searchParams.get('contentId');
     const contentIndex = searchParams.get('contentIndex');
     const versionId = searchParams.get('versionId');
@@ -22,7 +27,8 @@ const Chapters = () => {
         contentId: contentId || "",
         contentIndex: contentIndex ? parseInt(contentIndex) : 0,
         versionId: versionId || "",
-        sectionId: sectionId || ""
+        sectionId: sectionId || "",
+        uniqueId: `content-${contentId}-version-${versionId}`
       }];
     }
     
@@ -35,24 +41,31 @@ const Chapters = () => {
     }
   }, [chapters]);
 
-  const addChapter = (chapterInformation) => {
+  const addChapter = (chapterInformation, currentChapter) => {
     setChapters(prevChapters => {
       if (prevChapters.length >= 3) return prevChapters;
-      
+
       const newChapter = {
         ...chapterInformation,
         uniqueId: chapterInformation.segmentId || 
                  `content-${chapterInformation.contentId}-version-${chapterInformation.versionId}`
       };
   
-      return [
-        ...prevChapters.slice(0, 1),
-        newChapter,
-        ...prevChapters.slice(1)
-      ];
+      // Find the index of the current chapter
+      const currentIndex = prevChapters.findIndex(chap => 
+        chap.uniqueId === currentChapter.uniqueId
+      );
+  
+      if (currentIndex === -1) {
+        return [...prevChapters, newChapter];
+      }
+      // Insert the new chapter immediately after the current chapter
+      const updatedChapters = [...prevChapters];
+      updatedChapters.splice(currentIndex + 1, 0, newChapter);
+  
+      return updatedChapters;
     });
   };
-
   const removeChapter = (chapterInformation) => {
     // Find the index of the chapter to be removed
     const chapterIndex = chapters.findIndex(chapter => {

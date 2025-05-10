@@ -429,7 +429,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           segmentId={selectedSegmentId}
           setVersionId={handleVersionChange}
           versionId={versionId}
-          addChapter={addChapter}
+          addChapter={(chapterInfo) => addChapter(chapterInfo, currentChapter)} 
           sectionindex={selectedSectionIndex}
         />}
       </Container>
