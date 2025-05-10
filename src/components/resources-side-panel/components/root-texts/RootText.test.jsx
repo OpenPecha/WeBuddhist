@@ -8,6 +8,7 @@ import { mockTolgee } from "../../../../test-utils/CommonMocks.js";
 import RootTextView, { fetchRootTextData } from "./RootText.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
 import "@testing-library/jest-dom";
+import { PanelProvider } from "../../../../context/PanelContext.jsx";
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -70,12 +71,14 @@ describe("RootTextView", () => {
   let mockSetIsRootTextView;
   let mockSetExpandedRootTexts;
   let mockAddChapter;
+  let mockCloseResourcesPanel;
 
   beforeEach(() => {
     vi.resetAllMocks();
     mockSetIsRootTextView = vi.fn();
     mockSetExpandedRootTexts = vi.fn();
     mockAddChapter = vi.fn();
+    mockCloseResourcesPanel = vi.fn();
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
       if (queryKey[0] === "rootTexts") {
@@ -110,7 +113,9 @@ describe("RootTextView", () => {
       <Router>
         <QueryClientProvider client={queryClient}>
           <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <RootTextView {...defaultProps} {...props} />
+            <PanelProvider>
+              <RootTextView {...defaultProps} {...props} />
+            </PanelProvider>
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
