@@ -5,13 +5,14 @@ import {IoMdClose} from "react-icons/io";
 import { IoLanguage, IoNewspaperOutline,} from "react-icons/io5";
 import {FiInfo} from "react-icons/fi";
 import {BiSearch, BiBookOpen} from "react-icons/bi";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {useTranslate} from "@tolgee/react";
 import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import RootTextView from "./components/root-texts/RootText.jsx";
 import { usePanelContext } from "../../context/PanelContext.jsx";
+import { fetchShortUrl } from "../../components/chapter/component/chapter/Chapter.jsx";
 import "./Resources.scss"
 
 export const fetchSidePanelData = async (segmentId) => {
@@ -33,6 +34,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
   const [expandedTranslations, setExpandedTranslations] = useState({});
   const [expandedRootTexts, setExpandedRootTexts] = useState({});
   const [activeView, setActiveView] = useState("main");
+  const [shortUrl, setShortUrl] = useState("");
 
 
   const {t} = useTranslate();
@@ -44,6 +46,20 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
       refetchOnWindowFocus: false,
     }
   );
+
+  useEffect(() => {
+    if (activeView === "share" && segmentId) {
+      const currentUrl = window.location.href;
+      fetchShortUrl(currentUrl)
+        .then(url => {
+          setShortUrl(url);
+        })
+        .catch(error => {
+          console.error("Error fetching short URL:", error);
+          setShortUrl(currentUrl);
+        });
+    }
+  }, [activeView, segmentId]);
 
   const renderMainPanel = () => {
     return <>

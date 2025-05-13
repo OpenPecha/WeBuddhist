@@ -5,7 +5,7 @@ import { BsFacebook, BsTwitter } from "react-icons/bs";
 import { useTranslate } from "@tolgee/react";
 import "./ShareView.scss";
 
-const ShareView = ({ sidePanelData, setIsShareView }) => {
+const ShareView = ({ sidePanelData, setIsShareView, shortUrl }) => {
   const [copied, setCopied] = useState(false);
   const { t } = useTranslate();
 
@@ -22,11 +22,11 @@ const ShareView = ({ sidePanelData, setIsShareView }) => {
       <div className="share-content p-3">
         <p className="mb-3 textgreat ">{t('text.share_link')}</p>
         <div className="share-url-container p-3 mb-3">
-          <p className="share-url text-truncate">{sidePanelData?.text_infos?.short_url}</p>
+          <p className="share-url text-truncate">{shortUrl || sidePanelData?.text_infos?.short_url || window.location.href}</p>
           <button
             className="copy-button"
             onClick={() => {
-              navigator.clipboard.writeText(sidePanelData?.text_infos?.short_url);
+              navigator.clipboard.writeText(shortUrl || sidePanelData?.text_infos?.short_url || window.location.href);
               setCopied(true);
               setTimeout(() => {
                 setCopied(false);

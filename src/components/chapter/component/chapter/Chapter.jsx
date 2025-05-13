@@ -23,6 +23,16 @@ export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit
   return data;
 }
 
+export const fetchShortUrl = async (url) => {
+  try {
+    const { data } = await axiosInstance.post('/api/v1/shorten', { url });
+    return data.short_url;
+  } catch (error) {
+    console.error('Error generating short URL:', error);
+    return url; 
+  }
+}
+
 const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
