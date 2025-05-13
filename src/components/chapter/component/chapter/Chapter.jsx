@@ -77,11 +77,16 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       updateChapter(currentChapter, { contentId: textDetails.content.id });
     }
     
-    if (textDetails.mapping && isInitialLoadRef.current) {
+    if (textDetails.mapping && isInitialLoadRef.current && !isSectionChangeInProgressRef.current) {
       const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id;
       if (targetId) {
-        findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
-        isInitialLoadRef.current = false;
+        
+        setTimeout(() => {
+          if (!isSectionChangeInProgressRef.current) {
+            findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
+          }
+          isInitialLoadRef.current = false;
+        }, 300);
       }
     }
     
@@ -100,30 +105,58 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     checkTranslation();
   }, [textDetails, currentChapter, updateChapter]);
 
-  //handle scrolling to section when sectionId changes
+  const isSectionChangeInProgressRef = useRef(false);
   useEffect(() => {
     if (!currentChapter.sectionId || !containerRef.current) return;
     
-    const scrollTimeout = setTimeout(() => {
-      const sectionElement = containerRef.current.querySelector(
-        `[data-section-id="${currentChapter.sectionId}"]`
+    isSectionChangeInProgressRef.current = true;
+    
+    const attemptScroll = (attempt = 1, maxAttempts = 5) => {
+      const container = containerRef.current;
+      if (!container) {
+        if (attempt < maxAttempts) {
+          setTimeout(() => attemptScroll(attempt + 1, maxAttempts), 300);
+        }
+        return;
+      }
+      
+      const sectionElement = container.querySelector(
+        `div[data-section-id="${currentChapter.sectionId}"]`
       );
       
       if (sectionElement) {
-        const container = containerRef.current;
-        
         const sectionRect = sectionElement.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
         const offsetTop = sectionRect.top - containerRect.top + container.scrollTop;
         
         container.scrollTo({
-          top: offsetTop,
+          top: offsetTop - 50, // Add some padding at the top
           behavior: 'smooth'
         });
+        
+        sectionElement.classList.add('highlighted-segment');
+        
+        setTimeout(() => {
+          sectionElement.classList.remove('highlighted-segment');
+          isSectionChangeInProgressRef.current = false;
+        }, 2000);
+      } else if (attempt < maxAttempts) {
+        if (contents.length === 0 && textDetails && textDetails.content && textDetails.content.sections) {
+          setContents(textDetails.content.sections.map(section => ({ ...section, sectionindex: section.section_number - 1 })));
+        }
+        
+        setTimeout(() => attemptScroll(attempt + 1, maxAttempts), 300);
+      } else {
+        isSectionChangeInProgressRef.current = false;
       }
-    }, 300);
+    };
     
-    return () => clearTimeout(scrollTimeout);
+    const scrollTimeout = setTimeout(() => attemptScroll(), 800);
+    
+    return () => {
+      clearTimeout(scrollTimeout);
+      isSectionChangeInProgressRef.current = false;
+    };
   }, [currentChapter.sectionId]);
 
   useEffect(() => {
