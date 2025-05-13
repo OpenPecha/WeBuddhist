@@ -29,6 +29,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source);
   const [hasTranslation, setHasTranslation] = useState(false);
+  const [activeSectionId, setActiveSectionId] = useState(null);
   const containerRef = useRef(null);
   const [searchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel, isLeftPanelOpen } = usePanelContext();
@@ -308,6 +309,61 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   });
   };
 
+  // Handle scroll events to track active section
+  const handleScrollSpy = useCallback(() => {
+    if (!containerRef.current) return;
+    
+    const sections = containerRef.current.querySelectorAll('[data-section-id]');
+    if (!sections.length) return;
+    
+    // Get the section that is most visible in the viewport
+    let mostVisibleSection = null;
+    let maxVisibility = 0;
+    
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Calculate how much of the section is visible in the viewport
+      const visibleTop = Math.max(0, rect.top);
+      const visibleBottom = Math.min(windowHeight, rect.bottom);
+      const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+      
+      // Calculate the percentage of the section that is visible
+      const visibilityPercentage = visibleHeight / rect.height;
+      
+      if (visibilityPercentage > maxVisibility) {
+        maxVisibility = visibilityPercentage;
+        mostVisibleSection = section;
+      }
+    });
+    
+    if (mostVisibleSection && mostVisibleSection.dataset.sectionId) {
+      setActiveSectionId(mostVisibleSection.dataset.sectionId);
+    }
+  }, []);
+  
+  // Set up scroll event listener
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    // Initial check for visible sections
+    handleScrollSpy();
+    
+    // Add scroll event listener
+    container.addEventListener('scroll', handleScrollSpy);
+    
+    return () => {
+      container.removeEventListener('scroll', handleScrollSpy);
+    };
+  }, [handleScrollSpy, contents]);
+  
+  // Update active section when content changes
+  useEffect(() => {
+    handleScrollSpy();
+  }, [contents, handleScrollSpy]);
+  
   const renderSection = (section, parentSectionIndex = null) => {
     if (!section) return null;
     const currentSectionIndex = section.sectionindex !== undefined ? section.sectionindex : parentSectionIndex;
@@ -339,10 +395,12 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         {isLeftPanelOpen && <LeftSidePanel 
           updateChapter={updateChapter} 
           currentChapter={currentChapter} 
+          activeSectionId={activeSectionId}
         />}
         <div
           ref={containerRef}
           className="tibetan-text-container"
+          onScroll={handleScrollSpy}
         >
           {chapterContentIsLoading && skipDetails.direction.includes("up") && (
             <div className="text-center my-3 my-md-4">
