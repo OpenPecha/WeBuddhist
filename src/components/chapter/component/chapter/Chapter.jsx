@@ -29,8 +29,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source);
   const [hasTranslation, setHasTranslation] = useState(false);
-  const [activeSectionId, setActiveSectionId] = useState(null); 
-  const lastActiveSectionIdRef = useRef(null); 
   const containerRef = useRef(null);
   const [searchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel, isLeftPanelOpen } = usePanelContext();
@@ -166,54 +164,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     isLoadingTopRef.current = false;
   }, [textDetails]);
 
-  const throttle = useCallback((callback, delay) => {
-    let lastCall = 0;
-    return function(...args) {
-      const now = new Date().getTime();
-      if (now - lastCall >= delay) {
-        lastCall = now;
-        callback(...args);
-      }
-    };
-  }, []);
-
-  // Function to determine which section is in view
-  const determineActiveSectionInView = useCallback(() => {
-    if (!containerRef.current) return;
-
-    const sections = containerRef.current.querySelectorAll('[data-section-id]');
-    if (!sections.length) return;
-
-    if (isLoadingRef.current) return;
-
-    const containerTop = containerRef.current.getBoundingClientRect().top;
-
-    let closestSection = null;
-    let minDistance = Number.MAX_VALUE;
-
-    sections.forEach((section) => {
-      const rect = section.getBoundingClientRect();
-      const distance = rect.top - containerTop;
-      if (distance >= 0 && distance < minDistance) {
-        minDistance = distance;
-        closestSection = section;
-      }
-    });
-
-    if (closestSection) {
-      const newActiveSectionId = closestSection.getAttribute('data-section-id');
-      if (newActiveSectionId !== lastActiveSectionIdRef.current) {
-        lastActiveSectionIdRef.current = newActiveSectionId;
-        setActiveSectionId(newActiveSectionId);
-      }
-    }
-  }, []);
-
-  const throttledScrollSpy = useCallback(
-    throttle(determineActiveSectionInView, 150),
-    [throttle, determineActiveSectionInView]
-  );
-
   useEffect(() => {
     const currentContainer = containerRef.current;
     if (!currentContainer) return;
@@ -266,20 +216,15 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           }
         }
       }
-      throttledScrollSpy();
     };
     
     skipsCoveredRef.current.add(skipDetails.skip);
     currentContainer.addEventListener('scroll', handleScroll);
 
-    // Initial check for active section after a short delay
-    const initialCheckTimeout = setTimeout(determineActiveSectionInView, 300);
-
     return () => {
       currentContainer.removeEventListener('scroll', handleScroll);
-      clearTimeout(initialCheckTimeout);
     };
-  }, [contents, skipDetails.skip, totalContentRef.current, throttledScrollSpy]);
+  }, [contents, skipDetails.skip, totalContentRef.current]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -394,7 +339,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         {isLeftPanelOpen && <LeftSidePanel 
           updateChapter={updateChapter} 
           currentChapter={currentChapter} 
-          activeSectionId={activeSectionId} 
         />}
         <div
           ref={containerRef}
