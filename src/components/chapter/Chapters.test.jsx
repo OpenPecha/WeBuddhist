@@ -42,16 +42,17 @@ vi.mock("react-router-dom", async () => {
 const MockChapter = ({ currentChapter, addChapter, removeChapter, updateChapter }) => {
   const contentId = currentChapter?.contentId || '';
   const segmentId = currentChapter?.segmentId || '';
+  const uniqueId = currentChapter?.uniqueId || '';
   return (
-    <div data-testid="mocked-chapter" data-chapter-id={contentId} data-segment-id={segmentId}>
+    <div data-testid="mocked-chapter" data-chapter-id={contentId} data-segment-id={segmentId} data-unique-id={uniqueId}>
       Mocked Chapter Component
-      <button data-testid="add-chapter-btn" onClick={() => addChapter({ contentId: 'new-content', versionId: 'new-version' })}>Add Chapter</button>
+      <button data-testid="add-chapter-btn" onClick={() => addChapter({ contentId: 'new-content', versionId: 'new-version' }, currentChapter)}>Add Chapter</button>
       <button data-testid="remove-chapter-btn" onClick={() => removeChapter(currentChapter)}>Remove Chapter</button>
       <button data-testid="update-chapter-btn" onClick={() => updateChapter(currentChapter, { contentId: 'updated-content' })}>Update Chapter</button>
       {segmentId && (
         <>
-          <button data-testid="remove-segment-btn" onClick={() => removeChapter({ segmentId })}>Remove By Segment</button>
-          <button data-testid="update-segment-btn" onClick={() => updateChapter({ segmentId }, { contentId: "updated-by-segment" })}>Update By Segment</button>
+          <button data-testid="remove-segment-btn" onClick={() => removeChapter({ segmentId, uniqueId: `segment-${segmentId}` })}>Remove By Segment</button>
+          <button data-testid="update-segment-btn" onClick={() => updateChapter({ segmentId, uniqueId: `segment-${segmentId}` }, { contentId: "updated-by-segment" })}>Update By Segment</button>
         </>
       )}
     </div>
@@ -90,7 +91,8 @@ describe("Chapters Component", () => {
           contentId: "content123",
           versionId: "version123",
           contentIndex: 0,
-          segmentId: "segment123" 
+          segmentId: "segment123",
+          uniqueId: "segment-segment123"
         }]);
       }
       return null;
@@ -129,9 +131,6 @@ describe("Chapters Component", () => {
     expect(chapterContainers.length).toBe(1);
   });
 
-
-
-
   test("limits the number of chapters to 3", () => {
     mockSessionStorage.getItem.mockImplementation(key => {
       if (key === 'chapters') {
@@ -164,7 +163,7 @@ describe("Chapters Component", () => {
     
     expect(mockSessionStorage.setItem).toHaveBeenCalledWith(
       'chapters',
-      expect.stringContaining('new-content')
+      expect.stringContaining('content-new-content-version-new-version')
     );
   });
   
@@ -229,8 +228,8 @@ describe("Chapters Component", () => {
   test("correctly handles chapter removal with segmentId", () => {
     mockSessionStorage.getItem.mockImplementation(() => {
       return JSON.stringify([
-        { contentId: "content1", versionId: "version1", segmentId: "segment1" },
-        { contentId: "content2", versionId: "version2", segmentId: "segment2" }
+        { contentId: "content1", versionId: "version1", segmentId: "segment1", uniqueId: "segment-segment1" },
+        { contentId: "content2", versionId: "version2", segmentId: "segment2", uniqueId: "segment-segment2" }
       ]);
     });
     
@@ -249,7 +248,7 @@ describe("Chapters Component", () => {
   test("correctly handles chapter update with segmentId", () => {
     mockSessionStorage.getItem.mockImplementation(() => {
       return JSON.stringify([
-        { contentId: "content1", versionId: "version1", segmentId: "segment1" }
+        { contentId: "content1", versionId: "version1", segmentId: "segment1", uniqueId: "segment-segment1" }
       ]);
     });
     

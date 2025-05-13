@@ -10,8 +10,13 @@ const Chapters = () => {
     const savedChapters = sessionStorage.getItem('chapters');
     
     if (savedChapters) {
-      return JSON.parse(savedChapters);
+      const parsedChapters = JSON.parse(savedChapters);
+      return parsedChapters.map(chapter => ({
+        ...chapter,
+        uniqueId: chapter.uniqueId || (chapter.segmentId ? chapter.segmentId : `content-${chapter.contentId}-version-${chapter.versionId}`)
+      }));
     }
+  
     const contentId = searchParams.get('contentId');
     const contentIndex = searchParams.get('contentIndex');
     const versionId = searchParams.get('versionId');
@@ -22,7 +27,8 @@ const Chapters = () => {
         contentId: contentId || "",
         contentIndex: contentIndex ? parseInt(contentIndex) : 0,
         versionId: versionId || "",
-        sectionId: sectionId || ""
+        sectionId: sectionId || "",
+        uniqueId: `content-${contentId}-version-${versionId}`
       }];
     }
     
@@ -35,34 +41,51 @@ const Chapters = () => {
     }
   }, [chapters]);
 
-  const addChapter = (chapterInformation) => {
+  const addChapter = (chapterInformation, currentChapter) => {
     setChapters(prevChapters => {
-      if (prevChapters.length >= 3) {
-        return prevChapters;
-      }
+      if (prevChapters.length >= 3) return prevChapters;
+
       const newChapter = {
         ...chapterInformation,
-        textId: chapterInformation.textId || "",
-        segmentId: chapterInformation.segmentId || "",
-        contentIndex: chapterInformation.contentIndex !== undefined ? chapterInformation.contentIndex : 0
+        uniqueId: chapterInformation.segmentId || 
+                 `content-${chapterInformation.contentId}-version-${chapterInformation.versionId}`
       };
-      return [
-        ...prevChapters,
-        newChapter
-      ];
+  
+      // Find the index of the current chapter
+      const currentIndex = prevChapters.findIndex(chap => 
+        chap.uniqueId === currentChapter.uniqueId
+      );
+  
+      if (currentIndex === -1) {
+        return [...prevChapters, newChapter];
+      }
+      // Insert the new chapter immediately after the current chapter
+      const updatedChapters = [...prevChapters];
+      updatedChapters.splice(currentIndex + 1, 0, newChapter);
+  
+      return updatedChapters;
     });
   };
-
   const removeChapter = (chapterInformation) => {
+    const chapterIndex = chapters.findIndex(
+      chapter => chapter.uniqueId === chapterInformation.uniqueId
+    );
+  
+    if (chapterIndex !== -1) {
+      const chapterContainers = document.querySelectorAll('.chapter-container');
+      
+      if (chapterIndex < chapterContainers.length) {
+        const highlightedElements = chapterContainers[chapterIndex].querySelectorAll('.highlighted-segment');
+        highlightedElements.forEach(element => {
+          element.classList.remove('highlighted-segment');
+        });
+      }
+    }
+    
     setChapters(prevChapters =>
-      prevChapters.filter(chapter => {
-        if (chapterInformation.segmentId && chapter.segmentId) {
-          return chapter.segmentId !== chapterInformation.segmentId;
-        }
-        // Fall back to the original logic for chapters without segmentId
-        return !(chapter.contentId === chapterInformation.contentId && 
-                chapter.versionId === chapterInformation.versionId);
-      })
+      prevChapters.filter(chapter => 
+        chapter.uniqueId !== chapterInformation.uniqueId
+      )
     );
   };
 
@@ -84,16 +107,22 @@ const Chapters = () => {
 
   return (
       <div className="chapters-container">
-        {chapters.map((chapter, index) => (
-          <div
-            key={index}
-            className="chapter-container"
-            data-chapter-id={chapter.segmentId || `chapter-${index}`}
-            style={{width: `${100 / chapters.length}%`}}
-          >
-            <Chapter addChapter={addChapter} removeChapter={removeChapter} updateChapter={updateChapter} currentChapter={chapter} totalPages={chapters.length}/>
-          </div>
-        ))}
+       {chapters.map((chapter) => (
+  <div
+    key={chapter.segmentId || `content-${chapter.contentId}-version-${chapter.versionId}`}
+    className="chapter-container"
+    data-chapter-id={chapter.segmentId || `content-${chapter.contentId}-version-${chapter.versionId}`}
+    style={{width: `${100 / chapters.length}%`}}
+  >
+    <Chapter 
+      addChapter={addChapter} 
+      removeChapter={removeChapter} 
+      updateChapter={updateChapter} 
+      currentChapter={chapter} 
+      totalPages={chapters.length}
+    />
+  </div>
+))}
       </div>
   );
 }

@@ -96,46 +96,56 @@ export const findAndScrollToSegment = (
   }
 
   setTimeout(() => {
-    const chapterContainers = document.querySelectorAll(".chapter-container");
-    let targetContainer = null;
+    if (!currentChapter) return;
 
-    if (chapterContainers.length > 0) {
-      targetContainer = chapterContainers[chapterContainers.length - 1];
-    }
+    const targetContainer = document.querySelector(
+      `[data-chapter-id="${currentChapter.uniqueId}"]`
+    );
 
-    // Scenario 1: Looking for a segment
+    if (!targetContainer) return;
+
+    // Scenario 1: Scroll to segment
     if (targetId) {
-      const segmentElement = targetContainer
-        ? targetContainer.querySelector(`[data-segment-id="${targetId}"]`)
-        : document.querySelector(`[data-segment-id="${targetId}"]`);
+      const segmentElement = targetContainer.querySelector(
+        `[data-segment-id="${targetId}"]`
+      );
 
       if (segmentElement) {
-        const parentSection = segmentElement.closest(".nested-section");
-        if (parentSection) {
-          parentSection.scrollIntoView({ behavior: "smooth", block: "start" });
-          segmentElement.classList.add("highlighted-segment");
-        } else {
-          segmentElement.scrollIntoView({ behavior: "smooth", block: "start" });
-          segmentElement.classList.add("highlighted-segment");
+        const scrollContainer = targetContainer.querySelector(
+          ".tibetan-text-container"
+        );
+        if (scrollContainer) {
+          const elementTop =
+            segmentElement.offsetTop - scrollContainer.offsetTop;
+          scrollContainer.scrollTo({
+            top: elementTop - 50,
+            behavior: "smooth",
+          });
         }
+        segmentElement.classList.add("highlighted-segment");
         return;
       }
     }
 
-    // Scenario 2: Looking for a section
-    if (currentChapter && currentChapter.sectionId) {
-      const sectionElement = targetContainer
-        ? targetContainer.querySelector(
-            `[data-section-id="${currentChapter.sectionId}"]`
-          )
-        : document.querySelector(
-            `[data-section-id="${currentChapter.sectionId}"]`
-          );
+    // Scenario 2: Scroll to section
+    if (currentChapter.sectionId) {
+      const sectionElement = targetContainer.querySelector(
+        `[data-section-id="${currentChapter.sectionId}"]`
+      );
 
       if (sectionElement) {
-        sectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        const scrollContainer = targetContainer.querySelector(
+          ".tibetan-text-container"
+        );
+        if (scrollContainer) {
+          const elementTop =
+            sectionElement.offsetTop - scrollContainer.offsetTop;
+          scrollContainer.scrollTo({
+            top: elementTop - 50,
+            behavior: "smooth",
+          });
+        }
         sectionElement.classList.add("highlighted-segment");
-        return;
       }
     }
   }, 500);
