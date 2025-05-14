@@ -24,8 +24,9 @@ export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit
 }
 
 export const fetchShortUrl = async (url) => {
+  const body = { url, tags: "" };
   try {
-    const { data } = await axiosInstance.post('/api/v1/shorten', { url });
+    const { data } = await fetch('https://url-shortening-14682653622-b69c6fd.onrender.com/api/v1/shorten', { method: 'POST', body: JSON.stringify(body) });
     return data.short_url;
   } catch (error) {
     console.error('Error generating short URL:', error);
