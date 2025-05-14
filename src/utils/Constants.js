@@ -150,3 +150,53 @@ export const findAndScrollToSegment = (
     }
   }, 500);
 };
+
+export const findAndScrollToSection = (sectionId, currentChapter) => {
+  if (!sectionId || !currentChapter) return;
+
+  setTimeout(() => {
+    const targetContainer = document.querySelector(
+      `[data-chapter-id="${currentChapter.uniqueId}"]`
+    );
+
+    if (!targetContainer) {
+      console.log("Target container not found");
+      return;
+    }
+
+    const scrollContainer = targetContainer.querySelector(
+      ".tibetan-text-container"
+    );
+    if (!scrollContainer) {
+      console.log("Scroll container not found");
+      return;
+    }
+
+    let sectionElement = targetContainer.querySelector(`#section-${sectionId}`);
+
+    if (!sectionElement) {
+      const sectionElements = targetContainer.querySelectorAll(
+        `[data-section-id="${sectionId}"]`
+      );
+      if (sectionElements && sectionElements.length > 0) {
+        sectionElement = sectionElements[0];
+      }
+    }
+
+    if (sectionElement) {
+      const elementRect = sectionElement.getBoundingClientRect();
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const relativeTop =
+        elementRect.top - containerRect.top + scrollContainer.scrollTop;
+
+      scrollContainer.scrollTo({
+        top: relativeTop - 50,
+        behavior: "smooth",
+      });
+
+      console.log("Successfully scrolled to section:", sectionId);
+    } else {
+      console.log("Section element not found with ID:", sectionId);
+    }
+  }, 300);
+};

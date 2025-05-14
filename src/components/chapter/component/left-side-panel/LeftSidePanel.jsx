@@ -47,8 +47,11 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   
   const handleSectionClick = (sectionId, contentIndex) => {
     if (updateChapter && currentChapter) {
+      const validContentIndex = contentIndex !== undefined && !isNaN(parseInt(contentIndex, 10)) 
+        ? parseInt(contentIndex, 10) 
+        : 0;
       updateChapter(currentChapter, { 
-        contentIndex: contentIndex,
+        contentIndex: validContentIndex,
         sectionId: sectionId 
       });
     }
@@ -107,6 +110,11 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
     const isExpanded = sectionHierarchyState[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
     const isActive = activeSectionId === section.id;
+    
+    const validParentIndex = parentIndex !== undefined && !isNaN(parseInt(parentIndex, 10)) 
+      ? parseInt(parentIndex, 10) 
+      : 0;
+    
     return (
       <div 
         key={`section-${section.id}`} 
@@ -126,7 +134,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
             data-section-id={section.id}
             onClick={(e) => {
               e.stopPropagation();
-              handleSectionClick(section.id, parentIndex);
+              handleSectionClick(section.id, validParentIndex);
             }}
           >
             {section.title}
@@ -138,7 +146,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
               className="nested-content"
             >
               {section.sections.map((childSection) =>
-                renderSection(childSection, level + 1, contentId, parentIndex)
+                renderSection(childSection, level + 1, contentId, validParentIndex)
               )}
             </div>
           )}
@@ -180,15 +188,18 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
                             <FiChevronRight size={16} className="toggle-icon" />
                         ) : <span className="empty-icon"></span>}
                         <button 
-                          className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${activeSectionId === segment.id ? 'active' : ''}`}
-                          data-section-id={segment.id}
-                          onClick={(e) => {
-                            e.stopPropagation(); 
-                            handleSectionClick(segment.id, index);
-                          }}
-                        >
-                          {segment.title}
-                        </button>
+                        className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${activeSectionId === segment.id ? 'active' : ''}`}
+                        data-section-id={segment.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const validIndex = index !== undefined && !isNaN(parseInt(index, 10)) 
+                            ? parseInt(index, 10) 
+                            : 0;
+                          handleSectionClick(segment.id, validIndex);
+                        }}
+                      >
+                        {segment.title}
+                      </button>
                       </div>
 
                       {sectionHierarchyState[segment.id] && hasChildren && (
