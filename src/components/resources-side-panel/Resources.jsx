@@ -12,7 +12,6 @@ import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import RootTextView from "./components/root-texts/RootText.jsx";
 import { usePanelContext } from "../../context/PanelContext.jsx";
-import { fetchShortUrl } from "../../components/chapter/component/chapter/Chapter.jsx";
 import "./Resources.scss"
 
 export const fetchSidePanelData = async (segmentId) => {
@@ -46,24 +45,6 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
       refetchOnWindowFocus: false,
     }
   );
-
-  useEffect(() => {
-    if (activeView === "share" && segmentId) {
-      const baseUrl = window.location.origin + window.location.pathname;
-      const searchParams = new URLSearchParams(window.location.search);
-      searchParams.set('segment_id', segmentId);
-      const segmentSpecificUrl = `${baseUrl}?${searchParams.toString()}`;
-      
-      fetchShortUrl(segmentSpecificUrl)
-        .then(url => {
-          setShortUrl(url);
-        })
-        .catch(error => {
-          console.error("Error fetching short URL:", error);
-          setShortUrl(segmentSpecificUrl);
-        });
-    }
-  }, [activeView, segmentId]);
 
   const renderMainPanel = () => {
     return <>
