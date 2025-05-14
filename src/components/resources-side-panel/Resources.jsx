@@ -49,14 +49,18 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
 
   useEffect(() => {
     if (activeView === "share" && segmentId) {
-      const currentUrl = window.location.href;
-      fetchShortUrl(currentUrl)
+      const baseUrl = window.location.origin + window.location.pathname;
+      const searchParams = new URLSearchParams(window.location.search);
+      searchParams.set('segment_id', segmentId);
+      const segmentSpecificUrl = `${baseUrl}?${searchParams.toString()}`;
+      
+      fetchShortUrl(segmentSpecificUrl)
         .then(url => {
           setShortUrl(url);
         })
         .catch(error => {
           console.error("Error fetching short URL:", error);
-          setShortUrl(currentUrl);
+          setShortUrl(segmentSpecificUrl);
         });
     }
   }, [activeView, segmentId]);
@@ -143,6 +147,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
           <ShareView
             sidePanelData={sidePanelData}
             setIsShareView={setActiveView}
+            shortUrl={shortUrl}
           />
         );
       case "translation":

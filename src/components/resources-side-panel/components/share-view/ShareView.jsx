@@ -38,12 +38,22 @@ const ShareView = ({ sidePanelData, setIsShareView, shortUrl }) => {
         </div>
         <p className="textgreat">{t('text.more_options')}</p>
         <div className="social-share-buttons">
-          <p className="social-button">
+          <a 
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shortUrl || sidePanelData?.text_infos?.short_url || window.location.href)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-button"
+          >
             <BsFacebook className="social-icon"/>{t('common.share_on_fb')}
-          </p>
-          <p className="social-button">
+          </a>
+          <a 
+            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shortUrl || sidePanelData?.text_infos?.short_url || window.location.href)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-button"
+          >
             <BsTwitter className="social-icon"/>{t('common.share_on_x')}
-          </p>
+          </a>
         </div>
       </div>
     </div>
