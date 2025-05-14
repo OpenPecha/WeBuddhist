@@ -225,9 +225,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
             ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
             : skipDetails.skip + 1;
-          
+          console.log(totalContentRef.current,"yoo")
           if (newSkip < totalContentRef.current) {
-            // setSkipDetails({
+            console.log('i change the skip to down',newSkip)
+            // setSkipDetails({  // need to fix this logic
             //   skip: newSkip,
             //   direction: 'down'
             // });
@@ -246,6 +247,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             : Math.max(0, firstSectionNumber - 2);
           
           if (newSkip >= 0 && !skipsCoveredRef.current.has(newSkip)) {
+            console.log('i change the skip to up',newSkip)
             // setSkipDetails({
             //   skip: newSkip,
             //   direction: 'up'
