@@ -50,10 +50,18 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
       const validContentIndex = contentIndex !== undefined && !isNaN(parseInt(contentIndex, 10)) 
         ? parseInt(contentIndex, 10) 
         : 0;
-      updateChapter(currentChapter, { 
-        contentIndex: validContentIndex,
-        sectionId: sectionId 
-      });
+      if (currentChapter.contentIndex !== validContentIndex) {
+        updateChapter(currentChapter, { 
+          contentIndex: validContentIndex,
+          sectionId: sectionId 
+        });
+      }
+      else
+      {
+        updateChapter(currentChapter,{
+          sectionId: sectionId
+        })
+      }
     }
   };
   

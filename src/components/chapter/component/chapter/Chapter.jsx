@@ -25,7 +25,6 @@ export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit
 
 const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
-
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source);
@@ -42,7 +41,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     skip:  parseInt(currentChapter.contentIndex, 10) || parseInt(searchParams.get("contentIndex") || 0, 10),
     direction: 'down'
   });
-  console.log(skipDetails,currentChapter.contentIndex)
+  // console.log(skipDetails,currentChapter.contentIndex)
   const skipsCoveredRef = useRef(new Set());
   const [scrollPosition, setScrollPosition] = useState(0);
   const lastScrollPositionRef = useRef(0);
@@ -155,7 +154,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         isSectionChangeInProgressRef.current = false;
       }, 300);
     } else {
-      console.log('Section not found in current content, loading from server');
       if (contents.length === 0 && textDetails && textDetails.content && textDetails.content.sections) {
         setContents(textDetails.content.sections.map(section => ({ ...section, sectionindex: section.section_number - 1 })));
       }
@@ -229,10 +227,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             : skipDetails.skip + 1;
           
           if (newSkip < totalContentRef.current) {
-            setSkipDetails({
-              skip: newSkip,
-              direction: 'down'
-            });
+            // setSkipDetails({
+            //   skip: newSkip,
+            //   direction: 'down'
+            // });
           } else {
             isLoadingRef.current = false; 
           }
@@ -248,10 +246,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             : Math.max(0, firstSectionNumber - 2);
           
           if (newSkip >= 0 && !skipsCoveredRef.current.has(newSkip)) {
-            setSkipDetails({
-              skip: newSkip,
-              direction: 'up'
-            });
+            // setSkipDetails({
+            //   skip: newSkip,
+            //   direction: 'up'
+            // });
           } else {
             isLoadingTopRef.current = false;
           }

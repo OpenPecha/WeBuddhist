@@ -160,7 +160,6 @@ export const findAndScrollToSection = (sectionId, currentChapter) => {
     );
 
     if (!targetContainer) {
-      console.log("Target container not found");
       return;
     }
 
@@ -168,7 +167,6 @@ export const findAndScrollToSection = (sectionId, currentChapter) => {
       ".tibetan-text-container"
     );
     if (!scrollContainer) {
-      console.log("Scroll container not found");
       return;
     }
 
@@ -193,10 +191,6 @@ export const findAndScrollToSection = (sectionId, currentChapter) => {
         top: relativeTop - 50,
         behavior: "smooth",
       });
-
-      console.log("Successfully scrolled to section:", sectionId);
-    } else {
-      console.log("Section element not found with ID:", sectionId);
     }
   }, 300);
 };
