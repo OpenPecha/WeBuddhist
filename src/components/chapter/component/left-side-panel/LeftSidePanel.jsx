@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import { useQuery } from "react-query";
@@ -28,6 +28,8 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   const {t}=useTranslate();
   const [searchParams] = useSearchParams();
   const textId = currentChapter.textId || searchParams.get("text_id");
+  const panelContentRef = useRef(null);
+  const activeElementRef = useRef(null);
   const { data: tocData, isLoading} = useQuery(
     ["toc", textId],
     () => fetchTextContent(textId),
@@ -64,6 +66,26 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
       }
     }
   };
+  
+  // Scroll active section into view when it changes
+  useEffect(() => {
+    if (!activeSectionId || !showPanel) return;
+   const activeElement = document.querySelector(`.section-title.active[data-section-id="${activeSectionId}"]`);
+    if (activeElement && panelContentRef.current) {
+      activeElementRef.current = activeElement;
+      
+      const panelRect = panelContentRef.current.getBoundingClientRect();
+      const elementRect = activeElement.getBoundingClientRect();
+      
+      const isAbove = elementRect.top < panelRect.top;
+      const isBelow = elementRect.bottom > panelRect.bottom;
+        
+      if (isAbove || isBelow) {
+        const scrollOptions = { behavior: 'smooth', block: 'center' };
+        activeElement.scrollIntoView(scrollOptions);
+      }
+    }
+  }, [activeSectionId, showPanel]);
   
   // Track active sections and expand their parents
   useEffect(() => {
@@ -169,7 +191,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
         <div className="headerthing">
           <p className='mt-4 px-4 listtitle'>{t("text.table_of_contents")}</p>
         </div>
-        <div className="panel-content p-3">
+        <div className="panel-content p-3" ref={panelContentRef}>
           {isLoading && <p>{t("common.loading")}</p>}
           {!isLoading && tocData && tocData.contents && tocData.contents.length === 0 && (
             <p>{t("text_category.message.notfound")}</p>
