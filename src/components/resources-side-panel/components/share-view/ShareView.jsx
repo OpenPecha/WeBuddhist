@@ -28,7 +28,6 @@ const ShareView = ({ sidePanelData, setIsShareView, shortUrl }) => {
       staleTime: 1000 * 60 * 20,
     }
   );
-  console.log(shorturldata)
   return (
     <div>
       <div className="headerthing">
@@ -42,11 +41,11 @@ const ShareView = ({ sidePanelData, setIsShareView, shortUrl }) => {
       <div className="share-content p-3">
         <p className="mb-3 textgreat ">{t('text.share_link')}</p>
         <div className="share-url-container p-3 mb-3">
-          <p className="share-url text-truncate">{ window.location.href || shorturldata?.short_url}</p>
+          <p className="share-url text-truncate en-text">{shorturldata?.short_url}</p>
           <button
             className="copy-button"
             onClick={() => {
-              navigator.clipboard.writeText(window.location.href || shorturldata?.short_url);
+              navigator.clipboard.writeText(shorturldata?.short_url);
               setCopied(true);
               setTimeout(() => {
                 setCopied(false);
