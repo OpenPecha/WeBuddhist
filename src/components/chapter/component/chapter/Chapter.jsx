@@ -37,6 +37,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const isLoadingRef = useRef(false);
   const isLoadingTopRef = useRef(false);
   const totalContentRef = useRef(0)
+  const isPanelNavigationRef = useRef(false);
   const [skipDetails, setSkipDetails] = useState({
     skip:  parseInt(currentChapter.contentIndex, 10) || parseInt(searchParams.get("contentIndex") || 0, 10),
     direction: 'down'
@@ -73,6 +74,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       skip: skipValue,
       direction: 'down'
     });
+    isPanelNavigationRef.current = true;
   }, [versionId, contentId, textId, segmentId, sectionId, currentChapter.contentIndex]);
 
   useEffect(() => {
@@ -209,7 +211,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
     const handleScroll = () => {
       const {scrollTop, scrollHeight, clientHeight} = currentContainer;
-  
+      if (isPanelNavigationRef.current) {
+        isPanelNavigationRef.current = false;
+        lastScrollPositionRef.current = scrollTop;
+        return;
+      }
       // Determine scroll direction using ref for immediate access to previous value
       const isScrollingUp = scrollTop < lastScrollPositionRef.current;
   
@@ -228,10 +234,12 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           console.log(totalContentRef.current,"yoo")
           if (newSkip < totalContentRef.current) {
             console.log('i change the skip to down',newSkip)
-            // setSkipDetails({  // need to fix this logic
-            //   skip: newSkip,
-            //   direction: 'down'
-            // });
+            if (!isPanelNavigationRef.current) {
+              setSkipDetails({  // need to fix this logic
+                skip: newSkip,
+                direction: 'down'
+              });
+            }
           } else {
             isLoadingRef.current = false; 
           }
@@ -248,10 +256,12 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           
           if (newSkip >= 0 && !skipsCoveredRef.current.has(newSkip)) {
             console.log('i change the skip to up',newSkip)
-            // setSkipDetails({
-            //   skip: newSkip,
-            //   direction: 'up'
-            // });
+            if (!isPanelNavigationRef.current) {
+              setSkipDetails({
+                skip: newSkip,
+                direction: 'up'
+              });
+            }
           } else {
             isLoadingTopRef.current = false;
           }
