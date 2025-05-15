@@ -24,6 +24,7 @@ export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit
 }
 const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, totalPages}) => {
   const [contents, setContents] = useState([]);
+  console.log(contents)
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source_translation);
@@ -66,7 +67,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     if (textDetails.mapping && isInitialLoadRef.current) {
       const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id;
       if (targetId) {
-        findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter,containerRef);
+        findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
         isInitialLoadRef.current = false;
       }
     }
@@ -75,14 +76,30 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
   useEffect(() => {
     if (!textDetails) return;
-
+    
+    // Update total content reference if available
+    if (textDetails.total && (!totalContentRef.current || totalContentRef.current !== textDetails.total)) {
+      totalContentRef.current = textDetails.total;
+    }
+    
     // If this is a navigation-triggered change, reset the contents
     if (contentIndexChangeSourceRef.current === 'navigation') {
+      // Reset the contents completely for navigation changes
       setContents(() => {
         const incomingSections = textDetails.content.sections;
         const sectionindex = textDetails.current_section - 1;
         return incomingSections.map(section => ({ ...section, sectionindex }));
       });
+      
+      // Clear the skips covered set to start fresh
+      skipsCoveredRef.current = new Set([skipDetails.skip]);
+      
+      // Scroll to the top of the container when navigation happens
+      if (containerRef.current) {
+        containerRef.current.scrollTop = 0;
+      } 
+      
+      contentIndexChangeSourceRef.current = 'scroll';
     } else {
       // For scroll-triggered changes, append or prepend content
       setContents(prev => {
@@ -94,56 +111,66 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           .filter(section => !existingSectionNumbers.has(section.section_number))
           .map(section => ({ ...section, sectionindex }));
 
-        if(skipDetails.direction === 'up'){
+        if (filteredSections.length === 0) {
+          return prev;
+        }
+
+        if (skipDetails.direction === 'up') {
           const currentContainer = containerRef.current;
           if (!currentContainer) return prev;
 
           const currentScrollHeight = currentContainer?.scrollHeight || 0;
 
-          if (skipDetails.direction === 'up') {
-            setTimeout(() => {
-              if (currentContainer) {
-                const newScrollHeight = currentContainer.scrollHeight;
-                const heightDifference = newScrollHeight - currentScrollHeight;
-                currentContainer.scrollTop = heightDifference + scrollPosition;
-              }
-            }, 0);
-          }
+          // Maintain scroll position when adding content at the top
+          setTimeout(() => {
+            if (currentContainer) {
+              const newScrollHeight = currentContainer.scrollHeight;
+              const heightDifference = newScrollHeight - currentScrollHeight;
+              currentContainer.scrollTop = heightDifference + scrollPosition;
+            }
+          }, 0);
+          
           return [...filteredSections, ...prev];
         } else {
           return [...prev, ...filteredSections];
         }
       });
     }
-    
-    if (!totalContentRef.current) {
-      totalContentRef.current = textDetails?.total
-    }
 
+    // Reset loading flags
     isLoadingRef.current = false;
     isLoadingTopRef.current = false;
-    
-    // After processing the data, reset the change source to 'scroll' for future scrolling events
-    if (contentIndexChangeSourceRef.current === 'navigation') {
-      contentIndexChangeSourceRef.current = 'scroll';
+  }, [textDetails, skipDetails.skip]);
+  
+  // Handle version changes
+  useEffect(() => {
+    // When version changes, reset everything and start from the beginning
+    if (versionId) {
+      // Set navigation source to ensure content reset
+      contentIndexChangeSourceRef.current = 'navigation';
+      
+      // Reset skip to 0
+      setSkipDetails({
+        skip: 0,
+        direction: 'down'
+      });
+      
+      // Clear the contents
+      setContents([]);
+      
+      // Reset the skips covered
+      skipsCoveredRef.current = new Set([0]);
     }
-  }, [textDetails]);
+  }, [versionId]);
 
 
 
   useEffect(() => {
     const currentContainer = containerRef.current;
+    console.log(currentContainer)
     if (!currentContainer) return;
 
     const handleScroll = () => {
-      if (contentIndexChangeSourceRef.current === 'navigation') {
-        // Reset after a short delay to allow the navigation change to complete
-        setTimeout(() => {
-          contentIndexChangeSourceRef.current = 'scroll';
-        }, 300);
-        return;
-      }
-      
       const {scrollTop, scrollHeight, clientHeight} = currentContainer;
   
       // Determine scroll direction using ref for immediate access to previous value
@@ -159,13 +186,22 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         isLoadingRef.current = true;
         contentIndexChangeSourceRef.current = 'scroll';
         
-        const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
-          ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
-          : skipDetails.skip + 1;
-        setSkipDetails(prevState => ({
-          skip: newSkip,
-          direction: 'down'
-        }));
+        // Always calculate a new skip value when reaching the bottom
+        let newSkip;
+        if (skipsCoveredRef.current.size > 0) {
+          const maxSkip = Math.max(...Array.from(skipsCoveredRef.current));
+          newSkip = maxSkip + 1;
+        } else {
+          newSkip = skipDetails.skip + 1;
+        }
+        
+        // Make sure we're not exceeding total content
+        if (totalContentRef.current === 0 || newSkip < totalContentRef.current) {
+          setSkipDetails({
+            skip: newSkip,
+            direction: 'down'
+          });
+        }
       }
 
       if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
@@ -174,21 +210,27 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           isLoadingTopRef.current = true;
           contentIndexChangeSourceRef.current = 'scroll';
           
-          const newSkip = skipsCoveredRef.current.has(Math.max(0, firstSectionNumber - 2))
-            ? skipDetails.skip
-            : Math.max(0, firstSectionNumber - 2);
-          setSkipDetails(prevState => ({
-            skip: newSkip,
-            direction: 'up'
-          }));
+          // Calculate a new skip value for scrolling up
+          const newSkip = Math.max(0, firstSectionNumber - 2);
+          
+          // Only update if this is a new skip value we haven't loaded yet
+          if (!skipsCoveredRef.current.has(newSkip)) {
+            setSkipDetails({
+              skip: newSkip,
+              direction: 'up'
+            });
+          }
         }
       }
     };
-    skipsCoveredRef.current.add(skipDetails.skip)
+    
+    // Add current skip to the set of covered skips
+    skipsCoveredRef.current.add(skipDetails.skip);
+    
     currentContainer.addEventListener('scroll', handleScroll);
 
     return () => currentContainer.removeEventListener('scroll', handleScroll);
-  }, [contents]);
+  }, [contents, skipDetails.skip]);
 
   useEffect(() => {
     const container = containerRef.current;

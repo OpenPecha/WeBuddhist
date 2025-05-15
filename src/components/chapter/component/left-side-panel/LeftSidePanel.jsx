@@ -116,7 +116,9 @@ const LeftSidePanel = ({ updateChapter, currentChapter, setSkipDetails, contentI
                           onClick={(e) => {
                             e.stopPropagation();
                             const newIndex = index;
+                            console.log(newIndex)
                             contentIndexChangeSourceRef.current = 'navigation';
+                            console.log('the contentindex is ref',contentIndexChangeSourceRef.current)
                             updateChapter(currentChapter, {
                               sectionId: "",
                               contentIndex: newIndex,
@@ -127,7 +129,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, setSkipDetails, contentI
                             });
                           }}
                         >
-                          {segment.title}
+                          {segment.title}gfg
                         </button>
                       </div>
 
