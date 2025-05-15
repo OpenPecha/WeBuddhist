@@ -18,8 +18,7 @@ export const fetchShortUrl = async (url) => {
 const ShareView = ({ sidePanelData, setIsShareView, shortUrl }) => {
   const [copied, setCopied] = useState(false);
   const { t } = useTranslate();
-  //TODO: remove this
-  const shorturl="http://localhost:5173/texts/text-details?text_id=032b9a5f-0712-40d8-b7ec-73c8c94f1c15&contentId=78c33db2-e0bf-48b3-9d2e-82e9c84301da&versionId=&contentIndex=1"
+  const shorturl = window.location.href;
   const { data: shorturldata, isLoading} = useQuery(
     ["toc", shorturl],
     () => fetchShortUrl(shorturl),
