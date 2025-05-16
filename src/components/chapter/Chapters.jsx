@@ -21,6 +21,7 @@ const Chapters = () => {
     const contentIndex = searchParams.get('contentIndex');
     const versionId = searchParams.get('versionId');
     const sectionId = searchParams.get('sectionId');
+    const segmentId = searchParams.get('segmentId');
     
     if (contentId) {
       return [{
@@ -28,7 +29,8 @@ const Chapters = () => {
         contentIndex: contentIndex ? parseInt(contentIndex) : 0,
         versionId: versionId || "",
         sectionId: sectionId || "",
-        uniqueId: `content-${contentId}-version-${versionId}`
+        segmentId: segmentId || "",
+        uniqueId: segmentId || `content-${contentId}-version-${versionId}`
       }];
     }
     

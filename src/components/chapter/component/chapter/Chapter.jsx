@@ -79,6 +79,13 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   }, [versionId, contentId, textId, segmentId, sectionId, currentChapter.contentIndex]);
 
   useEffect(() => {
+    const resourcesOpen = searchParams.get('resourcesOpen') === 'true';
+    if (resourcesOpen && segmentId) {
+      openResourcesPanel();
+    }
+  }, [searchParams, openResourcesPanel, segmentId]);
+
+  useEffect(() => {
     if (!textDetails) return;
     
     if (currentChapter.contentId === "" && textDetails.content.id) {
@@ -205,6 +212,29 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     isLoadingRef.current = false;
     isLoadingTopRef.current = false;
   }, [textDetails]);
+
+  useEffect(() => {
+    const segmentIdFromURL = searchParams.get("segmentId");
+    
+    if (segmentIdFromURL && contents.length > 0) {
+      const segmentElement = document.querySelector(
+        `[data-segment-id="${segmentIdFromURL}"]`
+      );
+      
+      if (segmentElement) {
+        findAndScrollToSegment(segmentIdFromURL, setSelectedSegmentId, currentChapter);
+      } else if (
+        !isLoadingRef.current &&
+        skipDetails.skip < totalContentRef.current - 1
+      ) {
+        isLoadingRef.current = true;
+        setSkipDetails({
+          skip: skipDetails.skip + 1,
+          direction: "down",
+        });
+      }
+    }
+  }, [searchParams, contents, skipDetails.skip, totalContentRef.current, currentChapter]);
 
   useEffect(() => {
     const currentContainer = containerRef.current;
@@ -338,6 +368,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             setSelectedSegmentId(segment.segment_id);
             setSelectedSectionIndex(currentSectionIndex);
             handleSidebarToggle(true);
+            const url = new URL(window.location.href);
+            url.searchParams.set('segmentId', segment.segment_id);
+            url.searchParams.set('resourcesOpen', 'true');
+            window.history.replaceState({}, '', url.toString());
           }
         }}
       >
