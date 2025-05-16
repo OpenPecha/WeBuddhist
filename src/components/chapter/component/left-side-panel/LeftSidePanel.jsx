@@ -225,7 +225,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
                           const validIndex = index !== undefined && !isNaN(parseInt(index, 10)) 
                             ? parseInt(index, 10) 
                             : 0;
-                          handleSectionClick(segment.id, validIndex);
+                          handleSectionClick("", validIndex);
                         }}
                       >
                         {segment.title}
