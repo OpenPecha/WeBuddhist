@@ -31,7 +31,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [hasTranslation, setHasTranslation] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState(null);
   const containerRef = useRef(null);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel, isLeftPanelOpen } = usePanelContext();
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
@@ -84,7 +84,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     }
     
     if (textDetails.mapping && isInitialLoadRef.current && !isSectionChangeInProgressRef.current) {
-      const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id;
+      const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id || searchParams.get("segment_id");
       if (targetId) {
         
         setTimeout(() => {
@@ -304,8 +304,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     setVersionId(newVersionId);
   };
 
-  const handleSidebarToggle = (isOpen) => {
+  const handleSidebarToggle = (isOpen,segmentsend) => {
     if (isOpen) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('segment_id', segmentsend);
+      setSearchParams(newParams);
       openResourcesPanel();
     }
   };
@@ -335,7 +338,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
               !e.target.classList.contains('footnote'))) {
             setSelectedSegmentId(segment.segment_id);
             setSelectedSectionIndex(currentSectionIndex);
-            handleSidebarToggle(true);
+            handleSidebarToggle(true,segment.segment_id);
           }
         }}
       >
