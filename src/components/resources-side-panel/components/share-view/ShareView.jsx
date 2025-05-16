@@ -15,13 +15,13 @@ export const fetchShortUrl = async (url) => {
       });
     return data;
 }
-const ShareView = ({ sidePanelData, setIsShareView, shortUrl }) => {
+const ShareView = ({ setIsShareView }) => {
   const [copied, setCopied] = useState(false);
   const { t } = useTranslate();
-  const shorturl = window.location.href;
+  const pageUrl = window.location.href;
   const { data: shorturldata, isLoading} = useQuery(
-    ["toc", shorturl],
-    () => fetchShortUrl(shorturl),
+    ["toc", pageUrl],
+    () => fetchShortUrl(pageUrl),
     {
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 20,
@@ -57,7 +57,7 @@ const ShareView = ({ sidePanelData, setIsShareView, shortUrl }) => {
         <p className="textgreat">{t('text.more_options')}</p>
         <div className="social-share-buttons">
           <a 
-            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shortUrl || sidePanelData?.text_infos?.short_url || window.location.href)}`}
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shorturldata?.short_url || window.location.href)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="social-button"
@@ -65,7 +65,7 @@ const ShareView = ({ sidePanelData, setIsShareView, shortUrl }) => {
             <BsFacebook className="social-icon"/>{t('common.share_on_fb')}
           </a>
           <a 
-            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shortUrl || sidePanelData?.text_infos?.short_url || window.location.href)}`}
+            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shorturldata?.short_url || window.location.href)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="social-button"
