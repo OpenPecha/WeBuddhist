@@ -36,8 +36,9 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
   const isLoadingTopRef = useRef(false);
-  const totalContentRef = useRef(0)
+  const totalContentRef = useRef(0);
   const isPanelNavigationRef = useRef(false);
+  const isScrollLoadingRef = useRef(false);
   const [skipDetails, setSkipDetails] = useState({
     skip: parseInt(searchParams.get("contentIndex") || 0, 10) || parseInt(currentChapter.contentIndex, 10),
     direction: 'down'
@@ -76,6 +77,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     isPanelNavigationRef.current = true;
   }, [versionId, contentId, textId, segmentId, sectionId, currentChapter.contentIndex]);
 
+  // Reset scroll loading flag when sectionId changes (for left panel navigation)
+  useEffect(() => {
+    isScrollLoadingRef.current = false;
+  }, [currentChapter.sectionId]);
+
   useEffect(() => {
     if (!textDetails) return;
     
@@ -86,9 +92,9 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     if (textDetails.mapping && isInitialLoadRef.current && !isSectionChangeInProgressRef.current) {
       const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id || searchParams.get("segment_id");
       if (targetId) {
-
         setTimeout(() => {
-          if (!isSectionChangeInProgressRef.current) {
+          if (!isSectionChangeInProgressRef.current && !isScrollLoadingRef.current) {
+            console.log('scroll to segment boy',targetId)
             findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
           }
           isInitialLoadRef.current = false;
@@ -150,10 +156,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     
     if (sectionExists) {
       // Use the dedicated section scrolling function
-      findAndScrollToSection(currentChapter.sectionId, currentChapter);
-      setTimeout(() => {
-        isSectionChangeInProgressRef.current = false;
-      }, 300);
+      // console.log(' the section old')
+      // findAndScrollToSection(currentChapter.sectionId, currentChapter);
+      // setTimeout(() => {
+      //   isSectionChangeInProgressRef.current = false;
+      // }, 300);
     } else {
       if (contents.length === 0 && textDetails && textDetails.content && textDetails.content.sections) {
         setContents(textDetails.content.sections.map(section => ({ ...section, sectionindex: section.section_number - 1 })));
@@ -227,18 +234,20 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       if (bottomScrollPosition > 0.99 && !isLoadingRef.current && totalContentRef.current > 0) {
         if (skipDetails.skip < totalContentRef.current - 1) {
           isLoadingRef.current = true;
+          isScrollLoadingRef.current = true; // Set flag when loading due to scroll
           const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
             ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
             : skipDetails.skip + 1;
           if (newSkip < totalContentRef.current) {
             if (!isPanelNavigationRef.current) {
-              setSkipDetails({  // need to fix this logic
+              setSkipDetails({  
                 skip: newSkip,
                 direction: 'down'
               });
             }
           } else {
-            isLoadingRef.current = false; 
+            isLoadingRef.current = false;
+            isScrollLoadingRef.current = false; // Reset flag when not loading
           }
         }
       }
@@ -247,6 +256,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         const firstSectionNumber = contents[0]?.section_number;
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
+          isScrollLoadingRef.current = true; // Set flag when loading due to scroll
           const newSkip = skipsCoveredRef.current.has(Math.max(0, firstSectionNumber - 2))
             ? skipDetails.skip
             : Math.max(0, firstSectionNumber - 2);
@@ -260,6 +270,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             }
           } else {
             isLoadingTopRef.current = false;
+            isScrollLoadingRef.current = false; // Reset flag when not loading
           }
         }
       }
@@ -343,6 +354,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         }}
       >
         <div className="segment">
+          {segment.segment_id}
         <span className="segment-number">{segment.segment_number}</span>
           {showSource && (
             <>
@@ -414,11 +426,20 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
   useEffect(() => {
     if (currentChapter && textDetails) {
-      if (currentChapter.segmentId) {
-        findAndScrollToSegment(currentChapter.segmentId, setSelectedSegmentId, currentChapter);
-      } else if (currentChapter.sectionId) {
-        findAndScrollToSection(currentChapter.sectionId, currentChapter);
-      }
+      
+        if (currentChapter.segmentId) {
+          console.log('new i am not')
+          findAndScrollToSegment(currentChapter.segmentId, setSelectedSegmentId, currentChapter);
+        } else if (currentChapter.sectionId) {
+          if (!isScrollLoadingRef.current) {
+          console.log('new section')
+          findAndScrollToSection(currentChapter.sectionId, currentChapter);
+          }
+          else{
+            console.log('Skipping scroll to section - content loaded due to user scrolling');
+
+          }
+        }
     }
   }, [currentChapter.uniqueId, textDetails]);
   
@@ -433,6 +454,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         data-section-id={section.id}
         id={`section-${section.id}`} // Add a unique ID attribute for more reliable targeting
       >
+        {section.id}
         {section.title && <h4 className="section-title">{section.title}</h4>}
         
         {section.segments && section.segments.length > 0 && renderSegments(section.segments, currentSectionIndex)}
