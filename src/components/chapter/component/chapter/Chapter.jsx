@@ -86,7 +86,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     if (textDetails.mapping && isInitialLoadRef.current && !isSectionChangeInProgressRef.current) {
       const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id || searchParams.get("segment_id");
       if (targetId) {
-        
+
         setTimeout(() => {
           if (!isSectionChangeInProgressRef.current) {
             findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
@@ -411,6 +411,16 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   useEffect(() => {
     handleScrollSpy();
   }, [contents, handleScrollSpy]);
+
+  useEffect(() => {
+    if (currentChapter && textDetails) {
+      if (currentChapter.segmentId) {
+        findAndScrollToSegment(currentChapter.segmentId, setSelectedSegmentId, currentChapter);
+      } else if (currentChapter.sectionId) {
+        findAndScrollToSection(currentChapter.sectionId, currentChapter);
+      }
+    }
+  }, [currentChapter.uniqueId, textDetails]);
   
   const renderSection = (section, parentSectionIndex = null) => {
     if (!section) return null;
