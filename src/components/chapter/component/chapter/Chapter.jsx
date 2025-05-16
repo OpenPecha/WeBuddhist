@@ -42,7 +42,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     skip:  parseInt(currentChapter.contentIndex, 10) || parseInt(searchParams.get("contentIndex") || 0, 10),
     direction: 'down'
   });
-  // console.log(skipDetails,currentChapter.contentIndex)
   const skipsCoveredRef = useRef(new Set());
   const [scrollPosition, setScrollPosition] = useState(0);
   const lastScrollPositionRef = useRef(0);
@@ -154,18 +153,15 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       findAndScrollToSection(currentChapter.sectionId, currentChapter);
       setTimeout(() => {
         isSectionChangeInProgressRef.current = false;
-        currentChapter.sectionId=""
       }, 300);
     } else {
       if (contents.length === 0 && textDetails && textDetails.content && textDetails.content.sections) {
         setContents(textDetails.content.sections.map(section => ({ ...section, sectionindex: section.section_number - 1 })));
       }
       isSectionChangeInProgressRef.current = false;
-       currentChapter.sectionId=""
     }
     return () => {
       isSectionChangeInProgressRef.current = false;
-       currentChapter.sectionId=""
     };
   }, [currentChapter.sectionId, contents.length, textDetails]);
 
@@ -186,7 +182,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
         const currentScrollHeight = currentContainer?.scrollHeight || 0;
 
-        if (skipDetails.direction === '') {
+        if (skipDetails.direction === 'up') {
           setTimeout(() => {
             if (currentContainer) {
               const newScrollHeight = currentContainer.scrollHeight;
@@ -234,9 +230,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
             ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
             : skipDetails.skip + 1;
-          console.log(totalContentRef.current,"yoo")
           if (newSkip < totalContentRef.current) {
-            console.log('i change the skip to down',newSkip)
             if (!isPanelNavigationRef.current) {
               setSkipDetails({  // need to fix this logic
                 skip: newSkip,
@@ -258,7 +252,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             : Math.max(0, firstSectionNumber - 2);
           
           if (newSkip >= 0 && !skipsCoveredRef.current.has(newSkip)) {
-            console.log('i change the skip to up',newSkip)
             if (!isPanelNavigationRef.current) {
               setSkipDetails({
                 skip: newSkip,
