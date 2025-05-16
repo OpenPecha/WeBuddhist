@@ -26,7 +26,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   const showPanel = isLeftPanelOpen;
   const [sectionHierarchyState, setSectionHierarchyState] = useState({});
   const {t}=useTranslate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const textId = currentChapter.textId || searchParams.get("text_id");
   const panelContentRef = useRef(null);
   const activeElementRef = useRef(null);
@@ -57,6 +57,10 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
           contentIndex: validContentIndex,
           sectionId: sectionId 
         });
+        
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set('contentIndex', validContentIndex.toString());
+        setSearchParams(newParams);
       }
       else
       {

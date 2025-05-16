@@ -39,7 +39,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const totalContentRef = useRef(0)
   const isPanelNavigationRef = useRef(false);
   const [skipDetails, setSkipDetails] = useState({
-    skip:  parseInt(currentChapter.contentIndex, 10) || parseInt(searchParams.get("contentIndex") || 0, 10),
+    skip: parseInt(searchParams.get("contentIndex") || 0, 10) || parseInt(currentChapter.contentIndex, 10),
     direction: 'down'
   });
   const skipsCoveredRef = useRef(new Set());
