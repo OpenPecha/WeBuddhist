@@ -154,15 +154,18 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       findAndScrollToSection(currentChapter.sectionId, currentChapter);
       setTimeout(() => {
         isSectionChangeInProgressRef.current = false;
+        currentChapter.sectionId=""
       }, 300);
     } else {
       if (contents.length === 0 && textDetails && textDetails.content && textDetails.content.sections) {
         setContents(textDetails.content.sections.map(section => ({ ...section, sectionindex: section.section_number - 1 })));
       }
       isSectionChangeInProgressRef.current = false;
+       currentChapter.sectionId=""
     }
     return () => {
       isSectionChangeInProgressRef.current = false;
+       currentChapter.sectionId=""
     };
   }, [currentChapter.sectionId, contents.length, textDetails]);
 
@@ -183,7 +186,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
 
         const currentScrollHeight = currentContainer?.scrollHeight || 0;
 
-        if (skipDetails.direction === 'up') {
+        if (skipDetails.direction === '') {
           setTimeout(() => {
             if (currentContainer) {
               const newScrollHeight = currentContainer.scrollHeight;
