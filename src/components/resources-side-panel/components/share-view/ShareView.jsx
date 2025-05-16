@@ -4,11 +4,29 @@ import { IoCopy } from "react-icons/io5";
 import { BsFacebook, BsTwitter } from "react-icons/bs";
 import { useTranslate } from "@tolgee/react";
 import "./ShareView.scss";
+import { useQuery } from "react-query";
+import axios from "axios";
 
-const ShareView = ({ sidePanelData, setIsShareView }) => {
+export const fetchShortUrl = async (url) => {
+  const { data } = await axios.post('https://url-shortening-14682653622-b69c6fd.onrender.com/api/v1/shorten', 
+    { 
+      url,
+      tags: ""
+    });
+  return data;
+}
+
+const ShareView = ({ setIsShareView }) => {
   const [copied, setCopied] = useState(false);
   const { t } = useTranslate();
-
+  const pageUrl = window.location.href;
+  const { data: shorturldata, isLoading} = useQuery(
+    ["toc", pageUrl],
+    () => fetchShortUrl(pageUrl),
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
   return (
     <div>
       <div className="headerthing">
@@ -22,11 +40,11 @@ const ShareView = ({ sidePanelData, setIsShareView }) => {
       <div className="share-content p-3">
         <p className="mb-3 textgreat ">{t('text.share_link')}</p>
         <div className="share-url-container p-3 mb-3">
-          <p className="share-url text-truncate">{sidePanelData?.text_infos?.short_url}</p>
+          <p className="share-url text-truncate en-text">{isLoading ? t("common.loading") : shorturldata?.short_url}</p>
           <button
             className="copy-button"
             onClick={() => {
-              navigator.clipboard.writeText(sidePanelData?.text_infos?.short_url);
+              navigator.clipboard.writeText(shorturldata?.short_url);
               setCopied(true);
               setTimeout(() => {
                 setCopied(false);
@@ -38,12 +56,22 @@ const ShareView = ({ sidePanelData, setIsShareView }) => {
         </div>
         <p className="textgreat">{t('text.more_options')}</p>
         <div className="social-share-buttons">
-          <p className="social-button">
+          <a 
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shorturldata?.short_url || window.location.href)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-button"
+          >
             <BsFacebook className="social-icon"/>{t('common.share_on_fb')}
-          </p>
-          <p className="social-button">
+          </a>
+          <a 
+            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shorturldata?.short_url || window.location.href)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="social-button"
+          >
             <BsTwitter className="social-icon"/>{t('common.share_on_x')}
-          </p>
+          </a>
         </div>
       </div>
     </div>
