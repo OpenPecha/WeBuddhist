@@ -45,6 +45,7 @@ vi.mock("../../../resources-side-panel/Resources.jsx", () => ({
 
 const mockOpenResourcesPanel = vi.fn();
 let mockIsResourcesPanelOpen = false;
+const mockSetSearchParams = vi.fn();
 
 vi.mock("../../../../context/PanelContext.jsx", () => ({
   usePanelContext: vi.fn().mockImplementation(() => ({
@@ -59,7 +60,7 @@ vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
-    useSearchParams: () => [new URLSearchParams("?text_id=123&contentIndex=0")],
+    useSearchParams: () => [new URLSearchParams("?text_id=123&contentIndex=0"), mockSetSearchParams],
   };
 });
 
@@ -149,6 +150,7 @@ describe("Chapter Component", () => {
       return { data: null, isLoading: false };
     });
     axiosInstance.post.mockResolvedValue({ data: mockTextDetails });
+    mockSetSearchParams.mockClear();
   });
 
   const setup = (props = {}) => {
@@ -256,6 +258,7 @@ describe("Chapter Component", () => {
     fireEvent.click(segment);
 
     expect(mockOpenResourcesPanel).toHaveBeenCalled();
+    expect(mockSetSearchParams).toHaveBeenCalled();
     
     // Reset the mock state after the test
     mockIsResourcesPanelOpen = false;
@@ -311,5 +314,61 @@ describe("Chapter Component", () => {
     
     // Restore the original method
     Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+  });
+  
+  test("handles content loading state", async () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementationOnce(() => ({
+      data: null,
+      isLoading: true
+    }));
+  
+    setup();
+    
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: mockTextDetails,
+      isLoading: false
+    }));
+    
+    await waitFor(() => {
+      expect(screen.getByText("Section 1")).toBeInTheDocument();
+    });
+  });
+
+  test("handles scroll behavior", async () => {
+    const { container } = setup();
+    
+    await waitFor(() => {
+      expect(screen.getByText("Section 1")).toBeInTheDocument();
+    });
+    
+    const scrollContainer = container.querySelector(".tibetan-text-container");
+    
+    Object.defineProperty(scrollContainer, "scrollHeight", {
+      value: 1000,
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(scrollContainer, "clientHeight", {
+      value: 200,
+      configurable: true,
+      writable: true,
+    });
+    
+    Object.defineProperty(scrollContainer, "scrollTop", {
+      value: 800, 
+      configurable: true,
+      writable: true,
+    });
+    
+    fireEvent.scroll(scrollContainer);
+    Object.defineProperty(scrollContainer, "scrollTop", {
+      value: 5, 
+      configurable: true,
+      writable: true,
+    });
+    const mockContents = [{
+      section_number: 2, 
+    }];
+    fireEvent.scroll(scrollContainer);
   });
 });
