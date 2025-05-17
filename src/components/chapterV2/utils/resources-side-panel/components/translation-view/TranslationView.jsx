@@ -5,6 +5,7 @@ import "./TranslationView.scss";
 import { useQuery } from "react-query";
 import {getLanguageClass} from "../../../../../../utils/Constants.js";
 import axiosInstance from "../../../../../../config/axios-config.js";
+import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 
 export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {
