@@ -3,12 +3,12 @@ import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment
 import {useSearchParams} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
-import Resources from "../../../resources-side-panel/Resources.jsx";
 import LeftSidePanel from "../left-side-panel/LeftSidePanel.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 import { usePanelContext, PanelProvider } from "../../../../context/PanelContext.jsx";
+import Resources from "../../../chapterV2/utils/resources-side-panel/Resources.jsx";
 
 export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId,sectionId) => {
 
