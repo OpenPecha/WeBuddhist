@@ -1,5 +1,4 @@
 import React from "react";
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../../../test-utils/CommonMocks.js";
 import {QueryClient, QueryClientProvider} from "react-query";
 import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
@@ -7,7 +6,8 @@ import {fireEvent, render, screen} from "@testing-library/react";
 import TranslationView, {fetchTranslationsData} from "./TranslationView.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
-import axiosInstance from "../../../../config/axios-config.js";
+import {mockReactQuery, mockAxios, mockTolgee, mockUseAuth} from "../../../../../../test-utils/CommonMocks.js";
+import axiosInstance from "../../../../../../config/axios-config.js";
 
 mockAxios();
 mockUseAuth();

@@ -1,5 +1,3 @@
-import {LANGUAGE, mapLanguageCode, menuItems} from "../../utils/Constants.js";
-import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {IoMdClose} from "react-icons/io";
 import { IoLanguage, IoNewspaperOutline,} from "react-icons/io5";
@@ -11,8 +9,10 @@ import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import RootTextView from "./components/root-texts/RootText.jsx";
-import { usePanelContext } from "../../context/PanelContext.jsx";
 import "./Resources.scss"
+import axiosInstance from "../../../../config/axios-config.js";
+import {usePanelContext} from "../../../../context/PanelContext.jsx";
+import {menuItems, LANGUAGE, mapLanguageCode} from "../../../../utils/Constants.js";
 
 export const fetchSidePanelData = async (segmentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);

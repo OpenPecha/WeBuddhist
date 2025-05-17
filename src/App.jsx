@@ -23,6 +23,8 @@ const Pages = lazy(() => import("./components/pages/Pages.jsx"));
 const Book = lazy(() => import("./components/book/Book.jsx"));
 const Library = lazy(() => import("./components/library/Library.jsx"));
 const Chapters = lazy(() => import("./components/chapter/Chapters.jsx"));
+const ChaptersV2 = lazy(() => import("./components/chapterV2/Chapters"));
+
 const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword.jsx"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword.jsx"));
 
@@ -126,6 +128,7 @@ function App() {
               <Route path="/libraries/:id" element={<Library/>}/>
               <Route path="/book/:id" element={<Book/>}/>
               <Route path="/chapter" element={<Chapters/>}/>
+              <Route path="/chapter-v2" element={<ChaptersV2/>}/>
               <Route path="*" element={<HomePage/>}/>
           </Routes>
       </Suspense>

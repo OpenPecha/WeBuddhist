@@ -1,11 +1,11 @@
 import React from "react";
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../../../test-utils/CommonMocks.js";
 import {QueryClient, QueryClientProvider} from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render, screen} from "@testing-library/react";
 import ShareView from "./ShareView.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
+import {mockUseAuth, mockAxios, mockReactQuery, mockTolgee} from "../../../../../../test-utils/CommonMocks.js";
 
 mockAxios();
 mockUseAuth();

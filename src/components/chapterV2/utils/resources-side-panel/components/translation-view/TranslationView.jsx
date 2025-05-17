@@ -1,10 +1,10 @@
 import { IoMdClose } from "react-icons/io";
 import { useTranslate } from "@tolgee/react";
-import { getLanguageClass } from "../../../../utils/Constants.js";
 import { GoLinkExternal } from "react-icons/go";
 import "./TranslationView.scss";
 import { useQuery } from "react-query";
-import axiosInstance from "../../../../config/axios-config.js";
+import {getLanguageClass} from "../../../../../../utils/Constants.js";
+import axiosInstance from "../../../../../../config/axios-config.js";
 
 export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {

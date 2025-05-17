@@ -3,9 +3,9 @@ import { IoAddCircleOutline, IoShareSocialSharp } from "react-icons/io5";
 import { GoLinkExternal } from "react-icons/go";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
-import axiosInstance from "../../../../config/axios-config.js";
 import "./RelatedTexts.scss";
-import { getLanguageClass } from "../../../../utils/Constants.js";
+import axiosInstance from "../../../../../../config/axios-config.js";
+import {getLanguageClass} from "../../../../../../utils/Constants.js";
 
 export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/commentaries`, {
