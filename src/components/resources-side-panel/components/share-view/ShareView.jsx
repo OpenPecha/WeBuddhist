@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IoMdCheckmark, IoMdClose } from "react-icons/io";
 import { IoCopy } from "react-icons/io5";
 import { BsFacebook, BsTwitter } from "react-icons/bs";
@@ -6,6 +6,7 @@ import { useTranslate } from "@tolgee/react";
 import "./ShareView.scss";
 import { useQuery } from "react-query";
 import axios from "axios";
+import { updateOgMetaTags } from "../../../../utils/metaTagUtils";
 
 export const fetchShortUrl = async (url) => {
   const { data } = await axios.post('https://url-shortening-14682653622-b69c6fd.onrender.com/api/v1/shorten', 
@@ -16,7 +17,7 @@ export const fetchShortUrl = async (url) => {
   return data;
 }
 
-const ShareView = ({ setIsShareView }) => {
+const ShareView = ({ setIsShareView, segmentId, language = 'bo' }) => {
   const [copied, setCopied] = useState(false);
   const { t } = useTranslate();
   const pageUrl = window.location.href;
@@ -27,6 +28,13 @@ const ShareView = ({ setIsShareView }) => {
       refetchOnWindowFocus: false,
     }
   );
+
+  // Update OG meta tags when component mounts
+  useEffect(() => {
+    if (segmentId) {
+      updateOgMetaTags(segmentId, language);
+    }
+  }, [segmentId, language]);
   return (
     <div>
       <div className="headerthing">

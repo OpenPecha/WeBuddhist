@@ -1,11 +1,12 @@
 import {LANGUAGE, mapLanguageCode, menuItems} from "../../utils/Constants.js";
+import { resetOgMetaTags } from "../../utils/metaTagUtils.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {IoMdClose} from "react-icons/io";
 import { IoLanguage, IoNewspaperOutline,} from "react-icons/io5";
 import {FiInfo} from "react-icons/fi";
 import {BiSearch, BiBookOpen} from "react-icons/bi";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {useTranslate} from "@tolgee/react";
 import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
@@ -46,6 +47,13 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
       refetchOnWindowFocus: false,
     }
   );
+  
+  // Reset meta tags when component unmounts
+  useEffect(() => {
+    return () => {
+      resetOgMetaTags();
+    };
+  }, []);
 
   const renderMainPanel = () => {
     return <>
@@ -133,6 +141,8 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
         return (
           <ShareView
             setIsShareView={setActiveView}
+            segmentId={segmentId}
+            language="bo"
           />
         );
       case "translation":
