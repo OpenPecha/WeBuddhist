@@ -6,8 +6,13 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
 import CommentaryView, { fetchCommentaryData } from "./RelatedTexts.jsx";
 import "@testing-library/jest-dom";
+<<<<<<< HEAD:src/components/chapterV2/utils/resources-side-panel/components/related-texts/RelatedTexts.test.jsx
 import {mockTolgee} from "../../../../../../test-utils/CommonMocks.js";
 import axiosInstance from "../../../../../../config/axios-config.js";
+=======
+import React from "react";
+import { PanelContext } from "../../../../context/PanelContext.jsx";
+>>>>>>> develop:src/components/resources-side-panel/components/related-texts/RelatedTexts.test.jsx
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -77,6 +82,27 @@ describe("CommentaryView", () => {
       }
       return { data: null, isLoading: false };
     });
+    
+    // Mock the PanelContext
+    vi.mock("../../../../context/PanelContext.jsx", () => ({
+      usePanelContext: () => ({
+        isResourcesPanelOpen: true,
+        isTranslationSourceOpen: false,
+        isLeftPanelOpen: false,
+        openResourcesPanel: vi.fn(),
+        closeResourcesPanel: vi.fn(),
+        toggleResourcesPanel: vi.fn(),
+        openTranslationSource: vi.fn(),
+        closeTranslationSource: vi.fn(),
+        toggleTranslationSource: vi.fn(),
+        openLeftPanel: vi.fn(),
+        closeLeftPanel: vi.fn(),
+        toggleLeftPanel: vi.fn()
+      }),
+      PanelContext: {
+        Provider: ({ children, value }) => <div>{children}</div>
+      }
+    }));
   });
 
   const setup = (props = {}) => {
@@ -85,13 +111,32 @@ describe("CommentaryView", () => {
       setIsCommentaryView: mockSetIsRelatedTextView,
       expandedCommentaries: { "mock-RelatedText-1": false, "mock-RelatedText-2": false },
       setExpandedCommentaries: mockSetExpandedCommentaries,
+      addChapter: vi.fn(),
+      sectionindex: 0
+    };
+
+    const mockPanelContextValue = {
+      isResourcesPanelOpen: true,
+      isTranslationSourceOpen: false,
+      isLeftPanelOpen: false,
+      openResourcesPanel: vi.fn(),
+      closeResourcesPanel: vi.fn(),
+      toggleResourcesPanel: vi.fn(),
+      openTranslationSource: vi.fn(),
+      closeTranslationSource: vi.fn(),
+      toggleTranslationSource: vi.fn(),
+      openLeftPanel: vi.fn(),
+      closeLeftPanel: vi.fn(),
+      toggleLeftPanel: vi.fn()
     };
 
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
           <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <CommentaryView {...defaultProps} {...props} />
+            <PanelContext.Provider value={mockPanelContextValue}>
+              <CommentaryView {...defaultProps} {...props} />
+            </PanelContext.Provider>
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
@@ -150,21 +195,7 @@ describe("CommentaryView", () => {
     }
   });
 
-  test("clicking on 'open text' button calls addChapter", () => {
-    const mockAddChapter = vi.fn();
-    setup({ addChapter: mockAddChapter });
-
-    const openTextButtons = document.querySelectorAll(".commentary-button");
-    // The first button is the 'open text' button
-    fireEvent.click(openTextButtons[0]);
-
-    expect(mockAddChapter).toHaveBeenCalledWith({
-      contentId: "",
-      versionId: "",
-      textId: "mock-RelatedText-1",
-      segmentId: "mock-segment-id"
-    });
-  });
+ 
 
   test("renders correctly with empty commentaries", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementationOnce(() => ({

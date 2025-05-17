@@ -63,8 +63,11 @@
           color: #666;
         }
 
-        &:hover {
-          background-color: #f0f0f0;
+        &.selected {
+          background-color: #f0f7ff;
+        }
+        &.highlighted-segment {
+          background-color: #f0f7ff;
         }
       }
     }
@@ -265,4 +268,8 @@
       font-size: 0.85rem;
     }
   }
+}
+
+.highlighted-segment {
+  background-color: #f0f7ff;
 }

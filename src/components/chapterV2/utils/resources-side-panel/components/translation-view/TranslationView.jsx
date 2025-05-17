@@ -28,6 +28,7 @@ const TranslationView = ({
   sectionindex
 }) => {
   const { t } = useTranslate();
+  const {closeResourcesPanel} = usePanelContext();
   const {data: sidePanelTranslationsData} = useQuery(
     ["sidePanelTranslations",segmentId],
     () => fetchTranslationsData(segmentId), //send segmentId later todo
@@ -61,14 +62,14 @@ const TranslationView = ({
     const hasContent = !!translation.content?.length;
     return (
       <div key={index} className="translation-item">
-      <span className={`translation-content ${getLanguageClass(translation.language)}`}>
+      <span className={`translation-content  ${getLanguageClass(translation.language)}`}>
         <div
           className={`translation-text ${isExpanded ? 'expanded' : 'collapsed'}`}
           dangerouslySetInnerHTML={{ __html: translation.content }}
         />
         {hasContent && (
           <button
-            className="expand-button"
+            className="expand-button navbaritems"
             onClick={() => setExpandedTranslations(prev => ({
               ...prev,
               [translationKey]: !isExpanded,
@@ -85,7 +86,7 @@ const TranslationView = ({
           )}
           {translation.source && (
             <p className="navbaritems">
-              {t("connection_panel.menuscript.source")}: {translation.source}
+              {t("connection_panel.menuscript.source")}:<span className={`${getLanguageClass("en")} source`}> {translation.source}</span>
             </p>
           )}
 
@@ -96,14 +97,18 @@ const TranslationView = ({
           <div className="linkselect navbaritems">
             <div
               className="linkicons"
-              onClick={() => addChapter({ 
-                contentId: "", 
-                versionId: "", 
-                textId: translation.text_id, 
-                segmentId: translation.segment_id,
-                contentIndex: sectionindex !== null ? sectionindex : 0
-              })}
-            >
+              onClick={() => {
+                addChapter({ 
+                  contentId: "", 
+                  versionId: "", 
+                  textId: translation.text_id, 
+                  segmentId: translation.segment_id,
+                  // contentIndex: sectionindex !== null ? sectionindex : 0
+                  contentIndex: 0 //todo : change this to above when pagination on version is added
+                });
+                closeResourcesPanel();
+              }}
+              >
               <GoLinkExternal />
               {t("text.translation.open_text")}
             </div>

@@ -1,5 +1,11 @@
 import React from "react";
+<<<<<<< HEAD:src/components/chapterV2/utils/resources-side-panel/components/share-view/ShareView.test.jsx
+=======
+import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../../../test-utils/CommonMocks.js";
+import { BrowserRouter as Router } from "react-router-dom";
+>>>>>>> develop:src/components/resources-side-panel/components/share-view/ShareView.test.jsx
 import {QueryClient, QueryClientProvider} from "react-query";
+import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render, screen} from "@testing-library/react";
 import ShareView from "./ShareView.jsx";
@@ -11,16 +17,12 @@ mockAxios();
 mockUseAuth();
 mockReactQuery();
 
-vi.mock("@tolgee/react", async () => {
-  const actual = await vi.importActual("@tolgee/react");
-  return {
-    ...actual,
-    useTranslate: () => ({
-      t: (key) => key,
-    }),
-  };
-});
-
+vi.mock("@tolgee/react", async () => ({
+  useTranslate: () => ({
+    t: (key) => key,
+  }),
+  TolgeeProvider: ({ children }) => children
+}));
 
 Object.defineProperty(navigator, "clipboard", {
   value: {
@@ -30,20 +32,27 @@ Object.defineProperty(navigator, "clipboard", {
 
 describe("ShareView Component", () => {
   const queryClient = new QueryClient();
-  const mockSidePanelData = {
+  const mockShortUrlData = {
     text_infos: {
-      short_url: "https://example.com/share/123"
+      short_url: "https://gg.com/share/123"
     }
   };
 
   const mockProps = {
-    sidePanelData: mockSidePanelData,
     setIsShareView: vi.fn()
   };
 
   beforeEach(() => {
     vi.resetAllMocks();
     vi.useFakeTimers();
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => {
+      return {
+        data: {
+          short_url: "https://gg.com/share/123"
+        },
+        isLoading: false
+      };
+    });
   });
 
   afterEach(() => {
@@ -75,7 +84,7 @@ describe("ShareView Component", () => {
     
     const shareUrl = document.querySelector(".share-url");
     expect(shareUrl).toBeInTheDocument();
-    expect(shareUrl.textContent).toBe("https://example.com/share/123");
+    expect(shareUrl.textContent).toBe("https://gg.com/share/123");
   });
 
   test("handles close button click", () => {
@@ -96,7 +105,7 @@ describe("ShareView Component", () => {
     
     fireEvent.click(copyButton);
     
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("https://example.com/share/123");
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("https://gg.com/share/123");
   });
 
   test("shows checkmark icon after copying", () => {
@@ -136,6 +145,10 @@ describe("ShareView Component", () => {
   });
 
   test("handles null or undefined sidePanelData gracefully", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: null,
+      isLoading: false,
+    }));
     const { rerender } = render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider 

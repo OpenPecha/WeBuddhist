@@ -65,7 +65,7 @@ export const sourceTranslationOptionsMapper = {
 
 export const checkSectionsForTranslation = (sections) => {
   if (!sections || sections.length === 0) return false;
-  
+
   for (const section of sections) {
     if (section.segments && section.segments.length > 0) {
       for (const segment of section.segments) {
@@ -74,13 +74,15 @@ export const checkSectionsForTranslation = (sections) => {
         }
       }
     }
-    
+
     if (section.sections && section.sections.length > 0) {
-      const hasTranslationInNestedSections = checkSectionsForTranslation(section.sections);
+      const hasTranslationInNestedSections = checkSectionsForTranslation(
+        section.sections
+      );
       if (hasTranslationInNestedSections) return true;
     }
   }
-  
+
   return false;
 };
 
@@ -94,41 +96,101 @@ export const findAndScrollToSegment = (
   }
 
   setTimeout(() => {
-    const chapterContainers = document.querySelectorAll(".chapter-container");
-    let targetContainer = null;
+    if (!currentChapter) return;
 
-    if (chapterContainers.length > 0) {
-      targetContainer = chapterContainers[chapterContainers.length - 1];
-    }
+    const targetContainer = document.querySelector(
+      `[data-chapter-id="${currentChapter.uniqueId}"]`
+    );
 
-    // Scenario 1: Looking for a segment
+    if (!targetContainer) return;
+
+    // Scenario 1: Scroll to segment
     if (targetId) {
-      const segmentElement = targetContainer
-        ? targetContainer.querySelector(`[data-segment-id="${targetId}"]`)
-        : document.querySelector(`[data-segment-id="${targetId}"]`);
+      const segmentElement = targetContainer.querySelector(
+        `[data-segment-id="${targetId}"]`
+      );
 
       if (segmentElement) {
-        segmentElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        const scrollContainer = targetContainer.querySelector(
+          ".tibetan-text-container"
+        );
+        if (scrollContainer) {
+          const elementTop =
+            segmentElement.offsetTop - scrollContainer.offsetTop;
+          scrollContainer.scrollTo({
+            top: elementTop - 50,
+            behavior: "smooth",
+          });
+        }
         segmentElement.classList.add("highlighted-segment");
         return;
       }
     }
 
-    // Scenario 2: Looking for a section
-    if (currentChapter && currentChapter.sectionId) {
-      const sectionElement = targetContainer
-        ? targetContainer.querySelector(
-            `[data-section-id="${currentChapter.sectionId}"]`
-          )
-        : document.querySelector(
-            `[data-section-id="${currentChapter.sectionId}"]`
-          );
+    // Scenario 2: Scroll to section
+    if (currentChapter.sectionId) {
+      const sectionElement = targetContainer.querySelector(
+        `[data-section-id="${currentChapter.sectionId}"]`
+      );
 
       if (sectionElement) {
-        sectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
+        const scrollContainer = targetContainer.querySelector(
+          ".tibetan-text-container"
+        );
+        if (scrollContainer) {
+          const elementTop =
+            sectionElement.offsetTop - scrollContainer.offsetTop;
+          scrollContainer.scrollTo({
+            top: elementTop - 50,
+            behavior: "smooth",
+          });
+        }
         sectionElement.classList.add("highlighted-segment");
-        return;
       }
     }
   }, 500);
+};
+
+export const findAndScrollToSection = (sectionId, currentChapter) => {
+  if (!sectionId || !currentChapter) return;
+
+  setTimeout(() => {
+    const targetContainer = document.querySelector(
+      `[data-chapter-id="${currentChapter.uniqueId}"]`
+    );
+
+    if (!targetContainer) {
+      return;
+    }
+
+    const scrollContainer = targetContainer.querySelector(
+      ".tibetan-text-container"
+    );
+    if (!scrollContainer) {
+      return;
+    }
+
+    let sectionElement = targetContainer.querySelector(`#section-${sectionId}`);
+
+    if (!sectionElement) {
+      const sectionElements = targetContainer.querySelectorAll(
+        `[data-section-id="${sectionId}"]`
+      );
+      if (sectionElements && sectionElements.length > 0) {
+        sectionElement = sectionElements[0];
+      }
+    }
+
+    if (sectionElement) {
+      const elementRect = sectionElement.getBoundingClientRect();
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const relativeTop =
+        elementRect.top - containerRect.top + scrollContainer.scrollTop;
+
+      scrollContainer.scrollTo({
+        top: relativeTop - 50,
+        behavior: "smooth",
+      });
+    }
+  }, 300);
 };

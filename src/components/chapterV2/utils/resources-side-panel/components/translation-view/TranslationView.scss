@@ -1,10 +1,11 @@
 .translation-content {
   text-align: start;
-  font-size: medium;
-  line-height: 2;
+  line-height: 1.5;
   color: black;
   
   .translation-text {
+    padding-top: 3px;
+    font-size: small;
     position: relative;
     
     &.collapsed {
@@ -33,15 +34,14 @@
   }
   
   .belowdiv{
-    margin-top: 10px;
-    padding: 1rem;
-    border-radius: 6px;
-    background-color: #FBFBFA;
     font-size: small;
     .titles{
       font-size: medium;
       font-weight: 600;
       line-height: 1;
+    }
+    .source{
+      font-size: small;
     }
     p, div{
       font-size: small;

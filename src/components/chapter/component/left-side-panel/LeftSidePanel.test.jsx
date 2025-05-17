@@ -121,7 +121,7 @@ describe("LeftSidePanel Component", () => {
 
     expect(mockUpdateChapter).toHaveBeenCalledWith(
       { id: "chapter-1" },
-      { contentIndex: 0, sectionId: "section-1" }
+      { contentIndex: 0, sectionId: "" }
     );
   });
 

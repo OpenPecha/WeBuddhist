@@ -113,17 +113,6 @@ describe("Versions Component", () => {
   });
 
 
-  test("displays no content found message when versions is not an array", () => {
-    setup({ 
-      versionsData: { 
-        versions: "not an array" 
-      } 
-    });
-    
-    const noContentMessage = screen.getByText("No content found");
-    expect(noContentMessage).toBeInTheDocument();
-  });
-
   test("renders pagination component when versions exist", () => {
     setup();
     

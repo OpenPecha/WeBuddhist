@@ -6,8 +6,13 @@ import {fireEvent, render, screen} from "@testing-library/react";
 import TranslationView, {fetchTranslationsData} from "./TranslationView.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
+<<<<<<< HEAD:src/components/chapterV2/utils/resources-side-panel/components/translation-view/TranslationView.test.jsx
 import {mockReactQuery, mockAxios, mockTolgee, mockUseAuth} from "../../../../../../test-utils/CommonMocks.js";
 import axiosInstance from "../../../../../../config/axios-config.js";
+=======
+import axiosInstance from "../../../../config/axios-config.js";
+import { PanelProvider } from "../../../../context/PanelContext.jsx";
+>>>>>>> develop:src/components/resources-side-panel/components/translation-view/TranslationView.test.jsx
 
 mockAxios();
 mockUseAuth();
@@ -83,7 +88,9 @@ describe("TranslationView Component", () => {
           fallback={"Loading tolgee..."} 
           tolgee={mockTolgee}
         >
-          <TranslationView {...mockProps} />
+          <PanelProvider>
+            <TranslationView {...mockProps} />
+          </PanelProvider>
         </TolgeeProvider>
       </QueryClientProvider>
     );
@@ -167,7 +174,9 @@ describe("TranslationView Component", () => {
           fallback={"Loading tolgee..."} 
           tolgee={mockTolgee}
         >
-          <TranslationView {...mockProps} versionId="text-123" />
+          <PanelProvider>
+            <TranslationView {...mockProps} versionId="text-123" />
+          </PanelProvider>
         </TolgeeProvider>
       </QueryClientProvider>
     );
@@ -221,7 +230,8 @@ describe("TranslationView Component", () => {
       contentId: "",
       versionId: "",
       textId: "text-123",
-      segmentId: "test-segment-id"
+      segmentId: "test-segment-id",
+      contentIndex: 0
     });
   });
 });

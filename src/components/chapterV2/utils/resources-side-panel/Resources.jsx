@@ -9,6 +9,7 @@ import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import RootTextView from "./components/root-texts/RootText.jsx";
+import { useSearchParams } from "react-router-dom";
 import "./Resources.scss"
 import axiosInstance from "../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../context/PanelContext.jsx";
@@ -26,13 +27,14 @@ export const fetchSidePanelData = async (segmentId) => {
   return data;
 };
 
-const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex}) => {
+const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex, handleClose}) => {
   const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
   const showPanel = isResourcesPanelOpen;
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
   const [expandedTranslations, setExpandedTranslations] = useState({});
   const [expandedRootTexts, setExpandedRootTexts] = useState({});
   const [activeView, setActiveView] = useState("main");
+  const [searchParams, setSearchParams] = useSearchParams();
 
 
   const {t} = useTranslate();
@@ -52,8 +54,13 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
         <IoMdClose
           size={24}
           onClick={() => {
-            closeResourcesPanel();
+            handleClose ? handleClose() : closeResourcesPanel();
             setActiveView("main");
+            if (searchParams.has('segment_id')) {
+              const newParams = new URLSearchParams(searchParams);
+              newParams.delete('segment_id');
+              setSearchParams(newParams);
+            }
           }}
           className="close-icon"
         />
@@ -125,7 +132,6 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
       case "share":
         return (
           <ShareView
-            sidePanelData={sidePanelData}
             setIsShareView={setActiveView}
           />
         );

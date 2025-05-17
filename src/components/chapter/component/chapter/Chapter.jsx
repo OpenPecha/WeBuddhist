@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState, useCallback} from "react";
-import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment, checkSectionsForTranslation} from "../../../../utils/Constants.js";
+import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment, findAndScrollToSection, checkSectionsForTranslation} from "../../../../utils/Constants.js";
 import {useSearchParams} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
@@ -29,17 +29,18 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source);
   const [hasTranslation, setHasTranslation] = useState(false);
-  const [activeSectionId, setActiveSectionId] = useState(null); 
-  const lastActiveSectionIdRef = useRef(null); 
+  const [activeSectionId, setActiveSectionId] = useState(null);
   const containerRef = useRef(null);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel, isLeftPanelOpen } = usePanelContext();
   const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
   const isLoadingRef = useRef(false);
   const isLoadingTopRef = useRef(false);
-  const totalContentRef = useRef(0)
+  const totalContentRef = useRef(0);
+  const isPanelNavigationRef = useRef(false);
+  const isScrollLoadingRef = useRef(false);
   const [skipDetails, setSkipDetails] = useState({
-    skip: currentChapter.contentIndex !== undefined ? parseInt(currentChapter.contentIndex, 10) : parseInt(searchParams.get("contentIndex") || 0, 10),
+    skip: parseInt(searchParams.get("contentIndex") || 0, 10) || parseInt(currentChapter.contentIndex, 10),
     direction: 'down'
   });
   const skipsCoveredRef = useRef(new Set());
@@ -65,11 +66,21 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     isLoadingRef.current = false;
     isLoadingTopRef.current = false;
     totalContentRef.current = 0;
+    
+    const skipValue = currentChapter.contentIndex !== undefined && !isNaN(parseInt(currentChapter.contentIndex, 10)) 
+      ? parseInt(currentChapter.contentIndex, 10) 
+      : 0;    
     setSkipDetails({
-      skip: parseInt(currentChapter.contentIndex, 10),
+      skip: skipValue,
       direction: 'down'
     });
+    isPanelNavigationRef.current = true;
   }, [versionId, contentId, textId, segmentId, sectionId, currentChapter.contentIndex]);
+
+  // Reset scroll loading flag when sectionId changes (for left panel navigation)
+  useEffect(() => {
+    isScrollLoadingRef.current = false;
+  }, [currentChapter.sectionId]);
 
   useEffect(() => {
     if (!textDetails) return;
@@ -78,11 +89,15 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       updateChapter(currentChapter, { contentId: textDetails.content.id });
     }
     
-    if (textDetails.mapping && isInitialLoadRef.current) {
-      const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id;
+    if (textDetails.mapping && isInitialLoadRef.current && !isSectionChangeInProgressRef.current) {
+      const targetId = textDetails.mapping.segment_id || textDetails.mapping.section_id || searchParams.get("segment_id");
       if (targetId) {
-        findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
-        isInitialLoadRef.current = false;
+        setTimeout(() => {
+          if (!isSectionChangeInProgressRef.current && !isScrollLoadingRef.current) {
+            findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
+          }
+          isInitialLoadRef.current = false;
+        }, 300);
       }
     }
     
@@ -101,43 +116,70 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     checkTranslation();
   }, [textDetails, currentChapter, updateChapter]);
 
-  //handle scrolling to section when sectionId changes
+  const isSectionChangeInProgressRef = useRef(false);
+  // Helper function to check if a section ID exists in nested sections
+  const checkSectionHierarchy = (sections, targetId) => {
+    if (!sections || !sections.length) return false;
+    
+    for (const section of sections) {
+      if (section.id === targetId) return true;
+      
+      if (section.sections && section.sections.length > 0) {
+        const found = checkSectionHierarchy(section.sections, targetId);
+        if (found) return true;
+      }
+    }
+    
+    return false;
+  };
+
   useEffect(() => {
     if (!currentChapter.sectionId || !containerRef.current) return;
     
-    const scrollTimeout = setTimeout(() => {
-      const sectionElement = containerRef.current.querySelector(
-        `[data-section-id="${currentChapter.sectionId}"]`
-      );
-      
-      if (sectionElement) {
-        const container = containerRef.current;
-        
-        const sectionRect = sectionElement.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        const offsetTop = sectionRect.top - containerRect.top + container.scrollTop;
-        
-        container.scrollTo({
-          top: offsetTop,
-          behavior: 'smooth'
-        });
-      }
-    }, 300);
+    isSectionChangeInProgressRef.current = true;
     
-    return () => clearTimeout(scrollTimeout);
-  }, [currentChapter.sectionId]);
+    const container = containerRef.current;
+    if (!container) {
+      isSectionChangeInProgressRef.current = false;
+      return;
+    }
+    
+    // Check if the section is already in the loaded contents
+    const sectionExists = contents.some(section => {
+      if (section.id === currentChapter.sectionId) return true;
+      if (section.sections) {
+        return checkSectionHierarchy(section.sections, currentChapter.sectionId);
+      }
+      return false;
+    });
+    
+    if (sectionExists) {
+      // Use the dedicated section scrolling function
+      // findAndScrollToSection(currentChapter.sectionId, currentChapter);
+      // setTimeout(() => {
+      //   isSectionChangeInProgressRef.current = false;
+      // }, 300);
+    } else {
+      if (contents.length === 0 && textDetails && textDetails.content && textDetails.content.sections) {
+        setContents(textDetails.content.sections.map(section => ({ ...section, sectionindex: section.section_number - 1 })));
+      }
+      isSectionChangeInProgressRef.current = false;
+    }
+    return () => {
+      isSectionChangeInProgressRef.current = false;
+    };
+  }, [currentChapter.sectionId, contents.length, textDetails]);
 
   useEffect(() => {
     if (!textDetails) return;
 
     setContents(prev => {
       const incomingSections = textDetails.content.sections;
-      const sectionindex = textDetails.current_section - 1;
       const existingSectionNumbers = new Set(prev.map(section => section.section_number));
 
       const filteredSections = incomingSections
         .filter(section => !existingSectionNumbers.has(section.section_number))
-        .map(section => ({ ...section, sectionindex }));
+        .map(section => ({ ...section, sectionindex:section.section_number - 1 }));
 
       if(skipDetails.direction === 'up'){
         const currentContainer = containerRef.current;
@@ -167,61 +209,17 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     isLoadingTopRef.current = false;
   }, [textDetails]);
 
-  const throttle = useCallback((callback, delay) => {
-    let lastCall = 0;
-    return function(...args) {
-      const now = new Date().getTime();
-      if (now - lastCall >= delay) {
-        lastCall = now;
-        callback(...args);
-      }
-    };
-  }, []);
-
-  // Function to determine which section is in view
-  const determineActiveSectionInView = useCallback(() => {
-    if (!containerRef.current) return;
-
-    const sections = containerRef.current.querySelectorAll('[data-section-id]');
-    if (!sections.length) return;
-
-    if (isLoadingRef.current) return;
-
-    const containerTop = containerRef.current.getBoundingClientRect().top;
-
-    let closestSection = null;
-    let minDistance = Number.MAX_VALUE;
-
-    sections.forEach((section) => {
-      const rect = section.getBoundingClientRect();
-      const distance = rect.top - containerTop;
-      if (distance >= 0 && distance < minDistance) {
-        minDistance = distance;
-        closestSection = section;
-      }
-    });
-
-    if (closestSection) {
-      const newActiveSectionId = closestSection.getAttribute('data-section-id');
-      if (newActiveSectionId !== lastActiveSectionIdRef.current) {
-        lastActiveSectionIdRef.current = newActiveSectionId;
-        setActiveSectionId(newActiveSectionId);
-      }
-    }
-  }, []);
-
-  const throttledScrollSpy = useCallback(
-    throttle(determineActiveSectionInView, 150),
-    [throttle, determineActiveSectionInView]
-  );
-
   useEffect(() => {
     const currentContainer = containerRef.current;
     if (!currentContainer) return;
 
     const handleScroll = () => {
       const {scrollTop, scrollHeight, clientHeight} = currentContainer;
-  
+      if (isPanelNavigationRef.current) {
+        isPanelNavigationRef.current = false;
+        lastScrollPositionRef.current = scrollTop;
+        return;
+      }
       // Determine scroll direction using ref for immediate access to previous value
       const isScrollingUp = scrollTop < lastScrollPositionRef.current;
   
@@ -234,17 +232,20 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       if (bottomScrollPosition > 0.99 && !isLoadingRef.current && totalContentRef.current > 0) {
         if (skipDetails.skip < totalContentRef.current - 1) {
           isLoadingRef.current = true;
+          isScrollLoadingRef.current = true; // Set flag when loading due to scroll
           const newSkip = skipsCoveredRef.current.has(skipDetails.skip + 1)
             ? Math.max(...Array.from(skipsCoveredRef.current)) + 1
             : skipDetails.skip + 1;
-          
           if (newSkip < totalContentRef.current) {
-            setSkipDetails({
-              skip: newSkip,
-              direction: 'down'
-            });
+            if (!isPanelNavigationRef.current) {
+              setSkipDetails({  
+                skip: newSkip,
+                direction: 'down'
+              });
+            }
           } else {
-            isLoadingRef.current = false; 
+            isLoadingRef.current = false;
+            isScrollLoadingRef.current = false; // Reset flag when not loading
           }
         }
       }
@@ -253,34 +254,33 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         const firstSectionNumber = contents[0]?.section_number;
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
+          isScrollLoadingRef.current = true; // Set flag when loading due to scroll
           const newSkip = skipsCoveredRef.current.has(Math.max(0, firstSectionNumber - 2))
             ? skipDetails.skip
             : Math.max(0, firstSectionNumber - 2);
           
           if (newSkip >= 0 && !skipsCoveredRef.current.has(newSkip)) {
-            setSkipDetails({
-              skip: newSkip,
-              direction: 'up'
-            });
+            if (!isPanelNavigationRef.current) {
+              setSkipDetails({
+                skip: newSkip,
+                direction: 'up'
+              });
+            }
           } else {
             isLoadingTopRef.current = false;
+            isScrollLoadingRef.current = false; // Reset flag when not loading
           }
         }
       }
-      throttledScrollSpy();
     };
     
     skipsCoveredRef.current.add(skipDetails.skip);
     currentContainer.addEventListener('scroll', handleScroll);
 
-    // Initial check for active section after a short delay
-    const initialCheckTimeout = setTimeout(determineActiveSectionInView, 300);
-
     return () => {
       currentContainer.removeEventListener('scroll', handleScroll);
-      clearTimeout(initialCheckTimeout);
     };
-  }, [contents, skipDetails.skip, totalContentRef.current, throttledScrollSpy]);
+  }, [contents, skipDetails.skip, totalContentRef.current]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -313,8 +313,12 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     setVersionId(newVersionId);
   };
 
-  const handleSidebarToggle = (isOpen) => {
+  const handleSidebarToggle = (isOpen,segmentsend,segmentindex) => {
     if (isOpen) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('segment_id', segmentsend);
+      newParams.set('contentIndex', segmentindex);
+      setSearchParams(newParams);
       openResourcesPanel();
     }
   };
@@ -337,14 +341,14 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         <div
         key={segment.segment_id}
         data-segment-id={segment.segment_id}
-        className="text-segment mb-3 mb-md-4"
+        className={`text-segment mb-3 mb-md-4 ${isResourcesPanelOpen && selectedSegmentId === segment.segment_id ? 'selected' : ''} ${selectedSegmentId === segment.segment_id ? 'highlighted-segment' : ''}`}
         onClick={(e) => {
           if (!e.target.classList ||
             (!e.target.classList.contains('footnote-marker') &&
               !e.target.classList.contains('footnote'))) {
             setSelectedSegmentId(segment.segment_id);
             setSelectedSectionIndex(currentSectionIndex);
-            handleSidebarToggle(true);
+            handleSidebarToggle(true,segment.segment_id,currentSectionIndex);
           }
         }}
       >
@@ -363,24 +367,91 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     );
   });
   };
-
-  const renderSection = (section) => {
-    if (!section) return null;
+  // Handle scroll events to track active section
+  const handleScrollSpy = useCallback(() => {
+    if (!containerRef.current) return;
     
-    const currentSectionIndex = section.sectionindex !== undefined ? section.sectionindex : null;
+    const sections = containerRef.current.querySelectorAll('[data-section-id]');
+    if (!sections.length) return;
+    
+    // Get the section that is most visible in the viewport
+    let mostVisibleSection = null;
+    let maxVisibility = 0;
+    
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Calculate how much of the section is visible in the viewport
+      const visibleTop = Math.max(0, rect.top);
+      const visibleBottom = Math.min(windowHeight, rect.bottom);
+      const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+      
+      // Calculate the percentage of the section that is visible
+      const visibilityPercentage = visibleHeight / rect.height;
+      
+      if (visibilityPercentage > maxVisibility) {
+        maxVisibility = visibilityPercentage;
+        mostVisibleSection = section;
+      }
+    });
+    
+    if (mostVisibleSection && mostVisibleSection.dataset.sectionId) {
+      setActiveSectionId(mostVisibleSection.dataset.sectionId);
+    }
+  }, []);
+  
+  // Set up scroll event listener
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    // Initial check for visible sections
+    handleScrollSpy();
+    
+    // Add scroll event listener
+    container.addEventListener('scroll', handleScrollSpy);
+    
+    return () => {
+      container.removeEventListener('scroll', handleScrollSpy);
+    };
+  }, [handleScrollSpy, contents]);
+  
+  // Update active section when content changes
+  useEffect(() => {
+    handleScrollSpy();
+  }, [contents, handleScrollSpy]);
+
+  useEffect(() => {
+    if (currentChapter && textDetails) {
+      
+        if (currentChapter.segmentId) {
+          findAndScrollToSegment(currentChapter.segmentId, setSelectedSegmentId, currentChapter);
+        } else if (currentChapter.sectionId) {
+          if (!isScrollLoadingRef.current) {
+          findAndScrollToSection(currentChapter.sectionId, currentChapter);
+          }
+        }
+    }
+  }, [currentChapter.uniqueId, textDetails]);
+  
+  const renderSection = (section, parentSectionIndex = null) => {
+    if (!section) return null;
+    const currentSectionIndex = section.sectionindex !== undefined ? section.sectionindex : parentSectionIndex;
     
     return (
       <div 
         key={section.id} 
         className="nested-section"
         data-section-id={section.id}
+        id={`section-${section.id}`} // Add a unique ID attribute for more reliable targeting
       >
         {section.title && <h4 className="section-title">{section.title}</h4>}
         
         {section.segments && section.segments.length > 0 && renderSegments(section.segments, currentSectionIndex)}
         
         {section.sections && section.sections.length > 0 && 
-          section.sections.map(nestedSection => renderSection(nestedSection))
+          section.sections.map(nestedSection => renderSection(nestedSection, currentSectionIndex))
         }
       </div>
     );
@@ -396,11 +467,12 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         {isLeftPanelOpen && <LeftSidePanel 
           updateChapter={updateChapter} 
           currentChapter={currentChapter} 
-          activeSectionId={activeSectionId} 
+          activeSectionId={activeSectionId}
         />}
         <div
           ref={containerRef}
           className="tibetan-text-container"
+          onScroll={handleScrollSpy}
         >
           {chapterContentIsLoading && skipDetails.direction.includes("up") && (
             <div className="text-center my-3 my-md-4">
@@ -409,7 +481,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
               </Spinner>
             </div>
           )}
-          
+       
           {contents?.map((section) => (
             <div 
               key={section.id} 
@@ -431,7 +503,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           segmentId={selectedSegmentId}
           setVersionId={handleVersionChange}
           versionId={versionId}
-          addChapter={addChapter}
+          addChapter={(chapterInfo) => addChapter(chapterInfo, currentChapter)} 
           sectionindex={selectedSectionIndex}
         />}
       </Container>
