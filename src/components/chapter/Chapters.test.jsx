@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
-import { BrowserRouter as Router, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, useLocation, useSearchParams } from "react-router-dom";
 import Chapters from "./Chapters.jsx";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
@@ -35,6 +35,7 @@ vi.mock("react-router-dom", async () => {
         }
       }
     }),
+    useSearchParams: vi.fn().mockReturnValue([new URLSearchParams()]),
     useParams: vi.fn().mockReturnValue({}),
   };
 });
@@ -106,6 +107,7 @@ describe("Chapters Component", () => {
         }
       }
     });
+    useSearchParams.mockReturnValue([new URLSearchParams()]);
   });
 
   const setup = () => {
@@ -127,6 +129,40 @@ describe("Chapters Component", () => {
 
   test("renders initial chapter from sessionStorage", () => {
     const { container } = setup();
+    const chapterContainers = container.querySelectorAll(".chapter-container");
+    expect(chapterContainers.length).toBe(1);
+  });
+
+  test("initializes chapters from URL parameters when no sessionStorage data exists", () => {
+    mockSessionStorage.getItem.mockReturnValue(null);
+
+    const searchParamsMock = new URLSearchParams();
+    searchParamsMock.set("contentId", "content123");
+    searchParamsMock.set("contentIndex", "2");
+    searchParamsMock.set("versionId", "version123");
+    searchParamsMock.set("sectionId", "section123");
+
+    useSearchParams.mockReturnValue([searchParamsMock]);
+
+    const { container } = setup();
+
+    expect(mockSessionStorage.setItem).toHaveBeenCalledWith(
+      "chapters",
+      expect.stringContaining("content123")
+    );
+    expect(mockSessionStorage.setItem).toHaveBeenCalledWith(
+      "chapters",
+      expect.stringContaining("version123")
+    );
+    expect(mockSessionStorage.setItem).toHaveBeenCalledWith(
+      "chapters",
+      expect.stringContaining('"contentIndex":2')
+    );
+    expect(mockSessionStorage.setItem).toHaveBeenCalledWith(
+      "chapters",
+      expect.stringContaining("section123")
+    );
+
     const chapterContainers = container.querySelectorAll(".chapter-container");
     expect(chapterContainers.length).toBe(1);
   });
