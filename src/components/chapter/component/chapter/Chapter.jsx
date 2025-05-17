@@ -94,7 +94,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       if (targetId) {
         setTimeout(() => {
           if (!isSectionChangeInProgressRef.current && !isScrollLoadingRef.current) {
-            console.log('scroll to segment boy',targetId)
             findAndScrollToSegment(targetId, setSelectedSegmentId, currentChapter);
           }
           isInitialLoadRef.current = false;
@@ -156,7 +155,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     
     if (sectionExists) {
       // Use the dedicated section scrolling function
-      // console.log(' the section old')
       // findAndScrollToSection(currentChapter.sectionId, currentChapter);
       // setTimeout(() => {
       //   isSectionChangeInProgressRef.current = false;
@@ -315,10 +313,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     setVersionId(newVersionId);
   };
 
-  const handleSidebarToggle = (isOpen,segmentsend) => {
+  const handleSidebarToggle = (isOpen,segmentsend,segmentindex) => {
     if (isOpen) {
       const newParams = new URLSearchParams(searchParams);
       newParams.set('segment_id', segmentsend);
+      newParams.set('contentIndex', segmentindex);
       setSearchParams(newParams);
       openResourcesPanel();
     }
@@ -349,12 +348,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
               !e.target.classList.contains('footnote'))) {
             setSelectedSegmentId(segment.segment_id);
             setSelectedSectionIndex(currentSectionIndex);
-            handleSidebarToggle(true,segment.segment_id);
+            handleSidebarToggle(true,segment.segment_id,currentSectionIndex);
           }
         }}
       >
         <div className="segment">
-          {segment.segment_id}
         <span className="segment-number">{segment.segment_number}</span>
           {showSource && (
             <>
@@ -428,16 +426,10 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     if (currentChapter && textDetails) {
       
         if (currentChapter.segmentId) {
-          console.log('new i am not')
           findAndScrollToSegment(currentChapter.segmentId, setSelectedSegmentId, currentChapter);
         } else if (currentChapter.sectionId) {
           if (!isScrollLoadingRef.current) {
-          console.log('new section')
           findAndScrollToSection(currentChapter.sectionId, currentChapter);
-          }
-          else{
-            console.log('Skipping scroll to section - content loaded due to user scrolling');
-
           }
         }
     }
@@ -454,7 +446,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         data-section-id={section.id}
         id={`section-${section.id}`} // Add a unique ID attribute for more reliable targeting
       >
-        {section.id}
         {section.title && <h4 className="section-title">{section.title}</h4>}
         
         {section.segments && section.segments.length > 0 && renderSegments(section.segments, currentSectionIndex)}
