@@ -48,12 +48,11 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
     }
   );
   
-  // Reset meta tags when component unmounts
   useEffect(() => {
-    return () => {
+    if (!segmentId) {
       resetOgMetaTags();
-    };
-  }, []);
+    }
+  }, [segmentId]);
 
   const renderMainPanel = () => {
     return <>
