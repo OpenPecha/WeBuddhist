@@ -37,7 +37,7 @@ vi.mock("../left-side-panel/LeftSidePanel.jsx", () => ({
   ),
 }));
 
-vi.mock("../../../resources-side-panel/Resources.jsx", () => ({
+vi.mock("../../../resources/Resources.jsx", () => ({
   default: ({ segmentId }) => (
     <div data-testid="resources-panel">Resources for {segmentId}</div>
   ),
