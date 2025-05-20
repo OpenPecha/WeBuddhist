@@ -20,11 +20,13 @@
       .nav-link {
         font-weight: 500;
         color: #495057;
+        border: none;
 
         &.active {
-          color: #495057;
-          background-color: #fff;
-          border-color: #dee2e6 #dee2e6 #fff;
+          color: hsl(42, 49%, 46%);
+          background-color: transparent;
+          border: none;
+          border-bottom: 4px solid hsl(42, 49%, 46%);
         }
       }
     }

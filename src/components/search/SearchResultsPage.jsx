@@ -23,7 +23,10 @@ const SearchResultsPage = () => {
       <div className="tabs-container">
         <Tabs
           activeKey={activeTab}
-          onSelect={(k) => setActiveTab(k)}
+          onSelect={(k) => {
+            setActiveTab(k);
+            setSortOption(null);
+          }}
           id="search-tabs"
           className="custom-tabs"
         >
@@ -36,25 +39,61 @@ const SearchResultsPage = () => {
             id="sort-dropdown"
             className="sort-toggle"
           >
-            {sortOption
-              ? sortOption === "relevance"
-                ? t("filter_list.relevance", "Relevance")
-                : t("filter_list.chronological", "Chronological")
-              : t("profile.tab.dropdown.sort", "Sort")}
+            {t("profile.tab.dropdown.sort", "Sort")}
           </Dropdown.Toggle>
           <Dropdown.Menu align="end">
-            <Dropdown.Item
-              active={sortOption === "relevance"}
-              onClick={() => setSortOption("relevance")}
-            >
-              {t("filter_list.relevance", "Relevance")}
-            </Dropdown.Item>
-            <Dropdown.Item
-              active={sortOption === "chronological"}
-              onClick={() => setSortOption("chronological")}
-            >
-              {t("filter_list.chronological", "Chronological")}
-            </Dropdown.Item>
+            {activeTab === "sources" ? (
+              <>
+                <Dropdown.Item
+                  active={sortOption === "relevance"}
+                  onClick={() => setSortOption("relevance")}
+                >
+                  {sortOption === "relevance" && (
+                    <span className="checkmark">✓</span>
+                  )}
+                  {t("filter_list.relevance", "Relevance")}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  active={sortOption === "chronological"}
+                  onClick={() => setSortOption("chronological")}
+                >
+                  {sortOption === "chronological" && (
+                    <span className="checkmark">✓</span>
+                  )}
+                  {t("filter_list.chronological", "Chronological")}
+                </Dropdown.Item>
+              </>
+            ) : (
+              <>
+                <Dropdown.Item
+                  active={sortOption === "relevance"}
+                  onClick={() => setSortOption("relevance")}
+                >
+                  {sortOption === "relevance" && (
+                    <span className="checkmark">✓</span>
+                  )}
+                  {t("filter_list.relevance", "Relevance")}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  active={sortOption === "date_created"}
+                  onClick={() => setSortOption("date_created")}
+                >
+                  {sortOption === "date_created" && (
+                    <span className="checkmark">✓</span>
+                  )}
+                  {t("filter_list.date_created", "Date created")}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  active={sortOption === "views"}
+                  onClick={() => setSortOption("views")}
+                >
+                  {sortOption === "views" && (
+                    <span className="checkmark">✓</span>
+                  )}
+                  {t("profile.tab.sheet.tag.views", "Views")}
+                </Dropdown.Item>
+              </>
+            )}
           </Dropdown.Menu>
         </Dropdown>
       </div>
