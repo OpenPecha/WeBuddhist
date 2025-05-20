@@ -1,5 +1,5 @@
 import { Button, Container, Dropdown, Form, InputGroup, Nav, Navbar, } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaGlobe, FaQuestionCircle } from "react-icons/fa";
 import "./NavigationBar.scss";
 import { useAuth } from "../../config/AuthContext.jsx";
@@ -16,6 +16,8 @@ export const invalidateQueries = async (queryClient) => {
 };
 const NavigationBar = () => {
  const [expanded, setExpanded] = useState(false);
+ const [searchTerm, setSearchTerm] = useState('');
+ const navigate = useNavigate();
  const { t } = useTranslate();
  const { isLoggedIn, logout: pechaLogout } = useAuth();
  const { isAuthenticated, logout } = useAuth0();
@@ -98,14 +100,22 @@ const NavigationBar = () => {
 
 
        <div className=" d-lg-none  w-100 mt-3 ">
-         <Form className="d-flex w-100">
+         <Form className="d-flex w-100" onSubmit={(e) => {
+           e.preventDefault();
+           if (searchTerm.trim()) {
+             navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+             handleNavClick();
+           }
+         }}>
            <InputGroup>
              <Form.Control
                type="search"
                placeholder={t("common.placeholder.search")}
                aria-label="Search"
+               value={searchTerm}
+               onChange={(e) => setSearchTerm(e.target.value)}
              />
-             <Button variant="outline-secondary" onClick={handleNavClick}>
+             <Button variant="outline-secondary" type="submit">
                {t("common.placeholder.search")}
              </Button>
            </InputGroup>
@@ -127,14 +137,22 @@ const NavigationBar = () => {
 
 
          <div className="d-none d-lg-flex align-items-center navbaritems">
-           <Form className="d-flex me-3">
+           <Form className="d-flex me-3" onSubmit={(e) => {
+             e.preventDefault();
+             if (searchTerm.trim()) {
+               navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+               handleNavClick();
+             }
+           }}>
              <InputGroup>
                <Form.Control
                  type="search"
                  placeholder={t("common.placeholder.search")}
                  aria-label="Search"
+                 value={searchTerm}
+                 onChange={(e) => setSearchTerm(e.target.value)}
                />
-               <Button variant="outline-secondary" onClick={handleNavClick}>
+               <Button variant="outline-secondary" type="submit">
                  {t("common.placeholder.search")}
                </Button>
              </InputGroup>

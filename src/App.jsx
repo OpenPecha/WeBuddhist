@@ -25,6 +25,7 @@ const Library = lazy(() => import("./components/library/Library.jsx"));
 const Chapters = lazy(() => import("./components/chapter/Chapters.jsx"));
 const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword.jsx"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword.jsx"));
+const SearchResultsPage = lazy(() => import("./components/search/SearchResultsPage.jsx"));
 
 
 function App() {
@@ -126,6 +127,7 @@ function App() {
               <Route path="/texts/text-child/:id" element={<Library/>}/>
               <Route path="/texts/text-category/:id" element={<Book/>}/>
               <Route path="/texts/text-details" element={<Chapters/>}/>
+              <Route path="/search" element={<SearchResultsPage/>}/>
               <Route path="*" element={<HomePage/>}/>
           </Routes>
       </Suspense>
