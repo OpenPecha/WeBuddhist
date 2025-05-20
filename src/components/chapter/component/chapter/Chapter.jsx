@@ -59,15 +59,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       enabled: totalContentRef.current !== 0 ? (skipDetails.skip  < totalContentRef.current) : true,
     }
   );
-const segmentIdParam = searchParams.get('segment_id');
-  useEffect(() => {
-    // Update og:image meta tag when segmentId changes
-    const metaOgImage = document.querySelector('meta[property="og:image"]');
-    if (metaOgImage) {
-      const newOgImageUrl = `https://pecha-backend-12341825340-1fb0112.onrender.com/api/v1/share/image/?segment_id=${segmentIdParam || ''}&language=bo`;
-      metaOgImage.setAttribute('content', newOgImageUrl);
-    }
-  }, [segmentIdParam]);
   useEffect(() => {
     setContents([]);
     isInitialLoadRef.current = true;
