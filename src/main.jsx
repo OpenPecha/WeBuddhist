@@ -7,6 +7,7 @@ import { Auth0ProviderWithNavigate } from "./config/Auth0ProviderWithNavigate.js
 import { QueryClient, QueryClientProvider } from "react-query";
 import { PechaAuthProvider } from "./config/AuthContext.jsx";
 import { BackendFetch, DevTools, FormatSimple, Tolgee, TolgeeProvider } from "@tolgee/react";
+import { HelmetProvider } from 'react-helmet-async';
 import localeEn from "./i18n/en.json";
 import localeBoIn from "./i18n/bo-IN.json";
 import { LANGUAGE } from "./utils/Constants.js";
@@ -30,15 +31,17 @@ const tolgee = Tolgee()
     }
   });
 createRoot(document.getElementById('root')).render(
-  <Router>
-    <QueryClientProvider client={ queryClient }>
-      <TolgeeProvider tolgee={ tolgee }>
-        <Auth0ProviderWithNavigate>
-          <PechaAuthProvider>
-            <App />
-          </PechaAuthProvider>
-        </Auth0ProviderWithNavigate>
-      </TolgeeProvider>
-    </QueryClientProvider>
-  </Router>
+  <HelmetProvider>
+    <Router>
+      <QueryClientProvider client={ queryClient }>
+        <TolgeeProvider tolgee={ tolgee }>
+          <Auth0ProviderWithNavigate>
+            <PechaAuthProvider>
+              <App />
+            </PechaAuthProvider>
+          </Auth0ProviderWithNavigate>
+        </TolgeeProvider>
+      </QueryClientProvider>
+    </Router>
+  </HelmetProvider>
 )

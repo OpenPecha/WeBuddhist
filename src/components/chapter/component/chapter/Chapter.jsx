@@ -3,6 +3,7 @@ import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment
 import {useSearchParams} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
+import { Helmet } from 'react-helmet-async';
 import Resources from "../../../resources-side-panel/Resources.jsx";
 import LeftSidePanel from "../left-side-panel/LeftSidePanel.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
@@ -460,6 +461,13 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   // main renderer
   return (
     <div className="chapter">
+      <Helmet>
+        {/* Dynamic meta tags based on content */}
+        <meta property="og:title" content={textDetails?.text_detail?.title || "Pecha - Learn, live, and share Buddhist wisdom everyday"} />
+        <meta property="og:description" content={textDetails?.text_detail?.description || "The largest free library of Buddhist texts available to read online in Tibetan, English and Chinese including Sutras, Tantras, Abhidharma, Vinaya, commentaries and more."} />
+        <meta property="og:image" content={`https://pecha-backend-12341825340-1fb0112.onrender.com/api/v1/share/image/?segment_id=${selectedSegmentId || segmentId || ''}&language=${textDetails?.text_detail?.language || 'bo'}`} />
+        <title>{textDetails?.text_detail?.title || "Pecha - Learn, live, and share Buddhist wisdom everyday"}</title>
+      </Helmet>
       <ChapterHeader selectedOption={selectedOption} currentChapter={currentChapter} removeChapter={removeChapter}
                      setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
                      totalPages={totalPages} hasTranslation={hasTranslation}/>
