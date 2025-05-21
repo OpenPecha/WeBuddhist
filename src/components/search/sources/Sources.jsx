@@ -7,7 +7,7 @@ const Sources = () => {
   
   return (
     <div className="sources-tab">
-      <p className="no-results-message">
+      <p className="results-message">
         {t('search.zero_result', 'No results to display.')}
       </p>
     </div>

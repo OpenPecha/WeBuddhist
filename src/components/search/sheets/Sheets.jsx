@@ -7,7 +7,7 @@ const Sheets = () => {
   
   return (
     <div className="sheets-tab">
-      <p className="no-results-message">
+      <p className="results-message">
         {t('search.zero_result', 'No results to display.')}
       </p>
     </div>

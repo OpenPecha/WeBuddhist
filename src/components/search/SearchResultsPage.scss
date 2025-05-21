@@ -1,9 +1,10 @@
 .search-results-container {
-  padding: 20px 0 40px;
+  padding: 60px 32px 0;
 
   .search-query-text {
-    font-size: 1.1rem; //just for now
-    margin: 15px;
+    font-size: 1.3rem; //just for now
+    text-align: left;
+    margin: 0 0 20px 0;
   }
 
   .tabs-container {
@@ -61,5 +62,6 @@
 
   .tab-content-container {
     padding-top: 1rem;
+    text-align: left;
   }
 }
