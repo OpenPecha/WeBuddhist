@@ -1,9 +1,41 @@
+$primary-color: hsl(42, 49%, 46%);
+
 .sheets-tab {
   min-height: 100px;
-  
+
   .results-message {
     font-size: 16px;
     color: #6c757d;
     text-align: left;
+  }
+
+  .pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+
+    .pagination-btn {
+      width: 25px;
+      height: 28px;
+      font-size: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border-radius: 4px;
+
+      &:hover:not(:disabled) {
+        background-color: $primary-color;
+        border-color: $primary-color;
+        color: white;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: all;
+      }
+    }
   }
 }
