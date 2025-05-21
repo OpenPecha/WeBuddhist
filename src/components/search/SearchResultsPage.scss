@@ -62,7 +62,34 @@
   }
 
   .tab-content-container {
-    padding-top: 1rem;
+    padding-top: 0;
     text-align: left;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-results-container {
+    padding: 40px 20px 0;
+    
+    .tabs-container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      
+      .custom-tabs {
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        
+        .nav-link {
+          white-space: nowrap;
+        }
+      }
+      
+      .sort-dropdown {
+        align-self: flex-start;
+        margin-bottom: 4px;
+      }
+    }
   }
 }
