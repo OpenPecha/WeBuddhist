@@ -14,7 +14,7 @@ const SearchResultsPage = () => {
   const [sortOption, setSortOption] = useState(null);
 
   return (
-    <Container className="search-results-container">
+    <Container className="search-results-container listtitle">
       <h2 className="search-query-text">
         {t("search_page.results_for", "Results for: ( {searchedItem} )", {
           searchedItem: query,
