@@ -5,7 +5,6 @@ import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
 import Resources from "../../../resources-side-panel/Resources.jsx";
 import LeftSidePanel from "../left-side-panel/LeftSidePanel.jsx";
-import SEO from "../../../common/SEO.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
@@ -461,13 +460,6 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   // main renderer
   return (
     <div className="chapter">
-      <SEO 
-        title={textDetails?.text_detail?.title}
-        description={textDetails?.text_detail?.description}
-        segmentId={selectedSegmentId || segmentId || ''}
-        language={textDetails?.text_detail?.language || 'bo'}
-        type="article"
-      />
       <ChapterHeader selectedOption={selectedOption} currentChapter={currentChapter} removeChapter={removeChapter}
                      setSelectedOption={setSelectedOption} textDetails={textDetails?.text_detail}
                      totalPages={totalPages} hasTranslation={hasTranslation}/>
