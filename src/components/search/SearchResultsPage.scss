@@ -2,7 +2,7 @@
   padding: 60px 32px 0;
 
   .search-query-text {
-    font-size: 1.3rem; //just for now
+    font-size: 20px;
     text-align: left;
     margin: 0 0 20px 0;
   }
@@ -20,6 +20,7 @@
 
       .nav-link {
         font-weight: 500;
+        font-size: 14px;
         color: #495057;
         border: none;
 
@@ -34,7 +35,7 @@
 
     .sort-dropdown {
       .sort-toggle {
-        font-size: 0.9rem;
+        font-size: 14px;
         background-color: #f8f9fa;
         border-color: #dee2e6;
         color: #495057;
