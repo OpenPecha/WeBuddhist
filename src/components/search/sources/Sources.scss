@@ -1,9 +1,44 @@
 .sources-tab {
-  min-height: 100px;
-
-  .results-message {
-    font-size: 16px;
-    color: #6c757d;
-    text-align: left;
+  .source-item {
+    margin-bottom: 2rem;    
+    h4 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    span {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 10px;
+    }
+    
+    .segments {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      
+      .segment {
+        position: relative;
+        padding-left: 16px;
+        text-align: justify;
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 3px;
+          border-radius: 2rem;
+          background-color: #CCB478;
+        }
+        
+        p {
+          font-size: medium;
+          margin: 0;
+          line-height: 1.5;
+          color: #555;
+        }
+      }
+    }
   }
 }

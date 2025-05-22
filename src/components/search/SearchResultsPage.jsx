@@ -102,8 +102,8 @@ const SearchResultsPage = () => {
               </Dropdown>
             </div>
             <div className="tab-content-container">
-              {activeTab === "sources" && <Sources />}
-              {activeTab === "sheets" && <Sheets />}
+              {activeTab === "sources" && <Sources query={query} />}
+              {activeTab === "sheets" && <Sheets query={query} />}
             </div>
           </Container>
         </div>
