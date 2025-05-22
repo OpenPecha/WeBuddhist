@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Container, Tabs, Tab, Dropdown } from "react-bootstrap";
 import { useTranslate } from "@tolgee/react";
 import Sources from "./sources/Sources";
+import { IoCheckmarkOutline } from "react-icons/io5";
 import Sheets from "./sheets/Sheets";
 import "./SearchResultsPage.scss";
 
@@ -52,7 +53,7 @@ const SearchResultsPage = () => {
                         onClick={() => setSortOption("relevance")}
                       >
                         {sortOption === "relevance" && (
-                          <span className="checkmark">✓</span>
+                          <span className="checkmark"><IoCheckmarkOutline/></span>
                         )}
                         {t("filter_list.relevance", "Relevance")}
                       </Dropdown.Item>
@@ -61,7 +62,7 @@ const SearchResultsPage = () => {
                         onClick={() => setSortOption("chronological")}
                       >
                         {sortOption === "chronological" && (
-                          <span className="checkmark">✓</span>
+                          <span className="checkmark"><IoCheckmarkOutline/></span>
                         )}
                         {t("filter_list.chronological", "Chronological")}
                       </Dropdown.Item>
@@ -73,7 +74,7 @@ const SearchResultsPage = () => {
                         onClick={() => setSortOption("relevance")}
                       >
                         {sortOption === "relevance" && (
-                          <span className="checkmark">✓</span>
+                          <span className="checkmark"><IoCheckmarkOutline/></span>
                         )}
                         {t("filter_list.relevance", "Relevance")}
                       </Dropdown.Item>
@@ -82,7 +83,7 @@ const SearchResultsPage = () => {
                         onClick={() => setSortOption("date_created")}
                       >
                         {sortOption === "date_created" && (
-                          <span className="checkmark">✓</span>
+                          <span className="checkmark"><IoCheckmarkOutline/></span>
                         )}
                         {t("filter_list.date_created", "Date created")}
                       </Dropdown.Item>
@@ -91,7 +92,7 @@ const SearchResultsPage = () => {
                         onClick={() => setSortOption("views")}
                       >
                         {sortOption === "views" && (
-                          <span className="checkmark">✓</span>
+                          <span className="checkmark"><IoCheckmarkOutline/></span>
                         )}
                         {t("profile.tab.sheet.tag.views", "Views")}
                       </Dropdown.Item>
