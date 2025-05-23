@@ -5,14 +5,11 @@ import { CiBookmark } from 'react-icons/ci';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
-import { mapLanguageCode, LANGUAGE } from '../../../utils/Constants';
+import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
 
 export const fetchSheets = async(query, skip, pagination) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE)
-  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo")
-  const {data} = await axiosInstance.get(`api/v1/search/sheet?search=${query}`, {
+  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&type=${'Sheet'}`, {
     params: {
-      language,
       limit: pagination.limit,
       skip: skip
     }
@@ -22,18 +19,20 @@ export const fetchSheets = async(query, skip, pagination) => {
 
 const Sheets = (query) => {
   const { t } = useTranslate();
+  const stringq = query?.query;
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
 
   const {data: sheetData, isLoading, error} = useQuery(
-    ["sheets", query, skip, pagination],
-    () => fetchSheets(query, skip, pagination),
+    ["sheets", stringq, skip, pagination],
+    () => fetchSheets(stringq, skip, pagination),
     {
       refetchOnWindowFocus: false,
       retry: 1
     }
   )
-  
+  const searchText = sheetData?.search?.text || stringq;
+
   if (isLoading) return <div className="listsubtitle">{t("common.loading")}</div>;
 
   if (error) {
@@ -43,10 +42,10 @@ const Sheets = (query) => {
     return <div className="listtitle">Error loading content: {error.message}</div>;
   }
 
-  if (!sheetData || !sheetData.data || sheetData.data.length === 0) {
+  if (!sheetData || !sheetData.sheets || sheetData.sheets.length === 0) {
     return <div className="listtitle">{t('search.zero_result', 'No results to display.')}</div>;
   }
-  const totalVersions = sheetData.data.result?.length || 0;
+  const totalVersions = sheetData.sheets?.length || 0;
   const totalPages = Math.ceil(totalVersions / pagination.limit);
   
   const handlePageChange = (pageNumber) => {
@@ -58,13 +57,13 @@ const Sheets = (query) => {
       <p className="results-count">
         Total : ({totalVersions})
       </p>
-      {sheetData.data.result.map((sheet) => (
+      {sheetData.sheets.map((sheet) => (
         <div key={sheet.sheet_id} className="sheet-result-item">
           <div className="sheet-header">
           <h3 className="sheet-title">{sheet.sheet_title}</h3>
           <CiBookmark className="bookmark-icon"/>
           </div>
-          <p className="sheet-summary">{sheet.sheet_summary}</p>
+          <p className="sheet-summary">{highlightSearchMatch(sheet.sheet_summary, searchText, 'highlighted-text')}</p>
           <div className="publisher-info">
           <a href={sheet.publisher_url} className="publisher-link">
               {sheet.publisher_image ? (

@@ -4,7 +4,7 @@ $primary-color: hsl(42, 49%, 46%);
   min-height: 100px;
 
   .results-count {
-    font-size: 16px;
+    font-size: 20px;
     color: #000;
     text-align: left;
     margin-bottom: 20px;
@@ -12,7 +12,7 @@ $primary-color: hsl(42, 49%, 46%);
   }
 
   .sheet-result-item {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     padding-bottom: 20px;
 
     &:not(:last-of-type) {
@@ -108,5 +108,10 @@ $primary-color: hsl(42, 49%, 46%);
         margin-left: 32px; 
       }
     }
+  }
+
+  .highlighted-text {
+    background-color: #FFFF00;
+    padding: 2px;
   }
 }
