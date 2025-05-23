@@ -5,6 +5,7 @@ import { getLanguageClass } from '../../../utils/Constants';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
+import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
 
 
 export const fetchSources = async(query, skip, pagination) => {
@@ -21,7 +22,7 @@ export const fetchSources = async(query, skip, pagination) => {
 
 const Sources = (query) => {
   const { t } = useTranslate();
-  const stringq=query?.query
+  const stringq = query?.query;
 
    const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
     const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
@@ -33,6 +34,8 @@ const Sources = (query) => {
         retry:1
       }
     )
+    const searchText = sourceData?.search?.text || stringq;
+
     if (isLoading) return <div className="listsubtitle">{t("common.loading")}</div>;
   
     if (error) {
@@ -62,7 +65,7 @@ const Sources = (query) => {
         <div className="segments">
           {source.segment_match.map((segment) => (
             <div key={segment.segment_id} className="segment">
-              <p>{segment.content}</p>
+              <p>{highlightSearchMatch(segment.content, searchText, 'highlighted-text')}</p>
             </div>
           ))}
         </div>

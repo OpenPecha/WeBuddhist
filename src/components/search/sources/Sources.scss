@@ -37,6 +37,11 @@
           margin: 0;
           line-height: 1.5;
           color: #555;
+          
+          .highlighted-text {
+            background-color: #FFFF00;
+            padding: 2px;
+          }
         }
       }
     }
