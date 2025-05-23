@@ -35,10 +35,15 @@ const Sources = (query) => {
     )
     if (isLoading) return <div className="listsubtitle">{t("common.loading")}</div>;
   
-    if (error) return <div className="no-content listtitle">Error loading content: {error.message}</div>;
+    if (error) {
+      if(error.response?.status ===404){
+        return <div className="listtitle">{t('search.zero_result', 'No results to display.')}</div>;
+      }
+      return <div className="listtitle">Error loading content: {error.message}</div>;
+    }
   
     if (!sourceData || !sourceData.data || sourceData.data.length === 0) {
-      return <div className="no-content listtitle">{t('search.zero_result', 'No results to display.')}</div>;
+      return <div className="listtitle">{t('search.zero_result', 'No results to display.')}</div>;
     }
     const totalVersions = sourceData.data.result?.length || 0;
   const totalPages = Math.ceil(totalVersions / pagination.limit);
