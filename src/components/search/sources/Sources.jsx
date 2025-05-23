@@ -1,18 +1,16 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslate } from '@tolgee/react';
 import './Sources.scss';
-import { getLanguageClass,mapLanguageCode,LANGUAGE } from '../../../utils/Constants';
+import { getLanguageClass } from '../../../utils/Constants';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 
 
 export const fetchSources = async(query, skip, pagination) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE)
-  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo")
-  const {data} = await axiosInstance.get(`api/v1/search/sheet?search=${query}`, {
+
+  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&type=${'Source'}`, {
     params: {
-      language,
       limit: pagination.limit,
       skip: skip
     }
@@ -23,11 +21,13 @@ export const fetchSources = async(query, skip, pagination) => {
 
 const Sources = (query) => {
   const { t } = useTranslate();
+  const stringq=query?.query
+
    const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
     const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
     const {data:sourceData,isLoading,error}=useQuery(
-      ["sources",query,skip,pagination],
-      ()=>fetchSources(query,skip,pagination),
+      ["sources",stringq,skip,pagination],
+      ()=>fetchSources(stringq,skip,pagination),
       {
         refetchOnWindowFocus:false,
         retry:1
@@ -41,11 +41,10 @@ const Sources = (query) => {
       }
       return <div className="listtitle">Error loading content: {error.message}</div>;
     }
-  
-    if (!sourceData || !sourceData.data || sourceData.data.length === 0) {
+    if (!sourceData || !sourceData.sources || sourceData.sources.length === 0) {
       return <div className="listtitle">{t('search.zero_result', 'No results to display.')}</div>;
     }
-    const totalVersions = sourceData.data.result?.length || 0;
+    const totalVersions = sourceData.sources?.length || 0;
   const totalPages = Math.ceil(totalVersions / pagination.limit);
   const handlePageChange = (pageNumber) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
@@ -56,7 +55,7 @@ const Sources = (query) => {
     <div className="results-count">
       <p>Total :</p>
     </div>
-    {sourceData.data.result.map((source) => (
+    {sourceData.sources.map((source) => (
       <div key={source.text.text_id} className={`source-item ${getLanguageClass(source.text.language)}`}>
         <h4>{source.text.title}</h4>
         <span className='en-text'>{source.text.published_date}</span>
