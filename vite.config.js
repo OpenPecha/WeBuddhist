@@ -34,6 +34,7 @@ export default defineConfig(({ mode }) => {
           "src/main.jsx",
           "src/App.jsx",
           "src/context/**",
+          "src/utils/**",
         ],
       },
     },
