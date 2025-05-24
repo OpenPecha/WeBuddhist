@@ -4,7 +4,7 @@ import { useTranslate } from '@tolgee/react';
 import { LANGUAGE, mapLanguageCode } from '../../utils/Constants';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config.js';
-
+import { useNavigate } from 'react-router-dom';
 export const fetchsheet = async (userid="", limit, skip) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
@@ -22,6 +22,7 @@ export const fetchsheet = async (userid="", limit, skip) => {
 const CommunityPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [limit, setLimit] = useState(10);
+    const navigate = useNavigate();
       const skip = useMemo(() =>{
         return (currentPage - 1) * limit;
       },[currentPage])
@@ -74,7 +75,7 @@ const CommunityPage = () => {
         <div className='sidebar-section'>
           <div className='sidebar-content navbaritems'>
             <p>{t("side_nav.join_conversation.descriptions")}</p>
-            <button className='make-sheet-btn navbaritems'>
+            <button className='make-sheet-btn navbaritems' onClick={() => navigate("/sheets")}>
               <span className='btn-icon'></span>
               {t("side_nav.join_conversation.button.make_sheet")}
             </button>

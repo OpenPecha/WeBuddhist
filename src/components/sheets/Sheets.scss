@@ -1,0 +1,15 @@
+.sheet-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+    gap: 30px;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      padding: 0 15px;
+    }
+}
