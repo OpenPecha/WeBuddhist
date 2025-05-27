@@ -52,15 +52,6 @@ const CustomEditor = {
     const marks = Editor.marks(editor);
     return marks ? marks.bold === true : false;
   },
-
-  isCodeBlockActive(editor) {
-    const [match] = Editor.nodes(editor, {
-      match: (n) => n.type === "code",
-    });
-
-    return !!match;
-  },
-
   toggleBoldMark(editor) {
     const isActive = CustomEditor.isBoldMarkActive(editor);
     if (isActive) {
@@ -69,7 +60,13 @@ const CustomEditor = {
       Editor.addMark(editor, "bold", true);
     }
   },
+  isCodeBlockActive(editor) {
+    const [match] = Editor.nodes(editor, {
+      match: (n) => n.type === "code",
+    });
 
+    return !!match;
+  },
   toggleCodeBlock(editor) {
     const isActive = CustomEditor.isCodeBlockActive(editor);
     Transforms.setNodes(
@@ -77,6 +74,18 @@ const CustomEditor = {
       { type: isActive ? null : "code" },
       { match: (n) => Element.isElement(n) && Editor.isBlock(editor, n) }
     );
+  },
+  isItalicMarkActive(editor) {
+    const marks = Editor.marks(editor);
+    return marks ? marks.italic === true : false;
+  },
+  toggleItalicMark(editor) {
+    const isActive = CustomEditor.isItalicMarkActive(editor);
+    if (isActive) {
+      Editor.removeMark(editor, "italic");
+    } else {
+      Editor.addMark(editor, "italic", true);
+    }
   },
 };
 

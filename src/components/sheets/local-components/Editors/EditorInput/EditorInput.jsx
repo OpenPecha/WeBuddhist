@@ -53,12 +53,17 @@ const EditorInput = (prop) => {
           CustomEditor.toggleCodeBlock(editor)
           break
         }
-
+        case 'i': {
+          event.preventDefault()
+          CustomEditor.toggleItalicMark(editor)
+          break
+        }
         case 'b': {
           event.preventDefault()
           CustomEditor.toggleBoldMark(editor)
           break
         }
+      
       }
     }}
   />
