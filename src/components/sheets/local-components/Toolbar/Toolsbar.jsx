@@ -11,8 +11,8 @@ const Toolsbar = (prop) => {
       <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleLink(editor); }}>Link</Button>
       <Button onMouseDown={(e) => {e.preventDefault(); CustomEditor.toggleNumberList(editor); }}>Number List</Button>
       <Button onMouseDown={(e) => {e.preventDefault(); CustomEditor.toggleBulletList(editor); }}>Bullet List</Button>
-      <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleHeading(editor, { level: 1 }); }}>H1</Button>
-      <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleHeading(editor, { level: 2 }); }}>H2</Button>
+      <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleBlock(editor, "heading-one"); }}>H1</Button>
+      <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleBlock(editor, "heading-two"); }}>H2</Button>
       <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleImage(editor); }}>Image</Button>
       <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleCodeBlock(editor); }}>Code</Button>
       <Button onClick={(e) => { e.preventDefault(); console.log(editor.children) }}>Save</Button>

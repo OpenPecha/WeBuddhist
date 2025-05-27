@@ -7,6 +7,7 @@ import CodeElement from '../../../local-components/Editors/Elements/CodeElement'
 import ImageElement from '../../../local-components/Editors/Elements/ImageElement'
 import Leaf from '../../../local-components/Editors/leaves/Leaf'
 import CustomEditor from '../../../sheet-utils/CustomEditor'
+import Heading from '../Elements/Heading'
 
 
 const EditorInput = (prop) => {
@@ -19,6 +20,10 @@ const EditorInput = (prop) => {
         switch (props.element.type) {
           case 'code':
             return <CodeElement {...props} />
+          case 'heading-one':
+            return <Heading as="h1" {...props}  />
+          case 'heading-two':
+            return <Heading as="h2" {...props}/>
           case 'image':
             return <ImageElement {...props} />
           case 'youtube':

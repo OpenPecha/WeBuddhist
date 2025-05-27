@@ -1,4 +1,13 @@
 import { Editor, Transforms, Element } from "slate";
+
+const LIST_TYPES = ["numbered-list", "bulleted-list"];
+const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
+const isAlignType = (format) => {
+  return TEXT_ALIGN_TYPES.includes(format);
+};
+const isListType = (format) => {
+  return LIST_TYPES.includes(format);
+};
 const embedsRegex = [
   {
     regex: /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)(?:&.*)?/,
@@ -61,7 +70,57 @@ const CustomEditor = {
       Editor.addMark(editor, type, true);
     }
   },
+  toggleBlock(editor, format) {
+    const isActive = CustomEditor.isBlockActive(
+      editor,
+      format,
+      isAlignType(format) ? "align" : "type"
+    );
+    const isList = isListType(format);
+    Transforms.unwrapNodes(editor, {
+      match: (n) =>
+        !Editor.isEditor(n) &&
+        Element.isElement(n) &&
+        isListType(n.type) &&
+        !isAlignType(format),
+      split: true,
+    });
+    let newProperties;
+    if (isAlignType(format)) {
+      newProperties = {
+        align: isActive ? undefined : format,
+      };
+    } else {
+      newProperties = {
+        type: isActive ? "paragraph" : isList ? "list-item" : format,
+      };
+    }
+    Transforms.setNodes(editor, newProperties);
+    if (!isActive && isList) {
+      const block = { type: format, children: [] };
+      Transforms.wrapNodes(editor, block);
+    }
+  },
 
+  isBlockActive(editor, format, blockType = "type") {
+    const { selection } = editor;
+    if (!selection) return false;
+    const [match] = Array.from(
+      Editor.nodes(editor, {
+        at: Editor.unhangRange(editor, selection),
+        match: (n) => {
+          if (!Editor.isEditor(n) && Element.isElement(n)) {
+            if (blockType === "align" && isAlignElement(n)) {
+              return n.align === format;
+            }
+            return n.type === format;
+          }
+          return false;
+        },
+      })
+    );
+    return !!match;
+  },
   isCodeBlockActive(editor) {
     const [match] = Editor.nodes(editor, {
       match: (n) => n.type === "code",
