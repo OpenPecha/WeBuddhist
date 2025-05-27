@@ -1,15 +1,17 @@
-.sheet-container{
+
+.sheets-wrapper {
+    border: none;
+    height: 720px;
+    padding: 20px;
+    width: 720px;
+    margin: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+}
+
+.sheets-editable {
+    flex: 1;
+    height: 100%;
     width: 100%;
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 20px;
-    gap: 30px;
-    
-    @media (max-width: 768px) {
-      flex-direction: column;
-      padding: 0 15px;
-    }
+    overflow: auto;
 }

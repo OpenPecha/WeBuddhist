@@ -1,8 +1,42 @@
-import React, { useCallback, useState } from 'react'
-import { createEditor ,Editor, Transforms, Element} from 'slate'
+import React, { useCallback, useState, useMemo } from 'react'
+import { createEditor, Editor, Transforms, Element } from 'slate'
 import { Slate, Editable, withReact } from 'slate-react'
+import './Sheets.scss'
 
-const initialValue = [
+const CustomEditor = {
+  isBoldMarkActive(editor) {
+    const marks = Editor.marks(editor)
+    return marks ? marks.bold === true : false
+  },
+
+  isCodeBlockActive(editor) {
+    const [match] = Editor.nodes(editor, {
+      match: n => n.type === 'code',
+    })
+
+    return !!match
+  },
+
+  toggleBoldMark(editor) {
+    const isActive = CustomEditor.isBoldMarkActive(editor)
+    if (isActive) {
+      Editor.removeMark(editor, 'bold')
+    } else {
+      Editor.addMark(editor, 'bold', true)
+    }
+  },
+
+  toggleCodeBlock(editor) {
+    const isActive = CustomEditor.isCodeBlockActive(editor)
+    Transforms.setNodes(
+      editor,
+      { type: isActive ? null : 'code' },
+      { match: n => Element.isElement(n) && Editor.isBlock(editor, n) }
+    )
+  },
+}
+
+const defaultValue = [
   {
     type: 'paragraph',
     children: [{ text: 'A line of text in a paragraph.' }],
@@ -22,6 +56,12 @@ const Leaf = props => {
 }
 const Sheets = () => {
   const [editor] = useState(() => withReact(createEditor()))
+  
+  const initialValue = useMemo(
+    () =>
+      JSON.parse(localStorage.getItem('sheets-content')) || defaultValue,
+    []
+  )
   const renderLeaf = useCallback(props => {
     return <Leaf {...props} />
   }, [])
@@ -34,8 +74,21 @@ const Sheets = () => {
     }
   }, [])
   return (
-    <Slate editor={editor} initialValue={initialValue}>
-     <Editable
+    <div className="sheets-wrapper">
+      <Slate 
+        editor={editor} 
+        initialValue={initialValue}
+        onChange={value => {
+          const isAstChange = editor.operations.some(
+            op => 'set_selection' !== op.type
+          )
+          if (isAstChange) {
+            const content = JSON.stringify(value)
+            localStorage.setItem('sheets-content', content)
+          }
+        }}>
+       <Editable
+        className="sheets-editable"
         renderElement={renderElement}
         renderLeaf={renderLeaf}
         onKeyDown={event => {
@@ -46,35 +99,21 @@ const Sheets = () => {
 
           switch (event.key) {
             case '1': {
-              //for making like code block
               event.preventDefault()
-              const [match] = Editor.nodes(editor, {
-                match: n => n.type === 'code',
-              })
-              Transforms.setNodes(
-                editor,
-                { type: match ? null : 'code' },
-                {
-                  match: n => Element.isElement(n) && Editor.isBlock(editor, n),
-                }
-              )
+              CustomEditor.toggleCodeBlock(editor)
               break
             }
 
             case 'b': {
               event.preventDefault()
-              const isActive = Editor.marks(editor)?.bold === true;
-              if (isActive) {
-                Editor.removeMark(editor, 'bold');
-              } else {
-                Editor.addMark(editor, 'bold', true);
-              }
+              CustomEditor.toggleBoldMark(editor)
               break
             }
           }
         }}
       />
-    </Slate>
+      </Slate>
+    </div>
   )
 }
 
