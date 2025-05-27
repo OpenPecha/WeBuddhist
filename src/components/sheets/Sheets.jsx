@@ -1,92 +1,6 @@
-import React, { useCallback, useState, useMemo } from 'react'
-import { createEditor, Editor, Transforms, Element } from 'slate'
-import { Slate, Editable, withReact } from 'slate-react'
+import React, { useMemo } from 'react'
 import './Sheets.scss'
-import { Button } from 'react-bootstrap'
-import withEmbeds from './sheet-utils/withEmbeds'
-import YoutubeElement from './local-components/Editors/YoutubeElement'
-import CustomPecha from './local-components/Editors/CustomPecha'
-
-
-const embedsRegex=[
-  {
-    regex: /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)(?:&.*)?/,
-    type: 'youtube'
-  },
-  {
-    regex:/^https:\/\/pecha-frontend-12552055234-4f99e0e.onrender.com\/texts\/text-details\?text_id=([\w-]+)&contentId=([\w-]+)&versionId=&contentIndex=1&segment_id=([\w-]+)$/,
-    type: 'pecha'
-  }
-]
-const CustomEditor = {
-  handleEmbeds(editor, event) {
-    const text = event.clipboardData.getData('text/plain')
-    const matchItems=embedsRegex.some(({regex,type})=>{
-      const match=text.match(regex)
-      if (match) {
-        event.preventDefault()
-        if(type==='pecha'){
-          const pechaSegment=match[3]
-          const pechaImageURL = `https://pecha-frontend-12552055234-4f99e0e.onrender.com/api/v1/share/image?segment_id=${pechaSegment}&language=bo`
-          if(pechaSegment){
-            Transforms.insertNodes(editor,{
-              type:type,
-              url:text,
-              segmentId: pechaSegment,
-              children: [{ text:"" }],
-              src: pechaImageURL
-            })
-            return true
-          }
-          return false
-        }
-        if(type==='youtube'){
-          Transforms.insertNodes(editor,{
-            type: type,
-            youtubeId: match[1],
-            children: [{ text:"" }]
-          })
-          return true
-        }
-        return false
-      }
-      return false
-    })
-  },
-  handlePaste(editor, event) {
-    CustomEditor.handleEmbeds(editor, event)
-  },
-  isBoldMarkActive(editor) {
-    const marks = Editor.marks(editor)
-    return marks ? marks.bold === true : false
-  },
-
-  isCodeBlockActive(editor) {
-    const [match] = Editor.nodes(editor, {
-      match: n => n.type === 'code',
-    })
-
-    return !!match
-  },
-
-  toggleBoldMark(editor) {
-    const isActive = CustomEditor.isBoldMarkActive(editor)
-    if (isActive) {
-      Editor.removeMark(editor, 'bold')
-    } else {
-      Editor.addMark(editor, 'bold', true)
-    }
-  },
-
-  toggleCodeBlock(editor) {
-    const isActive = CustomEditor.isCodeBlockActive(editor)
-    Transforms.setNodes(
-      editor,
-      { type: isActive ? null : 'code' },
-      { match: n => Element.isElement(n) && Editor.isBlock(editor, n) }
-    )
-  },
-}
+import Editor from './local-components/Editors/EditorWrapper'
 
 const defaultValue = [
   {
@@ -101,130 +15,23 @@ const defaultValue = [
   // }
 ]
 
-
-const Leaf = props => {
-  return (
-    <span
-      {...props.attributes}
-      style={{ fontWeight: props.leaf.bold ? 'bold' : 'normal' }}
-    >
-      {props.children}
-    </span>
-  )
-}
 const Sheets = () => {
-  const [editor] = useState(() => withEmbeds(withReact(createEditor())))
-  
   const initialValue = useMemo(
     () =>
       JSON.parse(localStorage.getItem('sheets-content')) || defaultValue,
     []
   )
-  const renderLeaf = useCallback(props => {
-    return <Leaf {...props} />
-  }, [])
-  const renderElement = useCallback(props => {
-    switch (props.element.type) {
-      case 'code':
-        return <CodeElement {...props} />
-      case 'image':
-        return <ImageElement {...props} />
-      case 'youtube':
-        return <YoutubeElement {...props} />
-      case 'pecha':
-        return <CustomPecha {...props} />
-      default:
-        return <DefaultElement {...props} />
-    }
-  }, [])
+
   return (
     <div className="sheets-wrapper border">
-      <Slate 
-        editor={editor} 
-        initialValue={initialValue}
-        onChange={value => {
-          const isAstChange = editor.operations.some(
-            op => 'set_selection' !== op.type
-          )
-          if (isAstChange) {
-            const content = JSON.stringify(value)
-            localStorage.setItem('sheets-content', content)
-          }
-        }}>
-          <div className="border">
-            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleBoldMark(editor); }}>Bold</Button>
-            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleItalicMark(editor); }}>Italic</Button>
-            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleUnderlineMark(editor); }}>Underline</Button>
-            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleLink(editor); }}>Link</Button>
-            <Button onMouseDown={(e) => {e.preventDefault(); CustomEditor.toggleNumberList(editor); }}>Number List</Button>
-            <Button onMouseDown={(e) => {e.preventDefault(); CustomEditor.toggleBulletList(editor); }}>Bullet List</Button>
-            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleHeading(editor, { level: 1 }); }}>H1</Button>
-            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleHeading(editor, { level: 2 }); }}>H2</Button>
-            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleImage(editor); }}>Image</Button>
-            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleCodeBlock(editor); }}>Code</Button>
-            <Button onClick={(e) => { e.preventDefault(); console.log(editor.children) }}>Save</Button>
-          </div>
-       <Editable
-        className="sheets-editable"
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        onPaste={event => {
-          CustomEditor.handlePaste(editor,event)
-        }}
-        onKeyDown={event => {
-          if (event.shiftKey && event.key === 'Enter') {
-            event.preventDefault()
-            Editor.insertText(editor, '\n')
-            return
-          }
-          if (!(event.metaKey || event.ctrlKey)) {
-            return
-          }
-
-          switch (event.key) {
-            case '1': {
-              event.preventDefault()
-              CustomEditor.toggleCodeBlock(editor)
-              break
-            }
-
-            case 'b': {
-              event.preventDefault()
-              CustomEditor.toggleBoldMark(editor)
-              break
-            }
-          }
-        }}
-      />
-      </Slate>
+      <h1>newpost</h1>
+      <Editor initialValue={initialValue}>
+        <Editor.Toolbar />
+        <Editor.Input />
+      </Editor>
     </div>
   )
 }
 
 export default Sheets
 
-const CodeElement = props => {
-  return (
-    <pre {...props.attributes} className='codestyle'>
-      <code>{props.children}</code>
-    </pre>
-  )
-}
-
-const DefaultElement = props => {
-  return <p {...props.attributes}>{props.children}</p>
-}
-const ImageElement = props => {
-  return (
-    <div {...props.attributes}>
-      <div contentEditable={false}>
-        <img 
-          className="sheet-image"
-          src={props.element.src} 
-          alt={props.element.alt}
-        />
-      </div>
-      {props.children}
-    </div>
-  )
-}
