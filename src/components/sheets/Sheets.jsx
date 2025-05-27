@@ -1,10 +1,36 @@
 import React, { useCallback, useState, useMemo } from 'react'
 import { createEditor, Editor, Transforms, Element } from 'slate'
-import { Slate, Editable, withReact } from 'slate-react'
+import { Slate, Editable, withReact, useSlateStatic } from 'slate-react'
 import './Sheets.scss'
 import { Button } from 'react-bootstrap'
+import withEmbeds from './sheet-utils/withEmbeds'
+import YoutubeEmbed from 'react-youtube'
 
+const embedsRegex=[
+  {
+    regex: /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)(?:&.*)?/,
+    type: 'youtube'
+  }
+]
 const CustomEditor = {
+  handleEmbeds(editor, event) {
+    const text = event.clipboardData.getData('text/plain')
+    embedsRegex.some(({regex,type})=>{
+      const match=text.match(regex)
+      if (match) {
+        console.log('match',match[1])
+        event.preventDefault()
+        Transforms.insertNodes(editor,{
+          type: type,
+          youtubeId: match[1],
+          children: [{ text:"" }]
+        })
+      }
+    })
+  },
+  handlePaste(editor, event) {
+    CustomEditor.handleEmbeds(editor, event)
+  },
   isBoldMarkActive(editor) {
     const marks = Editor.marks(editor)
     return marks ? marks.bold === true : false
@@ -42,12 +68,12 @@ const defaultValue = [
     type: 'paragraph',
     children: [{ text: 'A line of text in a paragraph.' }],
   },
-  {
-    type:'image',
-    children: [{ text: '' }],
-    src: 'https://images.unsplash.com/photo-1745613184657-3c8dcd5f079a?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    alt: 'Placeholder'
-  }
+  // {
+  //   type:'image',
+  //   children: [{ text: '' }],
+  //   src: 'https://images.unsplash.com/photo-1745613184657-3c8dcd5f079a?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //   alt: 'Placeholder'
+  // }
 ]
 
 
@@ -62,7 +88,7 @@ const Leaf = props => {
   )
 }
 const Sheets = () => {
-  const [editor] = useState(() => withReact(createEditor()))
+  const [editor] = useState(() => withEmbeds(withReact(createEditor())))
   
   const initialValue = useMemo(
     () =>
@@ -78,6 +104,8 @@ const Sheets = () => {
         return <CodeElement {...props} />
       case 'image':
         return <ImageElement {...props} />
+      case 'youtube':
+        return <YoutubeElement {...props} />
       default:
         return <DefaultElement {...props} />
     }
@@ -98,6 +126,14 @@ const Sheets = () => {
         }}>
           <div className="border">
             <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleBoldMark(editor); }}>Bold</Button>
+            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleItalicMark(editor); }}>Italic</Button>
+            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleUnderlineMark(editor); }}>Underline</Button>
+            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleLink(editor); }}>Link</Button>
+            <Button onMouseDown={(e) => {e.preventDefault(); CustomEditor.toggleNumberList(editor); }}>Number List</Button>
+            <Button onMouseDown={(e) => {e.preventDefault(); CustomEditor.toggleBulletList(editor); }}>Bullet List</Button>
+            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleHeading(editor, { level: 1 }); }}>H1</Button>
+            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleHeading(editor, { level: 2 }); }}>H2</Button>
+            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleImage(editor); }}>Image</Button>
             <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleCodeBlock(editor); }}>Code</Button>
             <Button onClick={(e) => { e.preventDefault(); console.log(editor.children) }}>Save</Button>
           </div>
@@ -105,6 +141,9 @@ const Sheets = () => {
         className="sheets-editable"
         renderElement={renderElement}
         renderLeaf={renderLeaf}
+        onPaste={event => {
+          CustomEditor.handlePaste(editor,event)
+        }}
         onKeyDown={event => {
           if (event.shiftKey && event.key === 'Enter') {
             event.preventDefault()
@@ -159,6 +198,18 @@ const ImageElement = props => {
         />
       </div>
       {props.children}
+    </div>
+  )
+}
+const YoutubeElement = props => {
+  const {attributes,children,element} = props
+  const {youtubeId} = element
+  return (
+    <div {...attributes}>
+      <div contentEditable={false}>
+        <YoutubeEmbed videoId={youtubeId} />
+        {children}
+      </div>
     </div>
   )
 }
