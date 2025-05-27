@@ -1,31 +1,56 @@
 import React, { useCallback, useState, useMemo } from 'react'
 import { createEditor, Editor, Transforms, Element } from 'slate'
-import { Slate, Editable, withReact, useSlateStatic } from 'slate-react'
+import { Slate, Editable, withReact } from 'slate-react'
 import './Sheets.scss'
 import { Button } from 'react-bootstrap'
 import withEmbeds from './sheet-utils/withEmbeds'
-import YoutubeEmbed from 'react-youtube'
+import YoutubeElement from './local-components/Editors/YoutubeElement'
+import CustomPecha from './local-components/Editors/CustomPecha'
+
 
 const embedsRegex=[
   {
     regex: /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)(?:&.*)?/,
     type: 'youtube'
+  },
+  {
+    regex:/^https:\/\/pecha-frontend-12552055234-4f99e0e.onrender.com\/texts\/text-details\?text_id=([\w-]+)&contentId=([\w-]+)&versionId=&contentIndex=1&segment_id=([\w-]+)$/,
+    type: 'pecha'
   }
 ]
 const CustomEditor = {
   handleEmbeds(editor, event) {
     const text = event.clipboardData.getData('text/plain')
-    embedsRegex.some(({regex,type})=>{
+    const matchItems=embedsRegex.some(({regex,type})=>{
       const match=text.match(regex)
       if (match) {
-        console.log('match',match[1])
         event.preventDefault()
-        Transforms.insertNodes(editor,{
-          type: type,
-          youtubeId: match[1],
-          children: [{ text:"" }]
-        })
+        if(type==='pecha'){
+          const pechaSegment=match[3]
+          const pechaImageURL = `https://pecha-frontend-12552055234-4f99e0e.onrender.com/api/v1/share/image?segment_id=${pechaSegment}&language=bo`
+          if(pechaSegment){
+            Transforms.insertNodes(editor,{
+              type:type,
+              url:text,
+              segmentId: pechaSegment,
+              children: [{ text:"" }],
+              src: pechaImageURL
+            })
+            return true
+          }
+          return false
+        }
+        if(type==='youtube'){
+          Transforms.insertNodes(editor,{
+            type: type,
+            youtubeId: match[1],
+            children: [{ text:"" }]
+          })
+          return true
+        }
+        return false
       }
+      return false
     })
   },
   handlePaste(editor, event) {
@@ -106,6 +131,8 @@ const Sheets = () => {
         return <ImageElement {...props} />
       case 'youtube':
         return <YoutubeElement {...props} />
+      case 'pecha':
+        return <CustomPecha {...props} />
       default:
         return <DefaultElement {...props} />
     }
@@ -198,18 +225,6 @@ const ImageElement = props => {
         />
       </div>
       {props.children}
-    </div>
-  )
-}
-const YoutubeElement = props => {
-  const {attributes,children,element} = props
-  const {youtubeId} = element
-  return (
-    <div {...attributes}>
-      <div contentEditable={false}>
-        <YoutubeEmbed videoId={youtubeId} />
-        {children}
-      </div>
     </div>
   )
 }
