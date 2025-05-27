@@ -4,7 +4,8 @@ const Leaf = props => {
       {...props.attributes}
       style={{ 
         fontWeight: props.leaf.bold ? 'bold' : 'normal',
-        fontStyle: props.leaf.italic ? 'italic' : 'normal'
+        fontStyle: props.leaf.italic ? 'italic' : 'normal',
+        textDecoration: props.leaf.underline ? 'underline' : 'none',
       }}
     >
       {props.children}

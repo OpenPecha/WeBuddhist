@@ -8,6 +8,8 @@ import ImageElement from '../../../local-components/Editors/Elements/ImageElemen
 import Leaf from '../../../local-components/Editors/leaves/Leaf'
 import CustomEditor from '../../../sheet-utils/CustomEditor'
 import Heading from '../Elements/Heading'
+import List from '../Elements/List'
+import ListItem from '../Elements/ListItem'
 
 
 const EditorInput = (prop) => {
@@ -24,6 +26,12 @@ const EditorInput = (prop) => {
             return <Heading as="h1" {...props}  />
           case 'heading-two':
             return <Heading as="h2" {...props}/>
+            case 'ordered-list':
+              return <List {...props} />
+            case 'unordered-list':
+              return <List {...props} />
+            case 'list-item':
+              return <ListItem {...props} />
           case 'image':
             return <ImageElement {...props} />
           case 'youtube':
@@ -36,6 +44,7 @@ const EditorInput = (prop) => {
       }, [])
   return (
     <Editable
+    disableDefaultStyles
     className="sheets-editable"
     renderElement={renderElement}
     renderLeaf={renderLeaf}

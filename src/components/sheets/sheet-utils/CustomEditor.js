@@ -1,6 +1,6 @@
 import { Editor, Transforms, Element } from "slate";
 
-const LIST_TYPES = ["numbered-list", "bulleted-list"];
+const LIST_TYPES = ["ordered-list", "unordered-list"];
 const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
 const isAlignType = (format) => {
   return TEXT_ALIGN_TYPES.includes(format);
