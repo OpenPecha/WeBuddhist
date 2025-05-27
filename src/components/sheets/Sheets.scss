@@ -14,6 +14,16 @@
     width: 100%;
     overflow: auto;
 }
+
 .codestyle{
     background-color: #f8f8f8;
+}
+
+.sheet-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin: 10px 0;
+    display: block;
 }
