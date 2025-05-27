@@ -2,6 +2,7 @@ import React, { useCallback, useState, useMemo } from 'react'
 import { createEditor, Editor, Transforms, Element } from 'slate'
 import { Slate, Editable, withReact } from 'slate-react'
 import './Sheets.scss'
+import { Button } from 'react-bootstrap'
 
 const CustomEditor = {
   isBoldMarkActive(editor) {
@@ -74,7 +75,7 @@ const Sheets = () => {
     }
   }, [])
   return (
-    <div className="sheets-wrapper">
+    <div className="sheets-wrapper border">
       <Slate 
         editor={editor} 
         initialValue={initialValue}
@@ -87,13 +88,22 @@ const Sheets = () => {
             localStorage.setItem('sheets-content', content)
           }
         }}>
+          <div className="border">
+            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleBoldMark(editor); }}>Bold</Button>
+            <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleCodeBlock(editor); }}>Code</Button>
+            <Button onClick={(e) => { e.preventDefault(); console.log(editor.children) }}>Save</Button>
+          </div>
        <Editable
         className="sheets-editable"
         renderElement={renderElement}
         renderLeaf={renderLeaf}
         onKeyDown={event => {
-          const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-          if (!(isMac ? event.metaKey : event.ctrlKey)) {
+          if (event.shiftKey && event.key === 'Enter') {
+            event.preventDefault()
+            Editor.insertText(editor, '\n')
+            return
+          }
+          if (!(event.metaKey || event.ctrlKey)) {
             return
           }
 
@@ -121,7 +131,7 @@ export default Sheets
 
 const CodeElement = props => {
   return (
-    <pre {...props.attributes}>
+    <pre {...props.attributes} className='codestyle'>
       <code>{props.children}</code>
     </pre>
   )
