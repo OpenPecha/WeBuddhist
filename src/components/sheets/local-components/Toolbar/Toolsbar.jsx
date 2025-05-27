@@ -5,8 +5,8 @@ const Toolsbar = (prop) => {
   const {editor} = prop
   return (
     <div className="border">
-      <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleBoldMark(editor); }}>Bold</Button>
-      <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleItalicMark(editor); }}>Italic</Button>
+      <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleMark(editor, "bold"); }}>Bold</Button>
+      <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleMark(editor,"italic"); }}>Italic</Button>
       <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleUnderlineMark(editor); }}>Underline</Button>
       <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleLink(editor); }}>Link</Button>
       <Button onMouseDown={(e) => {e.preventDefault(); CustomEditor.toggleNumberList(editor); }}>Number List</Button>

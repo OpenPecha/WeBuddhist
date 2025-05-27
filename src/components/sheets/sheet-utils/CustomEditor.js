@@ -46,20 +46,22 @@ const CustomEditor = {
     });
   },
   handlePaste(editor, event) {
-    CustomEditor.handleEmbeds(editor, event);
+    this.handleEmbeds(editor, event);
   },
-  isBoldMarkActive(editor) {
+
+  isMarkActive(editor, type) {
     const marks = Editor.marks(editor);
-    return marks ? marks.bold === true : false;
+    return marks ? marks[type] === true : false;
   },
-  toggleBoldMark(editor) {
-    const isActive = CustomEditor.isBoldMarkActive(editor);
+  toggleMark(editor, type) {
+    const isActive = CustomEditor.isMarkActive(editor, type);
     if (isActive) {
-      Editor.removeMark(editor, "bold");
+      Editor.removeMark(editor, type);
     } else {
-      Editor.addMark(editor, "bold", true);
+      Editor.addMark(editor, type, true);
     }
   },
+
   isCodeBlockActive(editor) {
     const [match] = Editor.nodes(editor, {
       match: (n) => n.type === "code",
@@ -74,18 +76,6 @@ const CustomEditor = {
       { type: isActive ? null : "code" },
       { match: (n) => Element.isElement(n) && Editor.isBlock(editor, n) }
     );
-  },
-  isItalicMarkActive(editor) {
-    const marks = Editor.marks(editor);
-    return marks ? marks.italic === true : false;
-  },
-  toggleItalicMark(editor) {
-    const isActive = CustomEditor.isItalicMarkActive(editor);
-    if (isActive) {
-      Editor.removeMark(editor, "italic");
-    } else {
-      Editor.addMark(editor, "italic", true);
-    }
   },
 };
 

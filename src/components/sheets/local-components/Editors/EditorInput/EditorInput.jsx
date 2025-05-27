@@ -55,12 +55,12 @@ const EditorInput = (prop) => {
         }
         case 'i': {
           event.preventDefault()
-          CustomEditor.toggleItalicMark(editor)
+          CustomEditor.toggleMark(editor, "italic")
           break
         }
         case 'b': {
           event.preventDefault()
-          CustomEditor.toggleBoldMark(editor)
+          CustomEditor.toggleMark(editor, "bold")
           break
         }
       
