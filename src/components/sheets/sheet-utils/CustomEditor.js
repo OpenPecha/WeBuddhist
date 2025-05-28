@@ -5,6 +5,10 @@ const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
 const isAlignType = (format) => {
   return TEXT_ALIGN_TYPES.includes(format);
 };
+
+const isAlignElement = (n) => {
+  return n.align !== undefined;
+};
 const isListType = (format) => {
   return LIST_TYPES.includes(format);
 };

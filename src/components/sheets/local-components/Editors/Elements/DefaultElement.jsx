@@ -1,5 +1,7 @@
 const DefaultElement = props => {
-    return <p {...props.attributes}>{props.children}</p>
+    const { element, attributes, children } = props;
+    const style = element.align ? { textAlign: element.align } : {};
+    return <p style={style} {...attributes}>{children}</p>
   }
 
   export default DefaultElement

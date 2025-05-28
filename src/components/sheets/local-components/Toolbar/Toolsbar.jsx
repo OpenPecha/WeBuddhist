@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaBold ,FaItalic,FaUnderline,FaListOl,FaListUl} from 'react-icons/fa'
+import { FaBold ,FaItalic,FaUnderline,FaListOl,FaListUl,FaAlignLeft,FaAlignCenter,FaAlignRight,FaAlignJustify,FaQuoteLeft} from 'react-icons/fa'
 import { LuHeading1, LuHeading2 } from "react-icons/lu";
 import { Button } from 'react-bootstrap'
 import CustomEditor from '../../sheet-utils/CustomEditor'
@@ -16,6 +16,11 @@ const Toolsbar = (prop) => {
       <BlockButton format="heading-two" > <LuHeading2 /> </BlockButton>
       <BlockButton format="ordered-list"><FaListOl /></BlockButton>
       <BlockButton format="unordered-list"><FaListUl /></BlockButton>
+      <BlockButton format="left"> <FaAlignLeft /> </BlockButton>
+      <BlockButton format="center"> <FaAlignCenter /> </BlockButton>
+      <BlockButton format="right"> <FaAlignRight /> </BlockButton>
+      <BlockButton format="justify"> <FaAlignJustify /> </BlockButton>
+      <BlockButton format="block-quote"> <FaQuoteLeft /> </BlockButton>
       <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleLink(editor); }}>Link</Button>
       <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleImage(editor); }}>Image</Button>
       <Button onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleCodeBlock(editor); }}>Code</Button>

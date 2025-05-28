@@ -5,7 +5,8 @@ const List = (props) => {
 
   const listStyles = {
     paddingLeft: '2em',
-    margin: '0.5em 0'
+    margin: '0.5em 0',
+    textAlign: element.align || 'left'
   }
 
   if (element.type === 'ordered-list') {
