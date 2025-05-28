@@ -5,6 +5,7 @@ import CustomPecha from '../../../local-components/Editors/Elements/CustomPecha'
 import DefaultElement from '../../../local-components/Editors/Elements/DefaultElement'
 import CodeElement from '../../../local-components/Editors/Elements/CodeElement'
 import ImageElement from '../../../local-components/Editors/Elements/ImageElement'
+import QuoteElement from '../../../local-components/Editors/Elements/QuoteElement'
 import Leaf from '../../../local-components/Editors/leaves/Leaf'
 import CustomEditor from '../../../sheet-utils/CustomEditor'
 import Heading from '../Elements/Heading'
@@ -26,12 +27,14 @@ const EditorInput = (prop) => {
             return <Heading as="h1" {...props}  />
           case 'heading-two':
             return <Heading as="h2" {...props}/>
-            case 'ordered-list':
-              return <List {...props} />
-            case 'unordered-list':
-              return <List {...props} />
-            case 'list-item':
-              return <ListItem {...props} />
+          case 'block-quote':
+            return <QuoteElement {...props} />
+          case 'ordered-list':
+            return <List {...props} />
+          case 'unordered-list':
+            return <List {...props} />
+          case 'list-item':
+            return <ListItem {...props} />
           case 'image':
             return <ImageElement {...props} />
           case 'youtube':
