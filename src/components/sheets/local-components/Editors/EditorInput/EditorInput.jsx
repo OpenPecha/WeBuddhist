@@ -47,6 +47,8 @@ const EditorInput = (prop) => {
       }, [])
   return (
     <Editable
+    autoFocus
+    spellCheck
     disableDefaultStyles
     className="sheets-editable"
     renderElement={renderElement}
