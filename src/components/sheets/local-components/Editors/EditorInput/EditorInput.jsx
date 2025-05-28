@@ -50,7 +50,7 @@ const EditorInput = (prop) => {
     autoFocus
     spellCheck
     disableDefaultStyles
-    className="sheets-editable"
+    className="sheets-editable content"
     renderElement={renderElement}
     renderLeaf={renderLeaf}
     onPaste={event => {
