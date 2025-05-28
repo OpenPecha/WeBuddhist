@@ -1,0 +1,73 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 4px;
+  
+  &-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  
+  &-divider {
+    width: 1px;
+    height: 24px;
+    background-color: #e0e0e0;
+    margin: 0 6px;
+  }
+  
+  &-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background-color: transparent;
+    border-radius: 4px;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    padding: 0;
+    
+    &:hover {
+      background-color: #eaeaea;
+      color: #333;
+    }
+    
+    &:active,
+    &.active {
+      background-color: #e0e0e0;
+      color: #000;
+    }
+  }
+}
+
+.save-button {
+  color: #4285f4;
+  
+  &:hover {
+    background-color: rgba(66, 133, 244, 0.1);
+  }
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 6px;
+    
+    &-button {
+      width: 28px;
+      height: 28px;
+    }
+    
+    &-divider {
+      height: 20px;
+    }
+  }
+}

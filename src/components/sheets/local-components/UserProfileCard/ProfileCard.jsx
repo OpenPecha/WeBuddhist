@@ -1,0 +1,49 @@
+import React, { useEffect } from 'react';
+import { useAuth } from '../../../../config/AuthContext.jsx';
+import { useQuery } from 'react-query';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../../../config/axios-config.js';
+import './ProfileCard.scss';
+
+const fetchUserInfo = async () => {
+  const { data } = await axiosInstance.get("/api/v1/users/info");
+  return data;
+};
+
+const ProfileCard = () => {
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+  const {
+    data: userInfo,
+    isLoading: userInfoIsLoading
+  } = useQuery("userInfo", fetchUserInfo, { refetchOnWindowFocus: false, enabled: isLoggedIn });
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login');
+    }
+  }, [isLoggedIn, navigate]);
+
+  if (userInfoIsLoading) {
+    return <div className="profile-card-loading">Loading...</div>;
+  }
+  return (
+    <div className="profile-card">
+            {userInfo?.username && (
+      <div className="profile-card-content">
+        <div className="profile-picture-container">
+      
+            <img src={userInfo.avatar_url} alt="Profile" className="profile-image" />
+       
+        </div>
+        <div className="profile-info">
+          <h3 className="profile-name">{userInfo?.firstname} {userInfo?.lastname}</h3>
+          {userInfo?.username && <p className="profile-title">@{userInfo.username}</p>}
+        </div>
+      </div>
+         )}
+    </div>
+  );
+};
+
+export default ProfileCard

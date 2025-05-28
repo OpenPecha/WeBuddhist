@@ -33,15 +33,26 @@ const NavigationBar = () => {
 
  function handleLogout(e) {
    e.preventDefault()
+   
+   const currentPath = window.location.pathname;
+   if (currentPath !== '/login' && currentPath !== '/register') {
+     sessionStorage.setItem('redirectAfterLogin', currentPath);
+   }
+   
    localStorage.removeItem(LOGGED_IN_VIA);
    sessionStorage.removeItem(ACCESS_TOKEN);
    localStorage.removeItem(REFRESH_TOKEN)
    isLoggedIn && pechaLogout()
    isAuthenticated && logout({
      logoutParams: {
-       returnTo: window.location.origin,
+       returnTo: window.location.origin + '/login',
      },
    });
+   
+   if (isLoggedIn && !isAuthenticated) {
+     navigate('/login');
+   }
+   
    setExpanded(false);
  }
 

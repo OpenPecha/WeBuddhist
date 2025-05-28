@@ -20,8 +20,18 @@ const UserLogin = () => {
     const { login, isLoggedIn } = useAuth();
     const navigate = useNavigate();
 
+    // Check if there's a redirect path stored in sessionStorage
+    const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+    
     if (isLoggedIn || isAuthenticated) {
-        navigate("/texts")
+        // If there's a stored redirect path, navigate there and clear it
+        if (redirectPath) {
+            sessionStorage.removeItem('redirectAfterLogin');
+            navigate(redirectPath);
+        } else {
+            // Default redirect to texts page
+            navigate("/texts");
+        }
     }
     const loginMutation = useMutation(
         async (loginData) => {
@@ -36,7 +46,16 @@ const UserLogin = () => {
                 const accessToken = data.auth.access_token;
                 const refreshToken = data.auth.refresh_token;
                 login(accessToken, refreshToken);
-                navigate("/texts");
+                
+                // Check if there's a redirect path stored in sessionStorage
+                const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+                if (redirectPath) {
+                    sessionStorage.removeItem('redirectAfterLogin');
+                    navigate(redirectPath);
+                } else {
+                    // Default redirect to texts page
+                    navigate("/texts");
+                }
             },
             onError: (error) => {
                 console.error("Login failed", error);
@@ -86,11 +105,19 @@ const UserLogin = () => {
 
     const loginWithSocial = async () => {
         try {
+            // Check if there's a redirect path stored in sessionStorage
+            const redirectPath = sessionStorage.getItem('redirectAfterLogin') || "/texts";
+            
             await loginWithRedirect({
                 appState: {
-                    returnTo: "/texts",
+                    returnTo: redirectPath,
                 },
             });
+            
+            // Clear the redirect path after using it
+            if (sessionStorage.getItem('redirectAfterLogin')) {
+                sessionStorage.removeItem('redirectAfterLogin');
+            }
         } catch (error) {
             console.error("Social login failed:", error);
         }

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import './Sheets.scss'
 import Editor from './local-components/Editors/EditorWrapper'
+import ProfileCard from './local-components/UserProfileCard/ProfileCard'
 
 const defaultValue = [
   {
@@ -23,8 +24,8 @@ const Sheets = () => {
   )
 
   return (
-    <div className="sheets-wrapper border">
-      <h1>newpost</h1>
+    <div className="sheets-wrapper">
+      <ProfileCard />
       <Editor initialValue={initialValue}>
         <Editor.Toolbar />
         <Editor.Input />
