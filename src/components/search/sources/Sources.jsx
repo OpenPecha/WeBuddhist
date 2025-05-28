@@ -10,7 +10,7 @@ import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
 
 export const fetchSources = async(query, skip, pagination) => {
 
-  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&type=${'Source'}`, {
+  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&type=${'source'}`, {
     params: {
       limit: pagination.limit,
       skip: skip
