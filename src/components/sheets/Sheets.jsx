@@ -25,6 +25,7 @@ const Sheets = () => {
 
   return (
     <div className="sheets-wrapper">
+      <input type="text" className="content title-input" placeholder='Enter the title here'/>
       <ProfileCard />
       <Editor initialValue={initialValue}>
         <Editor.Toolbar />
