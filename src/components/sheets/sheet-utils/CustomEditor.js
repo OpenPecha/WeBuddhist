@@ -140,6 +140,30 @@ const CustomEditor = {
       { match: (n) => Element.isElement(n) && Editor.isBlock(editor, n) }
     );
   },
+
+  toggleImage(editor) {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const src = reader.result;
+        Transforms.insertNodes(editor, {
+          type: "image",
+          src,
+          alt: file.name,
+          children: [{ text: "" }],
+        });
+      };
+      reader.readAsDataURL(file);
+    };
+
+    input.click();
+  },
 };
 
 export default CustomEditor;
