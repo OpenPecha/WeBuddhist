@@ -4,6 +4,7 @@ import './Sources.scss';
 import { getLanguageClass } from '../../../utils/Constants';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
 
@@ -23,6 +24,7 @@ export const fetchSources = async(query, skip, pagination) => {
 const Sources = (query) => {
   const { t } = useTranslate();
   const stringq = query?.query;
+  const navigate = useNavigate();
 
    const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
     const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
@@ -60,7 +62,18 @@ const Sources = (query) => {
     </div>
     {sourceData.sources.map((source) => (
       <div key={source.text.text_id} className={`source-item ${getLanguageClass(source.text.language)}`}>
-        <h4>{source.text.title}</h4>
+        <h4
+          className="source-title"
+          onClick={() => {
+            const firstSegment = source.segment_match?.[0];
+            if (firstSegment && source.text?.text_id) {
+              navigate(
+                `/texts/text-details?textId=${source.text.text_id}&segmentId=${firstSegment.segment_id}`);
+            }
+          }}
+        >
+          {source.text.title}
+        </h4>
         <span className='en-text'>{source.text.published_date}</span>
         <div className="segments">
           {source.segment_match.map((segment) => (
