@@ -4,10 +4,6 @@
     h4 {
       font-size: 18px;
       font-weight: 600;
-      
-      &.source-title {
-        cursor: pointer;
-      }
     }
     
     span {
@@ -25,6 +21,7 @@
         position: relative;
         padding-left: 16px;
         text-align: justify;
+        cursor: pointer;
         &::before {
           content: '';
           position: absolute;

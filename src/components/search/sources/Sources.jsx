@@ -62,22 +62,17 @@ const Sources = (query) => {
     </div>
     {sourceData.sources.map((source) => (
       <div key={source.text.text_id} className={`source-item ${getLanguageClass(source.text.language)}`}>
-        <h4
-          className="source-title"
-          onClick={() => {
-            const firstSegment = source.segment_match?.[0];
-            if (firstSegment && source.text?.text_id) {
-              navigate(
-                `/texts/text-details?textId=${source.text.text_id}&segmentId=${firstSegment.segment_id}`);
-            }
-          }}
-        >
-          {source.text.title}
-        </h4>
+        <h4>{source.text.title}</h4>
         <span className='en-text'>{source.text.published_date}</span>
         <div className="segments">
           {source.segment_match.map((segment) => (
-            <div key={segment.segment_id} className="segment">
+            <div key={segment.segment_id} className="segment" 
+            onClick={() => {
+              if (segment.segment_id && source.text?.text_id) {
+                navigate(`/texts/text-details?textId=${source.text.text_id}&segmentId=${segment.segment_id}`);
+              }
+            }}
+            >
               <p>{highlightSearchMatch(segment.content, searchText, 'highlighted-text')}</p>
             </div>
           ))}
