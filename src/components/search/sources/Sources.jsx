@@ -73,7 +73,7 @@ const Sources = (query) => {
               }
             }}
             >
-              <p>{highlightSearchMatch(segment.content, searchText, 'highlighted-text')}</p>
+              <p dangerouslySetInnerHTML={{__html : highlightSearchMatch(segment.content, searchText, 'highlighted-text')}} />
             </div>
           ))}
         </div>
