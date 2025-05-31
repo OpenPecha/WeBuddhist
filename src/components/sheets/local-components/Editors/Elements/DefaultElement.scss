@@ -1,0 +1,22 @@
+.paragraph-with-indicator {
+  position: relative;
+  padding-left: 1.2em;
+  .newline-indicator {
+    position: absolute;
+    left: 0;
+    width: 0.8em;
+    height: 0.8em;
+    display: inline-block;
+    
+    &::before {
+      content: ":";
+      font-size: 1em;
+      color: #929292;
+      opacity: 0.7;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
+  
+}
