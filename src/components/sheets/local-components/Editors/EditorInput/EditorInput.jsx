@@ -82,7 +82,21 @@ const EditorInput = (prop) => {
           CustomEditor.toggleMark(editor, "bold")
           break
         }
-      
+        case 'u': {
+          event.preventDefault()
+          CustomEditor.toggleMark(editor, "underline")
+          break
+        }
+        case "z": {
+          event.preventDefault()
+          editor.undo()
+          break
+        }
+        case "y": {
+          event.preventDefault()
+          editor.redo()
+          break
+        }
       }
     }}
   />

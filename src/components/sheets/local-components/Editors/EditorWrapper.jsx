@@ -4,8 +4,9 @@ import { Slate, withReact } from 'slate-react'
 import withEmbeds from '../../sheet-utils/withEmbeds'
 import EditorInput from './EditorInput/EditorInput'
 import Toolsbar from '../Toolbar/Toolsbar'
+import { withHistory } from 'slate-history'
 const Editor = (prop) => {
-    const [editor] = useState(() => withEmbeds(withReact(createEditor())))
+    const [editor] = useState(() => withHistory(withEmbeds(withReact(createEditor()))))
     const { initialValue, children } = prop
   return (
       <Slate 
