@@ -1,7 +1,9 @@
 import React from 'react';
 import './DefaultElement.scss';
+import { useSelected } from 'slate-react';
 const DefaultElement = props => {
     const { element, attributes, children } = props;
+    const selected=useSelected()
     const style = {
       ...(element.align ? { textAlign: element.align } : {}),
       whiteSpace: 'pre-wrap' 
@@ -9,7 +11,11 @@ const DefaultElement = props => {
     
     return (
       <p style={style} {...attributes} className="paragraph-with-indicator">
-        <span className="newline-indicator"/>
+        {
+          selected && (
+            <span className="newline-indicator"/>
+          )
+        }
         {children}
       </p>
     );
