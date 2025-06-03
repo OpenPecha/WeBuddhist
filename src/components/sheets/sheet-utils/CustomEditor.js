@@ -59,7 +59,19 @@ const CustomEditor = {
     });
   },
   handlePaste(editor, event) {
-    this.handleEmbeds(editor, event);
+    if (this.handleEmbeds(editor, event)) {
+      return;
+    }
+    const text = event.clipboardData.getData("text/plain");
+    if (text) {
+      event.preventDefault();
+      const processed = text.replace(/^\n+/, "");
+      Transforms.insertNodes(editor, {
+        type: "paragraph",
+        align: "left",
+        children: [{ text: processed }],
+      });
+    }
   },
 
   isMarkActive(editor, type) {
