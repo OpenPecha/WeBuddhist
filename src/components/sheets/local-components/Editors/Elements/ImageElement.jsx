@@ -8,7 +8,6 @@ const ImageElement = props => {
             alt={props.element.alt}
           />
         </div>
-        {props.children}
       </div>
     )
   }

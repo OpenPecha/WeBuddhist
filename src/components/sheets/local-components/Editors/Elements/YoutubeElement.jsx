@@ -8,7 +8,7 @@ const YoutubeElement = props => {
         <div contentEditable={false}>
           <YoutubeEmbed videoId={youtubeId} />
         </div>
-        {children}
+
       </div>
     )
   }

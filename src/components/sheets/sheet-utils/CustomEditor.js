@@ -1,4 +1,4 @@
-import { Editor, Transforms, Element } from "slate";
+import { Editor, Transforms, Element, Path } from "slate";
 
 const LIST_TYPES = ["ordered-list", "unordered-list"];
 const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
@@ -164,12 +164,51 @@ const CustomEditor = {
       const reader = new FileReader();
       reader.onload = () => {
         const src = reader.result;
-        Transforms.insertNodes(editor, {
-          type: "image",
-          src,
-          alt: file.name,
-          children: [{ text: "" }],
-        });
+        const { selection } = editor;
+        let replaced = false;
+        if (selection) {
+          const [currentNode, currentPath] = Editor.node(editor, selection, {
+            depth: 1,
+          });
+          if (
+            currentNode.type === "paragraph" &&
+            Editor.isEmpty(editor, currentNode)
+          ) {
+            Transforms.setNodes(
+              editor,
+              {
+                type: "image",
+                src,
+                alt: file.name,
+                children: [{ text: "" }],
+              },
+              { at: currentPath }
+            );
+            Transforms.insertNodes(
+              editor,
+              {
+                type: "paragraph",
+                align: "left",
+                children: [{ text: "" }],
+              },
+              { at: Path.next(currentPath) }
+            );
+            replaced = true;
+          }
+        }
+        if (!replaced) {
+          Transforms.insertNodes(editor, {
+            type: "image",
+            src,
+            alt: file.name,
+            children: [{ text: "" }],
+          });
+          Transforms.insertNodes(editor, {
+            type: "paragraph",
+            align: "left",
+            children: [{ text: "" }],
+          });
+        }
       };
       reader.readAsDataURL(file);
     };
