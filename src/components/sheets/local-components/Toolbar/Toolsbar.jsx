@@ -5,6 +5,7 @@ import CustomEditor from '../../sheet-utils/CustomEditor'
 import MarkButton from './MarkButton'
 import BlockButton from './blockButton'
 import './Toolsbar.scss'
+import pechaIcon from "../../../../assets/icons/pecha_icon.png"
 const Toolsbar = (prop) => {
   const {editor} = prop
   return (
@@ -16,12 +17,14 @@ const Toolsbar = (prop) => {
       </div>
       
       <div className="toolbar-divider"></div>
-      
       <div className="toolbar-group">
+        <button className="toolbar-button"><img src={pechaIcon} style={{width: "20px", height: "20px" }} alt="source" /></button>
+      </div>
+      {/* <div className="toolbar-group">
         <BlockButton format="heading-one" className="toolbar-button"> <LuHeading1 /> </BlockButton>
         <BlockButton format="heading-two" className="toolbar-button"> <LuHeading2 /> </BlockButton>
       </div>
-      
+       */}
       <div className="toolbar-divider"></div>
       
       <div className="toolbar-group">

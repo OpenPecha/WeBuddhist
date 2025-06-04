@@ -1,22 +1,16 @@
 .paragraph-with-indicator {
   position: relative;
+  display: flex;
   padding-left: 1.2em;
+  align-items: center;
   .newline-indicator {
     position: absolute;
     left: 0;
-    width: 0.8em;
-    height: 0.8em;
+    width: 1em;
+    height: 1em;
     display: inline-block;
-    
-    &::before {
-      content: ":";
-      font-size: 1em;
-      color: #929292;
-      opacity: 0.7;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+    color: #929292;
+    font-size: 1em;
   }
   
 }
