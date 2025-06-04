@@ -2,7 +2,8 @@ import React from "react";
 import { useDropzone } from "react-dropzone";
 import { IoClose } from "react-icons/io5";
 import "./ImageUpload.scss";
-
+import { FaRegImages } from "react-icons/fa";
+import { FaCropSimple } from "react-icons/fa6";
 const ImageUploadModal = ({ onClose, onUpload }) => {
   const [selectedFile, setSelectedFile] = React.useState(null);
 
@@ -35,6 +36,7 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
         aria-modal="true"
         role="document"
       >
+        <p>Upload Image</p>
         <button
           className="close-button"
           onClick={onClose}
@@ -43,6 +45,7 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
           <IoClose />
         </button>
         <div {...getRootProps()} className="upload-area">
+            <FaRegImages/>
           <input {...getInputProps()} />
           <p>
             {selectedFile
@@ -50,15 +53,28 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
               : "Drag and drop an image here, or click to select"}
           </p>
         </div>
-        {selectedFile && (
-          <button
-            className="upload-button"
-            onClick={() => handleFile(selectedFile)}
-            aria-label="Upload selected image"
-          >
-            Upload
-          </button>
-        )}
+        {
+            selectedFile && (
+                <>
+                <div className="selected-file-container-wrapper">
+                <div className="selected-file-info">
+                    <div className="selected-file-container">
+                    <img src={URL.createObjectURL(selectedFile)} className="selected-file-image" alt="Selected" />
+                    </div>
+                    <p> {selectedFile.name}</p>
+                </div>
+                <FaCropSimple/>
+                </div>
+                 <button
+                 className="upload-button"
+                 onClick={() => handleFile(selectedFile)}
+                 aria-label="Upload selected image"
+               >
+                 Upload
+               </button>
+               </>
+            )
+        }
       </div>
     </div>
   );
