@@ -12,6 +12,8 @@ import UserProfile from "./components/user-profile/UserProfile.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
 import { Suspense, lazy } from "react";
+import { TestDemo } from './components/ImageUpload/UploadImageModal';
+
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 const HomePage = lazy(() => import("./components/home/HomePage.jsx"));
@@ -128,6 +130,7 @@ function App() {
               <Route path="/texts/text-category/:id" element={<Book/>}/>
               <Route path="/texts/text-details" element={<Chapters/>}/>
               <Route path="/search" element={<SearchResultsPage/>}/>
+              <Route path="/test-upload" element={<TestDemo />} />
               <Route path="*" element={<HomePage/>}/>
           </Routes>
       </Suspense>
