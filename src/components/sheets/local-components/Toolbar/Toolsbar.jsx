@@ -6,6 +6,8 @@ import MarkButton from './MarkButton'
 import BlockButton from './blockButton'
 import './Toolsbar.scss'
 import pechaIcon from "../../../../assets/icons/pecha_icon.png"
+import { serialize } from '../../sheet-utils/serialize';
+
 const Toolsbar = (prop) => {
   const {editor} = prop
   return (
@@ -52,7 +54,7 @@ const Toolsbar = (prop) => {
       <div className="toolbar-divider"></div>
       
       <div className="toolbar-group">
-        <button className="toolbar-button save-button" onClick={(e) => { e.preventDefault(); console.log(editor.children) }}><FaSave /></button>
+        <button className="toolbar-button save-button" onClick={(e) => { e.preventDefault(); const html = editor.children.map(serialize).join(''); console.log(html); }}><FaSave /></button>
       </div>
     </div>
   )
