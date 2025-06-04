@@ -1,34 +1,16 @@
 import { Editor, Transforms, Element, Path } from "slate";
-import './ImageUpload.scss';
-import { useDropzone } from 'react-dropzone';
-import { createPortal } from 'react-dom';
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { IoClose } from 'react-icons/io5';
+import "./ImageUpload.scss";
+import { createPortal } from "react-dom";
+import React from "react";
+import { createRoot } from "react-dom/client";
+import {
+  isAlignElement,
+  isAlignType,
+  isListType,
+  embedsRegex,
+} from "./Constant";
+import ImageUploadModal from "./ImageUploadModal";
 
-const LIST_TYPES = ["ordered-list", "unordered-list"];
-const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
-const isAlignType = (format) => {
-  return TEXT_ALIGN_TYPES.includes(format);
-};
-
-const isAlignElement = (n) => {
-  return n.align !== undefined;
-};
-const isListType = (format) => {
-  return LIST_TYPES.includes(format);
-};
-const embedsRegex = [
-  {
-    regex: /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]+)(?:&.*)?/,
-    type: "youtube",
-  },
-  {
-    regex:
-      /^https:\/\/pecha-frontend-12552055234-4f99e0e.onrender.com\/texts\/text-details\?text_id=([\w-]+)&contentId=([\w-]+)&versionId=&contentIndex=1&segment_id=([\w-]+)$/,
-    type: "pecha",
-  },
-];
 const CustomEditor = {
   handleEmbeds(editor, event) {
     const text = event.clipboardData.getData("text/plain");
@@ -160,121 +142,79 @@ const CustomEditor = {
   },
 
   toggleImage(editor) {
-    const modalRoot = document.createElement('div');
+    const modalRoot = document.createElement("div");
     document.body.appendChild(modalRoot);
     const root = createRoot(modalRoot);
 
-    const Modal = () => {
-      const [selectedFile, setSelectedFile] = React.useState(null);
-      
-      const { getRootProps, getInputProps } = useDropzone({
-        accept: { 'image/*': [] },
-        onDrop: (acceptedFiles) => {
-          if (acceptedFiles?.length > 0) {
-            setSelectedFile(acceptedFiles[0]);
-          }
-        }
-      });
-
-      const handleClose = () => {
-        root.unmount();
-        document.body.removeChild(modalRoot);
-      };
-
-      const handleFile = (file) => {
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = () => {
-          const src = reader.result;
-          const { selection } = editor;
-          let replaced = false;
-          
-          if (selection) {
-            const [currentNode, currentPath] = Editor.node(editor, selection, {
-              depth: 1,
-            });
-            if (
-              currentNode.type === "paragraph" &&
-              Editor.isEmpty(editor, currentNode)
-            ) {
-              Transforms.setNodes(
-                editor,
-                {
-                  type: "image",
-                  src,
-                  alt: file.name,
-                  children: [{ text: "" }],
-                },
-                { at: currentPath }
-              );
-              Transforms.insertNodes(
-                editor,
-                {
-                  type: "paragraph",
-                  align: "left",
-                  children: [{ text: "" }],
-                },
-                { at: Path.next(currentPath) }
-              );
-              replaced = true;
-            }
-          }
-          
-          if (!replaced) {
-            Transforms.insertNodes(editor, {
-              type: "image",
-              src,
-              alt: file.name,
-              children: [{ text: "" }],
-            });
-            Transforms.insertNodes(editor, {
-              type: "paragraph",
-              align: "left",
-              children: [{ text: "" }],
-            });
-          }
-
-          root.unmount();
-          document.body.removeChild(modalRoot);
-        };
-        reader.readAsDataURL(file);
-      };
-
-      return createPortal(
-        React.createElement('div', { 
-          className: 'image-upload-overlay', 
-          onClick: handleClose 
-        },
-          React.createElement('div', { 
-            className: 'image-upload-modal', 
-            onClick: e => e.stopPropagation() 
-          },
-            React.createElement('button', { 
-              className: 'close-button', 
-              onClick: handleClose 
-            }, React.createElement(IoClose)),
-            React.createElement('div', { 
-              ...getRootProps(), 
-              className: 'upload-area' 
-            },
-              React.createElement('input', getInputProps()),
-              React.createElement('p', null, selectedFile 
-                ? `Selected: ${selectedFile.name}`
-                : 'Drag and drop an image here, or click to select'
-              )
-            ),
-            selectedFile && React.createElement('button', {
-              className: 'upload-button',
-              onClick: () => handleFile(selectedFile)
-            }, 'Upload')
-          )
-        ),
-        modalRoot
-      );
+    const handleClose = () => {
+      root.unmount();
+      document.body.removeChild(modalRoot);
     };
 
-    root.render(React.createElement(Modal));
+    const handleUpload = (file) => {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const src = reader.result;
+        const { selection } = editor;
+        let replaced = false;
+        if (selection) {
+          const [currentNode, currentPath] = Editor.node(editor, selection, {
+            depth: 1,
+          });
+          if (
+            currentNode.type === "paragraph" &&
+            Editor.isEmpty(editor, currentNode)
+          ) {
+            Transforms.setNodes(
+              editor,
+              {
+                type: "image",
+                src,
+                alt: file.name,
+                children: [{ text: "" }],
+              },
+              { at: currentPath }
+            );
+            Transforms.insertNodes(
+              editor,
+              {
+                type: "paragraph",
+                align: "left",
+                children: [{ text: "" }],
+              },
+              { at: Path.next(currentPath) }
+            );
+            replaced = true;
+          }
+        }
+        if (!replaced) {
+          Transforms.insertNodes(editor, {
+            type: "image",
+            src,
+            alt: file.name,
+            children: [{ text: "" }],
+          });
+          Transforms.insertNodes(editor, {
+            type: "paragraph",
+            align: "left",
+            children: [{ text: "" }],
+          });
+        }
+        handleClose();
+      };
+      reader.readAsDataURL(file);
+    };
+
+    root.render(
+      createPortal(
+        React.createElement(ImageUploadModal, {
+          onClose: handleClose,
+          onUpload: handleUpload,
+        }),
+        modalRoot
+      )
+    );
   },
 };
 
