@@ -54,7 +54,19 @@ const Toolsbar = (prop) => {
       <div className="toolbar-divider"></div>
       
       <div className="toolbar-group">
-        <button className="toolbar-button save-button" onClick={(e) => { e.preventDefault(); const html = editor.children.map(serialize).join(''); console.log(html); }}><FaSave /></button>
+        <button
+          className="toolbar-button save-button"
+          onClick={(e) => {
+            e.preventDefault();
+            const serializedNodes = editor.children.map((node, index) => ({
+              text: serialize(node),
+              node: index + 1,
+            }));
+            console.log(serializedNodes);
+          }}
+        >
+          <FaSave />
+        </button>
       </div>
     </div>
   )
