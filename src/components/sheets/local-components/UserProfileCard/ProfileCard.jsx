@@ -10,6 +10,8 @@ const fetchUserInfo = async () => {
   return data;
 };
 
+const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : '';
+
 const ProfileCard = () => {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
@@ -37,8 +39,8 @@ const ProfileCard = () => {
        
         </div>
         <div className="profile-info">
-          <h3 className="profile-name">{userInfo?.firstname} {userInfo?.lastname}</h3>
-          {userInfo?.username && <p className="profile-title">@{userInfo.username}</p>}
+          <span className="profile-name">{capitalize(userInfo?.firstname)} {capitalize(userInfo?.lastname)}</span>
+          <span className="profile-title">@{userInfo.username}</span>
         </div>
       </div>
          )}

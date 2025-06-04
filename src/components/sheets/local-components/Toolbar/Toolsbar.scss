@@ -2,8 +2,7 @@
   display: flex;
   align-items: center;
   padding: 8px;
-  background-color: #F0F4F9;
-  border-radius: 6px;
+  margin: auto;
   margin-bottom: 12px;
   flex-wrap: wrap;
   gap: 4px;
@@ -50,11 +49,19 @@
 }
 
 .save-button {
-  color: #4285f4;
-  
-  &:hover {
-    background-color: rgba(66, 133, 244, 0.1);
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  border: none;
+  border-radius: 4px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  padding: 0 10px;
+  color: #f4f4f4;
+  background-color: #A9080E;
 }
 
 @media (max-width: 768px) {

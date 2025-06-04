@@ -1,12 +1,4 @@
 .profile-card {
-  border-radius: 10px;
-  padding: 15px;
-  &-content {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
   &-loading {
     padding: 20px;
     text-align: center;
@@ -15,16 +7,26 @@
   }
 }
 
-.profile-picture-container {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid #e2e2e2;
-  flex-shrink: 0;
+.profile-card-content {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: start;
+  margin-bottom: 10px;
+  width: fit-content;
+  padding: 4px;
+  border-radius: 10px;
+
+  .profile-picture-container {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #e2e2e2;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .profile-image {
@@ -34,10 +36,12 @@
 }
 
 .profile-info {
+  margin-left: 10px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: start;
+  justify-content: center;
+  
 }
 
 .profile-name {
@@ -48,20 +52,21 @@
 }
 
 .profile-title {
-  font-size: 14px;
+  font-size: 12px;
   color: #666;
+  margin-top: -2px;
 }
 
 @media (max-width: 480px) {
-  .profile-picture-container {
-    width: 50px;
-    height: 50px;
+  .profile-card-content {
+    .profile-picture-container {
+      width: 50px;
+      height: 50px;
+    }
   }
-  
   .profile-name {
     font-size: 14px;
   }
-  
   .profile-title {
     font-size: 12px;
   }
