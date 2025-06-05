@@ -85,6 +85,17 @@
   justify-content: space-between;
   padding: 1rem;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1);
+  .selected-file-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    .delete-icon {
+      cursor: pointer;
+      &:hover {
+        color: #A9080E;
+      }
+    }
+  }
 .selected-file-info {
   display: flex;
   align-items: center;
