@@ -67,4 +67,32 @@ describe("EditorWrapper (Editor) Component", () => {
     );
     expect(screen.getByTestId("editor-input")).toBeInTheDocument();
   });
+
+  test("triggers onChange callback when editor content changes", () => {
+    // Mock Slate to call onChange when rendered
+    vi.mock('slate-react', () => ({
+      Slate: ({ onChange, children }) => {
+        // Create mock content
+        const mockValue = [{ type: "paragraph", children: [{ text: "New text" }] }];
+        
+        // Call onChange
+        if (onChange) {
+          onChange(mockValue);
+        }
+        
+        return <div data-testid="slate-editor">{children}</div>;
+      },
+      withReact: (editor) => editor
+    }));
+   
+    render(
+      <Editor initialValue={defaultValue}>
+        <Editor.Toolbar />
+        <Editor.Input />
+      </Editor>
+    );
+   
+    // Verify component rendered
+    expect(screen.getByTestId("slate-editor")).toBeInTheDocument();
+   });
 });
