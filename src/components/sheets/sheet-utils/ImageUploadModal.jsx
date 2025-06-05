@@ -45,52 +45,58 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
         >
           <IoClose />
         </button>
-        {
-            selectedFile && !isCropping && (
+
+        {/* Show upload area when not cropping */}
+        {!isCropping && (
+          <>
+            <div {...getRootProps()} className="upload-area">
+              <FaRegImages />
+              <input {...getInputProps()} />
+              <p>
+                {selectedFile
+                  ? `Selected: ${selectedFile.name}`
+                  : "Drag and drop an image here, or click to select"}
+              </p>
+            </div>
+            {selectedFile && (
               <>
-        <div {...getRootProps()} className="upload-area">
-            <FaRegImages/>
-          <input {...getInputProps()} />
-          <p>
-            {selectedFile
-              ? `Selected: ${selectedFile.name}`
-              : "Drag and drop an image here, or click to select"}
-          </p>
-        </div>
                 <div className="selected-file-container-wrapper">
                 <div className="selected-file-info">
                     <div className="selected-file-container">
                     <img src={URL.createObjectURL(selectedFile)} className="selected-file-image" alt="Selected" />
                     </div>
-                    <p> {selectedFile.name}</p>
+                    <p>{selectedFile.name}</p>
+                  </div>
+                  <div className="selected-file-actions">
+                    <FaCropSimple onClick={() => setIsCropping(prev => !prev)} />
+                    <MdDeleteOutline 
+                      size={20} 
+                      className="delete-icon" 
+                      onClick={() => setSelectedFile(null)} 
+                    />
+                  </div>
                 </div>
-                <div className="selected-file-actions">
-                <FaCropSimple onClick={()=>setIsCropping((prev)=>!prev)}/>
-                <MdDeleteOutline size={20} className="delete-icon" onClick={() => setSelectedFile(null)}/>
-                </div>
-              
-                </div>
-             
-                 <button
-                 className="upload-button"
-                 onClick={() => handleFile(selectedFile)}
-                 aria-label="Upload selected image"
-               >
-                 Upload
-               </button>
-               </>
-            )
-        }
+                <button
+                  className="upload-button"
+                  onClick={() => handleFile(selectedFile)}
+                  aria-label="Upload selected image"
+                >
+                  Upload
+                </button>
+              </>
+            )}
+          </>
+        )}
+
         {isCropping && (
           <div className="cropping-overlay">
             <div className="cropping-content">
               <h2>Crop Image</h2>
-              <button onClick={()=>setIsCropping((prev)=>!prev)}>Done</button>
+              <button onClick={() => setIsCropping(prev => !prev)}>Done</button>
             </div>
           </div>
         )}
       </div>
-   
     </div>
   );
 };
