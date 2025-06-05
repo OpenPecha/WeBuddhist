@@ -22,11 +22,23 @@ const embedsRegex = [
       /^https:\/\/pecha-frontend-12552055234-4f99e0e.onrender.com\/texts\/text-details\?text_id=([\w-]+)&contentId=([\w-]+)&versionId=&contentIndex=1&segment_id=([\w-]+)$/,
     type: "pecha",
   },
+  {
+    regex: /https?:\/\/(?:www\.)?soundcloud\.com\/([a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+)/,
+    type: "audio",
+    getSrc: (match) => `https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${match[1]}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`,
+    idExtractor: (match) => match[1],
+  },
+  {
+    regex: /https?:\/\/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/,
+    type: "audio",
+    getSrc: (match) => `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator`,
+    idExtractor: (match) => match[2],
+  },
 ];
 const CustomEditor = {
   handleEmbeds(editor, event) {
     const text = event.clipboardData.getData("text/plain");
-    embedsRegex.some(({ regex, type }) => {
+    embedsRegex.some(({ regex, type, getSrc, idExtractor }) => {
       const match = text.match(regex);
       if (match) {
         event.preventDefault();
@@ -49,6 +61,16 @@ const CustomEditor = {
           Transforms.insertNodes(editor, {
             type: type,
             youtubeId: match[1],
+            children: [{ text: "" }],
+          });
+          return true;
+        }
+        if (type === "audio" && getSrc) {
+          const src = getSrc(match);
+          Transforms.insertNodes(editor, {
+            type: type, 
+            src: src,  
+            url: text,
             children: [{ text: "" }],
           });
           return true;
