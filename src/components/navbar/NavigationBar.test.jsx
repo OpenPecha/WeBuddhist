@@ -105,5 +105,21 @@ describe("UserRegistration Component", () => {
     await userEvent.click(desktopEnglishOption);
     expect(localStorage.getItem("language")).toBe("en");
   });
-
+  
+  test("handles search form submission for both search forms", async () => {
+  setup();
+  
+  const searchInputs = screen.getAllByPlaceholderText("Search");
+  const searchButtons = screen.getAllByText("Search");
+  
+  for (let i = 0; i < searchInputs.length; i++) {
+    const searchInput = searchInputs[i];
+    const searchButton = searchButtons[i];
+    
+    await userEvent.type(searchInput, "test search query");
+    expect(searchInput.value).toBe("test search query");
+    await userEvent.click(searchButton);
+    await userEvent.clear(searchInput);
+  }
+});
 });
