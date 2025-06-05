@@ -5,14 +5,19 @@ import "./ImageUpload.scss";
 import {  FaRegImages } from "react-icons/fa";
 import { FaCropSimple } from "react-icons/fa6";
 import { MdDeleteOutline } from "react-icons/md";
+import ImageCropContent from "./ImageCropModal";
+
 const ImageUploadModal = ({ onClose, onUpload }) => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [isCropping,setIsCropping] = useState(false);
+  const [isCropping, setIsCropping] = useState(false);
+  const [croppedFile, setCroppedFile] = useState(null);
+
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "image/*": [] },
     onDrop: (acceptedFiles) => {
       if (acceptedFiles?.length > 0) {
         setSelectedFile(acceptedFiles[0]);
+        setCroppedFile(null);
       }
     },
   });
@@ -22,31 +27,42 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
     onUpload(file);
   };
 
+  const handleCropComplete = (croppedImageBlob) => {
+    if (croppedImageBlob) {
+      const croppedFile = new File([croppedImageBlob], selectedFile.name, {
+        type: "image/jpeg",
+        lastModified: Date.now(),
+      });
+      setCroppedFile(croppedFile);
+    }
+    setIsCropping(false);
+  };
+
+  const displayFile = croppedFile || selectedFile;
+  const imageToDisplay = displayFile ? URL.createObjectURL(displayFile) : null;
+
   return (
     <div
       className="image-upload-overlay"
       onClick={onClose}
-      tabIndex={0}
-      aria-label="Close image upload modal"
-      role="dialog"
     >
       <div
-        className="image-upload-modal"
+        className={`image-upload-modal ${isCropping ? 'cropping-mode' : ''}`}
         onClick={(e) => e.stopPropagation()}
-        tabIndex={0}
-        aria-modal="true"
-        role="document"
       >
+       
+       { !isCropping && (
+        <> 
         <p>Upload Image</p>
         <button
           className="close-button"
           onClick={onClose}
-          aria-label="Close"
         >
           <IoClose />
         </button>
-
-        {/* Show upload area when not cropping */}
+        </>
+       )
+       }
         {!isCropping && (
           <>
             <div {...getRootProps()} className="upload-area">
@@ -61,40 +77,51 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
             {selectedFile && (
               <>
                 <div className="selected-file-container-wrapper">
-                <div className="selected-file-info">
+                  <div className="selected-file-info">
                     <div className="selected-file-container">
-                    <img src={URL.createObjectURL(selectedFile)} className="selected-file-image" alt="Selected" />
+                      <img 
+                        src={imageToDisplay} 
+                        className="selected-file-image" 
+                        alt="Selected" 
+                      />
                     </div>
-                    <p>{selectedFile.name}</p>
+                    <div className="selected-file-name">
+                      <span>{selectedFile.name}</span>
+                      {croppedFile && (
+                        <span className="cropped-indicator">Cropped</span>
+                      )}
+                    </div>
+                     
                   </div>
                   <div className="selected-file-actions">
-                    <FaCropSimple onClick={() => setIsCropping(prev => !prev)} />
+                    <FaCropSimple 
+                      onClick={() => setIsCropping(true)}
+                      className="crop-icon"
+                    />
                     <MdDeleteOutline 
                       size={20} 
                       className="delete-icon" 
-                      onClick={() => setSelectedFile(null)} 
+                      onClick={() =>( setSelectedFile(null), setCroppedFile(null))}
                     />
                   </div>
                 </div>
                 <button
                   className="upload-button"
-                  onClick={() => handleFile(selectedFile)}
-                  aria-label="Upload selected image"
+                  onClick={() => handleFile(displayFile)}
                 >
-                  Upload
+                  Upload {croppedFile ? 'Cropped ' : ''}Image
                 </button>
               </>
             )}
           </>
         )}
 
-        {isCropping && (
-          <div className="cropping-overlay">
-            <div className="cropping-content">
-              <h2>Crop Image</h2>
-              <button onClick={() => setIsCropping(prev => !prev)}>Done</button>
-            </div>
-          </div>
+        {isCropping && selectedFile && (
+          <ImageCropContent
+            imageSrc={URL.createObjectURL(selectedFile)}
+            onBack={() => setIsCropping(false)}
+            onCropComplete={handleCropComplete}
+          />
         )}
       </div>
     </div>
