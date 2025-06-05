@@ -1,12 +1,13 @@
 import ChapterHeader from "../utils/header/ChapterHeader.jsx";
 import React, {useState} from "react";
-import {VIEW_MODES} from "../utils/view-selector/ViewSelector.jsx";
+import {VIEW_MODES} from "../utils/header/view-selector/ViewSelector.jsx";
 
 const ContentsChapter = () => {
 
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE)
   const [showTableOfContents, setShowTableOfContents] = useState(false)
-  console.log(viewMode,showTableOfContents)
+
+
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
     const propsForChapterHeader = {viewMode, setViewMode, showTableOfContents, setShowTableOfContents}

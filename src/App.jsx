@@ -12,6 +12,7 @@ import UserProfile from "./components/user-profile/UserProfile.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
 import { Suspense, lazy } from "react";
+import ContentsChapter from "./components/chapterV2/chapter/ContentsChapter.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 const HomePage = lazy(() => import("./components/home/HomePage.jsx"));
@@ -115,6 +116,7 @@ function App() {
           <Routes>
               <Route path="/" element={<HomePage/>}/>
               <Route path="/libraries" element={<HomePage/>}/>
+              <Route path="/chapter-header" element={<ContentsChapter/>}/> {/*TODO :    should be removed */}
               <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
               <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
               <Route path="/reset-password" element={<ResetPassword/>}/>

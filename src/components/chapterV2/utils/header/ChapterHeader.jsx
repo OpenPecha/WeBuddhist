@@ -2,10 +2,10 @@ import React, {useState} from 'react'
 import {LuPanelLeftClose, LuPanelLeftOpen} from "react-icons/lu";
 import {getLanguageClass} from "../../../../utils/Constants.js";
 import {BsBookmark, BsBookmarkFill} from "react-icons/bs";
-import ViewSelector from "../view-selector/ViewSelector.jsx";
 import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
 import "./ChapterHeader.scss"
-import TableOfContents from "../table-of-contents/TableOfContents.jsx";
+import TableOfContents from "./table-of-contents/TableOfContents.jsx";
+import ViewSelector from "./view-selector/ViewSelector.jsx";
 
 
 const ChapterHeader = (props) => {
@@ -21,10 +21,10 @@ const ChapterHeader = (props) => {
         showTableOfContents ?
           <LuPanelLeftClose size={20} onClick={() => setShowTableOfContents(prev => !prev)} style={{ cursor: 'pointer' }}/>
           :
-          <div className="toc">
+            <>
             <LuPanelLeftOpen size={20} onClick={()=> setShowTableOfContents(prev => !prev)} style={{ cursor: 'pointer' }}/>
             <TableOfContents/>
-          </div>
+            </>
       }
     </div>
   }
