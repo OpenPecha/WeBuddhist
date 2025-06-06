@@ -6,6 +6,7 @@ import CommunityPage, {fetchsheet} from "./CommunityPage.jsx";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
+import {fireEvent} from "@testing-library/react";
 
 mockAxios();
 mockUseAuth();
@@ -52,6 +53,8 @@ describe("CommunityPage Component", () => {
     Object.defineProperty(window, "sessionStorage", {
       value: {
         removeItem: vi.fn(),
+        getItem: vi.fn(),
+        setItem: vi.fn(),
       },
       writable: true,
     });
@@ -144,5 +147,14 @@ describe("CommunityPage Component", () => {
     });
   
     expect(result).toEqual(mockSheetsData);
+  });
+
+  test("handles Make a Sheet button interaction", () => {
+    setup();
+    const makeSheetButton = screen.getByText("Make a Sheet");
+    expect(makeSheetButton).toBeInTheDocument();
+    expect(makeSheetButton).not.toBeDisabled();
+    fireEvent.click(makeSheetButton);
+    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('redirectAfterLogin', '/sheets');
   });
 });

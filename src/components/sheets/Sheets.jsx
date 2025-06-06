@@ -20,7 +20,7 @@ const Sheets = () => {
 
   return (
     <div className="sheets-wrapper">
-      <input type="text" className="content title-input" placeholder='Enter the title here'/>
+      <input type="text" style={{fontFamily:"serif"}} className=" title-input" placeholder='Enter the title here'/>
       <ProfileCard />
       <Editor initialValue={initialValue}>
         <Editor.Toolbar />

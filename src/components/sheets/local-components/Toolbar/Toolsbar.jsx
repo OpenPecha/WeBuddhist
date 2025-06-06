@@ -5,6 +5,9 @@ import CustomEditor from '../../sheet-utils/CustomEditor'
 import MarkButton from './MarkButton'
 import BlockButton from './blockButton'
 import './Toolsbar.scss'
+import pechaIcon from "../../../../assets/icons/pecha_icon.png"
+import { serialize } from '../../sheet-utils/serialize';
+
 const Toolsbar = (prop) => {
   const {editor} = prop
   return (
@@ -16,12 +19,14 @@ const Toolsbar = (prop) => {
       </div>
       
       <div className="toolbar-divider"></div>
-      
       <div className="toolbar-group">
+        <button className="toolbar-button"><img src={pechaIcon} style={{width: "20px", height: "20px" }} alt="source" /></button>
+      </div>
+      {/* <div className="toolbar-group">
         <BlockButton format="heading-one" className="toolbar-button"> <LuHeading1 /> </BlockButton>
         <BlockButton format="heading-two" className="toolbar-button"> <LuHeading2 /> </BlockButton>
       </div>
-      
+       */}
       <div className="toolbar-divider"></div>
       
       <div className="toolbar-group">
@@ -49,7 +54,19 @@ const Toolsbar = (prop) => {
       <div className="toolbar-divider"></div>
       
       <div className="toolbar-group">
-        <button className="toolbar-button save-button" onClick={(e) => { e.preventDefault(); console.log(editor.children) }}><FaSave /></button>
+        <button
+          className="save-button listtitle"
+          onClick={(e) => {
+            e.preventDefault();
+            const serializedNodes = editor.children.map((node, index) => ({
+              text: serialize(node),
+              node: index + 1,
+            }));
+            console.log(serializedNodes);
+          }}
+        >
+       Publish
+        </button>
       </div>
     </div>
   )

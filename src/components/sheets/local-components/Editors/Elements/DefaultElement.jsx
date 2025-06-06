@@ -1,5 +1,6 @@
 import React from 'react';
 import './DefaultElement.scss';
+import { MdDragIndicator } from "react-icons/md";
 import { useSelected } from 'slate-react';
 const DefaultElement = props => {
     const { element, attributes, children } = props;
@@ -13,7 +14,7 @@ const DefaultElement = props => {
       <p style={style} {...attributes} className="paragraph-with-indicator">
         {
           selected && (
-            <span className="newline-indicator"/>
+            <MdDragIndicator className="newline-indicator"/>
           )
         }
         {children}

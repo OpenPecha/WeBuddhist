@@ -1,10 +1,15 @@
 import { Editor, Transforms, Element, Path } from "slate";
+import "./ImageUpload.scss";
+import { createPortal } from "react-dom";
+import React from "react";
+import { createRoot } from "react-dom/client";
 import {
   isAlignElement,
   isAlignType,
   isListType,
   embedsRegex,
 } from "./Constant";
+import ImageUploadModal from "./ImageUploadModal";
 const CustomEditor = {
   handleEmbeds(editor, event) {
     const text = event.clipboardData.getData("text/plain");
@@ -156,12 +161,16 @@ const CustomEditor = {
   },
 
   toggleImage(editor) {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "image/*");
+    const modalRoot = document.createElement("div");
+    document.body.appendChild(modalRoot);
+    const root = createRoot(modalRoot);
 
-    input.onchange = (e) => {
-      const file = e.target.files[0];
+    const handleClose = () => {
+      root.unmount();
+      document.body.removeChild(modalRoot);
+    };
+
+    const handleUpload = (file) => {
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
@@ -211,11 +220,20 @@ const CustomEditor = {
             children: [{ text: "" }],
           });
         }
+        handleClose();
       };
       reader.readAsDataURL(file);
     };
 
-    input.click();
+    root.render(
+      createPortal(
+        React.createElement(ImageUploadModal, {
+          onClose: handleClose,
+          onUpload: handleUpload,
+        }),
+        modalRoot
+      )
+    );
   },
 };
 

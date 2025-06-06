@@ -21,6 +21,7 @@
         position: relative;
         padding-left: 16px;
         text-align: justify;
+        cursor: pointer;
         &::before {
           content: '';
           position: absolute;

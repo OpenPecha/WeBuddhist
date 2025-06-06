@@ -111,4 +111,17 @@ describe("UserLogin Component", () => {
     fireEvent.click(eyeButton);
     expect(passwordInput).toHaveAttribute("type", "password");
   });
+
+  test("handles social login button click", async () => {
+    setup();
+  
+    // Find and click social login button
+    const socialLoginButton = screen.getByText("login.social_logins");
+    
+    // Click the button - this should call loginWithSocial function
+    fireEvent.click(socialLoginButton);
+    
+    // Verify button still exists after click
+    expect(socialLoginButton).toBeInTheDocument();
+  });
 });
