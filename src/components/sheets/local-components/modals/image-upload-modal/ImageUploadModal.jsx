@@ -5,7 +5,7 @@ import "./ImageUpload.scss";
 import {  FaRegImages } from "react-icons/fa";
 import { FaCropSimple } from "react-icons/fa6";
 import { MdDeleteOutline } from "react-icons/md";
-import ImageCropContent from "./ImageCropModal";
+import ImageCropContent from "../image-crop-modal/ImageCropModal";
 
 const ImageUploadModal = ({ onClose, onUpload }) => {
   const [selectedFile, setSelectedFile] = useState(null);

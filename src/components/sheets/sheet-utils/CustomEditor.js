@@ -1,5 +1,5 @@
 import { Editor, Transforms, Element, Path } from "slate";
-import "./ImageUpload.scss";
+import "../local-components/modals/image-upload-modal/ImageUpload.scss";
 import { createPortal } from "react-dom";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -9,7 +9,7 @@ import {
   isListType,
   embedsRegex,
 } from "./Constant";
-import ImageUploadModal from "./ImageUploadModal";
+import ImageUploadModal from "../local-components/modals/image-upload-modal/ImageUploadModal";
 const CustomEditor = {
   handleEmbeds(editor, event) {
     const text = event.clipboardData.getData("text/plain");
