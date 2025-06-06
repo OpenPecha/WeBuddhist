@@ -1,6 +1,7 @@
 import ChapterHeader from "../utils/header/ChapterHeader.jsx";
 import React, {useState} from "react";
 import {VIEW_MODES} from "../utils/header/view-selector/ViewSelector.jsx";
+import UseChapterHook from "./helpers/UseChapterHook.jsx";
 
 const ContentsChapter = () => {
 
@@ -11,13 +12,14 @@ const ContentsChapter = () => {
     const propsForChapterHeader = {viewMode, setViewMode, showTableOfContents, setShowTableOfContents}
     return <ChapterHeader {...propsForChapterHeader}/>
   }
-  const renderChapterContent = () => {
-
+  const renderChapter = () => {
+    const propsForUseChapterHookComponent = {showTableOfContents}
+    return <UseChapterHook {...propsForUseChapterHookComponent} />
   }
   return (
     <div className="contents-chapter-container">
       {renderChapterHeader()}
-      {renderChapterContent()}
+      {renderChapter()}
 
     </div>
   )

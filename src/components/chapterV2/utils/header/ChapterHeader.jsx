@@ -27,7 +27,8 @@ const ChapterHeader = (props) => {
 
   const renderChapterTitle = () => {
     return <div className={`title-container ${getLanguageClass(props.language)}`}>
-      {props.title}
+      {/*{props.title}*/}
+      SOME RANDOM TITLE
     </div>
   }
 
@@ -59,15 +60,11 @@ const ChapterHeader = (props) => {
 
   return (
     <div className="chapter-header-container">
-      <div className="left-group">
-        {renderTableOfContentsIcon()}
-      </div>
+      {renderTableOfContentsIcon()}
       {renderChapterTitle()}
-      <div className="right-group">
-        {renderBookmarkIcon()}
-        {renderViewSelector()}
-        {renderCloseChapterIcon()}
-      </div>
+      {renderBookmarkIcon()}
+      {renderViewSelector()}
+      {renderCloseChapterIcon()}
     </div>
   )
 }

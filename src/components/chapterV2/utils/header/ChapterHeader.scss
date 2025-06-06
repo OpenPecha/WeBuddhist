@@ -6,34 +6,10 @@
   position: relative;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 1rem;
-
-
-  .left-group,
-  .right-group {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
+  gap: 2rem;
 
   .title-container {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
+    margin: 0 auto;
     white-space: nowrap;
-  }
-
-  .toc-icon-container,
-  .bookmark-icon-container,
-  .view-selector-icon-container,
-  .close-icon-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .view-selector-icon-container {
-    position: relative;
-    display: flex;
-    align-items: center;
   }
 }
