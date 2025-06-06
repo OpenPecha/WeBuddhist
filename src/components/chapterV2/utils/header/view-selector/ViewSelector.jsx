@@ -15,12 +15,12 @@ const options = [
   {id: "3", label: "text.reader_option_menu.source_with_translation", value: VIEW_MODES.SOURCE_AND_TRANSLATIONS}
 ]
 const ViewSelector = (props) => {
-  const {setToggleViewSelector, viewMode, setViewMode} = props;
+  const {setShowViewSelector, viewMode, setViewMode} = props;
   const {t} = useTranslate();
 
   // ----------------------------- renderers ----------------------------
   const renderCloseIcon = () => {
-    return <div className="view-selector-close-icon" onClick={() => setToggleViewSelector(false)}>
+    return <div className="view-selector-close-icon" onClick={() => setShowViewSelector(false)}>
       <MdClose size={18} style={{cursor: 'pointer'}}/>
     </div>
   }

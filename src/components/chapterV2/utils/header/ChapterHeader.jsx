@@ -4,7 +4,6 @@ import {getLanguageClass} from "../../../../utils/Constants.js";
 import {BsBookmark, BsBookmarkFill} from "react-icons/bs";
 import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
 import "./ChapterHeader.scss"
-import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import ViewSelector from "./view-selector/ViewSelector.jsx";
 
 
@@ -12,19 +11,16 @@ const ChapterHeader = (props) => {
 
   const {viewMode, setViewMode, showTableOfContents, setShowTableOfContents} = props
   const [isBookmarked, setIsBookmarked] = useState(false)
-  const [toggleViewSelector, setToggleViewSelector] = useState(false)
+  const [showViewSelector, setShowViewSelector] = useState(false)
   // ----------------------- renderers --------------------------
 
-  const renderTableOfContents = () => {
-    return <div className="toc-container">
+  const renderTableOfContentsIcon = () => {
+    return <div className="left-group toc-icon-container">
       {
         showTableOfContents ?
-          <LuPanelLeftClose size={20} onClick={() => setShowTableOfContents(prev => !prev)} style={{ cursor: 'pointer' }}/>
+          <LuPanelLeftClose size={20} onClick={() => setShowTableOfContents(prev => !prev)} style={{cursor: 'pointer'}}/>
           :
-            <>
-            <LuPanelLeftOpen size={20} onClick={()=> setShowTableOfContents(prev => !prev)} style={{ cursor: 'pointer' }}/>
-            <TableOfContents/>
-            </>
+          <LuPanelLeftOpen size={20} onClick={() => setShowTableOfContents(prev => !prev)} style={{cursor: 'pointer'}}/>
       }
     </div>
   }
@@ -35,7 +31,7 @@ const ChapterHeader = (props) => {
     </div>
   }
 
-  const renderBookmarkToggler = () => {
+  const renderBookmarkIcon = () => {
     return (
       <div className="bookmark-icon-container">
         <button onClick={() => setIsBookmarked(!isBookmarked)}>
@@ -46,10 +42,10 @@ const ChapterHeader = (props) => {
   }
 
   const renderViewSelector = () => {
-    const propsForViewSelectorComponent = { setToggleViewSelector, viewMode, setViewMode }
+    const propsForViewSelectorComponent = { setShowViewSelector, viewMode, setViewMode }
     return <div className="view-selector-icon-container">
-      <MdOutlineVerticalSplit size={20} onClick={() => setToggleViewSelector(true)}/>
-      {toggleViewSelector && <ViewSelector {...propsForViewSelectorComponent}/>}
+      <MdOutlineVerticalSplit size={20} onClick={() => setShowViewSelector(true)}/>
+      {showViewSelector && <ViewSelector {...propsForViewSelectorComponent}/>}
     </div>
   }
 
@@ -64,11 +60,11 @@ const ChapterHeader = (props) => {
   return (
     <div className="chapter-header-container">
       <div className="left-group">
-        {renderTableOfContents()}
+        {renderTableOfContentsIcon()}
       </div>
       {renderChapterTitle()}
       <div className="right-group">
-        {renderBookmarkToggler()}
+        {renderBookmarkIcon()}
         {renderViewSelector()}
         {renderCloseChapterIcon()}
       </div>
