@@ -10,11 +10,10 @@ import {
   embedsRegex,
 } from "./Constant";
 import ImageUploadModal from "./ImageUploadModal";
-
 const CustomEditor = {
   handleEmbeds(editor, event) {
     const text = event.clipboardData.getData("text/plain");
-    embedsRegex.some(({ regex, type }) => {
+    embedsRegex.some(({ regex, type, getSrc, idExtractor }) => {
       const match = text.match(regex);
       if (match) {
         event.preventDefault();
@@ -37,6 +36,26 @@ const CustomEditor = {
           Transforms.insertNodes(editor, {
             type: type,
             youtubeId: match[1],
+            children: [{ text: "" }],
+          });
+          return true;
+        }
+        if (type === "audio" && getSrc) {
+          const src = getSrc(match);
+          Transforms.insertNodes(editor, {
+            type: type,
+            src: src,
+            url: text,
+            children: [{ text: "" }],
+          });
+          return true;
+        }
+        if (type === "image" && getSrc) {
+          const src = getSrc(match);
+          Transforms.insertNodes(editor, {
+            type: type,
+            src: src,
+            url: text,
             children: [{ text: "" }],
           });
           return true;

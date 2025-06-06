@@ -1,15 +1,15 @@
 import React from 'react';
 
-const ImageElement = props => {
+const AudioElement = props => {
     const { attributes, children, element } = props;
-    const { src, url } = element;
+    const { src, url } = element; 
 
     if (!src) {
         return (
             <div {...attributes}>
                 {children}
                 <p contentEditable={false}>
-                    Image link: <a href={url} target="_blank" rel="noopener noreferrer">{url || 'Pasted image link'}</a>
+                    Audio link: <a href={url} target="_blank" rel="noopener noreferrer">{url || 'Pasted audio link'}</a>
                     {element.error && <span style={{color: 'red'}}> (Error: {element.error})</span>}
                 </p>
             </div>
@@ -19,16 +19,18 @@ const ImageElement = props => {
     return (
         <div {...attributes}>
             <div contentEditable={false} style={{ paddingTop: '10px', paddingBottom: '10px' }}>
-                <img
-                    className="sheet-image"
+                <iframe
+                    width="100%"
+                    height="166"
+                    allow="autoplay"
                     src={src}
-                    alt={element.alt || 'Sheet image'}
-                    style={{ maxWidth: '100%', height: 'auto' }}
-                />
+                    title="Audio Player"
+                    style={{ border: 'none', overflow: 'hidden' }}
+                ></iframe>
             </div>
-            {children}
+            {children} 
         </div>
     );
 };
 
-export default ImageElement;
+export default AudioElement;
