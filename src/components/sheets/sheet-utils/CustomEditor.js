@@ -34,6 +34,16 @@ const embedsRegex = [
     getSrc: (match) => `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator`,
     idExtractor: (match) => match[2],
   },
+  {
+    regex: /https?:\/\/.*\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i,
+    type: "image",
+    getSrc: (match) => match[0],
+  },
+  {
+    regex: /https?:\/\/encrypted-tbn\d+\.gstatic\.com\/images\?.*$/i,
+    type: "image",
+    getSrc: (match) => match[0],
+  },
 ];
 const CustomEditor = {
   handleEmbeds(editor, event) {
@@ -70,6 +80,16 @@ const CustomEditor = {
           Transforms.insertNodes(editor, {
             type: type, 
             src: src,  
+            url: text,
+            children: [{ text: "" }],
+          });
+          return true;
+        }
+        if (type === "image" && getSrc) {
+          const src = getSrc(match);
+          Transforms.insertNodes(editor, {
+            type: type,
+            src: src,
             url: text,
             children: [{ text: "" }],
           });
