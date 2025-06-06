@@ -7,6 +7,7 @@ import { mockTolgee } from "../../../test-utils/CommonMocks";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import * as reactQuery from "react-query";
+import { MemoryRouter } from "react-router-dom";
 
 vi.mock("../../commons/pagination/PaginationComponent", () => ({
   default: ({ pagination, totalPages, handlePageChange }) => (
@@ -93,7 +94,9 @@ describe("Sources Component", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <Sources query="test" />
+          <MemoryRouter>
+            <Sources query="test" />
+          </MemoryRouter>
         </TolgeeProvider>
       </QueryClientProvider>
     );
@@ -115,7 +118,9 @@ describe("Sources Component", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <Sources query="test" />
+          <MemoryRouter>
+            <Sources query="test" />
+          </MemoryRouter>
         </TolgeeProvider>
       </QueryClientProvider>
     );
@@ -133,7 +138,9 @@ describe("Sources Component", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <Sources query="test" />
+          <MemoryRouter>
+            <Sources query="test" />
+          </MemoryRouter>
         </TolgeeProvider>
       </QueryClientProvider>
     );
@@ -158,7 +165,9 @@ describe("Sources Component", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <Sources query="test" />
+          <MemoryRouter>
+            <Sources query="test" />
+          </MemoryRouter>
         </TolgeeProvider>
       </QueryClientProvider>
     );
@@ -176,7 +185,9 @@ describe("Sources Component", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <Sources query="test" />
+          <MemoryRouter>
+            <Sources query="test" />
+          </MemoryRouter>
         </TolgeeProvider>
       </QueryClientProvider>
     );
@@ -199,7 +210,9 @@ describe("Sources Component", () => {
     render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <Sources query="test" />
+          <MemoryRouter>
+            <Sources query="test" />
+          </MemoryRouter>
         </TolgeeProvider>
       </QueryClientProvider>
     );
