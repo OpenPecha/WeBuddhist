@@ -72,11 +72,10 @@ const CustomEditor = {
     const text = event.clipboardData.getData("text/plain");
     if (text) {
       event.preventDefault();
-      const processed = text.replace(/^\n+/, "");
       Transforms.insertNodes(editor, {
         type: "paragraph",
         align: "left",
-        children: [{ text: processed }],
+        children: [{ text: "" }],
       });
     }
   },

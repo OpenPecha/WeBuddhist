@@ -28,7 +28,6 @@ const AudioElement = props => {
                     style={{ border: 'none', overflow: 'hidden' }}
                 ></iframe>
             </div>
-            {children} 
         </div>
     );
 };
