@@ -169,59 +169,54 @@ const CustomEditor = {
       document.body.removeChild(modalRoot);
     };
 
-    const handleUpload = (file) => {
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const src = reader.result;
-        const { selection } = editor;
-        let replaced = false;
-        if (selection) {
-          const [currentNode, currentPath] = Editor.node(editor, selection, {
-            depth: 1,
-          });
-          if (
-            currentNode.type === "paragraph" &&
-            Editor.isEmpty(editor, currentNode)
-          ) {
-            Transforms.setNodes(
-              editor,
-              {
-                type: "image",
-                src,
-                alt: file.name,
-                children: [{ text: "" }],
-              },
-              { at: currentPath }
-            );
-            Transforms.insertNodes(
-              editor,
-              {
-                type: "paragraph",
-                align: "left",
-                children: [{ text: "" }],
-              },
-              { at: Path.next(currentPath) }
-            );
-            replaced = true;
-          }
+    const handleUpload = (url, alt) => {
+      if (!url) return;
+      const { selection } = editor;
+      let replaced = false;
+      if (selection) {
+        const [currentNode, currentPath] = Editor.node(editor, selection, {
+          depth: 1,
+        });
+        if (
+          currentNode.type === "paragraph" &&
+          Editor.isEmpty(editor, currentNode)
+        ) {
+          Transforms.setNodes(
+            editor,
+            {
+              type: "image",
+              src: url,
+              alt: alt,
+              children: [{ text: "" }],
+            },
+            { at: currentPath }
+          );
+          Transforms.insertNodes(
+            editor,
+            {
+              type: "paragraph",
+              align: "left",
+              children: [{ text: "" }],
+            },
+            { at: Path.next(currentPath) }
+          );
+          replaced = true;
         }
-        if (!replaced) {
-          Transforms.insertNodes(editor, {
-            type: "image",
-            src,
-            alt: file.name,
-            children: [{ text: "" }],
-          });
-          Transforms.insertNodes(editor, {
-            type: "paragraph",
-            align: "left",
-            children: [{ text: "" }],
-          });
-        }
-        handleClose();
-      };
-      reader.readAsDataURL(file);
+      }
+      if (!replaced) {
+        Transforms.insertNodes(editor, {
+          type: "image",
+          src: url,
+          alt: alt,
+          children: [{ text: "" }],
+        });
+        Transforms.insertNodes(editor, {
+          type: "paragraph",
+          align: "left",
+          children: [{ text: "" }],
+        });
+      }
+      handleClose();
     };
 
     root.render(

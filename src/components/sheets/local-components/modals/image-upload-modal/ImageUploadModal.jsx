@@ -6,11 +6,19 @@ import {  FaRegImages } from "react-icons/fa";
 import { FaCropSimple } from "react-icons/fa6";
 import { MdDeleteOutline } from "react-icons/md";
 import ImageCropContent from "../image-crop-modal/ImageCropModal";
+import axiosInstance from "../../../../../config/axios-config";
 
+export const UploadImageToS3= async(id,file)=>{
+  const formData= new FormData();
+  formData.append("file", file);
+  const {data}= await axiosInstance.post(`api/v1/sheets/upload?id=${id}`, formData);
+  return data;
+}
 const ImageUploadModal = ({ onClose, onUpload }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
   const [croppedFile, setCroppedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "image/*": [] },
@@ -22,9 +30,19 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
     },
   });
 
-  const handleFile = (file) => {
+  const handleFile = async (file) => {
     if (!file) return;
-    onUpload(file);
+    setIsUploading(true);
+    try {
+      const data = await UploadImageToS3(1, file);
+      if (data && data.url) {
+        onUpload(data.url, file.name);
+      }
+    } catch (error) {
+      console.error('Upload failed', error);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleCropComplete = (croppedImageBlob) => {
@@ -108,8 +126,9 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
                 <button
                   className="upload-button"
                   onClick={() => handleFile(displayFile)}
+                  disabled={isUploading}
                 >
-                  Upload {croppedFile ? 'Cropped ' : ''}Image
+                  {isUploading ? 'Uploading...' : `Upload ${croppedFile ? 'Cropped ' : ''}Image`}
                 </button>
               </>
             )}
