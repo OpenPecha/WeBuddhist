@@ -137,4 +137,39 @@ describe("UserLogin Component", () => {
     // Verify button still exists after click
     expect(appleLoginButton).toBeInTheDocument();
   });
+
+  test("shows validation error when submitting empty form", () => {
+    setup();
+  
+    const loginButton = screen.getByRole("button", { name: "Login" });
+
+    fireEvent.click(loginButton);
+    // getAllByText to handle multiple validation messages
+    const errorMessages = screen.getAllByText(/required/i);
+    
+    // Validation errors for both email and password
+    expect(errorMessages).toHaveLength(2);
+    expect(errorMessages[0]).toBeInTheDocument();
+    expect(errorMessages[1]).toBeInTheDocument();
+  });
+
+  test("validates password length correctly", () => {
+    setup();
+  
+    const emailInput = screen.getByPlaceholderText("Email Address");
+    const passwordInput = screen.getByPlaceholderText("Password");
+    const loginButton = screen.getByRole("button", { name: "Login" });
+  
+    // Test with valid email but short password (less than 8 characters)
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "123" } }); 
+  
+    fireEvent.click(loginButton);
+  
+    // Trigger password validation logic 
+    expect(passwordInput.value).toBe("123");
+    expect(emailInput.value).toBe("test@example.com");
+    expect(screen.getByText("user.validation.invalid_password")).toBeInTheDocument();
+  });
+  
 });
