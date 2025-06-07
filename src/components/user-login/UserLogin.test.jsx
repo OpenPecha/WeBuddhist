@@ -112,16 +112,29 @@ describe("UserLogin Component", () => {
     expect(passwordInput).toHaveAttribute("type", "password");
   });
 
-  test("handles social login button click", async () => {
+  test("handles Google login button click", async () => {
     setup();
   
-    // Find and click social login button
-    const socialLoginButton = screen.getByText("login.social_logins");
+    // Find and click Google login button
+    const googleLoginButton = screen.getByText("Google");
     
-    // Click the button - this should call loginWithSocial function
-    fireEvent.click(socialLoginButton);
+    // Click the button - this should call loginWithGoogle function
+    fireEvent.click(googleLoginButton);
     
     // Verify button still exists after click
-    expect(socialLoginButton).toBeInTheDocument();
+    expect(googleLoginButton).toBeInTheDocument();
+  });
+
+  test("handles Apple login button click", async () => {
+    setup();
+  
+    // Find and click Apple login button
+    const appleLoginButton = screen.getByText("Apple");
+    
+    // Click the button - this should call loginWithApple function
+    fireEvent.click(appleLoginButton);
+    
+    // Verify button still exists after click
+    expect(appleLoginButton).toBeInTheDocument();
   });
 });
