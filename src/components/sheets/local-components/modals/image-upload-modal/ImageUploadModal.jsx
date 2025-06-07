@@ -7,11 +7,18 @@ import { FaCropSimple } from "react-icons/fa6";
 import { MdDeleteOutline } from "react-icons/md";
 import ImageCropContent from "../image-crop-modal/ImageCropModal";
 import axiosInstance from "../../../../../config/axios-config";
+import { useParams } from "react-router-dom";
 
-export const UploadImageToS3= async(id,file)=>{
+export const UploadImageToS3= async(file,sheetId)=>{
   const formData= new FormData();
   formData.append("file", file);
-  const {data}= await axiosInstance.post(`api/v1/sheets/upload?id=${id}`, formData);
+  const {data}= await axiosInstance.post(`api/v1/sheets/upload`,formData,
+    {
+      params:{
+        ...(sheetId && {sheet_id:sheetId})
+      }
+    }
+  );
   return data;
 }
 const ImageUploadModal = ({ onClose, onUpload }) => {
@@ -19,7 +26,8 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
   const [isCropping, setIsCropping] = useState(false);
   const [croppedFile, setCroppedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-
+  const {id}=useParams();
+  const sheetId=id || "";
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "image/*": [] },
     onDrop: (acceptedFiles) => {
@@ -34,7 +42,7 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
     if (!file) return;
     setIsUploading(true);
     try {
-      const data = await UploadImageToS3(1, file);
+      const data = await UploadImageToS3(file,sheetId);
       if (data && data.url) {
         onUpload(data.url, file.name);
       }

@@ -55,7 +55,7 @@ const Toolsbar = (prop) => {
       
       <div className="toolbar-group">
         <button
-          className="save-button listtitle"
+          className="publish-button listtitle"
           onClick={(e) => {
             e.preventDefault();
             const serializedNodes = editor.children.map((node, index) => ({
@@ -66,6 +66,11 @@ const Toolsbar = (prop) => {
           }}
         >
        Publish
+        </button>
+        <button
+          className="save-button listtitle"
+        >
+       Save
         </button>
       </div>
     </div>
