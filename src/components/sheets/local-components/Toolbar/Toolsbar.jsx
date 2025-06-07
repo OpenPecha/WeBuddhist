@@ -10,49 +10,66 @@ import { serialize } from '../../sheet-utils/serialize';
 
 const Toolsbar = (prop) => {
   const {editor} = prop
-  return (
-    <div className="toolbar">
+
+  const renderMarkButtons = () => {
+    return (
       <div className="toolbar-group">
         <MarkButton format="bold" className="toolbar-button"> <FaBold /> </MarkButton>
         <MarkButton format="italic" className="toolbar-button"> <FaItalic /> </MarkButton>
         <MarkButton format="underline" className="toolbar-button"> <FaUnderline /> </MarkButton>
       </div>
-      
-      <div className="toolbar-divider"></div>
+    );
+  };
+
+  const renderPechaIconSection = () => {
+    return (
       <div className="toolbar-group">
         <button className="toolbar-button"><img src={pechaIcon} style={{width: "20px", height: "20px" }} alt="source" /></button>
       </div>
-      {/* <div className="toolbar-group">
+    );
+  };
+
+  const renderHeadingButtons = () => {
+    return (
+      <div className="toolbar-group">
         <BlockButton format="heading-one" className="toolbar-button"> <LuHeading1 /> </BlockButton>
         <BlockButton format="heading-two" className="toolbar-button"> <LuHeading2 /> </BlockButton>
       </div>
-       */}
-      <div className="toolbar-divider"></div>
-      
+    );
+  };
+
+  const renderListButtons = () => {
+    return (
       <div className="toolbar-group">
         <BlockButton format="ordered-list" className="toolbar-button"><FaListOl /></BlockButton>
         <BlockButton format="unordered-list" className="toolbar-button"><FaListUl /></BlockButton>
       </div>
-      
-      <div className="toolbar-divider"></div>
-      
+    );
+  };
+
+  const renderAlignmentButtons = () => {
+    return (
       <div className="toolbar-group">
         <BlockButton format="left" className="toolbar-button"> <FaAlignLeft /> </BlockButton>
         <BlockButton format="center" className="toolbar-button"> <FaAlignCenter /> </BlockButton>
         <BlockButton format="right" className="toolbar-button"> <FaAlignRight /> </BlockButton>
         <BlockButton format="justify" className="toolbar-button"> <FaAlignJustify /> </BlockButton>
       </div>
-      
-      <div className="toolbar-divider"></div>
-      
+    );
+  };
+
+  const renderUtilityButtons = () => {
+    return (
       <div className="toolbar-group">
         <BlockButton format="block-quote" className="toolbar-button"> <FaQuoteLeft /> </BlockButton>
         <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleCodeBlock(editor); }}><FaCode /></button>
         <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleImage(editor); }}><FaImage /></button>
       </div>
-      
-      <div className="toolbar-divider"></div>
-      
+    );
+  };
+
+  const renderActionButtons = () => {
+    return (
       <div className="toolbar-group">
         <button
           className="publish-button listtitle"
@@ -73,6 +90,27 @@ const Toolsbar = (prop) => {
        Save
         </button>
       </div>
+    );
+  };
+
+  return (
+    <div className="toolbar">
+      {renderMarkButtons()}
+      
+      <div className="toolbar-divider"/>
+      {renderPechaIconSection()}
+      
+      <div className="toolbar-divider"/>
+      {renderListButtons()}
+      
+      <div className="toolbar-divider"/>
+      {renderAlignmentButtons()}
+      
+      <div className="toolbar-divider"/>
+      {renderUtilityButtons()}
+      
+      <div className="toolbar-divider"/>
+      {renderActionButtons()}
     </div>
   )
 }

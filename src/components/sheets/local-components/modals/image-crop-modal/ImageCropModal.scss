@@ -1,0 +1,117 @@
+.crop-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding-top: 1rem;
+    .crop-container {
+        position: relative;
+        flex: 1;
+        background-color: #f5f5f5;
+        margin: 0 1.5rem;
+        border-radius: 4px;
+      }
+     
+      .crop-controls {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #eee;
+        background: #fafafa;
+        
+        .control-group {
+          margin-bottom: 1rem;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
+          
+          label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+            font-weight: 500;
+          }
+          
+          .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            appearance: none;
+            
+            &:hover {
+              opacity: 1;
+            }
+            
+            &::-webkit-slider-thumb {
+              appearance: none;
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              background: #A9080E;
+              cursor: pointer;
+            }
+            
+            &::-moz-range-thumb {
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              background: #A9080E;
+              cursor: pointer;
+              border: none;
+            }
+          }
+        }
+      }
+
+      .crop-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #eee;
+        
+        button {
+          padding: 0.5rem 1.5rem;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          transition: all 0.2s ease;
+          
+          &.cancel-button {
+            background: white;
+            color: #666;
+            
+            &:hover {
+              background: #f5f5f5;
+            }
+          }
+          
+          &.confirm-button {
+            background: #A9080E;
+            color: white;
+            border-color: #A9080E;
+            
+            &:hover:not(:disabled) {
+              background: #8a060a;
+              border-color: #8a060a;
+            }
+            
+            &:disabled {
+              background: #ccc;
+              border-color: #ccc;
+              cursor: not-allowed;
+            }
+          }
+        }
+      }
+      
+  }
+  
+ 
+  
+  
+  

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { IoClose } from "react-icons/io5";
-import "./ImageUpload.scss";
 import {  FaRegImages } from "react-icons/fa";
 import { FaCropSimple } from "react-icons/fa6";
 import { MdDeleteOutline } from "react-icons/md";
 import ImageCropContent from "../image-crop-modal/ImageCropModal";
 import axiosInstance from "../../../../../config/axios-config";
 import { useParams } from "react-router-dom";
+import "./ImageUpload.scss";
 
 export const UploadImageToS3= async(file,sheetId)=>{
   const formData= new FormData();
@@ -64,21 +64,19 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
     setIsCropping(false);
   };
 
+  const handleDeleteFile = () => {
+    setSelectedFile(null);
+    setCroppedFile(null);
+  };
+
   const displayFile = croppedFile || selectedFile;
   const imageToDisplay = displayFile ? URL.createObjectURL(displayFile) : null;
 
-  return (
-    <div
-      className="image-upload-overlay"
-      onClick={onClose}
-    >
-      <div
-        className={`image-upload-modal ${isCropping ? 'cropping-mode' : ''}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-       
-       { !isCropping && (
-        <> 
+  const renderModalHeader = () => {
+    if (isCropping) return null;
+
+    return (
+      <>
         <p>Upload Image</p>
         <button
           className="close-button"
@@ -86,70 +84,106 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
         >
           <IoClose />
         </button>
-        </>
-       )
-       }
-        {!isCropping && (
-          <>
-            <div {...getRootProps()} className="upload-area">
-              <FaRegImages />
-              <input {...getInputProps()} />
-              <p>
-                {selectedFile
-                  ? `Selected: ${selectedFile.name}`
-                  : "Drag and drop an image here, or click to select"}
-              </p>
-            </div>
-            {selectedFile && (
-              <>
-                <div className="selected-file-container-wrapper">
-                  <div className="selected-file-info">
-                    <div className="selected-file-container">
-                      <img 
-                        src={imageToDisplay} 
-                        className="selected-file-image" 
-                        alt="Selected" 
-                      />
-                    </div>
-                    <div className="selected-file-name">
-                      <span>{selectedFile.name}</span>
-                      {croppedFile && (
-                        <span className="cropped-indicator">Cropped</span>
-                      )}
-                    </div>
-                     
-                  </div>
-                  <div className="selected-file-actions">
-                    <FaCropSimple 
-                      onClick={() => setIsCropping(true)}
-                      className="crop-icon"
-                    />
-                    <MdDeleteOutline 
-                      size={20} 
-                      className="delete-icon" 
-                      onClick={() =>( setSelectedFile(null), setCroppedFile(null))}
-                    />
-                  </div>
-                </div>
-                <button
-                  className="upload-button"
-                  onClick={() => handleFile(displayFile)}
-                  disabled={isUploading}
-                >
-                  {isUploading ? 'Uploading...' : `Upload ${croppedFile ? 'Cropped ' : ''}Image`}
-                </button>
-              </>
-            )}
-          </>
-        )}
+      </>
+    );
+  };
 
-        {isCropping && selectedFile && (
-          <ImageCropContent
-            imageSrc={URL.createObjectURL(selectedFile)}
-            onBack={() => setIsCropping(false)}
-            onCropComplete={handleCropComplete}
+  const renderUploadArea = () => {
+    return (
+      <div {...getRootProps()} className="upload-area">
+        <FaRegImages />
+        <input {...getInputProps()} />
+        <p>
+          {selectedFile
+            ? `Selected: ${selectedFile.name}`
+            : "Drag and drop an image here, or click to select"}
+        </p>
+      </div>
+    );
+  };
+
+  const renderSelectedFileInfo = () => {
+    if (!selectedFile) return null;
+
+    return (
+      <div className="selected-file-container-wrapper">
+        <div className="selected-file-info">
+          <div className="selected-file-container">
+            <img 
+              src={imageToDisplay} 
+              className="selected-file-image" 
+              alt="Selected" 
+            />
+          </div>
+          <div className="selected-file-name">
+            <span>{selectedFile.name}</span>
+            {croppedFile && (
+              <span className="cropped-indicator">Cropped</span>
+            )}
+          </div>
+        </div>
+        <div className="selected-file-actions">
+          <FaCropSimple 
+            onClick={() => setIsCropping(true)}
+            className="crop-icon"
           />
-        )}
+          <MdDeleteOutline 
+            size={20} 
+            className="delete-icon" 
+            onClick={handleDeleteFile}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const renderUploadButton = () => {
+    if (!selectedFile) return null;
+
+    return (
+      <button
+        className="upload-button"
+        onClick={() => handleFile(displayFile)}
+        disabled={isUploading}
+      >
+        {isUploading ? 'Uploading...' : `Upload ${croppedFile ? 'Cropped ' : ''}Image`}
+      </button>
+    );
+  };
+
+  const renderUploadSection = () => {
+    if (isCropping) return null;
+
+    return (
+      <>
+        {renderUploadArea()}
+        {renderSelectedFileInfo()}
+        {renderUploadButton()}
+      </>
+    );
+  };
+
+  const renderImageCropSection = () => {
+    if (!isCropping || !selectedFile) return null;
+
+    return (
+      <ImageCropContent
+        imageSrc={URL.createObjectURL(selectedFile)}
+        onBack={() => setIsCropping(false)}
+        onCropComplete={handleCropComplete}
+      />
+    );
+  };
+
+  return (
+    <div className="image-upload-overlay" onClick={onClose}>
+      <div
+        className={`image-upload-modal ${isCropping ? 'cropping-mode' : ''}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {renderModalHeader()}
+        {renderUploadSection()}
+        {renderImageCropSection()}
       </div>
     </div>
   );

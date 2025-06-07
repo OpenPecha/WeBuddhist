@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
-
+import "./ImageCropModal.scss";
 const createImage = (url) =>
   new Promise((resolve, reject) => {
     const image = new Image();
@@ -46,7 +46,7 @@ const ImageCropContent = ({ imageSrc, onBack, onCropComplete }) => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
-  const onCropCompleteHandler = useCallback((_, croppedAreaPixels) => {
+  const handleCropComplete = useCallback((_, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -62,21 +62,29 @@ const ImageCropContent = ({ imageSrc, onBack, onCropComplete }) => {
     }
   }, [croppedAreaPixels, imageSrc, onCropComplete]);
 
-  return (
-    <div className="crop-content">
+  const handleZoomChange = (e) => {
+    setZoom(Number(e.target.value));
+  };
+
+  const renderCropContainer = () => {
+    return (
       <div className="crop-container">
         <Cropper
           image={imageSrc}
           crop={crop}
           zoom={zoom}
           onCropChange={setCrop}
-          onCropComplete={onCropCompleteHandler}
+          onCropComplete={handleCropComplete}
           onZoomChange={setZoom}
           cropShape="rect"
           showGrid={true}
         />
       </div>
+    );
+  };
 
+  const renderCropControls = () => {
+    return (
       <div className="crop-controls">
         <div className="control-group">
           <label htmlFor="zoom-slider">
@@ -90,17 +98,18 @@ const ImageCropContent = ({ imageSrc, onBack, onCropComplete }) => {
             max={3}
             step={0.1}
             aria-labelledby="zoom-slider"
-            onChange={(e) => setZoom(Number(e.target.value))}
+            onChange={handleZoomChange}
             className="slider"
           />
         </div>
       </div>
+    );
+  };
 
+  const renderCropActions = () => {
+    return (
       <div className="crop-actions">
-        <button
-          className="cancel-button"
-          onClick={onBack}
-        >
+        <button className="cancel-button" onClick={onBack}>
           Back
         </button>
         <button
@@ -111,6 +120,14 @@ const ImageCropContent = ({ imageSrc, onBack, onCropComplete }) => {
           Apply Crop
         </button>
       </div>
+    );
+  };
+
+  return (
+    <div className="crop-content">
+      {renderCropContainer()}
+      {renderCropControls()}
+      {renderCropActions()}
     </div>
   );
 };
