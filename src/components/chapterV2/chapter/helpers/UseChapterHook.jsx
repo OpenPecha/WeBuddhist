@@ -5,6 +5,7 @@ import TableOfContents from "../../utils/header/table-of-contents/TableOfContent
   * handles infinite scroll
   * figure out how to update table of contents based on the scroll
 */
+
 const UseChapterHook = (props) => {
   const {showTableOfContents} = props
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)

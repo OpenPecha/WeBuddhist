@@ -130,7 +130,7 @@ function App() {
               <Route path="/libraries/:id" element={<Library/>}/>
               <Route path="/book/:id" element={<Book/>}/>
               <Route path="/chapter" element={<Chapters/>}/>
-              <Route path="/chapter-v2" element={<ChaptersV2/>}/>
+              <Route path="/chapter-v2" element={<ChaptersV2/>}/>{/*TODO :    should be removed */}
               <Route path="*" element={<HomePage/>}/>
           </Routes>
       </Suspense>
