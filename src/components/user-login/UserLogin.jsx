@@ -242,21 +242,21 @@ const UserLogin = () => {
                                 { t("login.create_account") }
                             </Link>
                             <hr/>
-                            <div className="social-login-buttons d-flex gap-2">
+                            <div className="social-login-buttons">
                                 <Button 
                                     variant="outline-dark" 
-                                    className="flex-fill social-btn" 
+                                    className="social-btn" 
                                     onClick={loginWithGoogle}
                                 >
-                                    <FaGoogle className="me-2" />
+                                    <FaGoogle />
                                     Google
                                 </Button>
                                 <Button 
                                     variant="outline-dark" 
-                                    className="flex-fill social-btn" 
+                                    className="social-btn" 
                                     onClick={loginWithApple}
                                 >
-                                    <FaApple className="me-2" />
+                                    <FaApple />
                                     Apple
                                 </Button>
                             </div>
