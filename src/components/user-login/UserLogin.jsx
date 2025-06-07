@@ -9,6 +9,7 @@ import eyeClose from "../../assets/icons/eye-closed.svg";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useTranslate } from "@tolgee/react";
+import { FaGoogle, FaApple } from "react-icons/fa";
 
 const UserLogin = () => {
     const { t } = useTranslate();
@@ -103,12 +104,36 @@ const UserLogin = () => {
         }
     };
 
-    const loginWithSocial = async () => {
+    const loginWithGoogle = async () => {
+        try {
+            const redirectPath = sessionStorage.getItem('redirectAfterLogin') || "/texts";
+            
+            await loginWithRedirect({
+                authorizationParams: {
+                    connection: 'google-oauth2',
+                    prompt: 'select_account'
+                },
+                appState: {
+                    returnTo: redirectPath,
+                },
+            });
+            if (sessionStorage.getItem('redirectAfterLogin')) {
+                sessionStorage.removeItem('redirectAfterLogin');
+            }
+        } catch (error) {
+            console.error("Google login failed:", error);
+        }
+    };
+
+    const loginWithApple = async () => {
         try {
             // Check if there's a redirect path stored in sessionStorage
             const redirectPath = sessionStorage.getItem('redirectAfterLogin') || "/texts";
             
             await loginWithRedirect({
+                authorizationParams: {
+                    connection: 'apple'
+                },
                 appState: {
                     returnTo: redirectPath,
                 },
@@ -119,7 +144,7 @@ const UserLogin = () => {
                 sessionStorage.removeItem('redirectAfterLogin');
             }
         } catch (error) {
-            console.error("Social login failed:", error);
+            console.error("Apple login failed:", error);
         }
     };
 
@@ -218,8 +243,21 @@ const UserLogin = () => {
                             </Link>
                             <hr/>
                             <div className="social-login-buttons">
-                                <Button variant="outline-dark" className="w-100 mb-2" onClick={loginWithSocial}>
-                                    { t("login.social_logins") }
+                                <Button 
+                                    variant="outline-dark" 
+                                    className="social-btn" 
+                                    onClick={loginWithGoogle}
+                                >
+                                    <FaGoogle />
+                                    Google
+                                </Button>
+                                <Button 
+                                    variant="outline-dark" 
+                                    className="social-btn" 
+                                    onClick={loginWithApple}
+                                >
+                                    <FaApple />
+                                    Apple
                                 </Button>
                             </div>
                         </div>
