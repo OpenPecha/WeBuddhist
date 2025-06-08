@@ -231,4 +231,64 @@ describe("RootTextView", () => {
     // Second root text should still be truncated
     expect(rootTextContainers[1]).toHaveClass("content-truncated");
   });
+  
+  test("calls setIsRootTextView when close icon is clicked", () => {
+    setup();
+    // Find the close icon
+    const closeIcon = document.getElementsByClassName('close-icon')[0];
+    
+    // Click the close icon
+    fireEvent.click(closeIcon);
+    // Verify
+    expect(mockSetIsRootTextView).toHaveBeenCalledWith("main");
+  });
+
+  test("sets up event listener for footnote clicks on mount", () => {
+    // Mock a real DOM element
+    const mockRootTextsList = {
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn()
+    };
+    // Mock document.querySelector to return our mock element
+    document.querySelector = vi.fn().mockImplementation((selector) => {
+      if (selector === ".root-texts-list") {
+        return mockRootTextsList;
+      }
+      return null;
+    });
+    
+    setup();
+    // Verify addEventListener was called correctly
+    expect(mockRootTextsList.addEventListener).toHaveBeenCalledWith(
+      'click', 
+      expect.any(Function)
+    );
+    // Actual handler function
+    const handleFootnoteClick = mockRootTextsList.addEventListener.mock.calls[0][1];
+    
+    const mockFootnoteMarker = {
+      classList: {
+        contains: vi.fn().mockReturnValue(true)
+      },
+      nextElementSibling: {
+        classList: {
+          contains: vi.fn().mockReturnValue(true),
+          toggle: vi.fn()
+        }
+      }
+    };
+    
+    const mockEvent = {
+      target: mockFootnoteMarker,
+      stopPropagation: vi.fn(),
+      preventDefault: vi.fn()
+    };
+    // Call the handler function
+    const result = handleFootnoteClick(mockEvent);
+    //Verify
+    expect(mockEvent.stopPropagation).toHaveBeenCalled();
+    expect(mockEvent.preventDefault).toHaveBeenCalled();
+    expect(mockFootnoteMarker.nextElementSibling.classList.toggle).toHaveBeenCalledWith('active');
+    expect(result).toBe(false);
+  });
 });

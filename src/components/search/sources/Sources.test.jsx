@@ -7,12 +7,17 @@ import { mockTolgee } from "../../../test-utils/CommonMocks";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import * as reactQuery from "react-query";
+import { MemoryRouter } from "react-router-dom";
 
 const mockNavigate = vi.fn();
 
-vi.mock("react-router-dom", () => ({
-  useNavigate: () => mockNavigate
-}));
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate
+  };
+});
 
 vi.mock("../../commons/pagination/PaginationComponent", () => ({
   default: ({ pagination, totalPages, handlePageChange }) => (
@@ -47,7 +52,9 @@ describe("Sources Component", () => {
     return render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          {ui}
+          <MemoryRouter>
+            {ui}
+          </MemoryRouter>
         </TolgeeProvider>
       </QueryClientProvider>
     );
