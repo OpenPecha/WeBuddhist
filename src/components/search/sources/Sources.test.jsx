@@ -52,7 +52,9 @@ describe("Sources Component", () => {
     return render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          {ui}
+          <MemoryRouter>
+            {ui}
+          </MemoryRouter>
         </TolgeeProvider>
       </QueryClientProvider>
     );
@@ -113,17 +115,7 @@ describe("Sources Component", () => {
       error: null
     }));
 
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <MemoryRouter>
-            <Sources query="test" />
-          </MemoryRouter>
-        </TolgeeProvider>
-      </QueryClientProvider>
-    );
-
+    renderWithProviders(<Sources query="test" />);
 
     expect(screen.getAllByText("text title")).toHaveLength(2);
     expect(screen.getAllByText("12-02-2025")).toHaveLength(2);
@@ -139,17 +131,7 @@ describe("Sources Component", () => {
       error: null
     }));
 
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <MemoryRouter>
-            <Sources query="test" />
-          </MemoryRouter>
-        </TolgeeProvider>
-      </QueryClientProvider>
-    );
-
+    renderWithProviders(<Sources query="test" />);
 
     expect(screen.getByText("common.loading")).toBeInTheDocument();
   });
@@ -161,17 +143,7 @@ describe("Sources Component", () => {
       error: { message: "Failed to fetch data" }
     }));
 
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <MemoryRouter>
-            <Sources query="test" />
-          </MemoryRouter>
-        </TolgeeProvider>
-      </QueryClientProvider>
-    );
-
+    renderWithProviders(<Sources query="test" />);
 
     expect(screen.getByText(/Error loading content/)).toBeInTheDocument();
     expect(screen.getByText(/Failed to fetch data/)).toBeInTheDocument();
@@ -190,17 +162,7 @@ describe("Sources Component", () => {
       error: null
     }));
 
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <MemoryRouter>
-            <Sources query="test" />
-          </MemoryRouter>
-        </TolgeeProvider>
-      </QueryClientProvider>
-    );
-
+    renderWithProviders(<Sources query="test" />);
 
     expect(screen.getByText("No results to display.")).toBeInTheDocument();
   });
@@ -212,17 +174,7 @@ describe("Sources Component", () => {
       error: { response: { status: 404 } }
     }));
 
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <MemoryRouter>
-            <Sources query="test" />
-          </MemoryRouter>
-        </TolgeeProvider>
-      </QueryClientProvider>
-    );
-
+    renderWithProviders(<Sources query="test" />);
 
     expect(screen.getByText("No results to display.")).toBeInTheDocument();
   });
@@ -239,17 +191,7 @@ describe("Sources Component", () => {
       error: null
     }));
 
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <MemoryRouter>
-            <Sources query="test" />
-          </MemoryRouter>
-        </TolgeeProvider>
-      </QueryClientProvider>
-    );
-
+    renderWithProviders(<Sources query="test" />);
 
     // Check if pagination appears for 30 items (default: 10 per page)
     const paginationComponent = screen.getByTestId("pagination-component");
