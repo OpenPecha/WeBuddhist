@@ -1,7 +1,7 @@
 import React from 'react'
 import { FaBold, FaItalic, FaUnderline, FaListOl, FaListUl, FaAlignLeft, FaAlignCenter, FaAlignRight, FaAlignJustify, FaQuoteLeft, FaCode, FaImage, FaSave } from 'react-icons/fa'
 import { LuHeading1, LuHeading2 } from "react-icons/lu";
-import CustomEditor from '../../sheet-utils/CustomEditor'
+import { useCustomEditor } from '../../sheet-utils/CustomEditor'
 import MarkButton from './MarkButton'
 import BlockButton from './blockButton'
 import './Toolsbar.scss'
@@ -10,6 +10,7 @@ import { serialize } from '../../sheet-utils/serialize';
 
 const Toolsbar = (prop) => {
   const {editor} = prop
+  const customEditor = useCustomEditor();
 
   const renderMarkButtons = () => {
     return (
@@ -28,7 +29,7 @@ const Toolsbar = (prop) => {
           className="toolbar-button"
           onMouseDown={(e) => {
             e.preventDefault();
-            CustomEditor.toggleSheetSegment(editor);
+            customEditor.toggleSheetSegment(editor);
           }}
         >
           <img src={pechaIcon} style={{width: "20px", height: "20px" }} alt="source" />
@@ -70,8 +71,8 @@ const Toolsbar = (prop) => {
     return (
       <div className="toolbar-group">
         <BlockButton format="block-quote" className="toolbar-button"> <FaQuoteLeft /> </BlockButton>
-        <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleCodeBlock(editor); }}><FaCode /></button>
-        <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleImage(editor); }}><FaImage /></button>
+        <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); customEditor.toggleCodeBlock(editor); }}><FaCode /></button>
+        <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); customEditor.toggleImage(editor); }}><FaImage /></button>
       </div>
     );
   };
