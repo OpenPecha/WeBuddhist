@@ -93,11 +93,6 @@ const Toolsbar = (prop) => {
         >
        Publish
         </button>
-        <button
-          className="save-button listtitle"
-        >
-       Save
-        </button>
       </div>
     );
   };
