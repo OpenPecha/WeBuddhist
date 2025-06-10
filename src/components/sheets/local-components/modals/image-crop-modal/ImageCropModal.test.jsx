@@ -26,6 +26,28 @@ describe("ImageCropContent", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock canvas context
+    HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+      drawImage: vi.fn(),
+    }));
+    
+    // Mock canvas toBlob
+    HTMLCanvasElement.prototype.toBlob = vi.fn((callback) => {
+      const mockBlob = new Blob(['mock-image-data'], { type: 'image/jpeg' });
+      callback(mockBlob);
+    });
+
+    // Mock Image constructor and loading
+    global.Image = class MockImage {
+      constructor() {
+        this.addEventListener = vi.fn((event, callback) => {
+          if (event === 'load') {
+            setTimeout(() => callback(), 0);
+          }
+        });
+        this.setAttribute = vi.fn();
+      }
+    };
   });
 
   function setup(props = {}) {
@@ -65,5 +87,52 @@ describe("ImageCropContent", () => {
     setup();
     const applyBtn = screen.getByRole("button", { name: /Apply Crop/i });
     expect(applyBtn).toBeDisabled();
+  });
+
+  test("calls onCropComplete with cropped blob when Apply Crop is clicked", async () => {
+    setup();
+      
+    // Set crop area
+    fireEvent.click(screen.getByText("Complete Crop"));
+    
+    // Click Apply Crop
+    const applyBtn = screen.getByRole("button", { name: /Apply Crop/i });
+    fireEvent.click(applyBtn);
+    
+    await waitFor(() => {
+      expect(onCropComplete).toHaveBeenCalledWith(expect.any(Blob));
+    });
+  });
+
+  test("handles canvas context not available", async () => {
+    HTMLCanvasElement.prototype.getContext = vi.fn(() => null);
+    
+    setup();
+    fireEvent.click(screen.getByText("Complete Crop"));
+    
+    const applyBtn = screen.getByRole("button", { name: /Apply Crop/i });
+    fireEvent.click(applyBtn);
+    
+    await waitFor(() => {
+      expect(onCropComplete).toHaveBeenCalledWith(null);
+    });
+  });
+
+  test("handles error during image cropping", async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    HTMLCanvasElement.prototype.toBlob = vi.fn(() => {
+      throw new Error('Canvas error');
+    });
+    
+    setup();
+    fireEvent.click(screen.getByText("Complete Crop"));
+    
+    const applyBtn = screen.getByRole("button", { name: /Apply Crop/i });
+    fireEvent.click(applyBtn);
+    
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith("Error cropping image:", expect.any(Error));
+    });
+    consoleSpy.mockRestore();
   });
 });
