@@ -2,6 +2,7 @@ import React, { useCallback } from 'react'
 import {Editable} from 'slate-react'
 import YoutubeElement from '../../../local-components/Editors/Elements/youtube-element/YoutubeElement'
 import CustomPecha from '../../../local-components/Editors/Elements/custompecha-element/CustomPecha'
+import PechaElement from '../../../local-components/Editors/Elements/pecha-element/PechaElement'
 import DefaultElement from '../../../local-components/Editors/Elements/default-element/DefaultElement'
 import CodeElement from '../../../local-components/Editors/Elements/code-element/CodeElement'
 import ImageElement from '../../../local-components/Editors/Elements/image-element/ImageElement'
@@ -44,7 +45,7 @@ const EditorInput = (prop) => {
           case 'audio':
             return <AudioElement {...props} />
           case 'pecha':
-            return <CustomPecha {...props} />
+            return <PechaElement {...props} />
           default:
             return <DefaultElement {...props} />
         }

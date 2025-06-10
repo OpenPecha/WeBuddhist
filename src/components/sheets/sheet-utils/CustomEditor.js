@@ -246,7 +246,55 @@ export const useCustomEditor = () => {
       };
 
       const handleSegment = (segmentData) => {
-        // TODO: Handle the segment data here
+        if (!segmentData?.segment_id) return;
+
+        const { selection } = editor;
+        let replaced = false;
+
+        if (selection) {
+          const [currentNode, currentPath] = Editor.node(editor, selection, {
+            depth: 1,
+          });
+
+          if (
+            currentNode.type === "paragraph" &&
+            Editor.isEmpty(editor, currentNode)
+          ) {
+            Transforms.setNodes(
+              editor,
+              {
+                type: "pecha",
+                src: segmentData.segment_id,
+                children: [{ text: "" }],
+              },
+              { at: currentPath }
+            );
+            Transforms.insertNodes(
+              editor,
+              {
+                type: "paragraph",
+                align: "left",
+                children: [{ text: "" }],
+              },
+              { at: Path.next(currentPath) }
+            );
+            replaced = true;
+          }
+        }
+
+        if (!replaced) {
+          Transforms.insertNodes(editor, {
+            type: "pecha",
+            src: segmentData.segment_id,
+            children: [{ text: "" }],
+          });
+          Transforms.insertNodes(editor, {
+            type: "paragraph",
+            align: "left",
+            children: [{ text: "" }],
+          });
+        }
+
         handleClose();
       };
 
