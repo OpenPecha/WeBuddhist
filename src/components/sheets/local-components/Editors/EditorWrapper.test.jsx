@@ -18,7 +18,7 @@ vi.mock('slate-react', async () => {
   return {
     ...actual,
     Slate: vi.fn(({ onChange, children, editor, initialValue }) => {
-      // Store the onChange and editor for test access
+      // Store the onChange and editor for testing
       if (onChange) {
         window.__mockSlateOnChange = onChange;
         window.__mockSlateEditor = editor;
@@ -96,18 +96,16 @@ describe("EditorWrapper (Editor) Component", () => {
       { type: "paragraph", children: [{ text: "Hello World" }], align: "left" },
     ];
 
-    // Verify the onChange function is available
     expect(window.__mockSlateOnChange).toBeDefined();
     expect(window.__mockSlateEditor).toBeDefined();
 
-    // Set up editor with non-selection operations
     window.__mockSlateEditor.operations = [
       { type: 'insert_text', path: [0, 0], offset: 0, text: 'Hello' },
       { type: 'set_selection', path: [0, 0], offset: 5 }
     ];
 
     window.__mockSlateOnChange(newValue);
-
+    //Should save to localStorage
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
       "sheets-content",
       JSON.stringify(newValue)
@@ -126,11 +124,9 @@ describe("EditorWrapper (Editor) Component", () => {
       { type: "paragraph", children: [{ text: "Hello" }], align: "left" },
     ];
 
-    // Verify the onChange function is available
     expect(window.__mockSlateOnChange).toBeDefined();
     expect(window.__mockSlateEditor).toBeDefined();
 
-    // Set up editor with only selection operations
     window.__mockSlateEditor.operations = [
       { type: 'set_selection', path: [0, 0], offset: 2 },
       { type: 'set_selection', path: [0, 0], offset: 5 }
@@ -138,7 +134,7 @@ describe("EditorWrapper (Editor) Component", () => {
 
     window.__mockSlateOnChange(newValue);
 
-    // Should not save to localStorage for selection-only changes
+    // Should not save for selection-only changes
     expect(window.localStorage.setItem).not.toHaveBeenCalled();
   });
 
@@ -158,7 +154,7 @@ describe("EditorWrapper (Editor) Component", () => {
 
     window.__mockSlateOnChange(newValue);
 
-    // Should not save with empty operations (no AST change)
+    // Should not save with empty operations
     expect(window.localStorage.setItem).not.toHaveBeenCalled();
   });
 });
