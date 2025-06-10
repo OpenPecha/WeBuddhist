@@ -11,18 +11,21 @@ vi.mock("./ImageUploadModal", async () => {
     UploadImageToS3: vi.fn()
   };
 });
-
+let mockOnDrop;
 vi.mock("react-dropzone", () => ({
-  useDropzone: () => ({
-    getRootProps: () => ({
-      onClick: vi.fn(),
-    }),
-    getInputProps: () => ({
-      onChange: vi.fn(),
-      type: "file",
-      accept: { "image/*": [] },
-    }),
-  }),
+  useDropzone: ({ onDrop }) => {
+    mockOnDrop = onDrop; 
+    return {
+      getRootProps: () => ({
+        onClick: vi.fn(),
+      }),
+      getInputProps: () => ({
+        onChange: vi.fn(),
+        type: "file",
+        accept: { "image/*": [] },
+      }),
+    };
+  },
 }));
 
 vi.mock("react-router-dom", async () => {
@@ -41,6 +44,12 @@ vi.mock("../image-crop-modal/ImageCropModal", () => ({
       <button onClick={onBack}>Back</button>
     </div>
   ),
+}));
+
+vi.mock("../../../../../config/axios-config", () => ({
+  default: {
+    post: vi.fn().mockResolvedValue({ data: { url: "http://test.com/image.jpg" } })
+  }
 }));
 
 describe("ImageUploadModal", () => {
@@ -98,4 +107,153 @@ describe("ImageUploadModal", () => {
     expect(screen.getByText(/Drag and drop an image/i)).toBeInTheDocument();
   });
 
+  test("displays selected file information and upload button after file drop", async () => {
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+
+    if (mockOnDrop) {
+      mockOnDrop([mockFile]);
+    }
+    
+    await waitFor(() => {
+      expect(screen.getByText(`Selected: ${mockFile.name}`)).toBeInTheDocument();
+    });
+    
+    expect(screen.getByRole("button", { name: "Upload Image" })).toBeInTheDocument();
+    expect(screen.getByAltText("Selected")).toBeInTheDocument();
+    expect(screen.getByText(mockFile.name)).toBeInTheDocument();
+  });
+
+  test("removes selected file when delete button clicked", async () => {
+    const { container } = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    
+    if (mockOnDrop) {
+      mockOnDrop([mockFile]);
+    }
+    
+    await waitFor(() => {
+      expect(screen.getByText(`Selected: ${mockFile.name}`)).toBeInTheDocument();
+    });
+    
+    const deleteButton = container.querySelector('.delete-icon');
+    expect(deleteButton).toBeInTheDocument();
+    
+    fireEvent.click(deleteButton);
+    
+    await waitFor(() => {
+      expect(screen.getByText(/Drag and drop an image here/i)).toBeInTheDocument();
+    });
+    
+    expect(screen.queryByRole("button", { name: "Upload Image" })).not.toBeInTheDocument();
+  });
+
+  test("opens crop modal when crop button clicked", async () => {
+    const { container } = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    
+    if (mockOnDrop) {
+      mockOnDrop([mockFile]);
+    }
+    
+    await waitFor(() => {
+      expect(screen.getByText(`Selected: ${mockFile.name}`)).toBeInTheDocument();
+    });
+    
+    const cropButton = container.querySelector('.crop-icon');
+    expect(cropButton).toBeInTheDocument();
+    
+    fireEvent.click(cropButton);
+    
+    await waitFor(() => {
+      expect(screen.getByTestId("crop-modal")).toBeInTheDocument();
+    });
+  });
+
+  test("updates image and shows cropped indicator after crop completion", async () => {
+    const { container } = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    
+    if (mockOnDrop) {
+      mockOnDrop([mockFile]);
+    }
+    
+    await waitFor(() => {
+      expect(screen.getByText(`Selected: ${mockFile.name}`)).toBeInTheDocument();
+    });
+    
+    const cropButton = container.querySelector('.crop-icon');
+    fireEvent.click(cropButton);
+    
+    await waitFor(() => {
+      expect(screen.getByTestId("crop-modal")).toBeInTheDocument();
+    });
+    
+    const applyCropButton = screen.getByText("Apply Crop");
+    fireEvent.click(applyCropButton);
+    
+    await waitFor(() => {
+      expect(screen.queryByTestId("crop-modal")).not.toBeInTheDocument();
+    }); 
+    
+    await waitFor(() => {
+      expect(screen.getByText("Cropped")).toBeInTheDocument();
+    });
+    
+    expect(screen.getByText("Upload Cropped Image")).toBeInTheDocument();
+  });
+  
+  test("handles empty file drop gracefully", async () => {
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+      
+    if (mockOnDrop) {
+      mockOnDrop([]);
+    }
+    
+    expect(screen.getByText(/Drag and drop an image here/i)).toBeInTheDocument();
+    
+    expect(screen.queryByRole("button", { name: "Upload Image" })).not.toBeInTheDocument();
+  });
+
+  test("returns to file selection when crop back button clicked", async () => {
+    const { container } = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    
+    if (mockOnDrop) {
+      mockOnDrop([mockFile]);
+    }
+    
+    await waitFor(() => {
+      expect(screen.getByText(`Selected: ${mockFile.name}`)).toBeInTheDocument();
+    });
+    
+    const cropButton = container.querySelector('.crop-icon');
+    fireEvent.click(cropButton);
+    
+    await waitFor(() => {
+      expect(screen.getByTestId("crop-modal")).toBeInTheDocument();
+    });
+    
+    const backButton = screen.getByText("Back");
+    fireEvent.click(backButton);
+    
+    await waitFor(() => {
+      expect(screen.queryByTestId("crop-modal")).not.toBeInTheDocument();
+    });
+    
+    expect(screen.getByRole("button", { name: "Upload Image" })).toBeInTheDocument();
+    expect(screen.getByText(`Selected: ${mockFile.name}`)).toBeInTheDocument();
+  });
+
+  test("displays loading state when upload button clicked", async () => {
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    
+    if (mockOnDrop) {
+      mockOnDrop([mockFile]);
+    }
+    
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Upload Image" })).toBeInTheDocument();
+    });
+    
+    const uploadButton = screen.getByRole("button", { name: "Upload Image" });
+    fireEvent.click(uploadButton);
+
+    expect(screen.getByRole("button", { name: "Uploading..." })).toBeInTheDocument();
+  });
 });
