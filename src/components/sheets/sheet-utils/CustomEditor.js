@@ -10,6 +10,8 @@ import {
   embedsRegex,
 } from "./Constant";
 import ImageUploadModal from "../local-components/modals/image-upload-modal/ImageUploadModal";
+import SheetSegmentModal from "../local-components/modals/sheet-segment-modal/SheetSegmentModal";
+
 const CustomEditor = {
   handleEmbeds(editor, event) {
     const text = event.clipboardData.getData("text/plain");
@@ -224,6 +226,31 @@ const CustomEditor = {
         React.createElement(ImageUploadModal, {
           onClose: handleClose,
           onUpload: handleUpload,
+        }),
+        modalRoot
+      )
+    );
+  },
+
+  toggleSheetSegment(editor) {
+    const modalRoot = document.createElement("div");
+    document.body.appendChild(modalRoot);
+    const root = createRoot(modalRoot);
+    const handleClose = () => {
+      root.unmount();
+      document.body.removeChild(modalRoot);
+    };
+
+    const handleSegment = (segmentData) => {
+      // TODO: Handle the segment data here
+      handleClose();
+    };
+
+    root.render(
+      createPortal(
+        React.createElement(SheetSegmentModal, {
+          onClose: handleClose,
+          onSegment: handleSegment,
         }),
         modalRoot
       )

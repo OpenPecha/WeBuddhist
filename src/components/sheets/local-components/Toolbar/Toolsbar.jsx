@@ -24,7 +24,15 @@ const Toolsbar = (prop) => {
   const renderPechaIconSection = () => {
     return (
       <div className="toolbar-group">
-        <button className="toolbar-button"><img src={pechaIcon} style={{width: "20px", height: "20px" }} alt="source" /></button>
+        <button 
+          className="toolbar-button"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            CustomEditor.toggleSheetSegment(editor);
+          }}
+        >
+          <img src={pechaIcon} style={{width: "20px", height: "20px" }} alt="source" />
+        </button>
       </div>
     );
   };
