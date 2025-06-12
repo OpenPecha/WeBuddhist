@@ -18,7 +18,7 @@ const embedsRegex = [
   {
     regex:
       /^https:\/\/pecha-frontend-12552055234-4f99e0e.onrender.com\/texts\/text-details\?text_id=([\w-]+)&contentId=([\w-]+)&versionId=&contentIndex=1&segment_id=([\w-]+)$/,
-    type: "pecha",
+    type: "custompecha",
   },
   {
     regex:

@@ -46,6 +46,8 @@ const EditorInput = (prop) => {
             return <AudioElement {...props} />
           case 'pecha':
             return <PechaElement {...props} />
+          case 'custompecha':
+            return <CustomPecha {...props} />
           default:
             return <DefaultElement {...props} />
         }

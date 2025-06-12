@@ -1,0 +1,23 @@
+.custom-pecha-container {
+  margin: 1rem 0;
+  
+  .custom-pecha-wrapper {
+    max-width: 100%;
+    overflow: hidden;
+    
+    .custom-pecha-link {
+      display: block;
+      text-decoration: none;
+      
+      &:hover {
+        opacity: 0.9;
+      }
+      .custom-pecha-image {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+      }
+    }
+  }
+} 

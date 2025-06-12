@@ -23,7 +23,7 @@ export const useCustomEditor = () => {
         const match = text.match(regex);
         if (match) {
           event.preventDefault();
-          if (type === "pecha") {
+          if (type === "custompecha") {
             const pechaSegment = match[3];
             const pechaImageURL = `https://pecha-frontend-12552055234-4f99e0e.onrender.com/api/v1/share/image?segment_id=${pechaSegment}&language=bo`;
             if (pechaSegment) {
