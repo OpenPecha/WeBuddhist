@@ -13,11 +13,27 @@ vi.mock("../Toolbar/Toolsbar", () => ({
   __esModule: true,
   default: () => <div data-testid="editor-toolbar">EditorToolbar</div>,
 }));
-
+vi.mock('slate-react', async () => {
+  const actual = await vi.importActual('slate-react');
+  return {
+    ...actual,
+    Slate: vi.fn(({ onChange, children, editor, initialValue }) => {
+      // Store the onChange and editor for testing
+      if (onChange) {
+        window.__mockSlateOnChange = onChange;
+        window.__mockSlateEditor = editor;
+      }
+      return <div data-testid="slate-editor">{children}</div>;
+    })
+  };
+});
 describe("EditorWrapper (Editor) Component", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     vi.spyOn(window.localStorage.__proto__, "setItem").mockImplementation(() => {});
+    //Clean up globals
+    delete window.__mockSlateOnChange;
+    delete window.__mockSlateEditor;
   });
 
   const defaultValue = [
@@ -68,31 +84,77 @@ describe("EditorWrapper (Editor) Component", () => {
     expect(screen.getByTestId("editor-input")).toBeInTheDocument();
   });
 
-  test("triggers onChange callback when editor content changes", () => {
-    // Mock Slate to call onChange when rendered
-    vi.mock('slate-react', () => ({
-      Slate: ({ onChange, children }) => {
-        // Create mock content
-        const mockValue = [{ type: "paragraph", children: [{ text: "New text" }] }];
-        
-        // Call onChange
-        if (onChange) {
-          onChange(mockValue);
-        }
-        
-        return <div data-testid="slate-editor">{children}</div>;
-      },
-      withReact: (editor) => editor
-    }));
-   
+   test("saves content to localStorage on AST change", () => {
     render(
       <Editor initialValue={defaultValue}>
         <Editor.Toolbar />
         <Editor.Input />
       </Editor>
     );
-   
-    // Verify component rendered
-    expect(screen.getByTestId("slate-editor")).toBeInTheDocument();
-   });
+
+    const newValue = [
+      { type: "paragraph", children: [{ text: "Hello World" }], align: "left" },
+    ];
+
+    expect(window.__mockSlateOnChange).toBeDefined();
+    expect(window.__mockSlateEditor).toBeDefined();
+
+    window.__mockSlateEditor.operations = [
+      { type: 'insert_text', path: [0, 0], offset: 0, text: 'Hello' },
+      { type: 'set_selection', path: [0, 0], offset: 5 }
+    ];
+
+    window.__mockSlateOnChange(newValue);
+    //Should save to localStorage
+    expect(window.localStorage.setItem).toHaveBeenCalledWith(
+      "sheets-content",
+      JSON.stringify(newValue)
+    );
+  });
+
+  test("does NOT save to localStorage on selection-only change", () => {
+    render(
+      <Editor initialValue={defaultValue}>
+        <Editor.Toolbar />
+        <Editor.Input />
+      </Editor>
+    );
+
+    const newValue = [
+      { type: "paragraph", children: [{ text: "Hello" }], align: "left" },
+    ];
+
+    expect(window.__mockSlateOnChange).toBeDefined();
+    expect(window.__mockSlateEditor).toBeDefined();
+
+    window.__mockSlateEditor.operations = [
+      { type: 'set_selection', path: [0, 0], offset: 2 },
+      { type: 'set_selection', path: [0, 0], offset: 5 }
+    ];
+
+    window.__mockSlateOnChange(newValue);
+
+    // Should not save for selection-only changes
+    expect(window.localStorage.setItem).not.toHaveBeenCalled();
+  });
+
+  test("handles empty operations array", () => {
+    render(
+      <Editor initialValue={defaultValue}>
+        <Editor.Toolbar />
+        <Editor.Input />
+      </Editor>
+    );
+
+    const newValue = [
+      { type: "paragraph", children: [{ text: "Test" }], align: "left" },
+    ];
+
+    window.__mockSlateEditor.operations = [];
+
+    window.__mockSlateOnChange(newValue);
+
+    // Should not save with empty operations
+    expect(window.localStorage.setItem).not.toHaveBeenCalled();
+  });
 });
