@@ -19,10 +19,15 @@ export const useCustomEditor = () => {
   return {
     handleEmbeds(editor, event) {
       const text = event.clipboardData.getData("text/plain");
-      embedsRegex.some(({ regex, type, getSrc, idExtractor }) => {
+      return embedsRegex.some(({ regex, type, getSrc, idExtractor }) => {
         const match = text.match(regex);
         if (match) {
           event.preventDefault();
+
+          if (editor.selection) {
+            Transforms.delete(editor);
+          }
+
           if (type === "custompecha") {
             const pechaSegment = match[3];
             const pechaImageURL = `https://pecha-frontend-12552055234-4f99e0e.onrender.com/api/v1/share/image?segment_id=${pechaSegment}&language=bo`;
@@ -34,6 +39,11 @@ export const useCustomEditor = () => {
                 children: [{ text: "" }],
                 src: pechaImageURL,
               });
+              Transforms.insertNodes(editor, {
+                type: "paragraph",
+                align: "left",
+                children: [{ text: "" }],
+              });
               return true;
             }
             return false;
@@ -42,6 +52,11 @@ export const useCustomEditor = () => {
             Transforms.insertNodes(editor, {
               type: type,
               youtubeId: match[1],
+              children: [{ text: "" }],
+            });
+            Transforms.insertNodes(editor, {
+              type: "paragraph",
+              align: "left",
               children: [{ text: "" }],
             });
             return true;
@@ -54,6 +69,11 @@ export const useCustomEditor = () => {
               url: text,
               children: [{ text: "" }],
             });
+            Transforms.insertNodes(editor, {
+              type: "paragraph",
+              align: "left",
+              children: [{ text: "" }],
+            });
             return true;
           }
           if (type === "image" && getSrc) {
@@ -62,6 +82,11 @@ export const useCustomEditor = () => {
               type: type,
               src: src,
               url: text,
+              children: [{ text: "" }],
+            });
+            Transforms.insertNodes(editor, {
+              type: "paragraph",
+              align: "left",
               children: [{ text: "" }],
             });
             return true;
@@ -81,7 +106,7 @@ export const useCustomEditor = () => {
         Transforms.insertNodes(editor, {
           type: "paragraph",
           align: "left",
-          children: [{ text: "" }],
+          children: [{ text }],
         });
       }
     },
