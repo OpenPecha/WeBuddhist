@@ -7,12 +7,19 @@ import MarkButton from "./MarkButton";
 import CustomEditor from "../../sheet-utils/CustomEditor";
 import "@testing-library/jest-dom";
 
+const mockIsMarkActive = vi.fn();
+const mockToggleMark = vi.fn();
+
 vi.mock("../../sheet-utils/CustomEditor", () => ({
   __esModule: true,
   default: {
     isMarkActive: vi.fn(),
     toggleMark: vi.fn(),
   },
+  useCustomEditor: vi.fn(() => ({
+    isMarkActive: mockIsMarkActive,
+    toggleMark: mockToggleMark,
+  })),
 }));
 
 vi.mock("slate-react", async () => {
@@ -29,13 +36,15 @@ describe("MarkButton", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    mockIsMarkActive.mockClear();
+    mockToggleMark.mockClear();
     mockEditor = createEditor();
     
     const slateReact = await import("slate-react");
     useSlate = slateReact.useSlate;
     useSlate.mockReturnValue(mockEditor);
     
-    CustomEditor.isMarkActive.mockReturnValue(false);
+    mockIsMarkActive.mockReturnValue(false);
   });
 
   const renderWithSlate = (component) => {
@@ -59,7 +68,7 @@ describe("MarkButton", () => {
   });
 
   test("applies active class when text format is active", () => {
-    CustomEditor.isMarkActive.mockReturnValue(true);
+    mockIsMarkActive.mockReturnValue(true);
     
     renderWithSlate(<MarkButton {...defaultProps} />);
     
@@ -80,7 +89,7 @@ describe("MarkButton", () => {
     const button = screen.getByRole("button", { name: "B" });
     fireEvent.mouseDown(button);
     
-    expect(CustomEditor.toggleMark).toHaveBeenCalledWith(mockEditor, "bold");
+    expect(mockToggleMark).toHaveBeenCalledWith(mockEditor, "bold");
   });
 
   test("checks if text format is active on render", () => {
@@ -88,6 +97,6 @@ describe("MarkButton", () => {
     
     renderWithSlate(<MarkButton format={format} children="I" />);
     
-    expect(CustomEditor.isMarkActive).toHaveBeenCalledWith(mockEditor, format);
+    expect(mockIsMarkActive).toHaveBeenCalledWith(mockEditor, format);
   });
 });
