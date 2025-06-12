@@ -4,8 +4,10 @@ import { vi } from "vitest";
 import { createEditor } from "slate";
 import { Slate, withReact } from "slate-react";
 import blockButton from "./blockButton";
-import CustomEditor from "../../sheet-utils/CustomEditor";
 import "@testing-library/jest-dom";
+
+const mockIsBlockActive = vi.fn();
+const mockToggleBlock = vi.fn();
 
 vi.mock("../../sheet-utils/CustomEditor", () => ({
   __esModule: true,
@@ -13,6 +15,10 @@ vi.mock("../../sheet-utils/CustomEditor", () => ({
     isBlockActive: vi.fn(),
     toggleBlock: vi.fn(),
   },
+  useCustomEditor: vi.fn(() => ({
+    isBlockActive: mockIsBlockActive,
+    toggleBlock: mockToggleBlock,
+  })),
 }));
 
 vi.mock("slate-react", async () => {
@@ -29,13 +35,15 @@ describe("blockButton", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    mockIsBlockActive.mockClear();
+    mockToggleBlock.mockClear();
     mockEditor = createEditor();
     
     const slateReact = await import("slate-react");
     useSlate = slateReact.useSlate;
     useSlate.mockReturnValue(mockEditor);
     
-    CustomEditor.isBlockActive.mockReturnValue(false);
+    mockIsBlockActive.mockReturnValue(false);
   });
 
   const renderWithSlate = (component) => {
@@ -60,7 +68,7 @@ describe("blockButton", () => {
   });
 
   test("applies active class when block format is active", () => {
-    CustomEditor.isBlockActive.mockReturnValue(true);
+    mockIsBlockActive.mockReturnValue(true);
     
     const BlockButton = blockButton;
     renderWithSlate(<BlockButton {...defaultProps} />);
@@ -84,7 +92,7 @@ describe("blockButton", () => {
     const button = screen.getByRole("button", { name: "H1" });
     fireEvent.mouseDown(button);
     
-    expect(CustomEditor.toggleBlock).toHaveBeenCalledWith(mockEditor, "heading-one");
+    expect(mockToggleBlock).toHaveBeenCalledWith(mockEditor, "heading-one");
   });
 
   test("checks if block format is active on render", () => {
@@ -93,6 +101,6 @@ describe("blockButton", () => {
     
     renderWithSlate(<BlockButton format={format} children="H2" />);
     
-    expect(CustomEditor.isBlockActive).toHaveBeenCalledWith(mockEditor, format);
+    expect(mockIsBlockActive).toHaveBeenCalledWith(mockEditor, format);
   });
 });

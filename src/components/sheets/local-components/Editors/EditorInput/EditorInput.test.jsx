@@ -6,12 +6,19 @@ import EditorInput from './EditorInput';
 import { vi } from 'vitest';
 import { Slate, withReact } from 'slate-react';
 import { createEditor } from 'slate';
+const mockHandlePaste = vi.fn();
+const mockToggleCodeBlock = vi.fn();
+const mockToggleMark = vi.fn();
 
 vi.mock('../../../local-components/Editors/Elements/youtube-element/YoutubeElement', () => ({
   default: ({ children, ...props }) => <div data-testid="youtube-element" {...props}>{children}</div>
 }));
 
 vi.mock('../../../local-components/Editors/Elements/custompecha-element/CustomPecha', () => ({
+  default: ({ children, ...props }) => <div data-testid="pecha-element" {...props}>{children}</div>
+}));
+
+vi.mock('../../../local-components/Editors/Elements/pecha-element/PechaElement', () => ({
   default: ({ children, ...props }) => <div data-testid="pecha-element" {...props}>{children}</div>
 }));
 
@@ -66,7 +73,12 @@ vi.mock('../../../sheet-utils/CustomEditor', () => ({
     handlePaste: vi.fn(),
     toggleCodeBlock: vi.fn(),
     toggleMark: vi.fn(),
-  }
+  },
+  useCustomEditor: vi.fn(() => ({
+    handlePaste: mockHandlePaste,
+    toggleCodeBlock: mockToggleCodeBlock,
+    toggleMark: mockToggleMark,
+  })),
 }));
 
 import CustomEditor from '../../../sheet-utils/CustomEditor';
@@ -86,22 +98,22 @@ const simulateKeyDown = (editor, event) => {
   switch (event.key) {
     case '1': {
       event.preventDefault();
-      CustomEditor.toggleCodeBlock(editor);
+      mockToggleCodeBlock(editor);
       break;
     }
     case 'i': {
       event.preventDefault();
-      CustomEditor.toggleMark(editor, "italic");
+      mockToggleMark(editor, "italic");
       break;
     }
     case 'b': {
       event.preventDefault();
-      CustomEditor.toggleMark(editor, "bold");
+      mockToggleMark(editor, "bold");
       break;
     }
     case 'u': {
       event.preventDefault();
-      CustomEditor.toggleMark(editor, "underline");
+      mockToggleMark(editor, "underline");
       break;
     }
     case "z": {
@@ -118,7 +130,7 @@ const simulateKeyDown = (editor, event) => {
 };
 
 const simulatePaste = (editor, event) => {
-  CustomEditor.handlePaste(editor, event);
+  mockHandlePaste(editor, event);
 };
 
 describe('EditorInput', () => {
@@ -234,6 +246,13 @@ describe('EditorInput', () => {
       expect(screen.getByTestId('pecha-element')).toBeInTheDocument();
     });
 
+    it('renders custompecha element correctly', () => {
+      const initialValue = [{ type: 'custompecha', children: [{ text: 'Custom Pecha content' }] }];
+      renderWithSlate(initialValue);
+      
+      expect(screen.getByTestId('pecha-element')).toBeInTheDocument();
+    });
+
     it('renders default element for unknown types', () => {
       const initialValue = [{ type: 'unknown-element-type', children: [{ text: 'Unknown content' }] }];
       renderWithSlate(initialValue);
@@ -285,7 +304,7 @@ describe('EditorInput', () => {
       
       simulateKeyDown(editor, mockEvent);
       
-      expect(CustomEditor.toggleMark).toHaveBeenCalledWith(editor, 'bold');
+      expect(mockToggleMark).toHaveBeenCalledWith(editor, 'bold');
       expect(mockEvent.preventDefault).toHaveBeenCalled();
     });
   
@@ -301,7 +320,7 @@ describe('EditorInput', () => {
       
       simulateKeyDown(editor, mockEvent);
       
-      expect(CustomEditor.toggleMark).toHaveBeenCalledWith(editor, 'italic');
+      expect(mockToggleMark).toHaveBeenCalledWith(editor, 'italic');
     });
   
     it('toggles underline formatting when ctrl+u is pressed', () => {
@@ -316,7 +335,7 @@ describe('EditorInput', () => {
       
       simulateKeyDown(editor, mockEvent);
       
-      expect(CustomEditor.toggleMark).toHaveBeenCalledWith(editor, 'underline');
+      expect(mockToggleMark).toHaveBeenCalledWith(editor, 'underline');
     });
   
     it('toggles code block when ctrl+1 is pressed', () => {
@@ -331,7 +350,7 @@ describe('EditorInput', () => {
       
       simulateKeyDown(editor, mockEvent);
       
-      expect(CustomEditor.toggleCodeBlock).toHaveBeenCalledWith(editor);
+      expect(mockToggleCodeBlock).toHaveBeenCalledWith(editor);
     });
   
     it('triggers undo when ctrl+z is pressed', () => {
@@ -376,8 +395,8 @@ describe('EditorInput', () => {
       
       simulateKeyDown(editor, mockEvent);
       
-      expect(CustomEditor.toggleMark).not.toHaveBeenCalled();
-      expect(CustomEditor.toggleCodeBlock).not.toHaveBeenCalled();
+      expect(mockToggleMark).not.toHaveBeenCalled();
+      expect(mockToggleCodeBlock).not.toHaveBeenCalled();
       expect(editor.undo).not.toHaveBeenCalled();
       expect(editor.redo).not.toHaveBeenCalled();
       expect(editor.insertText).not.toHaveBeenCalled();
@@ -397,7 +416,7 @@ describe('EditorInput', () => {
       
       simulatePaste(editor, mockPasteEvent);
       
-      expect(CustomEditor.handlePaste).toHaveBeenCalledWith(editor, mockPasteEvent);
+      expect(mockHandlePaste).toHaveBeenCalledWith(editor, mockPasteEvent);
     });
   });
 });

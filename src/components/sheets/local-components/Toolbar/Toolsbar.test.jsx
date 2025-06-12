@@ -7,6 +7,9 @@ import Toolsbar from "./Toolsbar";
 import CustomEditor from "../../sheet-utils/CustomEditor";
 import "@testing-library/jest-dom";
 
+const mockToggleCodeBlock = vi.fn();
+const mockToggleImage = vi.fn();
+
 vi.mock("../../sheet-utils/CustomEditor", () => ({
   __esModule: true,
   default: {
@@ -17,7 +20,25 @@ vi.mock("../../sheet-utils/CustomEditor", () => ({
     toggleCodeBlock: vi.fn(),
     toggleImage: vi.fn(),
   },
+  useCustomEditor: vi.fn(() => ({
+    isMarkActive: vi.fn(),
+    toggleMark: vi.fn(),
+    isBlockActive: vi.fn(),
+    toggleBlock: vi.fn(),
+    toggleCodeBlock: mockToggleCodeBlock, 
+    toggleImage: mockToggleImage,
+  })),
 }));
+
+vi.mock("@tolgee/react", async () => {
+  const actual = await vi.importActual("@tolgee/react");
+  return {
+    ...actual,
+    useTranslate: () => ({
+      t: (key) => key,
+    }),
+  };
+});
 
 vi.mock("./MarkButton", () => ({
   __esModule: true,
@@ -111,8 +132,7 @@ describe("Toolsbar", () => {
     expect(screen.getByTestId("code-icon")).toBeInTheDocument();
     expect(screen.getByTestId("image-icon")).toBeInTheDocument();
     
-    expect(screen.getByText("Publish")).toBeInTheDocument();
-    expect(screen.getByText("Save")).toBeInTheDocument();
+    expect(screen.getByText("publish")).toBeInTheDocument();
   });
 
   test("displays pecha icon with correct source", () => {
@@ -128,8 +148,8 @@ describe("Toolsbar", () => {
     
     const codeButton = screen.getByTestId("code-icon").closest("button");
     fireEvent.mouseDown(codeButton);
-    
-    expect(CustomEditor.toggleCodeBlock).toHaveBeenCalledWith(mockEditor);
+
+    expect(mockToggleCodeBlock).toHaveBeenCalledWith(mockEditor);
   });
 
   test("toggles image when image button clicked", () => {
@@ -138,14 +158,14 @@ describe("Toolsbar", () => {
     const imageButton = screen.getByTestId("image-icon").closest("button");
     fireEvent.mouseDown(imageButton);
     
-    expect(CustomEditor.toggleImage).toHaveBeenCalledWith(mockEditor);
+    expect(mockToggleImage).toHaveBeenCalledWith(mockEditor);
   });
 
   test("serializes content when publish button clicked", () => {
     const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     renderWithSlate(<Toolsbar editor={mockEditor} />);
     
-    const publishButton = screen.getByText("Publish");
+    const publishButton = screen.getByText("publish");
     fireEvent.click(publishButton);
     
     expect(consoleSpy).toHaveBeenCalledWith([
