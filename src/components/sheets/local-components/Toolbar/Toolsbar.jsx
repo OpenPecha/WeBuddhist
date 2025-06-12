@@ -7,11 +7,12 @@ import BlockButton from './blockButton'
 import './Toolsbar.scss'
 import pechaIcon from "../../../../assets/icons/pecha_icon.png"
 import { serialize } from '../../sheet-utils/serialize';
+import { useTranslate } from '@tolgee/react';
 
 const Toolsbar = (prop) => {
   const {editor} = prop
   const customEditor = useCustomEditor();
-
+  const {t} = useTranslate();
   const renderMarkButtons = () => {
     return (
       <div className="toolbar-group">
@@ -91,7 +92,7 @@ const Toolsbar = (prop) => {
             console.log(serializedNodes);
           }}
         >
-       Publish
+          {t("publish")}
         </button>
       </div>
     );
