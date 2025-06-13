@@ -22,8 +22,12 @@ const ImageElement = props => {
             <div contentEditable={false} style={{ paddingTop: '10px', paddingBottom: '10px' }}>
                 <img
                     className="sheet-image"
-                    src={src || noImageUrl}  //FIXME: Fallback not showing as it should
+                    src={src}
                     alt={element.alt || 'Sheet image'}
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = noImageUrl;
+                    }}
                     style={{ maxWidth: '100%', height: 'auto' }}
                 />
             </div>
