@@ -10,7 +10,7 @@ import { getLanguageClass } from '../../../../../utils/Constants';
 import pechaIcon from '../../../../../assets/icons/pecha_icon.png';
 
 export const fetchSegments = async (searchFilter, limit, skip) => {
-  const { data } = await axiosInstance.get(`api/v1/search?query=${searchFilter}&type=${'source'}`, {
+  const { data } = await axiosInstance.get(`api/v1/search?query=${searchFilter}&search_type=${'SOURCE'}`, {
     params: {
       limit,
       skip,

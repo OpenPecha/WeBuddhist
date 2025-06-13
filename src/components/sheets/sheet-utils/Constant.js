@@ -46,4 +46,25 @@ const embedsRegex = [
     getSrc: (match) => match[0],
   },
 ];
-export { isAlignElement, isAlignType, isListType, embedsRegex };
+
+const removeFootnotes = (content) => {
+  if (!content) return "";
+
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = content;
+
+  const footnoteMarkers = tempDiv.querySelectorAll("sup.footnote-marker");
+  const footnotes = tempDiv.querySelectorAll("i.footnote");
+
+  footnoteMarkers.forEach((marker) => marker.remove());
+  footnotes.forEach((footnote) => footnote.remove());
+
+  return tempDiv.innerHTML;
+};
+export {
+  isAlignElement,
+  isAlignType,
+  isListType,
+  embedsRegex,
+  removeFootnotes,
+};

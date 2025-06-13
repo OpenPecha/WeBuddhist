@@ -11,7 +11,7 @@ import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
 
 export const fetchSources = async(query, skip, pagination) => {
 
-  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&type=${'source'}`, {
+  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&search_type=${'SOURCE'}`, {
     params: {
       limit: pagination.limit,
       skip: skip
@@ -54,7 +54,7 @@ const Sources = (query) => {
   const handlePageChange = (pageNumber) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
-
+console.log(sourceData)
   return (
     <div className="sources-tab">
     <div className="results-count">

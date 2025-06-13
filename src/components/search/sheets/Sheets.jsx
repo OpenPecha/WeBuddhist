@@ -8,7 +8,7 @@ import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
 
 export const fetchSheets = async(query, skip, pagination) => {
-  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&type=${'sheet'}`, {
+  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&search_type=${'SHEET'}`, {
     params: {
       limit: pagination.limit,
       skip: skip

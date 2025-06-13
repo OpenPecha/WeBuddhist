@@ -12,13 +12,57 @@ import {
 import ImageUploadModal from "../local-components/modals/image-upload-modal/ImageUploadModal";
 import SheetSegmentModal from "../local-components/modals/sheet-segment-modal/SheetSegmentModal";
 import { QueryClientProvider, useQueryClient } from "react-query";
+import axios from "axios";
 
+const fetchShortUrlContent = async (shortId) => {
+  try {
+    const response = await axios.get(
+      `https://url-shortening-14682653622-b69c6fd.onrender.com/api/v1/shorten/${shortId}`
+    );
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(response.data, "text/html");
+    const segmentIdMatch = doc
+      .querySelector('meta[property="og:url"]')
+      ?.getAttribute("content")
+      ?.match(/segment_id=([^&]+)/);
+    return segmentIdMatch ? segmentIdMatch[1] : null;
+  } catch (error) {
+    console.error("Error fetching short URL content:", error);
+    return null;
+  }
+};
 export const useCustomEditor = () => {
   const queryClient = useQueryClient();
 
   return {
-    handleEmbeds(editor, event) {
+    async handleEmbeds(editor, event) {
       const text = event.clipboardData.getData("text/plain");
+
+      const shortUrlMatch = text.match(/\/shorten\/([a-zA-Z0-9]+)$/);
+      if (shortUrlMatch) {
+        event.preventDefault();
+        const shortId = shortUrlMatch[1];
+        const segmentId = await fetchShortUrlContent(shortId);
+
+        if (segmentId) {
+          if (editor.selection) {
+            Transforms.delete(editor);
+          }
+
+          Transforms.insertNodes(editor, {
+            type: "pecha",
+            src: segmentId,
+            children: [{ text: "" }],
+          });
+          Transforms.insertNodes(editor, {
+            type: "paragraph",
+            align: "left",
+            children: [{ text: "" }],
+          });
+          return true;
+        }
+      }
+
       return embedsRegex.some(({ regex, type, getSrc, idExtractor }) => {
         const match = text.match(regex);
         if (match) {
