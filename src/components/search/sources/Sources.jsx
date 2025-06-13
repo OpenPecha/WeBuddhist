@@ -54,11 +54,10 @@ const Sources = (query) => {
   const handlePageChange = (pageNumber) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
-console.log(sourceData)
   return (
     <div className="sources-tab">
     <div className="results-count">
-      <p>Total :</p>
+      <p> {t("sheet.search.total")} : {sourceData.total}</p>
     </div>
     {sourceData.sources.map((source) => (
       <div key={source.text.text_id} className={`source-item ${getLanguageClass(source.text.language)}`}>

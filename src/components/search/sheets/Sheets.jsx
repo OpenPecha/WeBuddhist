@@ -55,7 +55,7 @@ const Sheets = (query) => {
   return (
     <div className="sheets-tab">
       <p className="results-count">
-        Total : ({totalVersions})
+        {t("sheet.search.total")} : {totalVersions}
       </p>
       {sheetData.sheets.map((sheet) => (
         <div key={sheet.sheet_id} className="sheet-result-item">

@@ -12,12 +12,8 @@ export const highlightSearchMatch = (text, searchTerm, highlightClass = "highlig
   const parts = text.split(regex);
   return parts.map((part, index) => {
     if (part.toLowerCase() === searchTerm.toLowerCase()) {
-      return (
-        <span key={index} className={highlightClass}>
-          {part}
-        </span>
-      );
+      return `<span class="${highlightClass}">${part}</span>`;
     }
     return part;
-  });
+  }).join('');
 };
