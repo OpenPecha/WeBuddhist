@@ -13,6 +13,7 @@ import { useCustomEditor } from '../../../sheet-utils/CustomEditor'
 import Heading from '../Elements/style-elements/Heading'
 import List from '../Elements/style-elements/List'
 import ListItem from '../Elements/style-elements/ListItem'
+import './EditorInput.scss'
 
 const EditorInput = (prop) => {
     const { editor } = prop
