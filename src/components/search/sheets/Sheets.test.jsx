@@ -96,7 +96,7 @@ describe("Sheets Component", () => {
     expect(screen.getAllByText("Yeshi Lhundup")).toHaveLength(2);
     expect(screen.getByText("pecha.org")).toBeInTheDocument();
     
-    expect(screen.getByText("Total : (2)")).toBeInTheDocument();
+    expect(document.querySelector('.results-count')).toHaveTextContent(/sheet\.search\.total.*2/);
 
     expect(screen.getByTestId("pagination-component")).toBeInTheDocument();
   });
