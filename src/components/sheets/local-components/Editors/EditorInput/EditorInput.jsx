@@ -2,20 +2,23 @@ import React, { useCallback } from 'react'
 import {Editable} from 'slate-react'
 import YoutubeElement from '../../../local-components/Editors/Elements/youtube-element/YoutubeElement'
 import CustomPecha from '../../../local-components/Editors/Elements/custompecha-element/CustomPecha'
+import PechaElement from '../../../local-components/Editors/Elements/pecha-element/PechaElement'
 import DefaultElement from '../../../local-components/Editors/Elements/default-element/DefaultElement'
 import CodeElement from '../../../local-components/Editors/Elements/code-element/CodeElement'
 import ImageElement from '../../../local-components/Editors/Elements/image-element/ImageElement'
 import AudioElement from '../../../local-components/Editors/Elements/audio-element/AudioElement'
 import QuoteElement from '../../../local-components/Editors/Elements/quote-element/QuoteElement'
 import Leaf from '../../../local-components/Editors/leaves/Leaf'
-import CustomEditor from '../../../sheet-utils/CustomEditor'
+import { useCustomEditor } from '../../../sheet-utils/CustomEditor'
 import Heading from '../Elements/style-elements/Heading'
 import List from '../Elements/style-elements/List'
 import ListItem from '../Elements/style-elements/ListItem'
-
+import './EditorInput.scss'
 
 const EditorInput = (prop) => {
-    const { editor }=prop
+    const { editor } = prop
+    const customEditor = useCustomEditor();
+    
     const renderLeaf = useCallback(props => {
         return <Leaf {...props} />
       }, [])
@@ -43,66 +46,69 @@ const EditorInput = (prop) => {
           case 'audio':
             return <AudioElement {...props} />
           case 'pecha':
+            return <PechaElement {...props} />
+          case 'custompecha':
             return <CustomPecha {...props} />
           default:
             return <DefaultElement {...props} />
         }
       }, [])
+      
   return (
     <Editable
-    autoFocus
-    spellCheck
-    disableDefaultStyles
-    className="sheets-editable content"
-    renderElement={renderElement}
-    renderLeaf={renderLeaf}
-    onPaste={event => {
-      CustomEditor.handlePaste(editor,event)
-    }}
-    onKeyDown={event => {
-      if (event.shiftKey && event.key === 'Enter') {
-        event.preventDefault()
-        editor.insertText('\n')
-        return
-      }
-      if (!(event.metaKey || event.ctrlKey)) {
-        return
-      }
+      autoFocus
+      spellCheck
+      disableDefaultStyles
+      className="sheets-editable content"
+      renderElement={renderElement}
+      renderLeaf={renderLeaf}
+      onPaste={event => {
+        customEditor.handlePaste(editor, event)
+      }}
+      onKeyDown={event => {
+        if (event.shiftKey && event.key === 'Enter') {
+          event.preventDefault()
+          editor.insertText('\n')
+          return
+        }
+        if (!(event.metaKey || event.ctrlKey)) {
+          return
+        }
 
-      switch (event.key) {
-        case '1': {
-          event.preventDefault()
-          CustomEditor.toggleCodeBlock(editor)
-          break
+        switch (event.key) {
+          case '1': {
+            event.preventDefault()
+            customEditor.toggleCodeBlock(editor)
+            break
+          }
+          case 'i': {
+            event.preventDefault()
+            customEditor.toggleMark(editor, "italic")
+            break
+          }
+          case 'b': {
+            event.preventDefault()
+            customEditor.toggleMark(editor, "bold")
+            break
+          }
+          case 'u': {
+            event.preventDefault()
+            customEditor.toggleMark(editor, "underline")
+            break
+          }
+          case "z": {
+            event.preventDefault()
+            editor.undo()
+            break
+          }
+          case "y": {
+            event.preventDefault()
+            editor.redo()
+            break
+          }
         }
-        case 'i': {
-          event.preventDefault()
-          CustomEditor.toggleMark(editor, "italic")
-          break
-        }
-        case 'b': {
-          event.preventDefault()
-          CustomEditor.toggleMark(editor, "bold")
-          break
-        }
-        case 'u': {
-          event.preventDefault()
-          CustomEditor.toggleMark(editor, "underline")
-          break
-        }
-        case "z": {
-          event.preventDefault()
-          editor.undo()
-          break
-        }
-        case "y": {
-          event.preventDefault()
-          editor.redo()
-          break
-        }
-      }
-    }}
-  />
+      }}
+    />
   )
 }
 

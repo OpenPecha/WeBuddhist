@@ -8,7 +8,7 @@ import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
 
 export const fetchSheets = async(query, skip, pagination) => {
-  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&type=${'sheet'}`, {
+  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&search_type=${'SHEET'}`, {
     params: {
       limit: pagination.limit,
       skip: skip
@@ -55,7 +55,7 @@ const Sheets = (query) => {
   return (
     <div className="sheets-tab">
       <p className="results-count">
-        Total : ({totalVersions})
+        {t("sheet.search.total")} : {totalVersions}
       </p>
       {sheetData.sheets.map((sheet) => (
         <div key={sheet.sheet_id} className="sheet-result-item">
@@ -63,7 +63,12 @@ const Sheets = (query) => {
           <h3 className="sheet-title">{sheet.sheet_title}</h3>
           <CiBookmark className="bookmark-icon"/>
           </div>
-          <p className="sheet-summary">{highlightSearchMatch(sheet.sheet_summary, searchText, 'highlighted-text')}</p>
+          <p 
+            className="sheet-summary" 
+            dangerouslySetInnerHTML={{ 
+              __html: highlightSearchMatch(sheet.sheet_summary, searchText, 'highlighted-text') 
+            }}
+          />
           <div className="publisher-info">
           <a href={sheet.publisher_url} className="publisher-link">
               {sheet.publisher_image ? (

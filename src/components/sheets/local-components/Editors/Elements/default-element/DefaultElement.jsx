@@ -2,6 +2,7 @@ import React from 'react';
 import './DefaultElement.scss';
 import { MdDragIndicator } from "react-icons/md";
 import { useSelected } from 'slate-react';
+import { getLanguageClass } from '../../../../../../utils/Constants';
 const DefaultElement = props => {
     const { element, attributes, children } = props;
     const selected=useSelected()
@@ -11,7 +12,7 @@ const DefaultElement = props => {
     };
     
     return (
-      <p style={style} {...attributes} className="paragraph-with-indicator">
+      <p style={style} {...attributes} className={`paragraph-with-indicator ${getLanguageClass("en")}`}>
         {
           selected && (
             <MdDragIndicator className="newline-indicator"/>

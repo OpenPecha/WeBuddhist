@@ -1,16 +1,18 @@
 import React from 'react'
 import { FaBold, FaItalic, FaUnderline, FaListOl, FaListUl, FaAlignLeft, FaAlignCenter, FaAlignRight, FaAlignJustify, FaQuoteLeft, FaCode, FaImage, FaSave } from 'react-icons/fa'
 import { LuHeading1, LuHeading2 } from "react-icons/lu";
-import CustomEditor from '../../sheet-utils/CustomEditor'
+import { useCustomEditor } from '../../sheet-utils/CustomEditor'
 import MarkButton from './MarkButton'
 import BlockButton from './blockButton'
 import './Toolsbar.scss'
 import pechaIcon from "../../../../assets/icons/pecha_icon.png"
 import { serialize } from '../../sheet-utils/serialize';
+import { useTranslate } from '@tolgee/react';
 
 const Toolsbar = (prop) => {
   const {editor} = prop
-
+  const customEditor = useCustomEditor();
+  const {t} = useTranslate();
   const renderMarkButtons = () => {
     return (
       <div className="toolbar-group">
@@ -24,7 +26,15 @@ const Toolsbar = (prop) => {
   const renderPechaIconSection = () => {
     return (
       <div className="toolbar-group">
-        <button className="toolbar-button"><img src={pechaIcon} style={{width: "20px", height: "20px" }} alt="source" /></button>
+        <button 
+          className="toolbar-button"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            customEditor.toggleSheetSegment(editor);
+          }}
+        >
+          <img src={pechaIcon} style={{width: "20px", height: "20px" }} alt="source" />
+        </button>
       </div>
     );
   };
@@ -62,8 +72,8 @@ const Toolsbar = (prop) => {
     return (
       <div className="toolbar-group">
         <BlockButton format="block-quote" className="toolbar-button"> <FaQuoteLeft /> </BlockButton>
-        <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleCodeBlock(editor); }}><FaCode /></button>
-        <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); CustomEditor.toggleImage(editor); }}><FaImage /></button>
+        <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); customEditor.toggleCodeBlock(editor); }}><FaCode /></button>
+        <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); customEditor.toggleImage(editor); }}><FaImage /></button>
       </div>
     );
   };
@@ -82,12 +92,7 @@ const Toolsbar = (prop) => {
             console.log(serializedNodes);
           }}
         >
-       Publish
-        </button>
-        <button
-          className="save-button listtitle"
-        >
-       Save
+          {t("publish")}
         </button>
       </div>
     );

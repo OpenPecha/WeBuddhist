@@ -3,7 +3,8 @@ import React from 'react';
 const ImageElement = props => {
     const { attributes, children, element } = props;
     const { src, url } = element;
-
+    const noImageUrl = "https://icrier.org/wp-content/uploads/2022/12/media-Event-Image-Not-Found.jpg"; 
+    
     if (!src) {
         return (
             <div {...attributes}>
@@ -23,6 +24,10 @@ const ImageElement = props => {
                     className="sheet-image"
                     src={src}
                     alt={element.alt || 'Sheet image'}
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = noImageUrl;
+                    }}
                     style={{ maxWidth: '100%', height: 'auto' }}
                 />
             </div>

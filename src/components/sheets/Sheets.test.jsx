@@ -7,6 +7,15 @@ import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import Sheets from "./Sheets.jsx";
 
+vi.mock("@tolgee/react", async () => {
+  const actual = await vi.importActual("@tolgee/react");
+  return {
+    ...actual,
+    useTranslate: () => ({
+      t: (key) => key,
+    }),
+  };
+});
 vi.mock("./local-components/UserProfileCard/ProfileCard", () => ({
   __esModule: true,
   default: () => <div data-testid="profile-card">ProfileCard</div>,
@@ -46,7 +55,7 @@ describe("Sheets Component", () => {
   test("renders Sheets component structure", () => {
     setup();
     expect(document.querySelector(".sheets-wrapper")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter the title here")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("sheet.title.placeholder")).toBeInTheDocument();
     expect(screen.getByTestId("profile-card")).toBeInTheDocument();
     expect(screen.getByTestId("editor")).toBeInTheDocument();
     expect(screen.getByTestId("editor-toolbar")).toBeInTheDocument();
@@ -55,7 +64,7 @@ describe("Sheets Component", () => {
 
   test("title input accepts text", () => {
     setup();
-    const input = screen.getByPlaceholderText("Enter the title here");
+    const input = screen.getByPlaceholderText("sheet.title.placeholder");
     fireEvent.change(input, { target: { value: "My Sheet Title" } });
     expect(input.value).toBe("My Sheet Title");
   });

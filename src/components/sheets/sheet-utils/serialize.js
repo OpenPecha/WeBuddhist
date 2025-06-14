@@ -80,6 +80,9 @@ export const serialize = (content) => {
       case "image": {
         return `<img src="${content.src}" alt="${content.alt || ""}" />`;
       }
+      case "pecha": {
+        return `<div class="pecha-content" data-segment-id="${content.src}"></div>`;
+      }
       default:
         break;
     }

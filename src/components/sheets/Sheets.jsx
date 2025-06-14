@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import './Sheets.scss'
 import Editor from './local-components/Editors/EditorWrapper'
 import ProfileCard from './local-components/UserProfileCard/ProfileCard'
-
+import { useTranslate } from '@tolgee/react';
 const defaultValue = [
   {
     type: 'paragraph',
@@ -12,6 +12,7 @@ const defaultValue = [
 ]
 
 const Sheets = () => {
+  const {t} = useTranslate();
   const initialValue = useMemo(
     () =>
       JSON.parse(localStorage.getItem('sheets-content')) || defaultValue,
@@ -20,7 +21,7 @@ const Sheets = () => {
 
   return (
     <div className="sheets-wrapper">
-      <input type="text" style={{fontFamily:"serif"}} className=" title-input" placeholder='Enter the title here'/>
+      <input type="text" style={{fontFamily:"serif"}} className=" title-input" placeholder={t("sheet.title.placeholder")}/>
       <ProfileCard />
       <Editor initialValue={initialValue}>
         <Editor.Toolbar />
