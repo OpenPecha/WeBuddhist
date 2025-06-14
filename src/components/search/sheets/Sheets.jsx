@@ -63,7 +63,12 @@ const Sheets = (query) => {
           <h3 className="sheet-title">{sheet.sheet_title}</h3>
           <CiBookmark className="bookmark-icon"/>
           </div>
-          <p className="sheet-summary">{highlightSearchMatch(sheet.sheet_summary, searchText, 'highlighted-text')}</p>
+          <p 
+            className="sheet-summary" 
+            dangerouslySetInnerHTML={{ 
+              __html: highlightSearchMatch(sheet.sheet_summary, searchText, 'highlighted-text') 
+            }}
+          />
           <div className="publisher-info">
           <a href={sheet.publisher_url} className="publisher-link">
               {sheet.publisher_image ? (
