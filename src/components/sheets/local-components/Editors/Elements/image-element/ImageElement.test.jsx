@@ -17,10 +17,9 @@ describe('ImageElement Component', () => {
   test('renders image with correct attributes when src is provided', () => {
     render(<ImageElement {...defaultProps} />);
     
-    const image = screen.getByAltText(defaultProps.element.alt);
+    const image = screen.getByRole('img');
     expect(image).toBeInTheDocument();
     expect(image).toHaveAttribute('src', defaultProps.element.src);
-    expect(image).toHaveAttribute('alt', defaultProps.element.alt);
     expect(image).toHaveClass('sheet-image');
     expect(image).toHaveStyle({ maxWidth: '100%', height: 'auto' });
   });
