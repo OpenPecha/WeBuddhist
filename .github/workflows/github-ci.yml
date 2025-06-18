@@ -70,36 +70,31 @@ jobs:
           curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
 
   sonarQube:
-    if: github.event_name == 'workflow_dispatch'
     name: SonarQube Scan
     needs: [buildDockerImage]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set up Python version
-        uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          # Fetch all history for better SonarQube analysis
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry install
+        run: npm ci
 
       - name: Run tests with coverage
-        run: poetry run pytest --cov=your_package_name --cov-report=xml
+        run: npm test -- --coverage
 
       - name: SonarQube Scan
         uses: SonarSource/sonarcloud-github-action@v1.10
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=your_project_key
-            -Dsonar.organization=your_organization
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.python.version=3.12
     
