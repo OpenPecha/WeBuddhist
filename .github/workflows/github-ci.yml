@@ -90,7 +90,7 @@ jobs:
         run: npm ci
 
       - name: Run tests with coverage
-        run: npm test -- --coverage
+        run: npm run coverage
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
