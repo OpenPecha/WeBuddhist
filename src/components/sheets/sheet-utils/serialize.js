@@ -97,3 +97,10 @@ export const serialize = (content) => {
   const children = content.children ? content.children.map(serialize) : [];
   return children.join("");
 };
+
+export const createPayloadStructure = (metadata = {}) => ({
+  titles: metadata.sheet_title || "",
+  sources: [],
+  isPublic: metadata.is_public || false,
+  sheetLanguage: metadata.sheet_language || "bo"
+});
