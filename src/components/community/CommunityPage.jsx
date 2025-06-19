@@ -79,9 +79,9 @@ const CommunityPage = () => {
             <p>{t("side_nav.join_conversation.descriptions")}</p>
             <button className='make-sheet-btn navbaritems' onClick={() => {
               if (isLoggedIn) {
-                navigate("/sheets");
+                navigate("/sheets/new");
               } else {
-                sessionStorage.setItem('redirectAfterLogin', '/sheets');
+                sessionStorage.setItem('redirectAfterLogin', '/sheets/new');
                 navigate("/login");
               }
             }}>

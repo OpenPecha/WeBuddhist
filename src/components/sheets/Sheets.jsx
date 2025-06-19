@@ -15,7 +15,8 @@ const Sheets = () => {
   const {t} = useTranslate();
   const initialValue = useMemo(
     () =>
-      JSON.parse(localStorage.getItem('sheets-content')) || defaultValue,
+      // JSON.parse(localStorage.getItem('sheets-content')) || defaultValue,
+      defaultValue,
     []
   )
 
