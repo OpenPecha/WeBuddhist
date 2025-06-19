@@ -10,7 +10,7 @@ import { getLanguageClass } from '../../../../../utils/Constants';
 import pechaIcon from '../../../../../assets/icons/pecha_icon.png';
 
 export const fetchSegments = async (searchFilter, limit, skip) => {
-  const { data } = await axiosInstance.get(`api/v1/search?query=${searchFilter}&search_type=${'SOURCE'}`, {
+  const { data } = await axiosInstance.get(`/api/v1/search?query=${searchFilter}&search_type=${'SOURCE'}`, {
     params: {
       limit,
       skip,
@@ -29,7 +29,7 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
     () => fetchSegments(debouncedSearchFilter, pagination.limit, skip),
     { refetchOnWindowFocus: false }
   );
-
+console.log(searchData)
   const totalSegments = searchData?.total || 0;
   const totalPages = Math.ceil(totalSegments / pagination.limit);
 
