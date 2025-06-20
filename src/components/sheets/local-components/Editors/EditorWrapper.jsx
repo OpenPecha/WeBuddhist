@@ -37,7 +37,8 @@ const updateSheet = async (sheetId, payload) => {
 };
 
 const createPayload = (value) => {
-  const titles = 'My Sheet Title';
+  //function to be taken from cho lungsang work
+  const titles = 'dummy';
   const isPublic = true;
   const sheetLanguage = 'en';
 
@@ -109,7 +110,7 @@ const Editor = ({ initialValue, children }) => {
 
   useEffect(() => {
     if (hasCreatedSheet.current) {
-      hasCreatedSheet.current = false; 
+      hasCreatedSheet.current = false; //so that at first creation of sheet, it doesn't trigger put req
       return;
     }
     if (!debouncedValue) return;
