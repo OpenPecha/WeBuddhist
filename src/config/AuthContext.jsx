@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "../utils/Constants.js";
 
@@ -6,6 +6,19 @@ const AuthContext = createContext();
 
 export const PechaAuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+    useEffect(() => {
+        const accessToken = sessionStorage.getItem(ACCESS_TOKEN);
+        const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+        const loggedInVia = localStorage.getItem(LOGGED_IN_VIA);
+        if (accessToken && (refreshToken || loggedInVia === "pecha")) {
+            setIsLoggedIn(true);
+        } else {
+            setIsLoggedIn(false);
+        }
+        setIsAuthLoading(false);
+    }, []);
 
     const login = (accessToken, refreshToken = null) => {
         sessionStorage.setItem(ACCESS_TOKEN, accessToken);
@@ -21,8 +34,7 @@ export const PechaAuthProvider = ({ children }) => {
         localStorage.removeItem("refreshToken");
         setIsLoggedIn(false);
     };
-    const contextValue = useMemo(() => ({ isLoggedIn, login, logout }), [isLoggedIn]);
-
+    const contextValue = useMemo(() => ({ isLoggedIn, login, logout, isAuthLoading }), [isLoggedIn, isAuthLoading]);
 
     return (
         <AuthContext.Provider value={contextValue}>

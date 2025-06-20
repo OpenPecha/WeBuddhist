@@ -19,7 +19,7 @@ const NavigationBar = () => {
  const [searchTerm, setSearchTerm] = useState('');
  const navigate = useNavigate();
  const { t } = useTranslate();
- const { isLoggedIn, logout: pechaLogout } = useAuth();
+ const { isLoggedIn, logout: pechaLogout, isAuthLoading } = useAuth();
  const { isAuthenticated, logout, isLoading: isAuth0Loading } = useAuth0();
  const tolgee = useTolgee(['language']);
  const queryClient = useQueryClient();
@@ -166,9 +166,9 @@ const NavigationBar = () => {
 
 
          <Nav className="d-flex align-items-lg-center navbaritems">
-           {isAuth0Loading ? (
+           {isAuth0Loading || isAuthLoading ? (
              <div>
-               Loading
+               Loading...
              </div>
            ) : (!isLoggedIn && !isAuthenticated) ? (
              <div className="d-flex flex-column flex-lg-row">

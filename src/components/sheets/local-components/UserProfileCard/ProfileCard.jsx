@@ -25,7 +25,6 @@ const ProfileCard = () => {
   if (userInfoIsLoading) {
     return <div className="profile-card-loading">Loading...</div>;
   }
-  console.log(userInfo)
   return (
     <div className="profile-card">
       {(userInfo?.username || user?.name) && (
