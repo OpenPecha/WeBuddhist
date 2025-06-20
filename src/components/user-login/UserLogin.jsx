@@ -3,7 +3,7 @@ import { useMutation } from "react-query";
 import { Button, Col, Container, Form, Row, Toast, ToastContainer } from "react-bootstrap";
 import "./UserLogin.scss";
 import axiosInstance from "../../config/axios-config";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import eyeOpen from "../../assets/icons/eye-open.svg";
 import eyeClose from "../../assets/icons/eye-closed.svg";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -19,7 +19,7 @@ const UserLogin = () => {
     const [showPassword, setShowPassword] = useState(false);
     const { loginWithRedirect } = useAuth0();
     const { login } = useAuth();
-
+    const navigate = useNavigate();
 
     const loginMutation = useMutation(
         async (loginData) => {
@@ -34,7 +34,7 @@ const UserLogin = () => {
                 const accessToken = data.auth.access_token;
                 const refreshToken = data.auth.refresh_token;
                 login(accessToken, refreshToken);
-                // navigate("/texts");
+                navigate("/texts");
             },
             onError: (error) => {
                 console.error("Login failed", error);
