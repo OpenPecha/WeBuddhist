@@ -138,7 +138,7 @@ describe('serialize', () => {
     it('should handle pecha content', () => {
       const node = {
         type: 'pecha',
-        segmentId: 'seg123',
+        src: 'seg123',
         children: [{ text: 'Pecha content' }]
       };
       expect(serialize(node)).toContain('class="pecha-content"');
