@@ -74,7 +74,7 @@ export const serialize = (node) => {
         ? `<a href="${node.url}" class="refLink" data-ref="${node.ref}">${children}</a>`
         : `<a href="${node.url}">${children}</a>`;
     case 'image':
-      return `<img src="${node.url}" alt="${node.alt || ''}"${styleAttr} />`;
+      return `<img src="${node.src ||node.url}" alt="${node.alt || ''}"${styleAttr} />`;
     case 'youtube':
       return `<div class="youtube-embed" data-video-id="${node.videoId}">${children}</div>`;
     case 'audio':
