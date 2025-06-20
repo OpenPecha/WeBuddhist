@@ -28,7 +28,6 @@ export default defineConfig(({ mode }) => {
         reporter: ["text", "json", "html", "lcov"],
         reportsDirectory: "./coverage",
         exclude: [
-          "**/*.js",
           "**/*test.jsx",
           "src/config/**",
           "src/main.jsx",
