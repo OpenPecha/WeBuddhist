@@ -28,12 +28,10 @@ const ProfileCard = () => {
   console.log(userInfo)
   return (
     <div className="profile-card">
-            {userInfo?.username || user?.name && (
+      {(userInfo?.username || user?.name) && (
       <div className="profile-card-content">
         <div className="profile-picture-container">
-      
             <img src={userInfo?.avatar_url || user?.picture} alt="Profile" className="profile-image" />
-       
         </div>
         <div className="profile-info">
           <span className="profile-name">{capitalize(userInfo?.firstname || user?.given_name)} {capitalize(userInfo?.lastname || user?.family_name)}</span>
@@ -41,6 +39,7 @@ const ProfileCard = () => {
         </div>
       </div>
          )}
+         
     </div>
   );
 };
