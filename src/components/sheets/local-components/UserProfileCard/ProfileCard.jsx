@@ -5,7 +5,7 @@ import axiosInstance from '../../../../config/axios-config.js';
 import './ProfileCard.scss';
 import { useAuth0 } from '@auth0/auth0-react';
 
-const fetchUserInfo = async () => {
+export const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
   return data;
 };
