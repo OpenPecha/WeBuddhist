@@ -88,7 +88,7 @@ export const serialize = (node) => {
     case 'list-item':
       return `<li${styleAttr}>${children}</li>`;
     case 'pecha':
-      return `<div class="pecha-content" data-segment-id="${node.segmentId}">${children}</div>`;
+      return `<div class="pecha-content" data-segment-id="${node.src}">${children}</div>`;
     case 'table':
       return `<table><tbody>${children}</tbody></table>`;
     case 'table-row':
