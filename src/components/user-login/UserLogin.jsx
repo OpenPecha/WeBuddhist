@@ -3,7 +3,7 @@ import { useMutation } from "react-query";
 import { Button, Col, Container, Form, Row, Toast, ToastContainer } from "react-bootstrap";
 import "./UserLogin.scss";
 import axiosInstance from "../../config/axios-config";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import eyeOpen from "../../assets/icons/eye-open.svg";
 import eyeClose from "../../assets/icons/eye-closed.svg";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -17,23 +17,10 @@ const UserLogin = () => {
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
-    const { loginWithRedirect, isAuthenticated } = useAuth0();
-    const { login, isLoggedIn } = useAuth();
-    const navigate = useNavigate();
+    const { loginWithRedirect } = useAuth0();
+    const { login } = useAuth();
 
-    // Check if there's a redirect path stored in sessionStorage
-    const redirectPath = sessionStorage.getItem('redirectAfterLogin');
-    
-    if (isLoggedIn || isAuthenticated) {
-        // If there's a stored redirect path, navigate there and clear it
-        if (redirectPath) {
-            sessionStorage.removeItem('redirectAfterLogin');
-            navigate(redirectPath);
-        } else {
-            // Default redirect to texts page
-            navigate("/texts");
-        }
-    }
+
     const loginMutation = useMutation(
         async (loginData) => {
             const response = await axiosInstance.post(
@@ -47,16 +34,7 @@ const UserLogin = () => {
                 const accessToken = data.auth.access_token;
                 const refreshToken = data.auth.refresh_token;
                 login(accessToken, refreshToken);
-                
-                // Check if there's a redirect path stored in sessionStorage
-                const redirectPath = sessionStorage.getItem('redirectAfterLogin');
-                if (redirectPath) {
-                    sessionStorage.removeItem('redirectAfterLogin');
-                    navigate(redirectPath);
-                } else {
-                    // Default redirect to texts page
-                    navigate("/texts");
-                }
+                // navigate("/texts");
             },
             onError: (error) => {
                 console.error("Login failed", error);
@@ -107,7 +85,7 @@ const UserLogin = () => {
 
     const loginWithGoogle = async () => {
         try {
-            const redirectPath = sessionStorage.getItem('redirectAfterLogin') || "/texts";
+            const redirectPath ="/texts";
             
             await loginWithRedirect({
                 authorizationParams: {
@@ -118,9 +96,6 @@ const UserLogin = () => {
                     returnTo: redirectPath,
                 },
             });
-            if (sessionStorage.getItem('redirectAfterLogin')) {
-                sessionStorage.removeItem('redirectAfterLogin');
-            }
         } catch (error) {
             console.error("Google login failed:", error);
         }
@@ -128,8 +103,7 @@ const UserLogin = () => {
 
     const loginWithApple = async () => {
         try {
-            // Check if there's a redirect path stored in sessionStorage
-            const redirectPath = sessionStorage.getItem('redirectAfterLogin') || "/texts";
+            const redirectPath = "/texts";
             
             await loginWithRedirect({
                 authorizationParams: {
@@ -139,11 +113,7 @@ const UserLogin = () => {
                     returnTo: redirectPath,
                 },
             });
-            
-            // Clear the redirect path after using it
-            if (sessionStorage.getItem('redirectAfterLogin')) {
-                sessionStorage.removeItem('redirectAfterLogin');
-            }
+
         } catch (error) {
             console.error("Apple login failed:", error);
         }

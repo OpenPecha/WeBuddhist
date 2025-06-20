@@ -20,7 +20,7 @@ const NavigationBar = () => {
  const navigate = useNavigate();
  const { t } = useTranslate();
  const { isLoggedIn, logout: pechaLogout } = useAuth();
- const { isAuthenticated, logout } = useAuth0();
+ const { isAuthenticated, logout, isLoading: isAuth0Loading } = useAuth0();
  const tolgee = useTolgee(['language']);
  const queryClient = useQueryClient();
 
@@ -33,12 +33,6 @@ const NavigationBar = () => {
 
  function handleLogout(e) {
    e.preventDefault()
-   
-   const currentPath = window.location.pathname;
-   if (currentPath !== '/login' && currentPath !== '/register') {
-     sessionStorage.setItem('redirectAfterLogin', currentPath);
-   }
-   
    localStorage.removeItem(LOGGED_IN_VIA);
    sessionStorage.removeItem(ACCESS_TOKEN);
    localStorage.removeItem(REFRESH_TOKEN)
@@ -172,7 +166,11 @@ const NavigationBar = () => {
 
 
          <Nav className="d-flex align-items-lg-center navbaritems">
-           {(!isLoggedIn && !isAuthenticated) ? (
+           {isAuth0Loading ? (
+             <div>
+               Loading
+             </div>
+           ) : (!isLoggedIn && !isAuthenticated) ? (
              <div className="d-flex flex-column flex-lg-row">
                <Button as={Link} to="/login" variant="outline-dark" className="mb-2 mb-lg-0 me-lg-2" onClick={handleNavClick}>
                  {t("login.form.button.login_in")}
@@ -183,8 +181,6 @@ const NavigationBar = () => {
              </div>
            ) : (
              <Button
-              // as={ Link }
-              // to="/login"
                onClick={(e) => {
                  handleLogout(e);
                  handleNavClick();
