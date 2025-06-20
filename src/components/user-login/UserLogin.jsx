@@ -60,7 +60,8 @@ const UserLogin = () => {
             },
             onError: (error) => {
                 console.error("Login failed", error);
-                setErrors({ error: error.response.data.message });
+                const errorMsg = error?.response?.data?.message || error?.response?.data?.detail || "Login failed";
+                setErrors({ error: errorMsg });
             },
         }
     );
@@ -153,7 +154,7 @@ const UserLogin = () => {
             fluid
             className="login-container d-flex align-items-center justify-content-center"
         >
-            { errors.error && <ToastContainer position="top-end">
+            { errors.error && <ToastContainer position="bottom-end">
                 <Toast bg={ "danger" } onClose={ () => setErrors({ error: null }) }>
                     <Toast.Header>
                         <strong className="me-auto">Error!</strong>
