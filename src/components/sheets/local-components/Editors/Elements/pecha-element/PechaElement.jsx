@@ -6,7 +6,11 @@ import { getLanguageClass  } from '../../../../../../utils/Constants';
 import { removeFootnotes } from '../../../../sheet-utils/Constant';
 
 const fetchSegmentDetails = async (segmentId) => {
-  const { data } = await axiosInstance.get(`/api/v1/segments?segment_id=${segmentId}`);
+  const { data } = await axiosInstance.get(`/api/v1/segments/${segmentId}`, {
+    params: {
+      text_details: true
+    }
+  });
   return data;
 };
 
@@ -32,11 +36,11 @@ const PechaElement = props => {
         {isLoading ? (
           <div>Loading...</div>
         ) : (
-          <>
+          <div className={`${getLanguageClass(segmentData.text.language)}`}>
             <img src={pechaIcon} className='pecha-icon' alt="source icon" />
             <div dangerouslySetInnerHTML={{ __html: cleanContent }} />
-            <p className={`pecha-title ${getLanguageClass("en")}`}>The Way of the Bodhisattva</p>
-          </>
+            <p className={`pecha-title`}>{segmentData.text.title}</p>
+          </div>
         )}
      
       </div>
