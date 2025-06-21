@@ -74,11 +74,11 @@ export const serialize = (node) => {
         ? `<a href="${node.url}" class="refLink" data-ref="${node.ref}">${children}</a>`
         : `<a href="${node.url}">${children}</a>`;
     case 'image':
-      return `<img src="${node.src ||node.url}" alt="${node.alt || ''}"${styleAttr} />`;
+      return node.src || node.url || '';
     case 'youtube':
-      return `<div class="youtube-embed" data-video-id="${node.youtubeId}">${children}</div>`;
+      return `https://www.youtube.com/embed/${node.youtubeId}?rel=0&showinfo=0`;
     case 'audio':
-      return `<audio controls src="${node.url}">${children}</audio>`;
+      return node.url || '';
     case 'ordered-list':
     case 'numbered-list':
       return `<ol${styleAttr}>${children}</ol>`;
@@ -88,7 +88,7 @@ export const serialize = (node) => {
     case 'list-item':
       return `<li${styleAttr}>${children}</li>`;
     case 'pecha':
-      return `<div class="pecha-content" data-segment-id="${node.src}">${children}</div>`;
+      return node.src || '';
     case 'table':
       return `<table><tbody>${children}</tbody></table>`;
     case 'table-row':
