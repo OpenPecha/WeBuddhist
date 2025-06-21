@@ -76,7 +76,7 @@ export const serialize = (node) => {
     case 'image':
       return `<img src="${node.src ||node.url}" alt="${node.alt || ''}"${styleAttr} />`;
     case 'youtube':
-      return `<div class="youtube-embed" data-video-id="${node.videoId}">${children}</div>`;
+      return `<div class="youtube-embed" data-video-id="${node.youtubeId}">${children}</div>`;
     case 'audio':
       return `<audio controls src="${node.url}">${children}</audio>`;
     case 'ordered-list':
