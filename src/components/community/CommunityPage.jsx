@@ -6,6 +6,8 @@ import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config.js';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../config/AuthContext.jsx';
+import { useAuth0 } from '@auth0/auth0-react';
+
 export const fetchsheet = async (userid="", limit, skip) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
@@ -25,6 +27,7 @@ const CommunityPage = () => {
     const [limit, setLimit] = useState(10);
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
+    const { isAuthenticated } = useAuth0();
       const skip = useMemo(() =>{
         return (currentPage - 1) * limit;
       },[currentPage])
@@ -39,6 +42,7 @@ const CommunityPage = () => {
     () => fetchsheet("tenzin_tsering.7233", limit, skip), 
     { refetchOnWindowFocus: false }
   );
+  const userIsLoggedIn = isLoggedIn || isAuthenticated;
   return (
     <div className='container-community'>
       <div className='sheet-community'>
@@ -77,14 +81,8 @@ const CommunityPage = () => {
         <div className='sidebar-section'>
           <div className='sidebar-content navbaritems'>
             <p>{t("side_nav.join_conversation.descriptions")}</p>
-            <button className='make-sheet-btn navbaritems' onClick={() => {
-              if (isLoggedIn) {
-                navigate("/sheets/new");
-              } else {
-                sessionStorage.setItem('redirectAfterLogin', '/sheets/new');
-                navigate("/login");
-              }
-            }}>
+            <button className='make-sheet-btn navbaritems' onClick={() => 
+              userIsLoggedIn ? navigate("/sheets/new") : navigate("/login")}>
               <span className='btn-icon'></span>
               {t("side_nav.join_conversation.button.make_sheet")}
             </button>

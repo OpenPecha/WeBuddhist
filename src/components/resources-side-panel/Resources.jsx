@@ -69,39 +69,39 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
         <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
         <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
 
-        {sidePanelData?.segment_infos?.translations > 0 && (
+        {sidePanelData?.segment_info?.translations > 0 && (
           <p onClick={() => setActiveView("translation")}>
             <IoLanguage className="m-2"/>
-            {`${t("connection_pannel.translations")} (${sidePanelData.segment_infos.translations})`}
+            {`${t("connection_pannel.translations")} (${sidePanelData.segment_info.translations})`}
           </p>
         )}
 
-        {sidePanelData?.segment_infos.related_text && (sidePanelData?.segment_infos?.related_text?.commentaries > 0 || sidePanelData?.segment_infos?.related_text?.root_text > 0) && (
+        {sidePanelData?.segment_info.related_text && (sidePanelData?.segment_info?.related_text?.commentaries > 0 || sidePanelData?.segment_info?.related_text?.root_text > 0) && (
           <>
             <p className='textgreat'>{t("text.related_texts")}</p>
             <div className='related-texts-container'>
-              {sidePanelData?.segment_infos?.related_text?.commentaries > 0 && (
+              {sidePanelData?.segment_info?.related_text?.commentaries > 0 && (
                 <p className='related-text-item' onClick={() => setActiveView("commentary")}>
                   <BiBookOpen className="m-2"/>
-                  {`${t("text.commentary")} (${sidePanelData?.segment_infos?.related_text?.commentaries})`}
+                  {`${t("text.commentary")} (${sidePanelData?.segment_info?.related_text?.commentaries})`}
                 </p>
               )}
-              {sidePanelData?.segment_infos?.related_text?.root_text > 0 && (
+              {sidePanelData?.segment_info?.related_text?.root_text > 0 && (
                 <p className='related-text-item' onClick={() => setActiveView("root_text")}>
                   <BiBookOpen className="m-2"/>
-                  {`${t("text.root_text")} (${sidePanelData?.segment_infos?.related_text?.root_text})`}
+                  {`${t("text.root_text")} (${sidePanelData?.segment_info?.related_text?.root_text})`}
                 </p>
               )}
             </div>
           </>
         )}
 
-        {sidePanelData?.segment_infos?.resources?.sheets > 0 && (
+        {sidePanelData?.segment_info?.resources?.sheets > 0 && (
           <>
             <p className='textgreat'>{t("panel.resources")}</p>
             <p>
               <IoNewspaperOutline className="m-2"/>
-              {` ${t("common.sheets")} (${sidePanelData?.segment_infos?.resources?.sheets})`}
+              {` ${t("common.sheets")} (${sidePanelData?.segment_info?.resources?.sheets})`}
             </p>
           </>
         )}

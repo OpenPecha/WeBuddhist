@@ -62,7 +62,7 @@ describe("Resources Side Panel", () => {
     }
   };
   const mockSidePanelData = {
-    segment_infos: {
+    segment_info: {
       short_url: "https://test.com/share",
       translations: 2,
       resources: {
@@ -127,7 +127,7 @@ describe("Resources Side Panel", () => {
       if (queryKey[0] === "sidePanel") {
         return { 
           data: {
-            segment_infos: {
+            segment_info: {
               translations: 5
             }
           }
@@ -148,7 +148,7 @@ describe("Resources Side Panel", () => {
       if (queryKey[0] === "sidePanel") {
         return { 
           data: {
-            segment_infos: {
+            segment_info: {
               related_text: {
                 commentaries: 2
               }
@@ -209,7 +209,7 @@ describe("Resources Side Panel", () => {
       if (queryKey[0] === "sidePanel") {
         return {
           data: {
-            segment_infos: {
+            segment_info: {
               related_text: {
                 root_text: 2,
               },
