@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-// import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import EditorInput from './EditorInput';
 import { vi } from 'vitest';
@@ -81,8 +80,6 @@ vi.mock('../../../sheet-utils/CustomEditor', () => ({
   })),
 }));
 
-import CustomEditor from '../../../sheet-utils/CustomEditor';
-
 // Simulate keyboard shortcuts as Slate blocks DOM events
 const simulateKeyDown = (editor, event) => {
   if (event.shiftKey && event.key === 'Enter') {
@@ -134,7 +131,6 @@ const simulatePaste = (editor, event) => {
 };
 
 describe('EditorInput', () => {
-  // let user;
   let editor;
   
   function renderWithSlate(initialValue = [{ type: 'paragraph', children: [{ text: '' }] }]) {
@@ -152,7 +148,6 @@ describe('EditorInput', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // user = userEvent.setup();
   });
 
   it('renders Editable with correct class', () => {
@@ -393,8 +388,14 @@ describe('EditorInput', () => {
         preventDefault: vi.fn()
       };
       
+      vi.clearAllMocks();
       simulateKeyDown(editor, mockEvent);
+
+      expect(mockEvent.key).toBe('b');
+      expect(mockEvent.ctrlKey).toBe(false);
+      expect(mockEvent.metaKey).toBe(false);
       
+      expect(mockEvent.preventDefault).not.toHaveBeenCalled();
       expect(mockToggleMark).not.toHaveBeenCalled();
       expect(mockToggleCodeBlock).not.toHaveBeenCalled();
       expect(editor.undo).not.toHaveBeenCalled();
