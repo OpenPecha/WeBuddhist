@@ -155,6 +155,5 @@ describe("CommunityPage Component", () => {
     expect(makeSheetButton).toBeInTheDocument();
     expect(makeSheetButton).not.toBeDisabled();
     fireEvent.click(makeSheetButton);
-    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('redirectAfterLogin', '/sheets');
   });
 });

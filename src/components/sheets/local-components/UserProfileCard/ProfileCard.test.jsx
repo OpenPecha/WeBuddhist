@@ -5,6 +5,8 @@ import ProfileCard from './ProfileCard';
 import { vi } from 'vitest';
 import { mockUseAuth, mockReactQuery } from '../../../../test-utils/CommonMocks.js';
 import { useQuery } from 'react-query';
+import axiosInstance from '../../../../config/axios-config.js';
+import { fetchUserInfo } from './ProfileCard.jsx';
 
 mockUseAuth();
 mockReactQuery();
@@ -43,5 +45,18 @@ describe('ProfileCard', () => {
     });
     render(<ProfileCard />);
     expect(screen.getByText('Loading...')).toBeInTheDocument();
+  });
+});
+
+describe('fetchUserInfo', () => {
+  it('fetches user info with correct API call and returns data', async () => {
+    const mockData = { username: 'janedoe', firstname: 'Jane', lastname: 'Doe', avatar_url: 'https://example.com/jane.jpg' };
+    const mockResponse = { data: mockData };
+    const getSpy = vi.spyOn(axiosInstance, 'get').mockResolvedValueOnce(mockResponse);
+
+    const result = await fetchUserInfo();
+
+    expect(getSpy).toHaveBeenCalledWith('/api/v1/users/info');
+    expect(result).toEqual(mockData);
   });
 });
