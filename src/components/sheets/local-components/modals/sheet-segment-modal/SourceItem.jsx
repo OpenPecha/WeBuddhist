@@ -38,7 +38,7 @@ SourceItem.propTypes = {
       })
     ).isRequired,
   }).isRequired,
-  onSegment: PropTypes.func,
+  onSegment: PropTypes.func.isRequired,
 };
 
 export default SourceItem;
