@@ -3,10 +3,8 @@ import PropTypes from "prop-types";
 
 const SegmentItem = ({ segment, onSegment }) => {
   return (
-    <div
+    <button
       className="segment-item"
-      role="button"
-      tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
@@ -19,7 +17,7 @@ const SegmentItem = ({ segment, onSegment }) => {
         className="segment-content"
         dangerouslySetInnerHTML={{ __html: segment.content }}
       />
-    </div>
+    </button>
   );
 };
 

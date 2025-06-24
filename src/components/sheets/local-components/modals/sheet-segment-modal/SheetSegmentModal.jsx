@@ -96,10 +96,12 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
   };
 
   return (
-    <div className="sheet-segment-overlay" onClick={onClose} role="dialog" aria-modal="true">
+    <div className="sheet-segment-overlay" onClick={onClose}>
       <div
         className="sheet-segment-modal"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
       >
         {renderModalHeader()}
         {renderSegmentContent()}
