@@ -4,7 +4,8 @@ import { getLanguageClass } from '../../../utils/Constants';
 import pechaIcon from '../../../assets/icons/pecha_icon.png';
 import './SheetDetailPage.scss';
 import YouTube from 'react-youtube';
-import { FiEdit ,FiTrash,FiHeart,FiEye} from "react-icons/fi";
+import { FiEdit ,FiTrash,FiEye, FiShare, FiPrinter} from "react-icons/fi";
+
 //TODO: to be remove when api is ready
 const sheetData = {
   sheet_title: "The great Dhrama of Tibet ",
@@ -21,7 +22,7 @@ const sheetData = {
           { 
             segment_id: "123",
             segment_number: "1.1",
-            content: "the great lama and his teachings",
+            content: "རིན་ཆེན་སེམས་དེ་གཟུང་བར་བྱ་བའི་ཕྱིར།།<br>དེ་བཞིན་གཤེགས་པ་རྣམས་དང་དམ་པའི་ཆོས།།<br>དཀོན་མཆོག་དྲི་མ་མེད་དང་སངས་རྒྱས་སྲས།།<br>ཡོན་ཏན་རྒྱ་མཚོ་རྣམས་ལ་ལེགས་པར་མཆོད།།",
             text_title: "Fundamentals of Buddhism",
             type: "source"
           },
@@ -70,7 +71,7 @@ const SheetDetailPage = () => {
             <div className="source-content">
               <img src={pechaIcon} className='pecha-icon' alt="source icon" />
               <div className={getLanguageClass(segment.language || 'en')}>
-                <p>{segment.content}</p>
+                <p className={`${getLanguageClass(segment.language || 'bo')}`} dangerouslySetInnerHTML={{__html:segment.content}}/>
               </div>
               <p className="pecha-title">{segment.text_title}</p>
             </div>
@@ -80,7 +81,7 @@ const SheetDetailPage = () => {
         return (
           <div className="segment segment-text" key={segment.segment_id}>
             
-            <p className="text-content" dangerouslySetInnerHTML={{ __html: segment.content }}></p>
+            <p className="text-content" dangerouslySetInnerHTML={{ __html: segment.content }}/>
           </div>
         );
       case 'image': //TODO : case for audio
@@ -113,18 +114,16 @@ const SheetDetailPage = () => {
     return(
       <div className="view-toolbar">
         <div className="view-toolbar-item">
-          <div className="view-toolbar-item-like">
-          <FiHeart />
-          <p>120</p>
-          </div>
           <div className="view-toolbar-item-eye">
           <FiEye />
           <p>20</p>
           </div>
         </div>
         <div className="view-toolbar-item">
-            <FiEdit />
-            <FiTrash />
+          <FiPrinter/>
+          <FiShare/>
+          <FiEdit />
+          <FiTrash />
         </div>
       </div>
     )
