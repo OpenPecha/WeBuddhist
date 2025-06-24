@@ -8,7 +8,7 @@
   }
   overflow: auto;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
-  height: 100%;
+  height: calc(100vh - 64px);
   z-index: 10;
 
   &.show {

@@ -1,10 +1,12 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { getLanguageClass } from '../../../utils/Constants';
 import pechaIcon from '../../../assets/icons/pecha_icon.png';
 import './SheetDetailPage.scss';
 import YouTube from 'react-youtube';
-import { FiEdit ,FiTrash,FiEye, FiShare, FiPrinter} from "react-icons/fi";
+import { FiEdit, FiTrash, FiEye, FiShare, FiPrinter } from "react-icons/fi";
+import Resources from '../../resources-side-panel/Resources';
+import { usePanelContext, PanelProvider } from '../../../context/PanelContext';
 
 //TODO: to be remove when api is ready
 const sheetData = {
@@ -20,7 +22,7 @@ const sheetData = {
         parent_id: "1212",
         segments: [
           { 
-            segment_id: "123",
+            segment_id: "d0a5b00b-0989-4e9e-87d8-db4f72e6ceca",
             segment_number: "1.1",
             content: "རིན་ཆེན་སེམས་དེ་གཟུང་བར་བྱ་བའི་ཕྱིར།།<br>དེ་བཞིན་གཤེགས་པ་རྣམས་དང་དམ་པའི་ཆོས།།<br>དཀོན་མཆོག་དྲི་མ་མེད་དང་སངས་རྒྱས་སྲས།།<br>ཡོན་ཏན་རྒྱ་མཚོ་རྣམས་ལ་ལེགས་པར་མཆོད།།",
             text_title: "Fundamentals of Buddhism",
@@ -62,12 +64,27 @@ const sheetData = {
 const SheetDetailPage = () => {
   const { publisherName, sheetSlugAndId } = useParams();
   const sheetId = sheetSlugAndId.split('-').pop(); //TODO : need later when we call the get api
+  const [segmentId, setSegmentId] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } = usePanelContext();
+
+  const handleSidePanelToggle = (segmentId) => {
+    setSegmentId(segmentId);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('segment_id', segmentId);
+    setSearchParams(newParams);
+    openResourcesPanel();
+  };
 
   const renderSegment = (segment) => {
     switch (segment.type) {
       case 'source':
         return (
-          <div className="segment segment-source" key={segment.segment_id}>
+          <div 
+            className={`segment segment-source ${isResourcesPanelOpen && segmentId === segment.segment_id ? 'selected' : ''}`} 
+            key={segment.segment_id} 
+            onClick={() => handleSidePanelToggle(segment.segment_id)}
+          >
             <div className="source-content">
               <img src={pechaIcon} className='pecha-icon' alt="source icon" />
               <div className={getLanguageClass(segment.language || 'en')}>
@@ -153,15 +170,29 @@ const SheetDetailPage = () => {
     )
   }
   return (
-    <main className="sheet-detail-container">
-      <article className="sheet-detail-page">
-        {renderHeader()}
-        {renderUserInfo()}
-        {renderViewToolbar()}
-        {renderSheetContent()}
-      </article>
-    </main>
+    <div className="sheet-detail-wrapper">
+      <main className={`sheet-detail-container ${isResourcesPanelOpen ? 'with-side-panel' : ''}`}>
+        <article className="sheet-detail-page">
+          {renderHeader()}
+          {renderUserInfo()}
+          {renderViewToolbar()}
+          {renderSheetContent()}
+        </article>
+      </main>
+      {isResourcesPanelOpen && segmentId && (
+        <Resources 
+          segmentId={segmentId}
+          handleClose={closeResourcesPanel}
+        />
+      )}
+    </div>
   );
 };
 
-export default SheetDetailPage; 
+const SheetDetailPageWithPanelContext = () => (
+  <PanelProvider>
+    <SheetDetailPage />
+  </PanelProvider>
+);
+
+export default SheetDetailPageWithPanelContext; 
