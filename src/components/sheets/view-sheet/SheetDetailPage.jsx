@@ -28,7 +28,7 @@ const sheetData = {
           {
             segment_id: "124",
             segment_number: "1.2",
-            content: "hello hello",
+            content: "Whatever flowers and fruits there may be,<strong>And whatever varieties</strong> of medicines exist,Whatever precious <strong>substances</strong> there are in the world,And whatever pure and delightful waters there are.",
             type: "text"
           },
           {
@@ -79,7 +79,8 @@ const SheetDetailPage = () => {
       case 'text':
         return (
           <div className="segment segment-text" key={segment.segment_id}>
-            <p className="text-content">{segment.content}</p>  {/* TODO: just create it as dangerous inner html  */}
+            
+            <p className="text-content" dangerouslySetInnerHTML={{ __html: segment.content }}></p>
           </div>
         );
       case 'image': //TODO : case for audio
@@ -108,7 +109,6 @@ const SheetDetailPage = () => {
         </header>
     );
   };
-
   const renderViewToolbar=()=>{
     return(
       <div className="view-toolbar">
@@ -129,7 +129,6 @@ const SheetDetailPage = () => {
       </div>
     )
   }
-
   const renderUserInfo=()=>{
     return(
       <div className="user-info">
@@ -141,21 +140,26 @@ const SheetDetailPage = () => {
       </div>
     )
   }
+  const renderSheetContent=()=>{
+    return(
+      <div className="sheet-content">
+      {sheetData.content.sections.map((section) => (
+        <section key={section.id} className="sheet-section">
+          <div className="segments ">
+            {section.segments.map((segment) => renderSegment(segment))}
+          </div>
+        </section>
+      ))}
+    </div>
+    )
+  }
   return (
     <main className="sheet-detail-container">
       <article className="sheet-detail-page">
         {renderHeader()}
         {renderUserInfo()}
         {renderViewToolbar()}
-        <div className="sheet-content">
-          {sheetData.content.sections.map((section) => (
-            <section key={section.id} className="sheet-section">
-              <div className="segments">
-                {section.segments.map((segment) => renderSegment(segment))}
-              </div>
-            </section>
-          ))}
-        </div>
+        {renderSheetContent()}
       </article>
     </main>
   );
