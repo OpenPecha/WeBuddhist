@@ -135,6 +135,62 @@ export const preparePayload = (content, metadata = {}) => ({
   }
 });
 
+/**
+ * Determines the type of content based on its value
+ * @param {string} content - The content to evaluate
+ * @returns {string} The content type (SOURCE, YOUTUBE, AUDIO, IMAGE, or CONTENT)
+ */
+const getContentType = (content) => {
+  if (!content) return 'CONTENT';
+  
+  const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+  if (youtubeRegex.test(content)) return 'YOUTUBE';
+  
+  const audioRegex = /(spotify\.com|soundcloud\.com)/i;
+  if (audioRegex.test(content)) return 'AUDIO';
+  
+  const imageRegex = /\.(jpeg|jpg|gif|png|webp|svg|bmp)$/i;
+  if (imageRegex.test(content) || /amazonaws\.com/.test(content) || content.includes('s3.')) return 'IMAGE';
+  
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if (uuidRegex.test(content)) return 'SOURCE';
+  
+  return 'CONTENT';
+};
+
+/**
+ * Formats the editor content for publishing
+ * @param {Array} content - Array of Slate nodes
+ * @returns {Object} Formatted output for publishing
+ */
+export const formatForPublish = (content) => {
+  if (!content || !Array.isArray(content)) {
+    console.error('Invalid content format. Expected an array of nodes.');
+    return {
+      titles: '',
+      sources: [],
+      is_published: false
+    };
+  }
+
+  const title = localStorage.getItem('sheets-title') || '';
+  const isPublished = localStorage.getItem('is_published') === 'true';
+  
+  const output = {};
+  output.titles = title;
+  output.sources = content.map((node, index) => {
+    const serializedContent = serialize(node);
+    return {
+      position: index,
+      type: getContentType(serializedContent),
+      content: serializedContent
+    };
+  });
+  output.is_published = isPublished;
+  
+  return output;
+};
+
 export const getCurrentContent = () => {
   try {
     const content = localStorage.getItem('sheets-content');

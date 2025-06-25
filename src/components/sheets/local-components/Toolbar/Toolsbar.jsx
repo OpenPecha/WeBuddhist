@@ -6,7 +6,7 @@ import MarkButton from './MarkButton'
 import BlockButton from './blockButton'
 import './Toolsbar.scss'
 import pechaIcon from "../../../../assets/icons/pecha_icon.png"
-import { serialize } from '../../sheet-utils/serialize';
+import { serialize, formatForPublish } from '../../sheet-utils/serialize';
 import { useTranslate } from '@tolgee/react';
 
 const Toolsbar = (prop) => {
@@ -85,11 +85,8 @@ const Toolsbar = (prop) => {
           className="publish-button listtitle"
           onClick={(e) => {
             e.preventDefault();
-            const serializedNodes = editor.children.map((node, index) => ({
-              text: serialize(node),
-              node: index + 1,
-            }));
-            console.log(serializedNodes);
+            const output = formatForPublish(editor.children);
+            console.log('Publishing content:', output);
           }}
         >
           {t("publish")}
