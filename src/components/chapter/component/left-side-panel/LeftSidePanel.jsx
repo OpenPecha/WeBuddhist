@@ -7,6 +7,7 @@ import { LANGUAGE, mapLanguageCode, getLanguageClass } from "../../../../utils/C
 import "./LeftSidePanel.scss";
 import { useTranslate } from "@tolgee/react";
 import { useSearchParams } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const fetchTextContent = async (textId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -267,3 +268,12 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
 };
 
 export default LeftSidePanel;
+
+LeftSidePanel.propTypes = {
+  updateChapter: PropTypes.func,
+  currentChapter: PropTypes.shape({
+    textId: PropTypes.string,
+    contentIndex: PropTypes.number
+  }).isRequired,
+  activeSectionId: PropTypes.string
+};
