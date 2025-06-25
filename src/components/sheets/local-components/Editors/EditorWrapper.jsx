@@ -53,9 +53,8 @@ const updateSheet = async (sheetId, payload) => {
   });
 };
 
-const createPayload = (value) => {
-  //function to be taken from cho lungsang work
-  const titles = 'dummy';
+const createPayload = (value,title) => {
+  const titles = title;
   const isPublic = false;
 
   const sources = value.map((node, i) => {
@@ -87,7 +86,7 @@ const createPayload = (value) => {
   };
 };
 
-const Editor = ({ initialValue, children }) => {
+const Editor = ({ initialValue, children,title }) => {
   const [editor] = useState(() => withHistory(withEmbeds(withReact(createEditor()))));
   const [value, setValue] = useState(initialValue);
   const [debouncedValue] = useDebounce(value, 1000);
@@ -106,7 +105,7 @@ const Editor = ({ initialValue, children }) => {
   const saveSheet = useCallback(
     async (content) => {
       try {
-        const payload = createPayload(content);
+        const payload = createPayload(content, title);
         
         if (!sheetId) {
           const response = await createSheet(payload);
@@ -121,7 +120,7 @@ const Editor = ({ initialValue, children }) => {
         console.error('Error saving sheet:', error);
       }
     },
-    [sheetId, handleNavigation]
+    [sheetId, handleNavigation, title]
   );
 
   useEffect(() => {
