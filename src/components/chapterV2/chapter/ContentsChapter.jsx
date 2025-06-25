@@ -4,10 +4,12 @@ import {VIEW_MODES} from "../utils/header/view-selector/ViewSelector.jsx";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import {useQuery} from "react-query";
+import {useSearchParams} from "react-router-dom";
 
-const fetchContentDetails = async (textId, skip, limit, contentId) => {
+// section id <-> contentId
+const fetchContentDetails = async (textId, skip, limit, sectionId) => {
   const {data} = await axiosInstance.post(`/api/v1/texts/${textId}/details`, {
-    ...(contentId && { content_id: contentId }),
+    content_id: sectionId,
     limit,
     skip
   });
@@ -16,9 +18,11 @@ const fetchContentDetails = async (textId, skip, limit, contentId) => {
 const ContentsChapter = () => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE)
   const [showTableOfContents, setShowTableOfContents] = useState(false)
+  const [searchParams] = useSearchParams();
+  const textId = searchParams.get('text_id');
   const {data: contentsData, isLoading: contentsDataLoading} = useQuery(
-    ["content", textId, contentId, skip],
-    () => fetchContentDetails(textId, skip, 1, contentId),
+    ["content", textId, sectionId, skip],
+    () => fetchContentDetails(textId, skip, 1, sectionId),
     {
       refetchOnWindowFocus: false,
       enabled: true
