@@ -11,53 +11,33 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../../config/axios-config';
 
 const createSheet = async (payload) => {
-  // const refreshToken = localStorage.getItem('refreshToken');
-  // const { data } = await axiosInstance.post('/api/v1/sheets', payload, {
-  //   headers: {
-  //     Authorization: `Bearer ${refreshToken}`
-  //   }
-  // });
-  // return data
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log('POST API called - Creating new sheet:', payload);
-      resolve({
-        data: {
-          sheetid: '1234567890',
-        },
-      });
-    }, 500);
+  const accessToken = sessionStorage.getItem('accessToken');
+  const { data } = await axiosInstance.post('/api/v1/sheets', payload, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
   });
+  return data
 
 };
 
-const updateSheet = async (sheetId, payload) => {
+const updateSheet = async (sheet_id, payload) => {
 
-  // const refreshToken = localStorage.getItem('refreshToken');
-  // const { data } = await axiosInstance.put(`/api/v1/sheets/${sheetId}`, payload, {
-  //   headers: {
-  //     Authorization: `Bearer ${refreshToken}`
-  //   }
-  // });
-  // return data
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log('PUT API called - Updating sheet:', payload);
-      resolve({
-        data: {
-          success: true,
-          message: 'Sheet updated successfully',
-        },
-      });
-    }, 300);
+  const accessToken = sessionStorage.getItem('accessToken');
+  const { data } = await axiosInstance.put(`/api/v1/sheets/${sheet_id}`, payload, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
   });
+  return data
+ 
 };
 
-const createPayload = (value,title) => {
-  const titles = title;
-  const isPublic = false;
+const createPayload = (value,titles) => {
+  const title = titles;
+  const is_published = false;
 
-  const sources = value.map((node, i) => {
+  const source = value.map((node, i) => {
     if (['image', 'audio', 'video'].includes(node.type)) {
       return {
         position: i,
@@ -68,21 +48,21 @@ const createPayload = (value,title) => {
     if (node.type === 'pecha') {
       return {
         position: i,
-        type: "SEGMENT",
+        type: "segment",
         content: node.src,
       };
     }
     return {
       position: i,
-      type: "CONTENT",
+      type: "content",
       content: serialize(node),
     };
   });
 
   return {
-    titles,
-    sources,
-    isPublic
+    title,
+    source,
+    is_published
   };
 };
 
@@ -94,6 +74,16 @@ const Editor = ({ initialValue, children,title }) => {
   const navigate = useNavigate();
   const [sheetId, setSheetId] = useState(id === 'new' ? null : id);
  const hasCreatedSheet=useRef(false)
+
+  const handleChange = useCallback((newValue) => {
+    setValue(newValue);
+    const isAstChange = editor.operations.some(op => op.type !== 'set_selection');
+    if (isAstChange) {
+      const content = JSON.stringify(newValue);
+      localStorage.setItem('sheets-content', content);
+    }
+  }, [editor]);
+
   const handleNavigation = useCallback(
     (newSheetId) => {
       const newUrl = window.location.pathname.replace('/new', `/${newSheetId}`);
@@ -109,7 +99,7 @@ const Editor = ({ initialValue, children,title }) => {
         
         if (!sheetId) {
           const response = await createSheet(payload);
-          const newSheetId = response.data.sheetid;
+          const newSheetId = response.sheet_id;
           setSheetId(newSheetId);
           handleNavigation(newSheetId);
           hasCreatedSheet.current=true
@@ -138,7 +128,7 @@ const Editor = ({ initialValue, children,title }) => {
     <Slate
       editor={editor}
       initialValue={initialValue}
-      onChange={setValue}
+      onChange={handleChange}
     >
       {React.Children.map(children, (child) => React.cloneElement(child, { editor }))}
     </Slate>
