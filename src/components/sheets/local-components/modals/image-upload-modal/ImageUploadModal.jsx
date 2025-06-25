@@ -12,7 +12,7 @@ import "./ImageUpload.scss";
 export const UploadImageToS3= async(file,sheetId)=>{
   const formData= new FormData();
   formData.append("file", file);
-  const {data}= await axiosInstance.post(`api/v1/sheets/upload`,formData,
+  const {data}= await axiosInstance.post(`/api/v1/sheets/upload`,formData,
     {
       params:{
         ...(sheetId && {sheet_id:sheetId})

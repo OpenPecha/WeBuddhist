@@ -8,8 +8,16 @@ import { withHistory } from 'slate-history';
 import { useDebounce } from 'use-debounce';
 import { serialize } from '../../sheet-utils/serialize';
 import { useParams, useNavigate } from 'react-router-dom';
+import axiosInstance from '../../../../config/axios-config';
 
 const createSheet = async (payload) => {
+  // const refreshToken = localStorage.getItem('refreshToken');
+  // const { data } = await axiosInstance.post('/api/v1/sheets', payload, {
+  //   headers: {
+  //     Authorization: `Bearer ${refreshToken}`
+  //   }
+  // });
+  // return data
   return new Promise((resolve) => {
     setTimeout(() => {
       console.log('POST API called - Creating new sheet:', payload);
@@ -20,12 +28,21 @@ const createSheet = async (payload) => {
       });
     }, 500);
   });
+
 };
 
 const updateSheet = async (sheetId, payload) => {
+
+  // const refreshToken = localStorage.getItem('refreshToken');
+  // const { data } = await axiosInstance.put(`/api/v1/sheets/${sheetId}`, payload, {
+  //   headers: {
+  //     Authorization: `Bearer ${refreshToken}`
+  //   }
+  // });
+  // return data
   return new Promise((resolve) => {
     setTimeout(() => {
-      console.log(`PUT API called - Updating sheet ${sheetId}:`, payload);
+      console.log('PUT API called - Updating sheet:', payload);
       resolve({
         data: {
           success: true,
@@ -39,35 +56,34 @@ const updateSheet = async (sheetId, payload) => {
 const createPayload = (value) => {
   //function to be taken from cho lungsang work
   const titles = 'dummy';
-  const isPublic = true;
-  const sheetLanguage = 'en';
+  const isPublic = false;
 
   const sources = value.map((node, i) => {
     if (['image', 'audio', 'video'].includes(node.type)) {
       return {
         position: i,
-        media_type: node.type,
-        mediaURL: node.src,
+        type: node.type,
+        content: node.src,
       };
     }
-    if (node.type === 'segment') {
+    if (node.type === 'pecha') {
       return {
         position: i,
-        source_segment_id: node.source_segment_id,
-        translation_segment_id: node.translation_segment_id,
+        type: "SEGMENT",
+        content: node.src,
       };
     }
     return {
       position: i,
-      outsideText: serialize(node),
+      type: "CONTENT",
+      content: serialize(node),
     };
   });
 
   return {
     titles,
     sources,
-    isPublic,
-    sheetLanguage,
+    isPublic
   };
 };
 
