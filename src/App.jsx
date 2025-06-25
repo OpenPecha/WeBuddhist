@@ -16,7 +16,7 @@ import ContentsChapter from "./components/chapterV2/chapter/ContentsChapter.jsx"
 import Sheets from "./components/sheets/Sheets.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
-const HomePage = lazy(() => import("./components/home/HomePage.jsx"));
+const Collections = lazy(() => import("./components/collections/Collections.jsx"));
 const UserLogin = lazy(() => import("./components/user-login/UserLogin.jsx"));
 const UserRegistration = lazy(() => import("./components/user-registration/UserRegistration.jsx"));
 const Topics = lazy(() => import("./components/topics/Topics.jsx"));
@@ -116,8 +116,8 @@ function App() {
       <Suspense>
           <NavigationBar/>
           <Routes>
-              <Route path="/" element={<HomePage/>}/>
-              <Route path="/libraries" element={<HomePage/>}/>
+              <Route path="/" element={<Collections/>}/>
+              <Route path="/libraries" element={<Collections/>}/>
               <Route path="/chapter-header" element={<ContentsChapter/>}/> {/*TODO :    should be removed */}
               <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
               <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
@@ -135,7 +135,7 @@ function App() {
               <Route path="/chapter-v2" element={<ChaptersV2/>}/>{/*TODO :    should be removed */}
               <Route path="/search" element={<SearchResultsPage/>}/>
               <Route path="/sheets" element={<Sheets/>}/>
-              <Route path="*" element={<HomePage/>}/>
+              <Route path="*" element={<Collections/>}/>
           </Routes>
       </Suspense>
     );
