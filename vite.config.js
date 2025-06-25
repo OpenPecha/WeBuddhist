@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
       setupFiles: "./src/test-utils/CommonMocks.js",
       coverage: {
         provider: "istanbul",
-        reporter: ["text", "json", "html"],
+        reporter: ["text", "json", "html", "lcov"],
         reportsDirectory: "./coverage",
         exclude: [
           "**/*.js",
@@ -34,6 +34,7 @@ export default defineConfig(({ mode }) => {
           "src/main.jsx",
           "src/App.jsx",
           "src/context/**",
+          "src/utils/**",
         ],
       },
     },

@@ -28,14 +28,21 @@ Object.defineProperty(navigator, "clipboard", {
   value: {
     writeText: vi.fn(),
   },
+  configurable: true,
 });
+
+// Mock window.location
+const originalLocation = window.location;
+delete window.location;
+window.location = {
+  ...originalLocation,
+  href: "https://example.com/original-url",
+};
 
 describe("ShareView Component", () => {
   const queryClient = new QueryClient();
   const mockShortUrlData = {
-    text_infos: {
-      short_url: "https://gg.com/share/123"
-    }
+    shortUrl: "https://gg.com/share/123"
   };
 
   const mockProps = {
@@ -48,7 +55,7 @@ describe("ShareView Component", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => {
       return {
         data: {
-          short_url: "https://gg.com/share/123"
+          shortUrl: "https://gg.com/share/123"
         },
         isLoading: false
       };
@@ -58,17 +65,24 @@ describe("ShareView Component", () => {
   afterEach(() => {
     vi.useRealTimers();
   });
+  
+  afterAll(() => {
+    // Restore original window.location
+    window.location = originalLocation;
+  });
 
   const setup = () => {
     return render(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider 
-          fallback={"Loading tolgee..."} 
-          tolgee={mockTolgee}
-        >
-          <ShareView {...mockProps} />
-        </TolgeeProvider>
-      </QueryClientProvider>
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider 
+            fallback={"Loading tolgee..."} 
+            tolgee={mockTolgee}
+          >
+            <ShareView {...mockProps} />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
     );
   };
 
@@ -80,17 +94,17 @@ describe("ShareView Component", () => {
   });
 
   test("displays the correct share URL", () => {
-    setup();
+    const { container } = setup();
     
-    const shareUrl = document.querySelector(".share-url");
+    const shareUrl = container.querySelector(".share-url");
     expect(shareUrl).toBeInTheDocument();
     expect(shareUrl.textContent).toBe("https://gg.com/share/123");
   });
 
   test("handles close button click", () => {
-    setup();
+    const { container } = setup();
     
-    const closeButton = document.querySelector(".close-icon");
+    const closeButton = container.querySelector(".close-icon");
     expect(closeButton).toBeInTheDocument();
     
     fireEvent.click(closeButton);
@@ -98,9 +112,9 @@ describe("ShareView Component", () => {
   });
 
   test("copies URL to clipboard when copy button is clicked", () => {
-    setup();
+    const { container } = setup();
     
-    const copyButton = document.querySelector(".copy-button");
+    const copyButton = container.querySelector(".copy-button");
     expect(copyButton).toBeInTheDocument();
     
     fireEvent.click(copyButton);
@@ -109,35 +123,37 @@ describe("ShareView Component", () => {
   });
 
   test("shows checkmark icon after copying", () => {
-    const { rerender } = setup();
+    const { container, rerender } = setup();
     
-    const copyButton = document.querySelector(".copy-button");
+    const copyButton = container.querySelector(".copy-button");
     // Before clicking, should show copy icon
     expect(copyButton.querySelector("svg")).toBeInTheDocument();
     
     fireEvent.click(copyButton);
     
     // After clicking, should show checkmark icon
-    const checkmarkIcon = document.querySelector(".copy-button svg");
+    const checkmarkIcon = container.querySelector(".copy-button svg");
     expect(checkmarkIcon).toBeInTheDocument();
     
     // After 3 seconds, should revert back to copy icon
     vi.advanceTimersByTime(3000);
     rerender(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-          <ShareView {...mockProps} />
-        </TolgeeProvider>
-      </QueryClientProvider>
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+            <ShareView {...mockProps} />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
     );
     const updatedCopyButton = document.querySelector(".copy-button svg");
     expect(updatedCopyButton).toBeInTheDocument();
   });
 
   test("displays social share buttons", () => {
-    setup();
+    const { container } = setup();
     
-    const socialButtons = document.querySelectorAll(".social-button");
+    const socialButtons = container.querySelectorAll(".social-button");
     expect(socialButtons.length).toBe(2);
 
     expect(socialButtons[0].textContent).toContain("common.share_on_fb");
@@ -150,14 +166,16 @@ describe("ShareView Component", () => {
       isLoading: false,
     }));
     const { rerender } = render(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider 
-          fallback={"Loading tolgee..."} 
-          tolgee={mockTolgee}
-        >
-          <ShareView setIsShareView={mockProps.setIsShareView} sidePanelData={null} />
-        </TolgeeProvider>
-      </QueryClientProvider>
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider 
+            fallback={"Loading tolgee..."} 
+            tolgee={mockTolgee}
+          >
+            <ShareView setIsShareView={mockProps.setIsShareView} sidePanelData={null} />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
     );
 
     expect(document.querySelector(".share-content")).toBeInTheDocument();
@@ -166,28 +184,32 @@ describe("ShareView Component", () => {
     expect(shareUrl.textContent).toBe("");
     
     rerender(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider 
-          fallback={"Loading tolgee..."} 
-          tolgee={mockTolgee}
-        >
-          <ShareView setIsShareView={mockProps.setIsShareView} sidePanelData={{}} />
-        </TolgeeProvider>
-      </QueryClientProvider>
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider 
+            fallback={"Loading tolgee..."} 
+            tolgee={mockTolgee}
+          >
+            <ShareView setIsShareView={mockProps.setIsShareView} sidePanelData={{}} />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
     );
     
     expect(document.querySelector(".share-content")).toBeInTheDocument();
     
     // Test with empty text_infos object
     rerender(
-      <QueryClientProvider client={queryClient}>
-        <TolgeeProvider 
-          fallback={"Loading tolgee..."} 
-          tolgee={mockTolgee}
-        >
-          <ShareView setIsShareView={mockProps.setIsShareView} sidePanelData={{ text_infos: {} }} />
-        </TolgeeProvider>
-      </QueryClientProvider>
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider 
+            fallback={"Loading tolgee..."} 
+            tolgee={mockTolgee}
+          >
+            <ShareView setIsShareView={mockProps.setIsShareView} sidePanelData={{ text_infos: {} }} />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
     );
     
     expect(document.querySelector(".share-content")).toBeInTheDocument();

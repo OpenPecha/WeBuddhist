@@ -1,5 +1,5 @@
 import { Button, Container, Dropdown, Form, InputGroup, Nav, Navbar, } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaGlobe, FaQuestionCircle } from "react-icons/fa";
 import "./NavigationBar.scss";
 import { useAuth } from "../../config/AuthContext.jsx";
@@ -16,9 +16,11 @@ export const invalidateQueries = async (queryClient) => {
 };
 const NavigationBar = () => {
  const [expanded, setExpanded] = useState(false);
+ const [searchTerm, setSearchTerm] = useState('');
+ const navigate = useNavigate();
  const { t } = useTranslate();
- const { isLoggedIn, logout: pechaLogout } = useAuth();
- const { isAuthenticated, logout } = useAuth0();
+ const { isLoggedIn, logout: pechaLogout, isAuthLoading } = useAuth();
+ const { isAuthenticated, logout, isLoading: isAuth0Loading } = useAuth0();
  const tolgee = useTolgee(['language']);
  const queryClient = useQueryClient();
 
@@ -37,9 +39,14 @@ const NavigationBar = () => {
    isLoggedIn && pechaLogout()
    isAuthenticated && logout({
      logoutParams: {
-       returnTo: window.location.origin,
+       returnTo: window.location.origin + '/login',
      },
    });
+   
+   if (isLoggedIn && !isAuthenticated) {
+     navigate('/login');
+   }
+   
    setExpanded(false);
  }
 
@@ -98,14 +105,22 @@ const NavigationBar = () => {
 
 
        <div className=" d-lg-none  w-100 mt-3 ">
-         <Form className="d-flex w-100">
+         <Form className="d-flex w-100" onSubmit={(e) => {
+           e.preventDefault();
+           if (searchTerm.trim()) {
+             navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+             handleNavClick();
+           }
+         }}>
            <InputGroup>
              <Form.Control
                type="search"
                placeholder={t("common.placeholder.search")}
                aria-label="Search"
+               value={searchTerm}
+               onChange={(e) => setSearchTerm(e.target.value)}
              />
-             <Button variant="outline-secondary" onClick={handleNavClick}>
+             <Button variant="outline-secondary" type="submit">
                {t("common.placeholder.search")}
              </Button>
            </InputGroup>
@@ -127,14 +142,22 @@ const NavigationBar = () => {
 
 
          <div className="d-none d-lg-flex align-items-center navbaritems">
-           <Form className="d-flex me-3">
+           <Form className="d-flex me-3" onSubmit={(e) => {
+             e.preventDefault();
+             if (searchTerm.trim()) {
+               navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+               handleNavClick();
+             }
+           }}>
              <InputGroup>
                <Form.Control
                  type="search"
                  placeholder={t("common.placeholder.search")}
                  aria-label="Search"
+                 value={searchTerm}
+                 onChange={(e) => setSearchTerm(e.target.value)}
                />
-               <Button variant="outline-secondary" onClick={handleNavClick}>
+               <Button variant="outline-secondary" type="submit">
                  {t("common.placeholder.search")}
                </Button>
              </InputGroup>
@@ -143,7 +166,11 @@ const NavigationBar = () => {
 
 
          <Nav className="d-flex align-items-lg-center navbaritems">
-           {(!isLoggedIn && !isAuthenticated) ? (
+           {isAuth0Loading || isAuthLoading ? (
+             <div>
+               Loading...
+             </div>
+           ) : (!isLoggedIn && !isAuthenticated) ? (
              <div className="d-flex flex-column flex-lg-row">
                <Button as={Link} to="/login" variant="outline-dark" className="mb-2 mb-lg-0 me-lg-2" onClick={handleNavClick}>
                  {t("login.form.button.login_in")}
@@ -154,8 +181,6 @@ const NavigationBar = () => {
              </div>
            ) : (
              <Button
-              // as={ Link }
-              // to="/login"
                onClick={(e) => {
                  handleLogout(e);
                  handleNavClick();

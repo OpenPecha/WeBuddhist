@@ -13,6 +13,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
 import { Suspense, lazy } from "react";
 import ContentsChapter from "./components/chapterV2/chapter/ContentsChapter.jsx";
+import Sheets from "./components/sheets/Sheets.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 const HomePage = lazy(() => import("./components/home/HomePage.jsx"));
@@ -28,6 +29,7 @@ const ChaptersV2 = lazy(() => import("./components/chapterV2/Chapters"));
 
 const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword.jsx"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword.jsx"));
+const SearchResultsPage = lazy(() => import("./components/search/SearchResultsPage.jsx"));
 
 
 function App() {
@@ -131,6 +133,8 @@ function App() {
               <Route path="/book/:id" element={<Book/>}/>
               <Route path="/chapter" element={<Chapters/>}/>
               <Route path="/chapter-v2" element={<ChaptersV2/>}/>{/*TODO :    should be removed */}
+              <Route path="/search" element={<SearchResultsPage/>}/>
+              <Route path="/sheets" element={<Sheets/>}/>
               <Route path="*" element={<HomePage/>}/>
           </Routes>
       </Suspense>

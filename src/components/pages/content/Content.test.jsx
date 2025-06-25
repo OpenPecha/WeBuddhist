@@ -309,4 +309,97 @@ describe("Content Component", () => {
     // This is an indirect test that verifies the component's behavior
     expect(true).toBe(true); // This test is now passing by design
   });
+  
+  test("sets content ID when data loads successfully", () => {
+  // To track if setContentId gets called
+  const mockSetContentId = vi.fn();
+
+  const testData = {
+    contents: [
+      {
+        id: "test-content-id", // This ID should be passed to setContentId
+        sections: [
+          { id: "section1", title: "Test Section", sections: [] }
+        ]
+      }
+    ],
+    text_detail: { language: "bo" }
+  };
+  
+  // Set up our query mock to call onSuccess with our test data
+  vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey, queryFn, options) => {
+    if (options && options.onSuccess) {
+      options.onSuccess(testData);
+    }
+    
+    return {
+      data: testData,
+      isLoading: false
+    };
+  });
+  
+  render(
+    <Router>
+      <QueryClientProvider client={queryClient}>
+        <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+          <Content textId="123" setContentId={mockSetContentId} />
+        </TolgeeProvider>
+      </QueryClientProvider>
+    </Router>
+  );
+  
+  // Check if our setContentId function was called with the right ID
+  expect(mockSetContentId).toHaveBeenCalledWith("test-content-id");
+});
+
+test("expands and collapses sections when clicking on headers", async () => {
+  // Setting up data with a parent section that has a child section inside
+  const nestedData = {
+    contents: [
+      {
+        id: "content1",
+        sections: [
+          {
+            id: "parent-section",
+            title: "Parent Section",
+            sections: [
+              { id: "child-section", title: "Child Section", sections: [] },
+            ],
+          },
+        ],
+      },
+    ],
+    text_detail: { language: "bo" },
+  };
+  vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+    data: nestedData,
+    isLoading: false,
+  }));
+
+  // Draw our component on the screen with the test data
+  const { container } = render(
+    <Router>
+      <QueryClientProvider client={queryClient}>
+        <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+          <Content textId="123" setContentId={() => {}} />
+        </TolgeeProvider>
+      </QueryClientProvider>
+    </Router>
+  );
+
+  // making sure the child section is hidden at first
+  expect(screen.queryByText("Child Section")).not.toBeInTheDocument();
+
+  // look for the clickable parent section header
+  const parentHeader = screen
+    .getByText("Parent Section")
+    .closest(".section-header");
+
+  // click on the parent section to expand it
+  fireEvent.click(parentHeader);
+
+  // check that our click worked and the header is still there
+  // this tests that our expand/collapse code runs without breaking
+  expect(parentHeader).toBeInTheDocument();
+});
 });

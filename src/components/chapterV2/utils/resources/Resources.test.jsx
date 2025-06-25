@@ -41,8 +41,17 @@ vi.mock("../../utils/Constants.js", () => ({
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
   menuItems: [
     { label: "common.share", icon: vi.fn() },
-    { label: "menu.item2", icon: vi.fn() }
+    { label: "menu.item2", icon: vi.fn(), isHeader: true }
   ],
+}));
+
+vi.mock("./components/root-texts/RootText.jsx", () => ({
+  default: ({ setIsRootTextView }) => (
+    <div data-testid="root-text-view">
+      Root Text View
+      <button onClick={() => setIsRootTextView("main")}>Back</button>
+    </div>
+  )
 }));
 
 describe("Resources Side Panel", () => {
@@ -54,7 +63,7 @@ describe("Resources Side Panel", () => {
     }
   };
   const mockSidePanelData = {
-    segment_infos: {
+    segment_info: {
       short_url: "https://test.com/share",
       translations: 2,
       resources: {
@@ -78,6 +87,7 @@ describe("Resources Side Panel", () => {
       return { data: null, isLoading: false };
     });
     vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
+    // mockSearchParams.delete('segment_id')
   });
 
   const setup = () => {
@@ -118,7 +128,7 @@ describe("Resources Side Panel", () => {
       if (queryKey[0] === "sidePanel") {
         return { 
           data: {
-            segment_infos: {
+            segment_info: {
               translations: 5
             }
           }
@@ -139,7 +149,7 @@ describe("Resources Side Panel", () => {
       if (queryKey[0] === "sidePanel") {
         return { 
           data: {
-            segment_infos: {
+            segment_info: {
               related_text: {
                 commentaries: 2
               }
@@ -194,32 +204,44 @@ describe("Resources Side Panel", () => {
     expect(panel).not.toHaveClass('show');
     mockContext.isResourcesPanelOpen = originalIsResourcesPanelOpen;
   });
-  // test("renders share view and handles copy functionality", async () => {
-  //   setup();
-  //
-  //   // Open side panel
-  //   fireEvent.click(document.querySelector(".text-segment"));
-  //
-  //   // Find and click share menu item
-  //   const menuItems = document.querySelectorAll(".panel-content p");
-  //   const shareItem = Array.from(menuItems).find(item =>
-  //     item.textContent.includes("common.share")
-  //   );
-  //   fireEvent.click(shareItem);
-  //
-  //   // Verify share view is shown
-  //   expect(screen.getByText("text.share_link")).toBeInTheDocument();
-  //
-  //   // Test copy functionality
-  //   const mockClipboard = {
-  //     writeText: vi.fn().mockImplementation(() => Promise.resolve()),
-  //   };
-  //   Object.assign(navigator, { clipboard: mockClipboard });
-  //
-  //   const copyButton = document.querySelector(".copy-button");
-  //   fireEvent.click(copyButton);
-  //
-  //   expect(navigator.clipboard.writeText).toHaveBeenCalledWith("https://test.com/share");
-  // });
 
+  test("shows root text view when clicking on root text option", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
+      if (queryKey[0] === "sidePanel") {
+        return {
+          data: {
+            segment_info: {
+              related_text: {
+                root_text: 2,
+              },
+            },
+          },
+        };
+      }
+      return { data: null, isLoading: false };
+    });
+
+    setup();
+    const rootTextElement = screen.getByText(/text\.root_text/);
+    fireEvent.click(rootTextElement);
+
+    expect(screen.getByTestId("root-text-view")).toBeInTheDocument();
+  });
+
+  test("renders menu items correctly including header items", () => {
+    setup();
+
+    const headerItem = screen.getByText("menu.item2");
+    expect(headerItem.closest("div")).toHaveClass("textgreat");
+  });
+
+  test("renders the panel backdrop that closes the panel when clicked", () => {
+    setup();
+
+    const backdrop = document.querySelector(".panel-backdrop");
+    expect(backdrop).toBeInTheDocument();
+
+    fireEvent.click(backdrop);
+    expect(mockContext.closeResourcesPanel).toHaveBeenCalled();
+  });
 })

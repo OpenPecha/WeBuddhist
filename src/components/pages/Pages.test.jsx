@@ -5,9 +5,10 @@ import "@testing-library/jest-dom";
 import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
-import Pages from "./Pages.jsx";
+import Pages, { fetchVersions } from "./Pages.jsx";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
 import {TolgeeProvider} from "@tolgee/react";
+import axiosInstance from "../../config/axios-config.js";
 
 mockAxios();
 mockUseAuth();
@@ -34,12 +35,18 @@ vi.mock("./content/Content.jsx", () => ({
   default: () => <div data-testid="content-component">Content Component</div>
 }));
 
+vi.mock("../../utils/Constants", () => ({
+  LANGUAGE: "LANGUAGE",
+  mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
+  getLanguageClass: () => "language-class"
+}));
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
     useParams: vi.fn(),
+    useSearchParams: () => [new URLSearchParams("?type=book"), vi.fn()]
   };
 });
 
@@ -59,6 +66,9 @@ describe("Pages Component", () => {
       data: mockTextDetailData,
       isLoading: false,
     }));
+
+    Storage.prototype.getItem = vi.fn().mockReturnValue("bo-IN");
+    axiosInstance.get.mockResolvedValue({ data: mockTextDetailData });
   });
 
   const setup = () => {
@@ -113,5 +123,21 @@ describe("Pages Component", () => {
     setup();
     expect(screen.getByText("Continue Reading")).toBeInTheDocument();
   });
+  
+  test("fetchVersions makes correct API call", async () => {
+    const result = await fetchVersions("123", 10, 0);
 
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      "/api/v1/texts/123/versions",
+      {
+        params: {
+          language: "bo",
+          limit: 10,
+          skip: 0,
+        },
+      }
+    );
+
+    expect(result).toEqual(mockTextDetailData);
+  });
 });

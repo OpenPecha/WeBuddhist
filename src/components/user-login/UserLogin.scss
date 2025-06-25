@@ -1,4 +1,3 @@
-
 $background-color: #f9f9f9;
 $white-color: #ffffff;
 $dark-grey: #333333;
@@ -23,6 +22,7 @@ $black-color: black;
   background: $white-color;
   padding: 2rem;
   border-radius: 8px;
+  width: 400px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
   .login-title {
@@ -71,6 +71,37 @@ $black-color: black;
 
       &:hover {
         text-decoration: underline;
+      }
+    }
+  }
+
+  .social-login-buttons {
+    display: flex;
+    gap: 0.5rem;
+    .social-btn {
+      flex: 1;
+      padding: 0.8rem;
+      font-weight: 500;
+      border-radius: 5px;
+      border: 1px solid $light-grey;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      color: $dark-grey;
+
+      &:hover {
+        background-color: $background-color;
+        border-color: $dark-grey;
+        color: $dark-grey;
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      }
+      svg {
+        margin-right: 0.5rem;
       }
     }
   }

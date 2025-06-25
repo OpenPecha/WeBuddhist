@@ -24,7 +24,7 @@ vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
-    useSearchParams: () => [new URLSearchParams("?text_id=123")],
+    useSearchParams: () => [new URLSearchParams("?text_id=123"), vi.fn()],
   };
 });
 
@@ -136,4 +136,144 @@ describe("LeftSidePanel Component", () => {
       expect(screen.getByText("Section 1.1")).toBeInTheDocument();
     });
   });
-});
+
+  test("renders nested sections correctly", async () => {
+    const complexMockData = {
+      text_detail: {
+        language: "bo",
+      },
+      contents: [
+        {
+          sections: [
+            {
+              id: "section-deep",
+              title: "Deep Section",
+              sections: [
+                {
+                  id: "section-deep-1",
+                  title: "Deep Section 1",
+                  sections: [
+                    {
+                      id: "section-deep-1-1",
+                      title: "Deep Section 1.1",
+                      sections: [],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => {
+      return { data: complexMockData, isLoading: false };
+    });
+
+    setup();
+    const deepSectionHeader = screen
+      .getByText("Deep Section")
+      .closest(".section-header");
+    fireEvent.click(deepSectionHeader);
+
+    await waitFor(() => {
+      expect(screen.getByText("Deep Section 1")).toBeInTheDocument();
+    });
+
+    const deepSection1Header = screen
+      .getByText("Deep Section 1")
+      .closest(".section-header");
+    fireEvent.click(deepSection1Header);
+
+    await waitFor(() => {
+      expect(screen.getByText("Deep Section 1.1")).toBeInTheDocument();
+    });
+  });
+
+  test("handles loading state correctly", async () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => {
+      return { data: null, isLoading: true };
+    });
+
+    setup();
+
+    expect(screen.getByText("common.loading")).toBeInTheDocument();
+
+    expect(screen.queryByText("Section 1")).not.toBeInTheDocument();
+  });
+
+  test("handles empty content and toggles sections with varied content types", async () => {
+    const specialMockData = {
+      text_detail: {
+        language: "bo",
+      },
+      contents: [
+        {
+          sections: [
+            {
+              id: "section-empty",
+              title: "Empty Section",
+              sections: [],
+            },
+            {
+              id: "section-null",
+              title: "Null Section",
+              sections: null,
+            },
+            {
+              id: "section-with-children",
+              title: "Section With Children",
+              sections: [
+                {
+                  id: "child-section",
+                  title: "Child Section",
+                  sections: [],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => {
+      return { data: specialMockData, isLoading: false };
+    });
+
+    setup({ activeSectionId: "child-section" });
+
+    expect(screen.getByText("Empty Section")).toBeInTheDocument();
+    expect(screen.getByText("Null Section")).toBeInTheDocument();
+    expect(screen.getByText("Section With Children")).toBeInTheDocument();
+    expect(screen.getByText("Child Section")).toBeInTheDocument();
+
+    const emptySection = screen
+      .getByText("Empty Section")
+      .closest(".section-header");
+    fireEvent.click(emptySection);
+
+    const nullSection = screen
+      .getByText("Null Section")
+      .closest(".section-header");
+    fireEvent.click(nullSection);
+
+    const childSection = screen.getByText("Child Section");
+    fireEvent.click(childSection);
+
+    const sectionWithChildren = screen
+      .getByText("Section With Children")
+      .closest(".section-header");
+    fireEvent.click(sectionWithChildren);
+
+    await waitFor(() => {
+      expect(screen.queryByText("Child Section")).not.toBeInTheDocument();
+    });
+
+    // Toggle again to expand
+    fireEvent.click(sectionWithChildren);
+    await waitFor(() => {
+      expect(screen.getByText("Child Section")).toBeInTheDocument();
+    });
+  });
+}); 

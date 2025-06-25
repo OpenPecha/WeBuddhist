@@ -53,7 +53,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
         <div className="commentaries-list">
           {segmentCommentaries && segmentCommentaries.commentaries && 
            segmentCommentaries.commentaries.length > 0 && (
-            <div className="all-commentaries">
+            <div>
               {segmentCommentaries.commentaries.map((commentary) => {
                 const commentaryId = commentary.text_id;
                 const segmentId = commentary.segment_id;

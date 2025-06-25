@@ -16,22 +16,26 @@ const Chapters = () => {
         uniqueId: chapter.uniqueId || (chapter.segmentId ? chapter.segmentId : `content-${chapter.contentId}-version-${chapter.versionId}`)
       }));
     }
-  
+
+    const textId = searchParams.get('textId');
     const contentId = searchParams.get('contentId');
     const contentIndex = searchParams.get('contentIndex');
     const versionId = searchParams.get('versionId');
     const sectionId = searchParams.get('sectionId');
+    const segmentId = searchParams.get('segmentId');
     
-    if (contentId) {
+    if (textId || contentId) {
       return [{
+        textId: textId || "",
         contentId: contentId || "",
         contentIndex: contentIndex ? parseInt(contentIndex) : 0,
         versionId: versionId || "",
         sectionId: sectionId || "",
-        uniqueId: `content-${contentId}-version-${versionId}`
+        segmentId: segmentId || "",
+        uniqueId: segmentId || `content-${contentId}-version-${versionId}`
       }];
     }
-    
+    return [];
   });
 
   useEffect(() => {

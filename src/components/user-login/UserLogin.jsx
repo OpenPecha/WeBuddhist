@@ -9,6 +9,7 @@ import eyeClose from "../../assets/icons/eye-closed.svg";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useTranslate } from "@tolgee/react";
+import { FaGoogle, FaApple } from "react-icons/fa";
 
 const UserLogin = () => {
     const { t } = useTranslate();
@@ -16,13 +17,10 @@ const UserLogin = () => {
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
-    const { loginWithRedirect, isAuthenticated } = useAuth0();
-    const { login, isLoggedIn } = useAuth();
+    const { loginWithRedirect } = useAuth0();
+    const { login } = useAuth();
     const navigate = useNavigate();
 
-    if (isLoggedIn || isAuthenticated) {
-        navigate("/libraries")
-    }
     const loginMutation = useMutation(
         async (loginData) => {
             const response = await axiosInstance.post(
@@ -40,7 +38,8 @@ const UserLogin = () => {
             },
             onError: (error) => {
                 console.error("Login failed", error);
-                setErrors({ error: error.response.data.message });
+                const errorMsg = error?.response?.data?.message || error?.response?.data?.detail || "Login failed";
+                setErrors({ error: errorMsg });
             },
         }
     );
@@ -84,15 +83,39 @@ const UserLogin = () => {
         }
     };
 
-    const loginWithSocial = async () => {
+    const loginWithGoogle = async () => {
         try {
+            const redirectPath ="/libraries";
+
             await loginWithRedirect({
+                authorizationParams: {
+                    connection: 'google-oauth2',
+                    prompt: 'select_account'
+                },
                 appState: {
-                    returnTo: "/libraries",
+                    returnTo: redirectPath,
                 },
             });
         } catch (error) {
-            console.error("Social login failed:", error);
+            console.error("Google login failed:", error);
+        }
+    };
+
+    const loginWithApple = async () => {
+        try {
+            const redirectPath = "/libraries";
+
+            await loginWithRedirect({
+                authorizationParams: {
+                    connection: 'apple'
+                },
+                appState: {
+                    returnTo: redirectPath,
+                },
+            });
+
+        } catch (error) {
+            console.error("Apple login failed:", error);
         }
     };
 
@@ -101,7 +124,7 @@ const UserLogin = () => {
             fluid
             className="login-container d-flex align-items-center justify-content-center"
         >
-            { errors.error && <ToastContainer position="top-end">
+            { errors.error && <ToastContainer position="bottom-end">
                 <Toast bg={ "danger" } onClose={ () => setErrors({ error: null }) }>
                     <Toast.Header>
                         <strong className="me-auto">Error!</strong>
@@ -191,8 +214,21 @@ const UserLogin = () => {
                             </Link>
                             <hr/>
                             <div className="social-login-buttons">
-                                <Button variant="outline-dark" className="w-100 mb-2" onClick={loginWithSocial}>
-                                    { t("login.social_logins") }
+                                <Button
+                                    variant="outline-dark"
+                                    className="social-btn"
+                                    onClick={loginWithGoogle}
+                                >
+                                    <FaGoogle />
+                                    Google
+                                </Button>
+                                <Button
+                                    variant="outline-dark"
+                                    className="social-btn"
+                                    onClick={loginWithApple}
+                                >
+                                    <FaApple />
+                                    Apple
                                 </Button>
                             </div>
                         </div>

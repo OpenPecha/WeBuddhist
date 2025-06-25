@@ -72,6 +72,7 @@ vi.mock("../../../../utils/Constants.js", () => ({
     source_translation: "source_translation",
   },
   findAndScrollToSegment: vi.fn(),
+  findAndScrollToSection: vi.fn(),
   checkSectionsForTranslation: vi.fn().mockReturnValue(true),
 }));
 
@@ -370,5 +371,194 @@ describe("Chapter Component", () => {
       section_number: 2, 
     }];
     fireEvent.scroll(scrollContainer);
+  });
+
+  test("navigates to sections and handles section hierarchy", async () => {
+    const props = {
+      ...defaultProps,
+      currentChapter: {
+        ...defaultProps.currentChapter,
+        sectionId: "section-1-1",
+      },
+    };
+
+    const originalSections = [...mockTextDetails.content.sections];
+    mockTextDetails.content.sections = [
+      {
+        id: "section-1",
+        section_number: 1,
+        title: "Section 1",
+        segments: [],
+        sections: [
+          {
+            id: "section-1-1",
+            title: "Nested Section",
+            segments: [
+              {
+                segment_id: "segment-2",
+                segment_number: 2,
+                content: "Nested content",
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    setup(props);
+
+    await waitFor(() => {
+      expect(screen.getByText("Nested Section")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Nested content")).toBeInTheDocument();
+
+    act(() => {
+      const updateChapterButton = screen.getByText("Update Chapter");
+      fireEvent.click(updateChapterButton);
+    });
+
+    expect(defaultProps.updateChapter).toHaveBeenCalledWith(expect.anything(), {
+      sectionId: "test-section",
+    });
+
+    mockTextDetails.content.sections = originalSections;
+  });
+
+  test("toggles footnote visibility when clicked", async () => {
+    const originalSections = [...mockTextDetails.content.sections];
+    mockTextDetails.content.sections = [
+      {
+        id: "section-1",
+        section_number: 1,
+        title: "Section 1",
+        segments: [
+          {
+            segment_id: "segment-1",
+            segment_number: 1,
+            content:
+              'Text with <span class="footnote-marker">1</span><div class="footnote">Footnote content</div>',
+            translation: {
+              content: "Translation",
+            },
+          },
+        ],
+      },
+    ];
+
+    const { container } = setup();
+
+    await waitFor(() => {
+      const footnoteMarker = container.querySelector(".footnote-marker");
+      expect(footnoteMarker).toBeTruthy();
+    });
+
+    const footnoteMarker = container.querySelector(".footnote-marker");
+    const footnote = container.querySelector(".footnote");
+
+    expect(footnote.classList.contains("active")).toBe(false);
+    fireEvent.click(footnoteMarker);
+
+    expect(footnote.classList.contains("active")).toBe(true);
+    fireEvent.click(footnoteMarker);
+
+    expect(footnote.classList.contains("active")).toBe(false);
+
+    mockTextDetails.content.sections = originalSections;
+  });
+
+  test("renders deeply nested section hierarchies correctly", async () => {
+    const originalSections = [...mockTextDetails.content.sections];
+
+    mockTextDetails.content.sections = [
+      {
+        id: "level1",
+        section_number: 1,
+        title: "Level 1",
+        segments: [
+          {
+            segment_id: "level1-segment",
+            segment_number: 1,
+            content: "Level 1 content",
+          },
+        ],
+        sections: [
+          {
+            id: "level2",
+            title: "Level 2",
+            segments: [
+              {
+                segment_id: "level2-segment",
+                segment_number: 2,
+                content: "Level 2 content",
+              },
+            ],
+            sections: [
+              {
+                id: "level3",
+                title: "Level 3",
+                segments: [
+                  {
+                    segment_id: "level3-segment",
+                    segment_number: 3,
+                    content: "Level 3 content",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const props = {
+      ...defaultProps,
+      currentChapter: {
+        ...defaultProps.currentChapter,
+        sectionId: "level3",
+      },
+    };
+
+    setup(props);
+
+    await waitFor(() => {
+      expect(screen.getByText("Level 1")).toBeInTheDocument();
+      expect(screen.getByText("Level 2")).toBeInTheDocument();
+      expect(screen.getByText("Level 3")).toBeInTheDocument();
+    });
+    expect(screen.getByText("Level 1 content")).toBeInTheDocument();
+    expect(screen.getByText("Level 2 content")).toBeInTheDocument();
+    expect(screen.getByText("Level 3 content")).toBeInTheDocument();
+
+    mockTextDetails.content.sections = originalSections;
+  });
+
+  test("handles segmentId in URL parameters", async () => {
+    const originalSections = [...mockTextDetails.content.sections];
+    mockTextDetails.mapping = {
+      segment_id: "mapped-segment",
+      section_id: "mapped-section",
+    };
+
+    const props = {
+      ...defaultProps,
+      currentChapter: {
+        ...defaultProps.currentChapter,
+        segmentId: "initial-segment",
+      },
+    };
+    setup(props);
+
+    await waitFor(() => {
+      expect(screen.getByText("Section 1")).toBeInTheDocument();
+    });
+
+    const segment = screen.getByText("Test content").closest(".text-segment");
+    fireEvent.click(segment);
+
+    expect(segment.classList.contains("highlighted-segment")).toBe(true);
+
+    delete mockTextDetails.mapping;
+    mockTextDetails.content.sections = originalSections;
   });
 });
