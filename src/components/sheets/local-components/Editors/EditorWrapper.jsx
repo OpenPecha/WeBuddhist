@@ -10,7 +10,7 @@ import { serialize } from '../../sheet-utils/serialize';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../../config/axios-config';
 
-const createSheet = async (payload) => {
+export const createSheet = async (payload) => {
   const accessToken = sessionStorage.getItem('accessToken');
   const { data } = await axiosInstance.post('/api/v1/sheets', payload, {
     headers: {
@@ -21,8 +21,7 @@ const createSheet = async (payload) => {
 
 };
 
-const updateSheet = async (sheet_id, payload) => {
-
+export const updateSheet = async (sheet_id, payload) => {
   const accessToken = sessionStorage.getItem('accessToken');
   const { data } = await axiosInstance.put(`/api/v1/sheets/${sheet_id}`, payload, {
     headers: {
