@@ -41,20 +41,20 @@ const createPayload = (value,titles) => {
     if (['image', 'audio', 'video'].includes(node.type)) {
       return {
         position: i,
-        type: node.type,
+        type: node.type.toUpperCase(),
         content: node.src,
       };
     }
     if (node.type === 'pecha') {
       return {
         position: i,
-        type: "segment",
+        type: "SEGMENT",
         content: node.src,
       };
     }
     return {
       position: i,
-      type: "content",
+      type: "CONTENT",
       content: serialize(node),
     };
   });
