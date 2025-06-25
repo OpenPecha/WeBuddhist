@@ -6,11 +6,12 @@ import MarkButton from './MarkButton'
 import BlockButton from './blockButton'
 import './Toolsbar.scss'
 import pechaIcon from "../../../../assets/icons/pecha_icon.png"
-import { serialize } from '../../sheet-utils/serialize';
 import { useTranslate } from '@tolgee/react';
+import { createPayload } from '../../sheet-utils/Constant';
+import { updateSheet } from '../Editors/EditorWrapper';
 
 const Toolsbar = (prop) => {
-  const {editor} = prop
+  const {editor, value, title, sheetId} = prop
   const customEditor = useCustomEditor();
   const {t} = useTranslate();
   const renderMarkButtons = () => {
@@ -83,13 +84,19 @@ const Toolsbar = (prop) => {
       <div className="toolbar-group">
         <button
           className="publish-button listtitle"
-          onClick={(e) => {
+          onClick={async (e) => {
             e.preventDefault();
-            const serializedNodes = editor.children.map((node, index) => ({
-              text: serialize(node),
-              node: index + 1,
-            }));
-            console.log(serializedNodes);
+            try {
+              if (!sheetId) {
+                alert('Sheet must be saved before publishing.'); //todo: use a  ui instead of alert
+                return;
+              }
+              const payload = createPayload(value, title, true);
+              await updateSheet(sheetId, payload);
+              alert('Sheet published successfully!');  //navigate to sheet listing page.
+            } catch (error) {
+              alert('Failed to publish sheet.',error);
+            }
           }}
         >
           {t("publish")}

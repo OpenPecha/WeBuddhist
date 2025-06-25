@@ -6,9 +6,9 @@ import EditorInput from './EditorInput/EditorInput';
 import Toolsbar from '../Toolbar/Toolsbar';
 import { withHistory } from 'slate-history';
 import { useDebounce } from 'use-debounce';
-import { serialize } from '../../sheet-utils/serialize';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../../config/axios-config';
+import { createPayload } from '../../sheet-utils/Constant';
 
 export const createSheet = async (payload) => {
   const accessToken = sessionStorage.getItem('accessToken');
@@ -22,49 +22,18 @@ export const createSheet = async (payload) => {
 };
 
 export const updateSheet = async (sheet_id, payload) => {
-  const accessToken = sessionStorage.getItem('accessToken');
-  const { data } = await axiosInstance.put(`/api/v1/sheets/${sheet_id}`, payload, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
+  const accessToken = sessionStorage.getItem("accessToken");
+  const { data } = await axiosInstance.put(
+    `/api/v1/sheets/${sheet_id}`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     }
-  });
-  return data
- 
+  );
+  return data;
 };
-
-const createPayload = (value,titles) => {
-  const title = titles;
-  const is_published = false;
-
-  const source = value.map((node, i) => {
-    if (['image', 'audio', 'video'].includes(node.type)) {
-      return {
-        position: i,
-        type: node.type,
-        content: node.src,
-      };
-    }
-    if (node.type === 'pecha') {
-      return {
-        position: i,
-        type: "segment",
-        content: node.src,
-      };
-    }
-    return {
-      position: i,
-      type: "content",
-      content: serialize(node),
-    };
-  });
-
-  return {
-    title,
-    source,
-    is_published
-  };
-};
-
 const Editor = ({ initialValue, children,title }) => {
   const [editor] = useState(() => withHistory(withEmbeds(withReact(createEditor()))));
   const [value, setValue] = useState(initialValue);
@@ -131,6 +100,7 @@ const Editor = ({ initialValue, children,title }) => {
       initialValue={initialValue}
       onChange={handleChange}
     >
+      <Toolsbar editor={editor} value={value} title={title} sheetId={sheetId} />
       {React.Children.map(children, (child) => React.cloneElement(child, { editor }))}
     </Slate>
   );
