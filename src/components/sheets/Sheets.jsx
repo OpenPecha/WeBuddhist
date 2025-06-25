@@ -18,7 +18,7 @@ const Sheets = () => {
   const [debouncedTitle] = useDebounce(title, 1000);
   const initialValue = useMemo(
     () =>
-      defaultValue,
+      JSON.parse(sessionStorage.getItem('sheets-content')) ||defaultValue,
     []
   )
 

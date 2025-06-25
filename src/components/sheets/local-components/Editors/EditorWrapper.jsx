@@ -82,6 +82,17 @@ const Editor = ({ initialValue, children,title }) => {
     [navigate]
   );
 
+    const handleChange = (value) => {
+    setValue(value);
+    const isAstChange = editor.operations.some(
+      op => 'set_selection' !== op.type
+    )
+    if (isAstChange) {
+      const content = JSON.stringify(value)
+      sessionStorage.setItem('sheets-content', content)
+    }
+  };
+
   const saveSheet = useCallback(
     async (content) => {
       try {
@@ -118,7 +129,7 @@ const Editor = ({ initialValue, children,title }) => {
     <Slate
       editor={editor}
       initialValue={initialValue}
-      onChange={setValue}
+      onChange={handleChange}
     >
       {React.Children.map(children, (child) => React.cloneElement(child, { editor }))}
     </Slate>
