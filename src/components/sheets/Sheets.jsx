@@ -18,7 +18,6 @@ const Sheets = () => {
   const [debouncedTitle] = useDebounce(title, 1000);
   const initialValue = useMemo(
     () =>
-      // JSON.parse(localStorage.getItem('sheets-content')) || defaultValue,
       defaultValue,
     []
   )

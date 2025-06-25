@@ -75,15 +75,6 @@ const Editor = ({ initialValue, children,title }) => {
   const [sheetId, setSheetId] = useState(id === 'new' ? null : id);
  const hasCreatedSheet=useRef(false)
 
-  const handleChange = useCallback((newValue) => {
-    setValue(newValue);
-    const isAstChange = editor.operations.some(op => op.type !== 'set_selection');
-    if (isAstChange) {
-      const content = JSON.stringify(newValue);
-      localStorage.setItem('sheets-content', content);
-    }
-  }, [editor]);
-
   const handleNavigation = useCallback(
     (newSheetId) => {
       const newUrl = window.location.pathname.replace('/new', `/${newSheetId}`);
@@ -128,7 +119,7 @@ const Editor = ({ initialValue, children,title }) => {
     <Slate
       editor={editor}
       initialValue={initialValue}
-      onChange={handleChange}
+      onChange={setValue}
     >
       {React.Children.map(children, (child) => React.cloneElement(child, { editor }))}
     </Slate>
