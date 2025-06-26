@@ -9,6 +9,7 @@ import axiosInstance from "../../../../config/axios-config.js";
 import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 import { usePanelContext, PanelProvider } from "../../../../context/PanelContext.jsx";
+import PropTypes from "prop-types";
 
 export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId,sectionId) => {
 
@@ -518,3 +519,35 @@ const ChapterWithPanelContext = (props) => (
 );
 
 export default ChapterWithPanelContext;
+
+Chapter.propTypes = {
+  addChapter: PropTypes.func.isRequired,
+  removeChapter: PropTypes.func.isRequired,
+  updateChapter: PropTypes.func.isRequired,
+  currentChapter: PropTypes.shape({
+    textId: PropTypes.string,
+    contentId: PropTypes.string,
+    contentIndex: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    versionId: PropTypes.string,
+    sectionId: PropTypes.string,
+    segmentId: PropTypes.string,
+    uniqueId: PropTypes.string
+  }).isRequired,
+  totalPages: PropTypes.number.isRequired,
+};
+
+ChapterWithPanelContext.propTypes = {
+  addChapter: PropTypes.func.isRequired,
+  removeChapter: PropTypes.func.isRequired,
+  updateChapter: PropTypes.func.isRequired,
+  currentChapter: PropTypes.shape({
+    textId: PropTypes.string,
+    contentId: PropTypes.string,
+    contentIndex: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    versionId: PropTypes.string,
+    sectionId: PropTypes.string,
+    segmentId: PropTypes.string,
+    uniqueId: PropTypes.string
+  }).isRequired,
+  totalPages: PropTypes.number.isRequired,
+};
