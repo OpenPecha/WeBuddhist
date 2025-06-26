@@ -65,7 +65,7 @@ const Editor = ({ initialValue, children,title }) => {
   const saveSheet = useCallback(
     async (content) => {
       try {
-        const payload = createPayload(content, title || sessionStorage.getItem("sheet-title"));
+        const payload = createPayload(content, title);
         
         if (!sheetId) {
           const response = await createSheet(payload);

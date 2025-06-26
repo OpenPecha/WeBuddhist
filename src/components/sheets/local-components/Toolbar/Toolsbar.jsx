@@ -1,5 +1,5 @@
-import React from 'react'
-import { FaBold, FaItalic, FaUnderline, FaListOl, FaListUl, FaAlignLeft, FaAlignCenter, FaAlignRight, FaAlignJustify, FaQuoteLeft, FaCode, FaImage, FaSave } from 'react-icons/fa'
+import React, { useState } from 'react'
+import { FaBold, FaItalic, FaUnderline, FaListOl, FaListUl, FaAlignLeft, FaAlignCenter, FaAlignRight, FaAlignJustify, FaQuoteLeft, FaCode, FaImage } from 'react-icons/fa'
 import { LuHeading1, LuHeading2 } from "react-icons/lu";
 import { useCustomEditor } from '../../sheet-utils/CustomEditor'
 import MarkButton from './MarkButton'
@@ -9,11 +9,35 @@ import pechaIcon from "../../../../assets/icons/pecha_icon.png"
 import { useTranslate } from '@tolgee/react';
 import { createPayload } from '../../sheet-utils/Constant';
 import { updateSheet } from '../Editors/EditorWrapper';
+import AlertModal from '../modals/alert-modal/AlertModal';
+import { useNavigate } from 'react-router-dom';
 
 const Toolsbar = (prop) => {
   const {editor, value, title, sheetId} = prop
   const customEditor = useCustomEditor();
   const {t} = useTranslate();
+  const navigate = useNavigate();
+
+  const [alert, setAlert] = useState({ open: false, type: 'success', message: '' });
+
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
+
+  const handlePublish = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = createPayload(value, title || sessionStorage.getItem("sheet-title"), true);
+      await updateSheet(sheetId, payload);
+      setAlert({ open: true, type: 'success', message: t('Sheet published successfully!') });
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error) {
+      setAlert({ open: true, type: 'error', message: t('Failed to publish sheet.',error)});
+    }
+  };
+
   const renderMarkButtons = () => {
     return (
       <div className="toolbar-group">
@@ -85,16 +109,7 @@ const Toolsbar = (prop) => {
         <button
           disabled={!sheetId}
           className={`publish-button listtitle ${!sheetId ? "disabled-button" : ""}`}
-          onClick={async (e) => {
-            e.preventDefault();
-            try {
-              const payload = createPayload(value, title || sessionStorage.getItem("sheet-title"), true);
-              await updateSheet(sheetId, payload);
-              alert('Sheet published successfully!');  //navigate to sheet listing page.
-            } catch (error) {
-              alert('Failed to publish sheet.',error);
-            }
-          }}
+          onClick={handlePublish}
         >
           {t("publish")}
         </button>
@@ -103,24 +118,28 @@ const Toolsbar = (prop) => {
   };
 
   return (
-    <div className="toolbar">
-      {renderMarkButtons()}
-      
-      <div className="toolbar-divider"/>
-      {renderPechaIconSection()}
-      
-      <div className="toolbar-divider"/>
-      {renderListButtons()}
-      
-      <div className="toolbar-divider"/>
-      {renderAlignmentButtons()}
-      
-      <div className="toolbar-divider"/>
-      {renderUtilityButtons()}
-      
-      <div className="toolbar-divider"/>
-      {renderActionButtons()}
-    </div>
+    <>
+      <div className="toolbar">
+        {renderMarkButtons()}
+        <div className="toolbar-divider"/>
+        {renderPechaIconSection()}
+        <div className="toolbar-divider"/>
+        {renderListButtons()}
+        <div className="toolbar-divider"/>
+        {renderAlignmentButtons()}
+        <div className="toolbar-divider"/>
+        {renderUtilityButtons()}
+        <div className="toolbar-divider"/>
+        {renderActionButtons()}
+      </div>
+      {alert.open && (
+        <AlertModal
+          type={alert.type}
+          message={alert.message}
+          onClose={handleCloseAlert}
+        />
+      )}
+    </>
   )
 }
 
