@@ -83,14 +83,11 @@ const Toolsbar = (prop) => {
     return (
       <div className="toolbar-group">
         <button
-          className="publish-button listtitle"
+          disabled={!sheetId}
+          className={`publish-button listtitle ${!sheetId ? "disabled-button" : ""}`}
           onClick={async (e) => {
             e.preventDefault();
             try {
-              if (!sheetId) {
-                alert('Sheet must be saved before publishing.'); //todo: use a  ui instead of alert
-                return;
-              }
               const payload = createPayload(value, title, true);
               await updateSheet(sheetId, payload);
               alert('Sheet published successfully!');  //navigate to sheet listing page.

@@ -83,7 +83,7 @@ export const createPayload = (value, title, is_published = false) => {
     if (node.type === "pecha") {
       return {
         position: i,
-        type: "segment",
+        type: "source",
         content: node.src,
       };
     }
