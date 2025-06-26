@@ -187,6 +187,43 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
     );
   };
   
+  const renderSegment = (segment, index, contentIndex, content) => {
+    const hasChildren = segment.sections && segment.sections.length > 0;
+    return (
+      <div 
+        key={`content-${contentIndex}-segment-${segment.id}-${index}`} 
+        className="section-container"
+      >
+        <div 
+          className={`section-header ${activeSectionId === segment.id ? 'active-section' : ''}`}
+          onClick={() => toggleSection(segment.id)}
+        >
+          {getToggleIcon(hasChildren, sectionHierarchyState[segment.id])}
+          <button 
+            className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${activeSectionId === segment.id ? 'active' : ''}`}
+            data-section-id={segment.id}
+            onClick={(e) => {
+              e.stopPropagation();
+              const validIndex = index !== undefined && !isNaN(parseInt(index, 10)) 
+                ? parseInt(index, 10) 
+                : 0;
+              handleSectionClick("", validIndex);
+            }}
+          >
+            {segment.title}
+          </button>
+        </div>
+        {sectionHierarchyState[segment.id] && hasChildren && (
+          <div className="nested-content">
+            {segment.sections.map((section) => 
+              renderSection(section, 1, content.id, index)
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderMainPanel = () => {
     
     return (
@@ -203,45 +240,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
             <div className="toc-container">
               {tocData.contents.map((content, contentIndex) => (
                 content.sections?.map((segment, index) => {
-                  const hasChildren = segment.sections && segment.sections.length > 0;
-                
-
-                  return (
-                    <div 
-                      key={`content-${contentIndex}-segment-${segment.id}-${index}`} 
-                      className="section-container"
-                    >
-                      <div 
-                        className={`section-header ${activeSectionId === segment.id ? 'active-section' : ''}`}
-                        onClick={() => toggleSection(segment.id)}
-                      >
-                        {getToggleIcon(hasChildren, sectionHierarchyState[segment.id])}
-                        <button 
-                        className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${activeSectionId === segment.id ? 'active' : ''}`}
-                        data-section-id={segment.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const validIndex = index !== undefined && !isNaN(parseInt(index, 10)) 
-                            ? parseInt(index, 10) 
-                            : 0;
-                          handleSectionClick("", validIndex);
-                        }}
-                      >
-                        {segment.title}
-                      </button>
-                      </div>
-
-                      {sectionHierarchyState[segment.id] && hasChildren && (
-                        <div 
-                          className="nested-content"
-                          >
-                          {segment.sections.map((section) => 
-                            renderSection(section, 1, content.id, index)
-                          )}
-                        </div>
-                      )}
-                      </div>
-                  );
+                  return renderSegment(segment, index, contentIndex, content);
                 })
               ))}
             </div>
