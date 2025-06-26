@@ -1,5 +1,11 @@
 const LIST_TYPES = ["ordered-list", "unordered-list"];
 const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
+
+const extractSpotifyInfo = (url) => {
+  const match = url.match(/spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/);
+  return match ? { type: match[1], id: match[2] } : null;
+};
+
 const isAlignType = (format) => {
   return TEXT_ALIGN_TYPES.includes(format);
 };
@@ -67,4 +73,5 @@ export {
   isListType,
   embedsRegex,
   removeFootnotes,
+  extractSpotifyInfo,
 };
