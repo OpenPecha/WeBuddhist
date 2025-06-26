@@ -88,7 +88,7 @@ const Toolsbar = (prop) => {
           onClick={async (e) => {
             e.preventDefault();
             try {
-              const payload = createPayload(value, title, true);
+              const payload = createPayload(value, title || sessionStorage.getItem("sheet-title"), true);
               await updateSheet(sheetId, payload);
               alert('Sheet published successfully!');  //navigate to sheet listing page.
             } catch (error) {
