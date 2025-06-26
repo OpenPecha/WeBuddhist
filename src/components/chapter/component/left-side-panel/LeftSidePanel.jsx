@@ -94,7 +94,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   
   // Track active sections and expand their parents
   useEffect(() => {
-    if (!activeSectionId || !tocData || !tocData.contents) return;
+    if (!activeSectionId || !tocData?.contents) return;
     
     // Function to find and expand parent sections
     const expandParentSections = (sections, targetId, parentPath = []) => {
@@ -141,15 +141,20 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
     });
   }, [activeSectionId, tocData]);
   
+  const getToggleIcon = (hasChildren, isExpanded) => {
+    if (!hasChildren) return <span className="empty-icon"></span>;
+    return isExpanded
+      ? <FiChevronDown size={16} className="toggle-icon" />
+      : <FiChevronRight size={16} className="toggle-icon" />;
+  };
+
   const renderSection = (section, level = 0, contentId, parentIndex) => {
     const isExpanded = sectionHierarchyState[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
     const isActive = activeSectionId === section.id;
-    
     const validParentIndex = parentIndex !== undefined && !isNaN(parseInt(parentIndex, 10)) 
       ? parseInt(parentIndex, 10) 
       : 0;
-    
     return (
       <div 
         key={`section-${section.id}`} 
@@ -159,11 +164,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
           className={`section-header ${isActive ? 'active-section' : ''}`}
           onClick={() => toggleSection(section.id)}
         >
-          {hasChildren ? (
-            isExpanded ?
-              <FiChevronDown size={16} className="toggle-icon" /> :
-              <FiChevronRight size={16} className="toggle-icon" />
-          ) : <span className="empty-icon"></span>}
+          {getToggleIcon(hasChildren, isExpanded)}
           <button 
             className={`section-title ${getLanguageClass(tocData?.text_detail?.language || 'en')} ${isActive ? 'active' : ''}`}
             data-section-id={section.id}
@@ -175,17 +176,14 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
             {section.title}
           </button>
         </div>
-
-          {isExpanded && hasChildren && (
-            <div 
-              className="nested-content"
-            >
-              {section.sections.map((childSection) =>
-                renderSection(childSection, level + 1, contentId, validParentIndex)
-              )}
-            </div>
-          )}
-        </div>
+        {isExpanded && hasChildren && (
+          <div className="nested-content">
+            {section.sections.map((childSection) =>
+              renderSection(childSection, level + 1, contentId, validParentIndex)
+            )}
+          </div>
+        )}
+      </div>
     );
   };
   
@@ -201,10 +199,10 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
           {!isLoading && tocData && tocData.contents && tocData.contents.length === 0 && (
             <p>{t("text_category.message.notfound")}</p>
           )}
-          {!isLoading && tocData && tocData.contents && tocData.contents.length > 0 && (
+          {!isLoading && tocData?.contents?.length > 0 && (
             <div className="toc-container">
               {tocData.contents.map((content, contentIndex) => (
-                content.sections && content.sections.map((segment, index) => {
+                content.sections?.map((segment, index) => {
                   const hasChildren = segment.sections && segment.sections.length > 0;
                 
 
@@ -217,11 +215,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
                         className={`section-header ${activeSectionId === segment.id ? 'active-section' : ''}`}
                         onClick={() => toggleSection(segment.id)}
                       >
-                        {hasChildren ? (
-                          sectionHierarchyState[segment.id] ? 
-                            <FiChevronDown size={16} className="toggle-icon" /> : 
-                            <FiChevronRight size={16} className="toggle-icon" />
-                        ) : <span className="empty-icon"></span>}
+                        {getToggleIcon(hasChildren, sectionHierarchyState[segment.id])}
                         <button 
                         className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${activeSectionId === segment.id ? 'active' : ''}`}
                         data-section-id={segment.id}
