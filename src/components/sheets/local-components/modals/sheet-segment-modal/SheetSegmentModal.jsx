@@ -29,7 +29,7 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
     () => fetchSegments(debouncedSearchFilter, pagination.limit, skip),
     { refetchOnWindowFocus: false }
   );
-console.log(searchData)
+
   const totalSegments = searchData?.total || 0;
   const totalPages = Math.ceil(totalSegments / pagination.limit);
 
