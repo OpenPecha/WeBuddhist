@@ -34,7 +34,7 @@ const UserLogin = () => {
                 const accessToken = data.auth.access_token;
                 const refreshToken = data.auth.refresh_token;
                 login(accessToken, refreshToken);
-                navigate("/libraries");
+                navigate("/collections");
             },
             onError: (error) => {
                 console.error("Login failed", error);
@@ -85,7 +85,7 @@ const UserLogin = () => {
 
     const loginWithGoogle = async () => {
         try {
-            const redirectPath ="/libraries";
+            const redirectPath ="/collections";
 
             await loginWithRedirect({
                 authorizationParams: {
@@ -103,7 +103,7 @@ const UserLogin = () => {
 
     const loginWithApple = async () => {
         try {
-            const redirectPath = "/libraries";
+            const redirectPath = "/collections";
 
             await loginWithRedirect({
                 authorizationParams: {

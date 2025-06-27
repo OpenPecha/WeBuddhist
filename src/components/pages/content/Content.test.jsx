@@ -205,7 +205,7 @@ describe("Content Component", () => {
     const mockPagination = { limit: 10 };
     const result = await fetchTextContent("123", 0, mockPagination);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/libraries/123/contents", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections/123/contents", {
       params: {
         language: "bo",
         limit: 10,

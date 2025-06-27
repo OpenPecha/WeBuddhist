@@ -5,7 +5,7 @@ import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
-import Library, { fetchChildTexts } from "./Library.jsx";
+import SubCollections, { fetchChildTexts } from "./SubCollections.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -37,7 +37,7 @@ vi.mock("../../utils/Constants.js", () => ({
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
 }));
 
-describe("Library Component", () => {
+describe("SubCollections Component", () => {
   const queryClient = new QueryClient();
   const mockTextChildData = {
     parent: {
@@ -72,19 +72,13 @@ describe("Library Component", () => {
             fallback={"Loading tolgee..."} 
             tolgee={mockTolgee}
           >
-            <Library />
+            <SubCollections />
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
     );
   };
 
-  test("renders Library component", () => {
-    setup();
-    expect(document.querySelector(".main-container")).toBeInTheDocument();
-    expect(document.querySelector(".text-child-container")).toBeInTheDocument();
-    expect(document.querySelector(".side-container")).toBeInTheDocument();
-  });
 
   test("displays loading state when data is being fetched", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
@@ -98,7 +92,7 @@ describe("Library Component", () => {
 
   test("renders the category header with parent title", () => {
     setup();
-    const header = document.querySelector(".category-header h1");
+    const header = document.querySelector(".sub-collection-details h1");
     expect(header).toBeInTheDocument();
     expect(header.textContent).toBe("PARENT TITLE");
   });
@@ -122,7 +116,7 @@ describe("Library Component", () => {
 
   test("renders sidebar with about section", () => {
     setup();
-    const sidebar = document.querySelector(".side-container");
+    const sidebar = document.querySelector(".about-section");
     expect(sidebar).toBeInTheDocument();
     expect(sidebar.querySelector(".about-title").textContent).toBe("common.about Parent Title");
   });
@@ -134,7 +128,7 @@ describe("Library Component", () => {
     }));
     
     setup();
-    const container = document.querySelector(".library-container");
+    const container = document.querySelector(".sub-collections-container");
     expect(container).toBeInTheDocument();
   });
 

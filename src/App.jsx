@@ -23,7 +23,7 @@ const Topics = lazy(() => import("./components/topics/Topics.jsx"));
 const CommunityPage = lazy(() => import("./components/community/CommunityPage.jsx"));
 const Pages = lazy(() => import("./components/pages/Pages.jsx"));
 const Book = lazy(() => import("./components/book/Book.jsx"));
-const Library = lazy(() => import("./components/library/Library.jsx"));
+const SubCollections = lazy(() => import("./components/sub-collections/SubCollections.jsx"));
 const Chapters = lazy(() => import("./components/chapter/Chapters.jsx"));
 const ChaptersV2 = lazy(() => import("./components/chapterV2/Chapters"));
 
@@ -51,7 +51,7 @@ function App() {
                         isLoggedIn && pechaLogout()
                         isAuthenticated && await logout({
                             logoutParams: {
-                                returnTo: window.location.origin + "/libraries",
+                                returnTo: window.location.origin + "/collections",
                             },
                         });
                     } else {
@@ -117,7 +117,7 @@ function App() {
           <NavigationBar/>
           <Routes>
               <Route path="/" element={<Collections/>}/>
-              <Route path="/libraries" element={<Collections/>}/>
+              <Route path="/collections" element={<Collections/>}/>
               <Route path="/chapter-header" element={<ContentsChapter/>}/> {/*TODO :    should be removed */}
               <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
               <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
@@ -129,7 +129,7 @@ function App() {
               <Route path="/topics/:id" element={<Topics/>}/>
               <Route path="/community" element={<CommunityPage/>}/>
               <Route path="/pages/:id" element={<Pages/>}/>
-              <Route path="/libraries/:id" element={<Library/>}/>
+              <Route path="/collections/:id" element={<SubCollections/>}/>
               <Route path="/book/:id" element={<Book/>}/>
               <Route path="/chapter" element={<Chapters/>}/>
               <Route path="/chapter-v2" element={<ChaptersV2/>}/>{/*TODO :    should be removed */}

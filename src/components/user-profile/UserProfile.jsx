@@ -103,7 +103,7 @@ const UserProfile = () => {
     isLoggedIn && pechaLogout()
     isAuthenticated && logout({
       logoutParams: {
-        returnTo: window.location.origin + "/libraries",
+        returnTo: window.location.origin + "/collections",
       },
     });
   }

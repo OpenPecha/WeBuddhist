@@ -24,7 +24,7 @@ const Collections = () => {
   const {data: collectionsData, isLoading: termsIsLoading} = useQuery(
     ["texts"],
     () => fetchTexts(),
-    {refetchOnWindowFocus: false,}
+    {refetchOnWindowFocus: false}
   );
 
   const renderBrowseLibrary = () => {
@@ -39,18 +39,19 @@ const Collections = () => {
   };
 
   const renderCollections = () => {
+    const renderCollectionNames = (term) => {
+      return term.has_child ?
+        <Link to={`/collections/${term.id}`} className="listtitle collection-link">
+          {term.title}
+        </Link> :
+        term.title
+    }
     return (
       <div className="collections-list-container">
         {collectionsData?.terms.map((term, index) => (
           <div className="collections">
             <div className={"red-line"}></div>
-              {term.has_child ? (
-                <Link to={`/libraries/${term.id}`} className="listtitle collection-link">
-                  {term.title}
-                </Link>
-              ) : (
-                term.title
-              )}
+              {renderCollectionNames(term)}
               <p className="content collections-description">{term.description}</p>
           </div>
         ))}
