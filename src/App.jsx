@@ -129,7 +129,7 @@ function App() {
               <Route path="/texts/text-category/:id" element={<Book/>}/>
               <Route path="/texts/text-details" element={<Chapters/>}/>
               <Route path="/search" element={<SearchResultsPage/>}/>
-              <Route path="/sheets" element={<Sheets/>}/>
+              <Route path="/sheets/:id" element={<Sheets/>}/>
               <Route path="*" element={<HomePage/>}/>
           </Routes>
       </Suspense>
