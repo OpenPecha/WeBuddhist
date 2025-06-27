@@ -10,6 +10,7 @@ import { usePanelContext, PanelProvider } from '../../../context/PanelContext';
 import { extractSpotifyInfo } from '../sheet-utils/Constant';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
+import { useTranslate } from '@tolgee/react';
 
 export const fetchSheetData=async(id)=>{
 const {data}=await axiosInstance.get(`/api/v1/sheets/${id}`,{
@@ -36,7 +37,7 @@ const getAudioSrc = (url) => {
 const SheetDetailPage = () => {
   // const { sheetSlugAndId } = useParams();
   // const sheetId = sheetSlugAndId.split('-').pop();
-
+  const {t}=useTranslate();
   const sheetId= "626ddc35-a146-4bca-a3a3-b8221c501df3"//remove this once samdup work is done
   const {data:sheetData, isLoading} = useQuery({
     queryKey:['sheetData',sheetId],
@@ -93,7 +94,7 @@ const SheetDetailPage = () => {
             <YouTube videoId={segment.content} />
           </div>
         ); 
-      case 'audio':
+      case 'audio': {
           const audioSrc = getAudioSrc(segment.content);
           return (
             <div className="segment segment-audio" key={segment.segment_id}>
@@ -101,16 +102,22 @@ const SheetDetailPage = () => {
                 src={audioSrc}
                 width="100%"
                 height="166"
+                title={`audio-${segment.segment_id}`}
               />
             </div>
           );
+        }
       default:
         return null;
     }
   };
 
   if (isLoading) {
-    return <div>Loading...</div>; //add tolgee translation
+      return <p>{t("common.loading")}</p>;
+  }
+
+  if (!sheetData || sheetData.content.segments.length === 0) {
+    return <p>{t("text_category.message.notfound")}</p>;
   }
 
   const renderHeader = () => {
