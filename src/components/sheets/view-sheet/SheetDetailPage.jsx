@@ -8,6 +8,18 @@ import { FiEdit, FiTrash, FiEye, FiShare, FiPrinter } from "react-icons/fi";
 import Resources from '../../resources-side-panel/Resources';
 import { usePanelContext, PanelProvider } from '../../../context/PanelContext';
 import { extractSpotifyInfo } from '../sheet-utils/Constant';
+import axiosInstance from '../../../config/axios-config';
+import { useQuery } from 'react-query';
+
+export const fetchSheetData=async(id)=>{
+const {data}=await axiosInstance.get(`/api/v1/sheets/${id}`,{
+  params:{
+    skip:0,
+    limit:10,
+  }
+})
+return data
+}
 
 const getAudioSrc = (url) => {
   const spotify = extractSpotifyInfo(url);
@@ -21,68 +33,15 @@ const getAudioSrc = (url) => {
 }
   
 
-//TODO: to be remove when api is ready
-const sheetData = {
-  sheet_title: "The great Dhrama of Tibet ",
-  content: {
-    id: "123455",
-    text_id: "123456",
-    sections: [
-      {
-        id: "12345",
-        title: null,
-        section_number: "1",
-        parent_id: "1212",
-        segments: [
-          { 
-            segment_id: "d0a5b00b-0989-4e9e-87d8-db4f72e6ceca",
-            segment_number: "1.1",
-            content: "རིན་ཆེན་སེམས་དེ་གཟུང་བར་བྱ་བའི་ཕྱིར།།<br>དེ་བཞིན་གཤེགས་པ་རྣམས་དང་དམ་པའི་ཆོས།།<br>དཀོན་མཆོག་དྲི་མ་མེད་དང་སངས་རྒྱས་སྲས།།<br>ཡོན་ཏན་རྒྱ་མཚོ་རྣམས་ལ་ལེགས་པར་མཆོད།།",
-            text_title: "Fundamentals of Buddhism",
-            type: "source"
-          },
-          {
-            segment_id: "124",
-            segment_number: "1.2",
-            content: "Whatever flowers and fruits there may be,<strong>And whatever varieties</strong> of medicines exist,Whatever precious <strong>substances</strong> there are in the world,And whatever pure and delightful waters there are.",
-            type: "text"
-          },
-          {
-            segment_id: "125",
-            segment_number: "1.3",
-            type: "image",
-            content: "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-          },
-          {
-            segment_id: "126",
-            segment_number: "1.4",
-            type: "audio",
-            content: "https://soundcloud.com/planetfitnessmotivation/hip-hop-workout-music-mix-2018-gym-training-motivation?in_system_playlist=personalized-tracks%3A%3Atenzin-lungsang%3A280487518" //TODO: do changes such that spotify and soundcloud ui can be used
-          },
-          {
-            segment_id: "127",
-            segment_number: "1.5",
-            type: "video",
-            content: "oOylEw3tPQ8"
-          },
-          {
-            segment_id: "128",
-            segment_number: "1.6",
-            type: "audio",
-            content: "https://open.spotify.com/album/40d8W7uNHGeih483QVvLu4" //TODO: do changes such that spotify and soundcloud ui can be used
-          },
-        ],
-      },
-    ]
-  },
-  skip: 0,
-  limit: 10,
-  total: 1
-};
-
 const SheetDetailPage = () => {
-  // const { publisherName, sheetSlugAndId } = useParams();
-  // const sheetId = sheetSlugAndId.split('-').pop(); //TODO : need later when we call the get api
+  // const { sheetSlugAndId } = useParams();
+  // const sheetId = sheetSlugAndId.split('-').pop();
+
+  const sheetId= "626ddc35-a146-4bca-a3a3-b8221c501df3"//remove this once samdup work is done
+  const {data:sheetData, isLoading} = useQuery({
+    queryKey:['sheetData',sheetId],
+    queryFn:()=>fetchSheetData(sheetId)
+  })
   const [segmentId, setSegmentId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } = usePanelContext();
@@ -113,7 +72,7 @@ const SheetDetailPage = () => {
             </div>
           </div>
         );
-      case 'text':
+      case 'content':
         return (
           <div className="segment segment-text" key={segment.segment_id}>
             
@@ -150,6 +109,10 @@ const SheetDetailPage = () => {
     }
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>; //add tolgee translation
+  }
+
   const renderHeader = () => {
     return (
          <header className="sheet-detail-page-header">
@@ -163,7 +126,7 @@ const SheetDetailPage = () => {
         <div className="view-toolbar-item">
           <div className="view-toolbar-item-eye">
           <FiEye />
-          <p>20</p>
+          <p>{sheetData.views || 0}</p>
           </div>
         </div>
         <div className="view-toolbar-item">
@@ -176,12 +139,13 @@ const SheetDetailPage = () => {
     )
   }
   const renderUserInfo=()=>{
+    const { name, username, avatar_url } = sheetData.publisher;
     return(
       <div className="user-info">
-        <img src="https://avatars.githubusercontent.com/u/122612557?v=4" alt="user" className='user-info-avatar' />
+        <img src={avatar_url} alt="user" className='user-info-avatar' />
         <div className="user-info-text">
-          <p>Tenzin Delek</p>
-          <p>@tenzin_delek.3248</p>
+          <p>{name}</p>
+          <p>@{username}</p>
         </div>
       </div>
     )
@@ -189,14 +153,12 @@ const SheetDetailPage = () => {
   const renderSheetContent=()=>{
     return(
       <div className="sheet-content">
-      {sheetData.content.sections.map((section) => (
-        <section key={section.id} className="sheet-section">
+        <section className="sheet-section">
           <div className="segments ">
-            {section.segments.map((segment) => renderSegment(segment))}
+            {sheetData.content.segments.map((segment) => renderSegment(segment))}
           </div>
         </section>
-      ))}
-    </div>
+      </div>
     )
   }
   return (
