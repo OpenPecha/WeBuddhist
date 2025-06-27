@@ -73,6 +73,7 @@ describe("Sheets Component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    sessionStorage.clear();
   });
 
   test("renders Sheets component structure", () => {
@@ -82,7 +83,6 @@ describe("Sheets Component", () => {
     expect(screen.getByPlaceholderText("sheet.title.placeholder")).toBeInTheDocument();
     expect(screen.getByTestId("profile-card")).toBeInTheDocument();
     expect(screen.getByTestId("editor")).toBeInTheDocument();
-    expect(screen.getByTestId("editor-toolbar")).toBeInTheDocument();
     expect(screen.getByTestId("editor-input")).toBeInTheDocument();
   });
 
@@ -93,6 +93,7 @@ describe("Sheets Component", () => {
     fireEvent.change(input, { target: { value: "My Sheet Title" } });
     
     expect(input.value).toBe("My Sheet Title");
+    expect(sessionStorage.getItem("sheet-title")).toBe("My Sheet Title");
   });
 
   test("title input has correct styling and placeholder", () => {
@@ -128,15 +129,16 @@ describe("Sheets Component", () => {
     
     fireEvent.change(input, { target: { value: "First Title" } });
     expect(input.value).toBe("First Title");
+    expect(sessionStorage.getItem("sheet-title")).toBe("First Title");
     
     fireEvent.change(input, { target: { value: "Updated Title" } });
     expect(input.value).toBe("Updated Title");
+    expect(sessionStorage.getItem("sheet-title")).toBe("Updated Title");
   });
 
   test("renders all child components of Editor", () => {
     setup();
     
-    expect(screen.getByTestId("editor-toolbar")).toBeInTheDocument();
     expect(screen.getByTestId("editor-input")).toBeInTheDocument();
   });
 
@@ -156,6 +158,7 @@ describe("Sheets Component", () => {
   });
 
   test("empty title input initially", () => {
+    sessionStorage.removeItem("sheet-title");
     setup();
     
     const input = screen.getByPlaceholderText("sheet.title.placeholder");

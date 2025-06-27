@@ -128,7 +128,7 @@ describe("EditorWrapper (Editor) Component", () => {
     );
 
     expect(screen.getByTestId("slate-editor")).toBeInTheDocument();
-    expect(screen.getByTestId("editor-toolbar")).toBeInTheDocument();
+    expect(screen.getAllByTestId("editor-toolbar")).toHaveLength(2);
     expect(screen.getByTestId("editor-input")).toBeInTheDocument();
   });
 
@@ -142,7 +142,7 @@ describe("EditorWrapper (Editor) Component", () => {
       </TestWrapper>
     );
 
-    expect(screen.getByTestId("editor-toolbar")).toBeInTheDocument();
+    expect(screen.getAllByTestId("editor-toolbar")).toHaveLength(2);
     expect(screen.getByTestId("editor-input")).toBeInTheDocument();
   });
 
@@ -185,6 +185,21 @@ describe("EditorWrapper (Editor) Component", () => {
     );
 
     expect(screen.getByTestId("slate-editor")).toBeInTheDocument();
+    expect(screen.getByTestId("editor-toolbar")).toBeInTheDocument();
+  });
+
+  test("renders only hardcoded toolbar when no Toolbar child is provided", () => {
+    render(
+      <TestWrapper>
+        <Editor initialValue={defaultValue} title="Test Sheet">
+          <Editor.Input />
+        </Editor>
+      </TestWrapper>
+    );
+
+    expect(screen.getByTestId("slate-editor")).toBeInTheDocument();
+    expect(screen.getByTestId("editor-toolbar")).toBeInTheDocument();
+    expect(screen.getByTestId("editor-input")).toBeInTheDocument();
   });
 });
 
