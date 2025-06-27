@@ -239,7 +239,8 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     };
 
     const handleScrollUp = (scrollTop, isScrollingUp) => {
-      if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
+      const shouldHandleScrollUp = scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0;
+      if (shouldHandleScrollUp) {
         const firstSectionNumber = contents[0]?.section_number;
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
