@@ -6,8 +6,8 @@ import { Form } from 'react-bootstrap';
 import { useQuery } from 'react-query';
 import axiosInstance from "../../../../../config/axios-config";
 import PaginationComponent from '../../../../../components/commons/pagination/PaginationComponent';
-import { getLanguageClass } from '../../../../../utils/Constants';
-import pechaIcon from '../../../../../assets/icons/pecha_icon.png';
+import SourceItem from './SourceItem';
+import PropTypes from 'prop-types';
 
 export const fetchSegments = async (searchFilter, limit, skip) => {
   const { data } = await axiosInstance.get(`/api/v1/search?query=${searchFilter}&search_type=${'SOURCE'}`, {
@@ -74,26 +74,11 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
             </div>
           ) : (
             sources.map((source) => (
-              <div key={source.text.text_id} className={`source-item ${getLanguageClass(source.text.language)}`}>
-                <div className='source-title-container'>
-                  <p className='source-title'>{source.text.title}</p>
-                  <img src={pechaIcon} alt="source icon" />
-                </div>
-                <div className='segment-matches'>
-                  {source.segment_match.map((segment) => (
-                    <div 
-                      key={segment.segment_id} 
-                      className='segment-item'
-                      onClick={() => onSegment?.(segment)}
-                    >
-                      <div 
-                        className="segment-content"
-                        dangerouslySetInnerHTML={{ __html: segment.content }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <SourceItem 
+                key={source.text.text_id}
+                source={source}
+                onSegment={onSegment}
+              />
             ))
           )}
         </div>
@@ -115,12 +100,19 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
       <div
         className="sheet-segment-modal"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
       >
         {renderModalHeader()}
         {renderSegmentContent()}
       </div>
     </div>
   );
+};
+
+SheetSegmentModal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onSegment: PropTypes.func.isRequired,
 };
 
 export default SheetSegmentModal;

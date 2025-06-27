@@ -156,6 +156,9 @@
       border-radius: 6px;
       cursor: pointer;
       position: relative;
+      border:none;
+      padding:0;
+      text-align: left;
       &::before {
         content: '';
         position: absolute;
