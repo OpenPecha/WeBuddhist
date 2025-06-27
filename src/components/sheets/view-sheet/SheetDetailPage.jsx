@@ -7,6 +7,19 @@ import YouTube from 'react-youtube';
 import { FiEdit, FiTrash, FiEye, FiShare, FiPrinter } from "react-icons/fi";
 import Resources from '../../resources-side-panel/Resources';
 import { usePanelContext, PanelProvider } from '../../../context/PanelContext';
+import { extractSpotifyInfo } from '../sheet-utils/Constant';
+
+const getAudioSrc = (url) => {
+  const spotify = extractSpotifyInfo(url);
+  if (spotify) {
+    return `https://open.spotify.com/embed/${spotify.type}/${spotify.id}?utm_source=generator`;
+  }
+  if (url.includes('soundcloud.com')) {
+    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&color=%23ff5500`;
+  }
+  return null;
+}
+  
 
 //TODO: to be remove when api is ready
 const sheetData = {
@@ -44,14 +57,20 @@ const sheetData = {
             segment_id: "126",
             segment_number: "1.4",
             type: "audio",
-            content: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" //TODO: do changes such that spotify and soundcloud ui can be used
+            content: "https://soundcloud.com/planetfitnessmotivation/hip-hop-workout-music-mix-2018-gym-training-motivation?in_system_playlist=personalized-tracks%3A%3Atenzin-lungsang%3A280487518" //TODO: do changes such that spotify and soundcloud ui can be used
           },
           {
             segment_id: "127",
             segment_number: "1.5",
             type: "video",
-            content: "5noIKN8t69U"
-          }
+            content: "oOylEw3tPQ8"
+          },
+          {
+            segment_id: "128",
+            segment_number: "1.6",
+            type: "audio",
+            content: "https://open.spotify.com/album/40d8W7uNHGeih483QVvLu4" //TODO: do changes such that spotify and soundcloud ui can be used
+          },
         ],
       },
     ]
@@ -62,8 +81,8 @@ const sheetData = {
 };
 
 const SheetDetailPage = () => {
-  const { publisherName, sheetSlugAndId } = useParams();
-  const sheetId = sheetSlugAndId.split('-').pop(); //TODO : need later when we call the get api
+  // const { publisherName, sheetSlugAndId } = useParams();
+  // const sheetId = sheetSlugAndId.split('-').pop(); //TODO : need later when we call the get api
   const [segmentId, setSegmentId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } = usePanelContext();
@@ -101,7 +120,7 @@ const SheetDetailPage = () => {
             <p className="text-content" dangerouslySetInnerHTML={{ __html: segment.content }}/>
           </div>
         );
-      case 'image': //TODO : case for audio
+      case 'image':
         return (
           <div className="segment segment-image" key={segment.segment_id}>
             <figure>
@@ -114,7 +133,18 @@ const SheetDetailPage = () => {
           <div className="segment segment-video" key={segment.segment_id}>
             <YouTube videoId={segment.content} />
           </div>
-        );
+        ); 
+      case 'audio':
+          const audioSrc = getAudioSrc(segment.content);
+          return (
+            <div className="segment segment-audio" key={segment.segment_id}>
+              <iframe
+                src={audioSrc}
+                width="100%"
+                height="166"
+              />
+            </div>
+          );
       default:
         return null;
     }

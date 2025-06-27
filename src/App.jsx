@@ -130,7 +130,7 @@ function App() {
               <Route path="/texts/text-details" element={<Chapters/>}/>
               <Route path="/search" element={<SearchResultsPage/>}/>
               <Route path="/sheets/:id" element={<Sheets/>}/>
-              <Route path="/:publisherName/:sheetSlugAndId" element={<SheetDetailPage/>}/>
+              <Route path="/temporary" element={<SheetDetailPage/>}/>
               <Route path="*" element={<HomePage/>}/>
           </Routes>
       </Suspense>
