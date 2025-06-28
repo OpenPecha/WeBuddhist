@@ -4,10 +4,9 @@ import { useTranslate } from '@tolgee/react';
 import { LANGUAGE, mapLanguageCode } from '../../utils/Constants';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config.js';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import { useAuth } from '../../config/AuthContext.jsx';
 import { useAuth0 } from '@auth0/auth0-react';
-
 export const fetchsheet = async (userid="", limit, skip) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
@@ -55,9 +54,13 @@ const CommunityPage = () => {
                     ) : (
                       sheetsData?.sheets.map((sheet) => (
                         <div key={sheet.id} className="sheet-item">
-                          <div className="sheet-content ">
+                          <div className="sheet-content">
+                          <Link to={`/${encodeURIComponent(sheet.publisher.name)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}-${sheet.id}`}>
+                            <div className='sheet-title-container'>
                             <h4 className="sheet-title listtitle">{sheet.title}</h4>
                             <p className=' navbaritems'>{sheet.summary}</p>
+                            </div>
+                            </Link>
                             <div className="sheet-metadata content">
                                 {sheet.publisher.image_url ? (
                             <img src={sheet.publisher.image_url} alt={sheet.publisher.name} />

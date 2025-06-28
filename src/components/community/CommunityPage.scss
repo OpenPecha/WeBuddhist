@@ -252,16 +252,19 @@
     }
     
     .sheet-content {
+      a {
+        text-decoration: none !important;
+      }
+      
+      .sheet-title-container {
+        width: fit-content;
+        height: fit-content;
+        margin-bottom: 5px;
+        color: #333;
+      }
       .sheet-title {
         color: #333;
-        margin-bottom: 5px;
       }
-      
-      .sheet-summary {
-        color: #666;
-        margin-bottom: 10px;
-      }
-      
       .sheet-metadata {
         display: flex;
         align-items: center;
