@@ -23,7 +23,7 @@ vi.mock("../../../../context/PanelContext.jsx", () => ({
 
 import TranslationSource from "./TranslationSource";
 
-vi.mock("../../../../utils/Constants.js", () => ({
+vi.mock("../../../../utils/constants.js", () => ({
   sourceTranslationOptionsMapper: {
     "source": "SOURCE",
     "translation": "TRANSLATION",

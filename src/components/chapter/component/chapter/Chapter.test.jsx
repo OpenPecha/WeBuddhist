@@ -64,7 +64,7 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("../../../../utils/Constants.js", () => ({
+vi.mock("../../../../utils/constants.js", () => ({
   getLanguageClass: () => "language-class",
   sourceTranslationOptionsMapper: {
     source: "source",

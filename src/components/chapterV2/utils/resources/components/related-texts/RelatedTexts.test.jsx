@@ -24,7 +24,7 @@ vi.mock("@tolgee/react", async () => {
   };
 });
 
-vi.mock("../../../../utils/Constants.js", () => ({
+vi.mock("../../../../utils/constants.js", () => ({
   getLanguageClass: (language) => {
     switch (language) {
       case "bo":

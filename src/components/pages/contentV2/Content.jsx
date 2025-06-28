@@ -1,5 +1,6 @@
-import {LANGUAGE, mapLanguageCode} from "../../../utils/Constants.js";
+import {LANGUAGE} from "../../../utils/constants.js";
 import axiosInstance from "../../../config/axios-config.js";
+import {mapLanguageCode} from "../../../utils/helperFunctions.jsx";
 
 
 export const fetchTextContent = async (text_id, skip, pagination) => {

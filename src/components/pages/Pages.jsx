@@ -6,11 +6,10 @@ import { useTranslate } from '@tolgee/react';
 import Versions from "./versions/Versions.jsx";
 import Content from "./content/Content.jsx";
 import {useParams, Link, useSearchParams} from 'react-router-dom';
-import { getLanguageClass } from '../../utils/Constants';
-import {LANGUAGE} from '../../utils/Constants';
-import {mapLanguageCode} from '../../utils/Constants';
+import {LANGUAGE} from '../../utils/constants.js';
 import axiosInstance from '../../config/axios-config';
 import { useQuery } from 'react-query';
+import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 
 export const fetchVersions = async (id, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);

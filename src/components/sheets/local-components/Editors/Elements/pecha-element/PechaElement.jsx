@@ -2,8 +2,8 @@ import { useQuery } from 'react-query';
 import axiosInstance from '../../../../../../config/axios-config';
 import './PechaElement.scss';
 import pechaIcon from '../../../../../../assets/icons/pecha_icon.png';
-import { getLanguageClass  } from '../../../../../../utils/Constants';
 import { removeFootnotes } from '../../../../sheet-utils/Constant';
+import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 
 export const fetchSegmentDetails = async (segmentId) => {
   const { data } = await axiosInstance.get(`/api/v1/segments/${segmentId}`, {

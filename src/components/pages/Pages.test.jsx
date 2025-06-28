@@ -46,7 +46,7 @@ vi.mock("react-router-dom", async () => {
   return {
     ...actual,
     useParams: vi.fn(),
-    useSearchParams: () => [new URLSearchParams("?type=book"), vi.fn()]
+    useSearchParams: () => [new URLSearchParams("?type=works"), vi.fn()]
   };
 });
 

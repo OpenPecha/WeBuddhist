@@ -1,12 +1,13 @@
 import React from 'react';
-import { LANGUAGE, mapLanguageCode } from '../../utils/Constants';
+import { LANGUAGE } from '../../utils/constants.js';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config';
 import './SubCollections.scss';
 import { useTranslate } from '@tolgee/react';
+import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 
-export const fetchChildTexts = async (parentId) => {
+export const fetchSubCollections = async (parentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
   const { data } = await axiosInstance.get("/api/v1/terms", {
@@ -23,22 +24,28 @@ export const fetchChildTexts = async (parentId) => {
 const SubCollections = () => {
   const {id} = useParams();
   const {t} = useTranslate();
-  const {data: subCollectionsData, isLoading: subCollectionsDataIsLoading} = useQuery(
+  const {data: subCollectionsData, isLoading: subCollectionsDataIsLoading, error: subCollectionsError} = useQuery(
     ["texts", id],
-    () => fetchChildTexts(id),
+    () => fetchSubCollections(id),
     {refetchOnWindowFocus: false}
   );
 
   if (subCollectionsDataIsLoading) {
     return <div className="loading listtitle">{t("common.loading")}</div>;
   }
+  // ----------------------------------- helpers -----------------------------------------
+
+  const earlyReturn = getEarlyReturn({ termsIsLoading: subCollectionsDataIsLoading, subCollectionsError, t });
+  if (earlyReturn) return earlyReturn;
+
+  // ----------------------------------- renderers ---------------------------------------
   const renderTitle = () =>  <h1>{subCollectionsData?.parent?.title?.toUpperCase()}</h1>
 
   const renderSubCollections = () => {
 
     return <div className="sub-collections-list-container">
       {subCollectionsData?.terms?.map((term) =>
-        <Link key={term.id} to={`/book/${term.id}`} className="text-item overalltext sub-collection">
+        <Link key={term.id} to={`/works/${term.id}`} className="text-item overalltext sub-collection">
           <div className="divider"></div>
           <p>{term.title}</p>
         </Link>

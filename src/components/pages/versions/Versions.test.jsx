@@ -22,7 +22,7 @@ vi.mock("@tolgee/react", async () => {
   };
 });
 
-vi.mock("../../../utils/Constants.js", () => ({
+vi.mock("../../../utils/constants.js", () => ({
   getLanguageClass: (lang) => `language-${lang}`,
 }));
 

@@ -3,10 +3,11 @@ import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import { useQuery } from "react-query";
 import axiosInstance from "../../../../config/axios-config.js";
-import { LANGUAGE, mapLanguageCode, getLanguageClass } from "../../../../utils/Constants.js";
+import { LANGUAGE } from "../../../../utils/constants.js";
 import "./LeftSidePanel.scss";
 import { useTranslate } from "@tolgee/react";
 import { useSearchParams } from "react-router-dom";
+import {getLanguageClass, mapLanguageCode} from "../../../../utils/helperFunctions.jsx";
 
 const fetchTextContent = async (textId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);

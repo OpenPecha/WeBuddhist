@@ -3,9 +3,9 @@ import { useTranslate } from "@tolgee/react";
 import { GoLinkExternal } from "react-icons/go";
 import "./TranslationView.scss";
 import { useQuery } from "react-query";
-import {getLanguageClass} from "../../../../../../utils/Constants.js";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
+import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 
 export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {

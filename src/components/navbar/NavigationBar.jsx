@@ -4,14 +4,14 @@ import { FaGlobe, FaQuestionCircle } from "react-icons/fa";
 import "./NavigationBar.scss";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
-import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/Constants.js";
+import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
 import { useTolgee, useTranslate } from "@tolgee/react";
 import { setFontVariables } from "../../config/commonConfigs.js";
 import { useQueryClient } from "react-query";
 import { useState } from 'react';
 
 export const invalidateQueries = async (queryClient) => {
-  const queriesToInvalidate = ["texts", "topics","sheets","sidePanel","book","texts-versions","texts-content"];
+  const queriesToInvalidate = ["texts", "topics","sheets","sidePanel","works","texts-versions","texts-content"];
   await Promise.all(queriesToInvalidate.map(query => queryClient.invalidateQueries(query)));
 };
 const NavigationBar = () => {

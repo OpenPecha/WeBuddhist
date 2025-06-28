@@ -5,10 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useTranslate } from "@tolgee/react";
-import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, mapLanguageCode, REFRESH_TOKEN } from "../../utils/Constants.js";
+import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMemo, useState } from "react";
+import {mapLanguageCode} from "../../utils/helperFunctions.jsx";
 
 export const fetchsheet = async (userid, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);

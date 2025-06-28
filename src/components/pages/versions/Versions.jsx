@@ -1,9 +1,9 @@
 import "./Versions.scss"
 import {useTranslate} from "@tolgee/react";
-import {getLanguageClass} from "../../../utils/Constants.js";
 import {Link} from "react-router-dom";
 import React from "react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
+import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 
 const Versions = ({ versionsData, pagination, setPagination }) => {
   const { t } = useTranslate();

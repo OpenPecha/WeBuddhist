@@ -17,7 +17,7 @@ vi.mock("react-icons/md", () => ({
 }));
 
 import { useSelected } from 'slate-react';
-import { getLanguageClass } from '../../../../../../utils/Constants';
+import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 
 describe("DefaultElement Component", () => {
   const defaultProps = {

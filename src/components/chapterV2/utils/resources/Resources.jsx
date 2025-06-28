@@ -13,7 +13,8 @@ import { useSearchParams } from "react-router-dom";
 import "./Resources.scss"
 import axiosInstance from "../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../context/PanelContext.jsx";
-import {menuItems, LANGUAGE, mapLanguageCode} from "../../../../utils/Constants.js";
+import {MENU_ITEMS, LANGUAGE} from "../../../../utils/constants.js";
+import {mapLanguageCode} from "../../../../utils/helperFunctions.jsx";
 
 export const fetchSidePanelData = async (segmentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -106,7 +107,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
           </>
         )}
 
-        {menuItems.map((item) => (
+        {MENU_ITEMS.map((item) => (
           <div
             key={item.label}
             className={item.isHeader ? 'textgreat' : ''}

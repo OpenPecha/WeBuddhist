@@ -2,7 +2,7 @@ import React from 'react';
 import './DefaultElement.scss';
 import { MdDragIndicator } from "react-icons/md";
 import { useSelected } from 'slate-react';
-import { getLanguageClass } from '../../../../../../utils/Constants';
+import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 const DefaultElement = props => {
     const { element, attributes, children } = props;
     const selected=useSelected()

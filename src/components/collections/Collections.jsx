@@ -3,11 +3,12 @@ import {Button} from "react-bootstrap";
 import "./Collections.scss";
 import {useTranslate} from "@tolgee/react";
 import axiosInstance from "../../config/axios-config.js";
-import {LANGUAGE, mapLanguageCode} from "../../utils/Constants.js";
+import {LANGUAGE} from "../../utils/constants.js";
 import {useQuery} from "react-query";
 import {Link} from "react-router-dom";
+import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 
-export const fetchTexts = async () => {
+export const fetchCollections = async () => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
   const {data} = await axiosInstance.get("api/v1/terms", {
@@ -21,12 +22,18 @@ export const fetchTexts = async () => {
 }
 const Collections = () => {
   const {t} = useTranslate();
-  const {data: collectionsData, isLoading: termsIsLoading} = useQuery(
+  const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
     ["texts"],
-    () => fetchTexts(),
+    () => fetchCollections(),
     {refetchOnWindowFocus: false}
   );
 
+  // ----------------------------- helpers ---------------------------------------
+
+  const earlyReturn = getEarlyReturn({ termsIsLoading: collectionsIsLoading, collectionsError, t });
+  if (earlyReturn) return earlyReturn;
+
+  // ----------------------------- renderers -------------------------------------
   const renderBrowseLibrary = () => {
     return (
       <div className="browse-section">
@@ -72,9 +79,6 @@ const Collections = () => {
     );
   };
 
-  if(termsIsLoading){
-    return <div className="notfound listtitle"> {t("common.loading")}</div>;
-  }
 
   return (
     <div className="collections-container">

@@ -5,7 +5,7 @@ import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
-import SubCollections, { fetchChildTexts } from "./SubCollections.jsx";
+import SubCollections, { fetchSubCollections } from "./SubCollections.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -32,7 +32,7 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("../../utils/Constants.js", () => ({
+vi.mock("../../utils/constants.js", () => ({
   LANGUAGE: "LANGUAGE",
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
 }));
@@ -110,7 +110,7 @@ describe("SubCollections Component", () => {
     setup();
     const links = document.querySelectorAll(".text-item");
     links.forEach((link, index) => {
-      expect(link).toHaveAttribute("href", `/book/${mockTextChildData.terms[index].id}`);
+      expect(link).toHaveAttribute("href", `/works/${mockTextChildData.terms[index].id}`);
     });
   });
 
@@ -132,12 +132,12 @@ describe("SubCollections Component", () => {
     expect(container).toBeInTheDocument();
   });
 
-  test("fetchChildTexts function makes correct API call", async () => {
+  test("fetchSubCollections function makes correct API call", async () => {
     const parentId = "parent123";
     window.localStorage.getItem.mockReturnValue("bo-IN");
     axiosInstance.get.mockResolvedValueOnce({ data: mockTextChildData });
 
-    const result = await fetchChildTexts(parentId);
+    const result = await fetchSubCollections(parentId);
 
     expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/terms", {
       params: {
@@ -150,11 +150,11 @@ describe("SubCollections Component", () => {
     expect(result).toEqual(mockTextChildData);
   });
 
-  test("fetchChildTexts handles missing parentId", async () => {
+  test("fetchSubCollections handles missing parentId", async () => {
     vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
     axiosInstance.get.mockResolvedValueOnce({ data: mockTextChildData });
 
-    const result = await fetchChildTexts();
+    const result = await fetchSubCollections();
 
     expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/terms", {
       params: {
@@ -166,12 +166,12 @@ describe("SubCollections Component", () => {
     expect(result).toEqual(mockTextChildData);
   });
 
-  test("fetchChildTexts uses default language when none stored", async () => {
+  test("fetchSubCollections uses default language when none stored", async () => {
     const parentId = "parent123";
     vi.spyOn(Storage.prototype, "getItem").mockReturnValue(null);
     axiosInstance.get.mockResolvedValueOnce({ data: mockTextChildData });
 
-    const result = await fetchChildTexts(parentId);
+    const result = await fetchSubCollections(parentId);
 
     expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/terms", {
       params: {

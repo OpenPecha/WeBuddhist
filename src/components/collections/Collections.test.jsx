@@ -5,7 +5,7 @@ import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router, useParams} from "react-router-dom";
-import Collections, {fetchTexts} from "./Collections.jsx";
+import Collections, {fetchCollections} from "./Collections.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -33,7 +33,7 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("../../utils/Constants.js", () => ({
+vi.mock("../../utils/constants.js", () => ({
   getAlphabet: () => ["A", "B", "C", "T"],
   LANGUAGE: "LANGUAGE",
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
@@ -218,7 +218,7 @@ describe("Collections Component", () => {
     vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en");
     axiosInstance.get.mockResolvedValueOnce({ data: mockTermsData });
 
-    const result = await fetchTexts();
+    const result = await fetchCollections();
     expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/terms", {
       params: {
         language: "en",

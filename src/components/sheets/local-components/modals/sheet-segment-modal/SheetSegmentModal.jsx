@@ -6,8 +6,8 @@ import { Form } from 'react-bootstrap';
 import { useQuery } from 'react-query';
 import axiosInstance from "../../../../../config/axios-config";
 import PaginationComponent from '../../../../../components/commons/pagination/PaginationComponent';
-import { getLanguageClass } from '../../../../../utils/Constants';
 import pechaIcon from '../../../../../assets/icons/pecha_icon.png';
+import {getLanguageClass} from "../../../../../utils/helperFunctions.jsx";
 
 export const fetchSegments = async (searchFilter, limit, skip) => {
   const { data } = await axiosInstance.get(`/api/v1/search?query=${searchFilter}&search_type=${'SOURCE'}`, {

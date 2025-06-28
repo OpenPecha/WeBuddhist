@@ -14,7 +14,7 @@ mockAxios();
 mockUseAuth();
 mockReactQuery();
 
-vi.mock("../../../utils/Constants.js", () => ({
+vi.mock("../../../utils/constants.js", () => ({
   LANGUAGE: "LANGUAGE",
   mapLanguageCode: () => "bo",
   getLanguageClass: (language) => {

@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import './Content.scss';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
-import { LANGUAGE, mapLanguageCode, getLanguageClass } from '../../../utils/Constants';
+import { LANGUAGE } from '../../../utils/constants.js';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { useTranslate } from "@tolgee/react";
+import {getLanguageClass, mapLanguageCode} from "../../../utils/helperFunctions.jsx";
 export const fetchTextContent = async (text_id, skip, pagination) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");

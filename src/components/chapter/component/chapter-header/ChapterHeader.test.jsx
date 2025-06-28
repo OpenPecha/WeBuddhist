@@ -23,7 +23,7 @@ vi.mock("../../../../context/PanelContext.jsx", () => ({
 
 import ChapterHeader from "./ChapterHeader";
 
-vi.mock("../../../../utils/Constants.js", () => ({
+vi.mock("../../../../utils/constants.js", () => ({
   getLanguageClass: (language) => language === "bo" ? "bo-text" : "en-text"
 }));
 

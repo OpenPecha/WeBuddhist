@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState, useCallback} from "react";
-import {getLanguageClass, sourceTranslationOptionsMapper, findAndScrollToSegment, findAndScrollToSection, checkSectionsForTranslation} from "../../../../utils/Constants.js";
+import {SOURCE_TRANSLATION_OPTIONS_MAPPER} from "../../../../utils/constants.js";
 import {useSearchParams} from "react-router-dom";
 import {useQuery} from "react-query";
 import {Container, Spinner} from "react-bootstrap";
@@ -9,6 +9,11 @@ import "./Chapter.scss"
 import ChapterHeader from "../chapter-header/ChapterHeader.jsx";
 import { usePanelContext, PanelProvider } from "../../../../context/PanelContext.jsx";
 import Resources from "../../../chapterV2/utils/resources/Resources.jsx";
+import {
+  checkSectionsForTranslation,
+  findAndScrollToSection,
+  findAndScrollToSegment, getLanguageClass
+} from "../../../../utils/helperFunctions.jsx";
 
 export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId,sectionId) => {
 
@@ -27,7 +32,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const [contents, setContents] = useState([]);
   const [selectedSegmentId, setSelectedSegmentId] = useState("");
   const [selectedSectionIndex, setSelectedSectionIndex] = useState(null);
-  const [selectedOption, setSelectedOption] = useState(sourceTranslationOptionsMapper.source);
+  const [selectedOption, setSelectedOption] = useState(SOURCE_TRANSLATION_OPTIONS_MAPPER.source);
   const [hasTranslation, setHasTranslation] = useState(false);
   const [activeSectionId, setActiveSectionId] = useState(null);
   const containerRef = useRef(null);
@@ -106,9 +111,9 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         const hasAnyTranslation = checkSectionsForTranslation(textDetails.content.sections);
         setHasTranslation(hasAnyTranslation);
         if (hasAnyTranslation) {
-          setSelectedOption(sourceTranslationOptionsMapper.source_translation);
+          setSelectedOption(SOURCE_TRANSLATION_OPTIONS_MAPPER.source_translation);
         } else {
-          setSelectedOption(sourceTranslationOptionsMapper.source);
+          setSelectedOption(SOURCE_TRANSLATION_OPTIONS_MAPPER.source);
         }
       }
     };
@@ -328,13 +333,13 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     
     return segments.map(segment => {
       const hasTranslation = segment.translation && segment.translation.content;
-      const showTranslation = (selectedOption === sourceTranslationOptionsMapper.translation || 
-                             selectedOption === sourceTranslationOptionsMapper.source_translation) && 
+      const showTranslation = (selectedOption === SOURCE_TRANSLATION_OPTIONS_MAPPER.translation ||
+                             selectedOption === SOURCE_TRANSLATION_OPTIONS_MAPPER.source_translation) &&
                              hasTranslation;
-      const showSource = selectedOption === sourceTranslationOptionsMapper.source || 
-                       selectedOption === sourceTranslationOptionsMapper.source_translation;
+      const showSource = selectedOption === SOURCE_TRANSLATION_OPTIONS_MAPPER.source ||
+                       selectedOption === SOURCE_TRANSLATION_OPTIONS_MAPPER.source_translation;
 
-      if (selectedOption === sourceTranslationOptionsMapper.translation && !hasTranslation) {
+      if (selectedOption === SOURCE_TRANSLATION_OPTIONS_MAPPER.translation && !hasTranslation) {
         return null;
       }
       return (

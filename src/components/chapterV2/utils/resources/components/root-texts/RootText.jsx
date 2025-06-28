@@ -6,8 +6,8 @@ import { useQuery } from "react-query";
 import { useEffect } from "react";
 import "./RootText.scss";
 import axiosInstance from "../../../../../../config/axios-config.js";
-import {getLanguageClass} from "../../../../../../utils/Constants.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
+import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 
 export const fetchRootTextData = async (segment_id) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/root_text`);

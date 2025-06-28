@@ -1,4 +1,3 @@
-import {getLanguageClass} from "../../../../utils/Constants.js";
 import {BsBookmark, BsBookmarkFill} from "react-icons/bs";
 import { LuPanelLeftClose, LuPanelLeftOpen } from "react-icons/lu";
 import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
@@ -6,6 +5,7 @@ import TranslationSource from "../translation-source-option-selector/Translation
 import {useState} from "react";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import "./ChapterHeader.scss";
+import {getLanguageClass} from "../../../../utils/helperFunctions.jsx";
 
 
 const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPages, removeChapter, currentChapter, hasTranslation}) => {
