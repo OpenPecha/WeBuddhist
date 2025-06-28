@@ -12,8 +12,9 @@ import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import axiosInstance from "../../../config/axios-config.js";
 import SheetDetailPageWithPanelContext, { fetchSheetData } from "./SheetDetailPage.jsx";
-import { BrowserRouter as Router, useParams, useSearchParams } from "react-router-dom";
+import { BrowserRouter as Router, useParams } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
+import * as Constants from "../sheet-utils/Constant";
 
 mockAxios();
 mockUseAuth();
@@ -73,6 +74,8 @@ describe("SheetDetailPage Component", () => {
     }
   };
 
+  let extractSpotifyInfoSpy;
+
   beforeEach(() => {
     vi.restoreAllMocks();
     useParams.mockReturnValue({ sheetSlugAndId: "test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3" });
@@ -80,6 +83,7 @@ describe("SheetDetailPage Component", () => {
       data: mockSheetData,
       isLoading: false,
     }));
+    extractSpotifyInfoSpy = vi.spyOn(Constants, 'extractSpotifyInfo').mockImplementation(() => null);
   });
 
   afterEach(() => {
@@ -163,6 +167,95 @@ describe("SheetDetailPage Component", () => {
     
     expect(screen.getByTestId("resources-panel")).toBeInTheDocument();
     expect(screen.getByText("Resources for segment: segment1")).toBeInTheDocument();
+  });
+
+  describe("getAudioSrc function tests", () => {
+    test("renders audio segment with Spotify URL correctly", () => {
+      extractSpotifyInfoSpy.mockReturnValue({ type: "track", id: "4iV5W9uYEdYUVa79Axb7Rh" });
+
+      const audioSheetData = {
+        ...mockSheetData,
+        content: {
+          segments: [
+            {
+              segment_id: "audio1",
+              type: "audio",
+              content: "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh"
+            }
+          ]
+        }
+      };
+
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+        data: audioSheetData,
+        isLoading: false,
+      }));
+
+      setup();
+      
+      const iframe = screen.getByTitle("audio-audio1");
+      expect(iframe).toBeInTheDocument();
+      expect(iframe.src).toBe("https://open.spotify.com/embed/track/4iV5W9uYEdYUVa79Axb7Rh?utm_source=generator");
+      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith("https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh");
+    });
+
+    test("renders audio segment with SoundCloud URL correctly", () => {
+      extractSpotifyInfoSpy.mockReturnValue(null);
+
+      const audioSheetData = {
+        ...mockSheetData,
+        content: {
+          segments: [
+            {
+              segment_id: "audio2",
+              type: "audio",
+              content: "https://soundcloud.com/test/track"
+            }
+          ]
+        }
+      };
+
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+        data: audioSheetData,
+        isLoading: false,
+      }));
+
+      setup();
+      
+      const iframe = screen.getByTitle("audio-audio2");
+      expect(iframe).toBeInTheDocument();
+      expect(iframe.src).toBe("https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Ftest%2Ftrack&color=%23ff5500");
+      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith("https://soundcloud.com/test/track");
+    });
+
+    test("handles audio segment with unsupported URL (returns null)", () => {
+      extractSpotifyInfoSpy.mockReturnValue(null);
+
+      const audioSheetData = {
+        ...mockSheetData,
+        content: {
+          segments: [
+            {
+              segment_id: "audio3",
+              type: "audio",
+              content: "https://example.com/unsupported-audio"
+            }
+          ]
+        }
+      };
+
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+        data: audioSheetData,
+        isLoading: false,
+      }));
+
+      setup();
+      
+      const iframe = screen.getByTitle("audio-audio3");
+      expect(iframe).toBeInTheDocument();
+      expect(iframe.src).toBe("");
+      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith("https://example.com/unsupported-audio");
+    });
   });
 
   test("fetchSheetData calls the correct API endpoint", async () => {
