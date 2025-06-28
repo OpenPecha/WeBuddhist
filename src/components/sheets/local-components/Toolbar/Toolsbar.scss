@@ -30,6 +30,26 @@
         cursor: not-allowed;
       }
     }
+    .save-status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-left: 10px;
+      vertical-align: middle;
+      background-color: #ccc; 
+      transition: background-color 0.3s;
+
+      &--idle {
+        background-color: #ccc; 
+      }
+      &--saving {
+        background-color: rgb(226, 150, 11);
+      }
+      &--saved {
+        background-color: #0aa01c; 
+      }
+    }
   }
   
   &-divider {

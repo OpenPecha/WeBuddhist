@@ -42,6 +42,7 @@ const Editor = ({ initialValue, children,title }) => {
   const navigate = useNavigate();
   const [sheetId, setSheetId] = useState(id === 'new' ? null : id);
  const hasCreatedSheet=useRef(false)
+  const [saveStatus, setSaveStatus] = useState('idle');
 
   const handleNavigation = useCallback(
     (newSheetId) => {
@@ -65,18 +66,21 @@ const Editor = ({ initialValue, children,title }) => {
   const saveSheet = useCallback(
     async (content) => {
       try {
+        setSaveStatus('saving');
         const payload = createPayload(content, title);
-        
         if (!sheetId) {
           const response = await createSheet(payload);
           const newSheetId = response.sheet_id;
           setSheetId(newSheetId);
           handleNavigation(newSheetId);
           hasCreatedSheet.current=true
+          setSaveStatus('saved');
           return;
         }
         await updateSheet(sheetId, payload);
+        setSaveStatus('saved');
       } catch (error) {
+        setSaveStatus('idle');
         console.error('Error saving sheet:', error);
       }
     },
@@ -100,7 +104,7 @@ const Editor = ({ initialValue, children,title }) => {
       initialValue={initialValue}
       onChange={handleChange}
     >
-      <Toolsbar editor={editor} value={value} title={title} sheetId={sheetId} />
+      <Toolsbar editor={editor} value={value} title={title} sheetId={sheetId} saveStatus={saveStatus} />
       {React.Children.map(children, (child) => React.cloneElement(child, { editor }))}
     </Slate>
   );

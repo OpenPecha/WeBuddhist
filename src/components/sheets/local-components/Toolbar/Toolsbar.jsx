@@ -13,7 +13,7 @@ import AlertModal from '../modals/alert-modal/AlertModal';
 import { useNavigate } from 'react-router-dom';
 
 const Toolsbar = (prop) => {
-  const {editor, value, title, sheetId} = prop
+  const {editor, value, title, sheetId, saveStatus} = prop
   const customEditor = useCustomEditor();
   const {t} = useTranslate();
   const navigate = useNavigate();
@@ -36,6 +36,20 @@ const Toolsbar = (prop) => {
     } catch (error) {
       setAlert({ open: true, type: 'error', message: t('Failed to publish sheet.',error)});
     }
+  };
+
+  const getSaveStatusIndicator = () => {
+    let statusClass = 'save-status-indicator--idle';
+    if (saveStatus === 'saving') {
+      statusClass = 'save-status-indicator--saving';
+    } else if (saveStatus === 'saved') {
+      statusClass = 'save-status-indicator--saved';
+    }
+    return (
+      <span
+        className={`save-status-indicator ${statusClass}`}
+      />
+    );
   };
 
   const renderMarkButtons = () => {
@@ -113,6 +127,7 @@ const Toolsbar = (prop) => {
         >
           {t("publish")}
         </button>
+        {getSaveStatusIndicator()}
       </div>
     );
   };
