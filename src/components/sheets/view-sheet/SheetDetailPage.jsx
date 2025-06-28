@@ -59,9 +59,8 @@ const SheetDetailPage = () => {
     switch (segment.type) {
       case 'source':
         return (
-          <div 
-            className={`segment segment-source ${isResourcesPanelOpen && segmentId === segment.segment_id ? 'selected' : ''}`} 
-            key={segment.segment_id} 
+          <button
+            className={`segment segment-source ${isResourcesPanelOpen && segmentId === segment.segment_id ? 'selected' : ''}`}
             onClick={() => handleSidePanelToggle(segment.segment_id)}
           >
             <div className="source-content">
@@ -71,7 +70,7 @@ const SheetDetailPage = () => {
               </div>
               <p className="pecha-title">{segment.text_title}</p>
             </div>
-          </div>
+          </button>
         );
       case 'content':
         return (

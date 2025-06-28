@@ -92,12 +92,14 @@
           gap: 1rem;
           margin-bottom: 1rem;
           transition: all 0.2s ease;
-    
           &.segment-source {
+            background: none;
+            border: none;
+            margin: auto;
             cursor: pointer;
             .source-content {
               flex: 1;
-              padding: 1rem;
+              padding: 2rem;
               margin: 0.5rem 0;
               border: 1px dashed #d7d7d7;
               border-radius: 4px;
