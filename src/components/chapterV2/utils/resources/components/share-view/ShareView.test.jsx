@@ -1,9 +1,5 @@
 import React from "react";
-<<<<<<< HEAD:src/components/chapterV2/utils/resources-side-panel/components/share-view/ShareView.test.jsx
-=======
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../../../test-utils/CommonMocks.js";
 import { BrowserRouter as Router } from "react-router-dom";
->>>>>>> develop:src/components/resources-side-panel/components/share-view/ShareView.test.jsx
 import {QueryClient, QueryClientProvider} from "react-query";
 import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";

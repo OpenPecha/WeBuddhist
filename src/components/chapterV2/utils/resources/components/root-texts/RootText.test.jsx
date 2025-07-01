@@ -6,13 +6,9 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
 import RootTextView, { fetchRootTextData } from "./RootText.jsx";
 import "@testing-library/jest-dom";
-<<<<<<< HEAD:src/components/chapterV2/utils/resources-side-panel/components/root-texts/RootText.test.jsx
 import {mockTolgee} from "../../../../../../test-utils/CommonMocks.js";
 import axiosInstance from "../../../../../../config/axios-config.js";
-=======
-import { PanelProvider } from "../../../../context/PanelContext.jsx";
->>>>>>> develop:src/components/resources-side-panel/components/root-texts/RootText.test.jsx
-
+import {PanelProvider} from "../../../../../../context/PanelContext.jsx";
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
   return {
@@ -23,7 +19,7 @@ vi.mock("@tolgee/react", async () => {
   };
 });
 
-vi.mock("../../../../utils/constants.js", () => ({
+vi.mock("../../../../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: (language) => {
     switch (language) {
       case "bo":

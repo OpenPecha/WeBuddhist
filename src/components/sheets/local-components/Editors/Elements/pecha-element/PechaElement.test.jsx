@@ -13,7 +13,7 @@ import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 mockAxios();
 mockReactQuery();
 
-vi.mock('../../../../../../utils/Constants', () => ({
+vi.mock('../../../../../../utils/helperFunctions.jsx', () => ({
   getLanguageClass: vi.fn(() => 'tibetan-class')
 }));
 

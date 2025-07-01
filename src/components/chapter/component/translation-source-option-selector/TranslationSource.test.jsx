@@ -4,6 +4,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { mockTolgee } from "../../../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
 import "@testing-library/jest-dom";
+import TranslationSource from "./TranslationSource";
+import {SOURCE_TRANSLATION_OPTIONS_MAPPER} from "../../../../utils/constants.js";
+
 
 const mockContext = {
   isResourcesPanelOpen: true,
@@ -21,10 +24,9 @@ vi.mock("../../../../context/PanelContext.jsx", () => ({
   PanelProvider: ({ children }) => children
 }));
 
-import TranslationSource from "./TranslationSource";
 
 vi.mock("../../../../utils/constants.js", () => ({
-  sourceTranslationOptionsMapper: {
+  SOURCE_TRANSLATION_OPTIONS_MAPPER: {
     "source": "SOURCE",
     "translation": "TRANSLATION",
     "source_translation": "SOURCE_TRANSLATION"

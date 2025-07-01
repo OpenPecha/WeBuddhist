@@ -4,6 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { mockTolgee } from "../../../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
 import "@testing-library/jest-dom";
+import ChapterHeader from "./ChapterHeader";
 
 const mockContext = {
   isResourcesPanelOpen: false,
@@ -21,9 +22,8 @@ vi.mock("../../../../context/PanelContext.jsx", () => ({
   PanelProvider: ({ children }) => children
 }));
 
-import ChapterHeader from "./ChapterHeader";
 
-vi.mock("../../../../utils/constants.js", () => ({
+vi.mock("../../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: (language) => language === "bo" ? "bo-text" : "en-text"
 }));
 

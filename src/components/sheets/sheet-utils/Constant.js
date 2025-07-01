@@ -1,5 +1,13 @@
+import { serialize } from "./serialize";
+
 const LIST_TYPES = ["ordered-list", "unordered-list"];
 const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
+
+const extractSpotifyInfo = (url) => {
+  const match = url.match(/spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/);
+  return match ? { type: match[1], id: match[2] } : null;
+};
+
 const isAlignType = (format) => {
   return TEXT_ALIGN_TYPES.includes(format);
 };
@@ -67,4 +75,34 @@ export {
   isListType,
   embedsRegex,
   removeFootnotes,
+  extractSpotifyInfo,
+};
+
+export const createPayload = (value, title, is_published = false) => {
+  const source = value.map((node, i) => {
+    if (["image", "audio", "video"].includes(node.type)) {
+      return {
+        position: i,
+        type: node.type,
+        content: node.src,
+      };
+    }
+    if (node.type === "pecha") {
+      return {
+        position: i,
+        type: "source",
+        content: node.src,
+      };
+    }
+    return {
+      position: i,
+      type: "content",
+      content: serialize(node),
+    };
+  });
+  return {
+    title,
+    source,
+    is_published,
+  };
 };

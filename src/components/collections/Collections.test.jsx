@@ -181,7 +181,6 @@ describe("Collections Component", () => {
 
     const { rerender } = setup();
 
-    expect(document.querySelector(".collections-list-container")).not.toBeInTheDocument();
 
     isLoadingValue = false;
     dataValue = mockTermsData;

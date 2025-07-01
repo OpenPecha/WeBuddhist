@@ -3,7 +3,7 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import NavigationBar from "./components/navbar/NavigationBar.jsx";
 import { useMutation } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.jsx";
-import { useEffect, useState } from "react";
+import { useEffect, useState , Suspense, lazy} from "react";
 import axiosInstance from "./config/axios-config.js";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "./utils/constants.js";
 import { useAuth } from "./config/AuthContext.jsx";
@@ -11,9 +11,9 @@ import EditUserProfile from "./components/edit-user-profile/EditUserProfile.jsx"
 import UserProfile from "./components/user-profile/UserProfile.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
-import { Suspense, lazy } from "react";
 import ContentsChapter from "./components/chapterV2/chapter/ContentsChapter.jsx";
 import Sheets from "./components/sheets/Sheets.jsx";
+import SheetDetailPage from "./components/sheets/view-sheet/SheetDetailPage.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 const Collections = lazy(() => import("./components/collections/Collections.jsx"));
@@ -134,8 +134,9 @@ function App() {
               <Route path="/chapter" element={<Chapters/>}/>
               <Route path="/chapter-v2" element={<ChaptersV2/>}/>{/*TODO :    should be removed */}
               <Route path="/search" element={<SearchResultsPage/>}/>
-              <Route path="/sheets" element={<Sheets/>}/>
               <Route path="*" element={<Collections/>}/>
+              <Route path="/sheets/:id" element={<Sheets/>}/>
+              <Route path="/temporary" element={<SheetDetailPage/>}/>
           </Routes>
       </Suspense>
     );

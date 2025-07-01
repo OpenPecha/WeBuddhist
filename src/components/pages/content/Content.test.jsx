@@ -14,8 +14,7 @@ mockAxios();
 mockUseAuth();
 mockReactQuery();
 
-vi.mock("../../../utils/constants.js", () => ({
-  LANGUAGE: "LANGUAGE",
+vi.mock("../../../utils/helperFunctions.jsx", () => ({
   mapLanguageCode: () => "bo",
   getLanguageClass: (language) => {
     switch (language) {
@@ -29,6 +28,10 @@ vi.mock("../../../utils/constants.js", () => ({
         return "en-text";
     }
   }
+}));
+
+vi.mock("../../../utils/constants.js", () => ({
+  LANGUAGE: "language",
 }));
 
 vi.mock("react-router-dom", async () => {
@@ -205,7 +208,7 @@ describe("Content Component", () => {
     const mockPagination = { limit: 10 };
     const result = await fetchTextContent("123", 0, mockPagination);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections/123/contents", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/texts/123/contents", {
       params: {
         language: "bo",
         limit: 10,

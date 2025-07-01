@@ -7,6 +7,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import Versions from "./Versions.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
+import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 
 mockAxios();
 mockUseAuth();
@@ -22,7 +23,7 @@ vi.mock("@tolgee/react", async () => {
   };
 });
 
-vi.mock("../../../utils/constants.js", () => ({
+vi.mock("../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: (lang) => `language-${lang}`,
 }));
 

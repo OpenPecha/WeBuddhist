@@ -14,6 +14,8 @@ import {
   findAndScrollToSection,
   findAndScrollToSegment, getLanguageClass
 } from "../../../../utils/helperFunctions.jsx";
+import PropTypes from "prop-types";
+
 
 export const fetchTextDetails = async (text_id, contentId, versionId,skip, limit,segmentId,sectionId) => {
 
@@ -218,21 +220,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     const currentContainer = containerRef.current;
     if (!currentContainer) return;
 
-    const handleScroll = () => {
-      const {scrollTop, scrollHeight, clientHeight} = currentContainer;
-      if (isPanelNavigationRef.current) {
-        isPanelNavigationRef.current = false;
-        lastScrollPositionRef.current = scrollTop;
-        return;
-      }
-      // Determine scroll direction using ref for immediate access to previous value
-      const isScrollingUp = scrollTop < lastScrollPositionRef.current;
-  
-      // Store current position for next comparison
-      lastScrollPositionRef.current = scrollTop;
-      setScrollPosition(scrollTop);
-
-      // Check if scrolled near bottom
+    const handleScrollDown = (scrollTop, scrollHeight, clientHeight) => {
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
       if (bottomScrollPosition > 0.99 && !isLoadingRef.current && totalContentRef.current > 0) {
         if (skipDetails.skip < totalContentRef.current - 1) {
@@ -254,8 +242,11 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
           }
         }
       }
+    };
 
-      if (scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0) {
+    const handleScrollUp = (scrollTop, isScrollingUp) => {
+      const shouldHandleScrollUp = scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0;
+      if (shouldHandleScrollUp) {
         const firstSectionNumber = contents[0]?.section_number;
         if (firstSectionNumber && firstSectionNumber > 1) {
           isLoadingTopRef.current = true;
@@ -278,7 +269,28 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         }
       }
     };
-    
+
+    const handleScroll = () => {
+      const {scrollTop, scrollHeight, clientHeight} = currentContainer;
+      if (isPanelNavigationRef.current) {
+        isPanelNavigationRef.current = false;
+        lastScrollPositionRef.current = scrollTop;
+        return;
+      }
+      // Determine scroll direction using ref for immediate access to previous value
+      const isScrollingUp = scrollTop < lastScrollPositionRef.current;
+
+      // Store current position for next comparison
+      lastScrollPositionRef.current = scrollTop;
+      setScrollPosition(scrollTop);
+
+      // Check if scrolled near bottom
+      handleScrollDown(scrollTop, scrollHeight, clientHeight);
+
+      // Check if scrolled near top
+      handleScrollUp(scrollTop, isScrollingUp);
+    };
+
     skipsCoveredRef.current.add(skipDetails.skip);
     currentContainer.addEventListener('scroll', handleScroll);
 
@@ -523,3 +535,35 @@ const ChapterWithPanelContext = (props) => (
 );
 
 export default ChapterWithPanelContext;
+
+Chapter.propTypes = {
+  addChapter: PropTypes.func.isRequired,
+  removeChapter: PropTypes.func.isRequired,
+  updateChapter: PropTypes.func.isRequired,
+  currentChapter: PropTypes.shape({
+    textId: PropTypes.string,
+    contentId: PropTypes.string,
+    contentIndex: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    versionId: PropTypes.string,
+    sectionId: PropTypes.string,
+    segmentId: PropTypes.string,
+    uniqueId: PropTypes.string
+  }).isRequired,
+  totalPages: PropTypes.number.isRequired,
+};
+
+ChapterWithPanelContext.propTypes = {
+  addChapter: PropTypes.func.isRequired,
+  removeChapter: PropTypes.func.isRequired,
+  updateChapter: PropTypes.func.isRequired,
+  currentChapter: PropTypes.shape({
+    textId: PropTypes.string,
+    contentId: PropTypes.string,
+    contentIndex: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    versionId: PropTypes.string,
+    sectionId: PropTypes.string,
+    segmentId: PropTypes.string,
+    uniqueId: PropTypes.string
+  }).isRequired,
+  totalPages: PropTypes.number.isRequired,
+};

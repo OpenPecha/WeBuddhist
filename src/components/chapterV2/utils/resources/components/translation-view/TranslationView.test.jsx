@@ -2,17 +2,14 @@ import React from "react";
 import {QueryClient, QueryClientProvider} from "react-query";
 import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
-import {fireEvent, render, screen} from "@testing-library/react";
+import {fireEvent, render} from "@testing-library/react";
 import TranslationView, {fetchTranslationsData} from "./TranslationView.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
-<<<<<<< HEAD:src/components/chapterV2/utils/resources-side-panel/components/translation-view/TranslationView.test.jsx
 import {mockReactQuery, mockAxios, mockTolgee, mockUseAuth} from "../../../../../../test-utils/CommonMocks.js";
+
 import axiosInstance from "../../../../../../config/axios-config.js";
-=======
-import axiosInstance from "../../../../config/axios-config.js";
-import { PanelProvider } from "../../../../context/PanelContext.jsx";
->>>>>>> develop:src/components/resources-side-panel/components/translation-view/TranslationView.test.jsx
+import {PanelProvider} from "../../../../../../context/PanelContext.jsx";
 
 mockAxios();
 mockUseAuth();

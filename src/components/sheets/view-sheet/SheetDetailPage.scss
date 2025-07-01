@@ -1,0 +1,181 @@
+.sheet-detail-wrapper {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+
+  .sheet-detail-container {
+    flex: 1;
+    padding: 2rem;
+    height: 100vh;
+    overflow-y: auto;
+   
+    .sheet-detail-page {
+      max-width: 800px;
+      margin: 0 auto;
+      .user-info{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        .user-info-avatar{
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+        }
+        .user-info-text{
+          text-align: left;
+          p:first-child{
+            margin: 0;
+            font-weight: 600;
+          }
+          p:last-child{
+            margin: 0;
+            font-size: 0.8rem;
+            color: #666;
+          }
+        }
+      }
+      .view-toolbar{
+        margin-bottom: 10px;
+        display: flex;
+        border-top: 1px solid #d7d7d7;
+        border-bottom: 1px solid #d7d7d7;
+        padding: 10px;
+        justify-content: space-between;
+        align-items: center;
+        .view-toolbar-item{
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 0 20px;
+          svg {
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+            
+            &:hover {
+              opacity: 1;
+            }
+          }
+          .view-toolbar-item-like {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            p {
+              margin: 0;
+              text-align: center;
+            }
+          }
+          .view-toolbar-item-eye{ 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            p {
+              margin: 0;
+              text-align: center;
+            }
+          }
+        }
+      } 
+      .sheet-detail-page-header {
+        h1 {
+          font-family: 'Noto Serif', serif;
+          margin-bottom: 1rem;
+        }
+      }
+      .sheet-content{
+        .segment {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 1rem;
+          transition: all 0.2s ease;
+          &.segment-source {
+            background: none;
+            border: none;
+            margin: auto;
+            cursor: pointer;
+            .source-content {
+              flex: 1;
+              padding: 2rem;
+              margin: 0.5rem 0;
+              border: 1px dashed #d7d7d7;
+              border-radius: 4px;
+              
+              .pecha-icon {
+                margin-bottom: 10px;
+                width: 50px;
+                height: 50px;
+              }
+              .pecha-title {
+                margin-top: 10px;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #A9080E;
+              }
+              p {
+                margin: 0;
+              }
+    
+              footer {
+                margin-top: 10px;
+                
+                cite {
+                  font-size: 1.1rem;
+                  font-weight: 600;
+                  color: #A9080E;
+                  font-style: normal;
+                }
+              }
+            }
+          }
+    
+          &.segment-text {
+            .text-content {
+              margin: 0;
+            }
+          }
+    
+          &.segment-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            figure {
+              margin: 0;
+              img {
+                width: 100%;
+                height: auto;
+                max-height: 600px;
+                object-fit: cover;
+                border-radius: 4px;
+              }
+            }
+          }
+    
+          &.segment-audio {
+            audio {
+              width: 100%;
+              height: auto;
+            }
+          }
+    
+          &.segment-video {
+              width: 100%;
+              height: auto;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              
+              iframe {
+                max-width: 100%;
+                aspect-ratio: 16/9;
+              }
+          }
+        }
+      }
+    
+    }
+  }
+}

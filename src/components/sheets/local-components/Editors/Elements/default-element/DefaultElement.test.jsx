@@ -4,7 +4,10 @@ import "@testing-library/jest-dom";
 import DefaultElement from "./DefaultElement";
 import { vi } from "vitest";
 
-vi.mock('../../../../../../utils/Constants', () => ({
+import { useSelected } from 'slate-react';
+import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
+
+vi.mock('../../../../../../utils/helperFunctions.jsx', () => ({
   getLanguageClass: vi.fn(() => 'en-class')
 }));
 
@@ -16,8 +19,6 @@ vi.mock("react-icons/md", () => ({
   MdDragIndicator: (props) => <span data-testid="drag-indicator" {...props}>Drag</span>
 }));
 
-import { useSelected } from 'slate-react';
-import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 
 describe("DefaultElement Component", () => {
   const defaultProps = {
