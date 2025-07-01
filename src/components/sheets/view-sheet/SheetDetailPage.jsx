@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
-import { getLanguageClass } from '../../../utils/Constants';
+import { useParams,useNavigate, useSearchParams } from 'react-router-dom';
+import { getLanguageClass, USER_NOT_FOUND } from '../../../utils/Constants';
 import pechaIcon from '../../../assets/icons/pecha_icon.png';
 import './SheetDetailPage.scss';
 import YouTube from 'react-youtube';
@@ -38,7 +38,8 @@ const SheetDetailPage = () => {
   // const { sheetSlugAndId } = useParams();
   // const sheetId = sheetSlugAndId.split('-').pop();
   const {t}=useTranslate();
-  const sheetId= "626ddc35-a146-4bca-a3a3-b8221c501df3"//remove this once samdup work is done
+  const navigate=useNavigate();
+  const sheetId= "b9c3acff-4e78-44b9-8e92-5fbdc1424d74"//remove this once samdup work is done
   const {data:sheetData, isLoading} = useQuery({
     queryKey:['sheetData',sheetId],
     queryFn:()=>fetchSheetData(sheetId)
@@ -138,7 +139,9 @@ const SheetDetailPage = () => {
         <div className="view-toolbar-item">
           <FiPrinter/>
           <FiShare/>
-          <FiEdit />
+          <FiEdit onClick={()=>{
+            navigate(`/sheets/${sheetId}`)
+          }}/>
           <FiTrash />
         </div>
       </div>
@@ -148,7 +151,11 @@ const SheetDetailPage = () => {
     const { name, username, avatar_url } = sheetData.publisher;
     return(
       <div className="user-info">
-        <img src={avatar_url} alt="user" className='user-info-avatar' />
+        <img src={avatar_url}
+        onError={(e)=>{
+          e.target.src=USER_NOT_FOUND
+        }}
+         alt="user" className='user-info-avatar' />
         <div className="user-info-text">
           <p>{name}</p>
           <p>@{username}</p>
