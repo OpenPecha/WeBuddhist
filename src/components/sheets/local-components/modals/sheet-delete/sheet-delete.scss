@@ -1,0 +1,68 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    width: 24rem;
+    position: relative;
+  }
+  
+  .modal-content .close-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: #6b7280;
+    font-size: 1.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    &:hover {
+      color: #374151;
+    }
+  }
+  
+  .modal-content h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+  
+  .modal-content p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+  }
+  
+  .modal-content .button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  
+  .modal-content .cancel-button {
+    padding: 0.5rem 1rem;
+    background-color: #e5e7eb;
+    border-radius: 9999px;
+    &:hover {
+      background-color: #d1d5db;
+    }
+  }
+  
+  .modal-content .delete-button {
+    padding: 0.5rem 1rem;
+    background-color: #ef4444;
+    color: white;
+    border-radius: 9999px;
+    &:hover {
+      background-color: #dc2626;
+    }
+  }
