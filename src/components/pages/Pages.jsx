@@ -44,7 +44,6 @@ const Pages = () => {
   const { t } = useTranslate();
   const textId = versionsData?.text?.id;
 
-  console.log(contentId)
   return (
     <div className="pecha-app">
       <main className="main-content">

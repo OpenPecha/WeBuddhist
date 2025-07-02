@@ -1,7 +1,7 @@
-import React from "react"
-
-const CommentaryChapter = () => {
-
-}
-
-export  default React.memo(CommentaryChapter)
+// import React from "react"
+//
+// const CommentaryChapter = () => {
+//
+// }
+//
+// export  default React.memo(CommentaryChapter)
