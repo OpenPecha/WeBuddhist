@@ -170,7 +170,7 @@ export function convertSegmentsToSlate(segments) {
     if (type === "source") {
       return {
         type: "pecha",
-        src: content,
+        src: segment.segment_id,
         children: [{ text: "" }],
       };
     }
