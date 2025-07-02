@@ -56,7 +56,7 @@ const Collections = () => {
     return (
       <div className="collections-list-container">
         {collectionsData?.terms.map((term, index) => (
-          <div className="collections">
+          <div className="collections" key={term.id}>
             <div className={"red-line"}></div>
               {renderCollectionNames(term)}
               <p className="content collections-description">{term.description}</p>

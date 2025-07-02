@@ -6,8 +6,6 @@ import { Form } from 'react-bootstrap';
 import { useQuery } from 'react-query';
 import axiosInstance from "../../../../../config/axios-config";
 import PaginationComponent from '../../../../../components/commons/pagination/PaginationComponent';
-import pechaIcon from '../../../../../assets/icons/pecha_icon.png';
-import {getLanguageClass} from "../../../../../utils/helperFunctions.jsx";
 import SourceItem from './SourceItem';
 import PropTypes from 'prop-types';
 

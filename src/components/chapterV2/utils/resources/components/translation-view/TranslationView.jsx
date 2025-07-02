@@ -32,7 +32,7 @@ const TranslationView = ({
   const {closeResourcesPanel} = usePanelContext();
   const {data: sidePanelTranslationsData} = useQuery(
     ["sidePanelTranslations",segmentId],
-    () => fetchTranslationsData(segmentId), //send segmentId later todo
+    () => fetchTranslationsData(segmentId),
     {
       refetchOnWindowFocus: false,
     }
@@ -105,7 +105,7 @@ const TranslationView = ({
                   textId: translation.text_id, 
                   segmentId: translation.segment_id,
                   // contentIndex: sectionindex !== null ? sectionindex : 0
-                  contentIndex: 0 //todo : change this to above when pagination on version is added
+                  contentIndex: 0
                 });
                 closeResourcesPanel();
               }}
