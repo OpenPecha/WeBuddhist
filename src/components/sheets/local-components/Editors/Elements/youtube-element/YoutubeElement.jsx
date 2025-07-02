@@ -1,5 +1,5 @@
 import YoutubeEmbed from 'react-youtube'
-
+import PropTypes from "prop-types";
 const YoutubeElement = props => {
     const {attributes,children,element} = props
     const {youtubeId} = element
@@ -14,3 +14,10 @@ const YoutubeElement = props => {
   }
   
   export default YoutubeElement
+  YoutubeElement.propTypes = {
+    attributes: PropTypes.object.isRequired, 
+    children: PropTypes.node.isRequired, 
+    element: PropTypes.shape({
+      youtubeId: PropTypes.string
+    }).isRequired
+  }

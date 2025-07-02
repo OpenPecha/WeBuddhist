@@ -1,5 +1,5 @@
 import React from 'react'
-
+import PropTypes from "prop-types";
 const ListItem = (props) => {
   const { attributes, children } = props
   return (
@@ -10,3 +10,7 @@ const ListItem = (props) => {
 }
 
 export default ListItem
+ListItem.propTypes = {
+  attributes: PropTypes.object.isRequired, 
+  children: PropTypes.node.isRequired
+}

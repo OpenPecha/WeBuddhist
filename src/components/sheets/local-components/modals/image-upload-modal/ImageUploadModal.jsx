@@ -8,7 +8,7 @@ import ImageCropContent from "../image-crop-modal/ImageCropModal";
 import axiosInstance from "../../../../../config/axios-config";
 import { useParams } from "react-router-dom";
 import "./ImageUpload.scss";
-
+import PropTypes from "prop-types";
 export const UploadImageToS3= async(file,sheetId)=>{
   const formData= new FormData();
   formData.append("file", file);
@@ -189,4 +189,8 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
   );
 };
 
-export default ImageUploadModal; 
+export default ImageUploadModal;
+ImageUploadModal.propTypes={
+  onClose: PropTypes.func.isRequired,
+  onUpload: PropTypes.func.isRequired,
+}; 

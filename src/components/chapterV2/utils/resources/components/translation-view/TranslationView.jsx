@@ -6,7 +6,7 @@ import { useQuery } from "react-query";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
-
+import PropTypes from "prop-types";
 export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {
     params: {
@@ -164,3 +164,13 @@ const TranslationView = ({
 };
 
 export default TranslationView;
+TranslationView.propTypes = {
+  segmentId: PropTypes.string.isRequired, 
+  setIsTranslationView: PropTypes.func.isRequired, 
+  expandedTranslations: PropTypes.object.isRequired, 
+  setExpandedTranslations: PropTypes.func.isRequired, 
+  setVersionId: PropTypes.func.isRequired, 
+  versionId: PropTypes.string, 
+  addChapter: PropTypes.func.isRequired, 
+  sectionindex: PropTypes.number
+}

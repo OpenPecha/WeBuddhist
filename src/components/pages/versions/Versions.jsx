@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 import React from "react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
-
+import PropTypes from "prop-types";
 const Versions = ({ versionsData, pagination, setPagination }) => {
   const { t } = useTranslate();
   const languageMap = {
@@ -73,3 +73,20 @@ const Versions = ({ versionsData, pagination, setPagination }) => {
   )
 }
 export default Versions
+Versions.propTypes = {
+  versionsData: PropTypes.shape({
+    versions: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
+        language: PropTypes.string.isRequired,
+        table_of_contents: PropTypes.array.isRequired
+      })
+    ).isRequired
+  }), 
+  pagination: PropTypes.shape({
+    currentPage: PropTypes.number.isRequired,
+    limit: PropTypes.number.isRequired
+  }).isRequired, 
+  setPagination: PropTypes.func.isRequired
+}

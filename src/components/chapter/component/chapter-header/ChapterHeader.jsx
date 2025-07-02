@@ -6,6 +6,7 @@ import {useState} from "react";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import "./ChapterHeader.scss";
 import {getLanguageClass} from "../../../../utils/helperFunctions.jsx";
+import PropTypes from "prop-types";
 
 
 const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPages, removeChapter, currentChapter, hasTranslation}) => {
@@ -55,3 +56,15 @@ const ChapterHeader = ({textDetails, selectedOption, setSelectedOption, totalPag
 }
 
 export default ChapterHeader
+ChapterHeader.propTypes = {
+  textDetails: PropTypes.shape({
+    title: PropTypes.string,
+    language: PropTypes.string,
+  }),
+  selectedOption: PropTypes.string.isRequired, 
+  setSelectedOption: PropTypes.func.isRequired, 
+  totalPages: PropTypes.number.isRequired, 
+  removeChapter: PropTypes.func.isRequired, 
+  currentChapter: PropTypes.number.isRequired, 
+  hasTranslation: PropTypes.bool.isRequired
+}

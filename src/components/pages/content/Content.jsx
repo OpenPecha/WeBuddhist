@@ -8,6 +8,7 @@ import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { useTranslate } from "@tolgee/react";
 import {getLanguageClass, mapLanguageCode} from "../../../utils/helperFunctions.jsx";
 import axiosInstance from "../../../config/axios-config.js";
+import PropTypes from "prop-types";
 export const fetchTextContent = async (text_id, skip, pagination) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -163,3 +164,7 @@ const Content = ({textId, setContentId}) => {
 };
 
 export default Content;
+Content.propTypes = {
+  textId: PropTypes.string.isRequired, 
+  setContentId: PropTypes.func.isRequired
+}

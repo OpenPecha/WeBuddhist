@@ -7,7 +7,7 @@ import "./RelatedTexts.scss";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
-
+import PropTypes from "prop-types";
 export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/commentaries`, {
     params: {
@@ -128,3 +128,11 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
 };
 
 export default CommentaryView;
+CommentaryView.propTypes = {
+  segmentId: PropTypes.string.isRequired, 
+  setIsCommentaryView: PropTypes.func.isRequired, 
+  expandedCommentaries: PropTypes.object.isRequired, 
+  setExpandedCommentaries: PropTypes.func.isRequired, 
+  addChapter: PropTypes.func.isRequired, 
+  sectionindex: PropTypes.number
+}

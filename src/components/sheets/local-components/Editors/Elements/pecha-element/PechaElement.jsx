@@ -4,7 +4,7 @@ import './PechaElement.scss';
 import pechaIcon from '../../../../../../assets/icons/pecha_icon.png';
 import { removeFootnotes } from '../../../../sheet-utils/Constant';
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
-
+import PropTypes from "prop-types";
 export const fetchSegmentDetails = async (segmentId) => {
   const { data } = await axiosInstance.get(`/api/v1/segments/${segmentId}`, {
     params: {
@@ -49,3 +49,10 @@ const PechaElement = props => {
 };
 
 export default PechaElement;
+PechaElement.propTypes = {
+  attributes: PropTypes.object.isRequired, 
+  children: PropTypes.node.isRequired, 
+  element: PropTypes.shape({
+    src: PropTypes.string
+  }).isRequired
+}

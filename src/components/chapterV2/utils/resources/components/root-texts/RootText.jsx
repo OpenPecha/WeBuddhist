@@ -8,7 +8,7 @@ import "./RootText.scss";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
-
+import PropTypes from "prop-types";
 export const fetchRootTextData = async (segment_id) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/root_text`);
   return data;
@@ -148,3 +148,11 @@ const {closeResourcesPanel} = usePanelContext();
 };
 
 export default RootTextView;
+RootTextView.propTypes = {
+  segmentId: PropTypes.string.isRequired, 
+  setIsRootTextView: PropTypes.func.isRequired, 
+  expandedRootTexts: PropTypes.object.isRequired, 
+  setExpandedRootTexts: PropTypes.func.isRequired, 
+  addChapter: PropTypes.func.isRequired, 
+  sectionindex: PropTypes.number
+} 

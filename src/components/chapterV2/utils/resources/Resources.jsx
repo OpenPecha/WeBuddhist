@@ -15,7 +15,7 @@ import axiosInstance from "../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../context/PanelContext.jsx";
 import {MENU_ITEMS, LANGUAGE} from "../../../../utils/constants.js";
 import {mapLanguageCode} from "../../../../utils/helperFunctions.jsx";
-
+import PropTypes from "prop-types";
 export const fetchSidePanelData = async (segmentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -187,3 +187,11 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
 }
 
 export default Resources;
+Resources.propTypes = {
+  segmentId: PropTypes.string.isRequired, 
+  setVersionId: PropTypes.func.isRequired, 
+  versionId: PropTypes.string, 
+  addChapter: PropTypes.func.isRequired, 
+  sectionindex: PropTypes.number.isRequired, 
+  handleClose: PropTypes.func
+}

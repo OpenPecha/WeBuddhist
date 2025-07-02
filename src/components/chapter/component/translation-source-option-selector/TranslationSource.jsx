@@ -4,6 +4,7 @@ import "./TranslationSource.scss";
 import {useTranslate} from "@tolgee/react";
 import {SOURCE_TRANSLATION_OPTIONS_MAPPER} from "../../../../utils/constants.js";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
+import PropTypes from "prop-types";
 
 const TranslationSource = ({selectedOption, onOptionChange, onClose, hasTranslation = false}) => {
   const { closeResourcesPanel } = usePanelContext();
@@ -63,3 +64,9 @@ const TranslationSource = ({selectedOption, onOptionChange, onClose, hasTranslat
 };
 
 export default TranslationSource;
+TranslationSource.propTypes = {
+  selectedOption: PropTypes.string.isRequired, 
+  onOptionChange: PropTypes.func.isRequired, 
+  onClose: PropTypes.func.isRequired, 
+  hasTranslation: PropTypes.bool.isRequired
+}
