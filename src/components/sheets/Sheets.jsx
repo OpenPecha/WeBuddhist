@@ -38,11 +38,11 @@ const Sheets = () => {
     <div className="sheets-wrapper">
       <input type="text" 
       style={{fontFamily:"serif"}} 
-      value={title || sheetData?.sheet_title} 
+      value={ sheetData?.sheet_title || title} 
       onChange={(e)=>{setTitle(e.target.value); sessionStorage.setItem("sheet-title", e.target.value)}} 
       className=" title-input" placeholder={t("sheet.title.placeholder")}/>
       <ProfileCard />
-      <Editor title={debouncedTitle} initialValue={initialValue}>
+      <Editor title={debouncedTitle || sheetData?.sheet_title} initialValue={initialValue}>
         <Editor.Input />
       </Editor>
     </div>
