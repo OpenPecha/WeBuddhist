@@ -39,7 +39,7 @@ const SheetDetailPage = () => {
   // const sheetId = sheetSlugAndId.split('-').pop();
   const {t}=useTranslate();
   const navigate=useNavigate();
-  const sheetId= "9be308ea-15b5-48b5-9d5f-4aa926eafd72"//remove this once samdup work is done
+  const sheetId= "48ff874c-795b-4cca-ac4e-f20e62ee3e98"//remove this once samdup work is done
   const {data:sheetData, isLoading} = useQuery({
     queryKey:['sheetData',sheetId],
     queryFn:()=>fetchSheetData(sheetId)
@@ -55,7 +55,6 @@ const SheetDetailPage = () => {
     setSearchParams(newParams);
     openResourcesPanel();
   };
-
   const renderSegment = (segment) => {
     switch (segment.type) {
       case 'source':
