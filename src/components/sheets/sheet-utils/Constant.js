@@ -108,3 +108,76 @@ export const createPayload = (value, title, is_published = false) => {
     is_published,
   };
 };
+
+export function convertSegmentsToSlate(segments) {
+  if (segments.length === 0) {
+    return [{ type: "paragraph", align: "left", children: [{ text: "" }] }];
+  }
+  const parser = typeof window !== "undefined" ? new window.DOMParser() : null;
+  return segments.map((segment) => {
+    const { type, content } = segment;
+    if (type === "content") {
+      if (parser && /<\/?[a-z][\s\S]*>/i.test(content)) {
+        const doc = parser.parseFromString(
+          `<body>${content}</body>`,
+          "text/html"
+        );
+        const body = doc.body;
+        const child = body.firstChild;
+        if (child && child.nodeName === "DIV") {
+          const align = child.style.textAlign || "left";
+          const text = child.textContent || "";
+          return {
+            type: "paragraph",
+            align,
+            children: [{ text }],
+          };
+        }
+        return {
+          type: "paragraph",
+          align: "left",
+          children: [{ text: body.textContent || "" }],
+        };
+      } else {
+        return {
+          type: "paragraph",
+          align: "left",
+          children: [{ text: content || "" }],
+        };
+      }
+    }
+    if (type === "video") {
+      return {
+        type: "youtube",
+        youtubeId: content,
+        children: [{ text: "" }],
+      };
+    }
+    if (type === "image") {
+      return {
+        type: "image",
+        src: content,
+        children: [{ text: "" }],
+      };
+    }
+    if (type === "audio") {
+      return {
+        type: "audio",
+        src: content,
+        children: [{ text: "" }],
+      };
+    }
+    if (type === "source") {
+      return {
+        type: "pecha",
+        src: content,
+        children: [{ text: "" }],
+      };
+    }
+    return {
+      type: "paragraph",
+      align: "left",
+      children: [{ text: content || "" }],
+    };
+  });
+}

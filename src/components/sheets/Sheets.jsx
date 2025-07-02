@@ -7,7 +7,7 @@ import { useDebounce } from 'use-debounce';
 import { useParams } from 'react-router-dom';
 import { fetchSheetData } from './view-sheet/SheetDetailPage';
 import { useQuery } from 'react-query';
-import { deserializeSheetSegments } from './sheet-utils/deserialize';
+import { convertSegmentsToSlate } from './sheet-utils/Constant';
 
 const defaultValue = [
   {
@@ -31,10 +31,9 @@ const Sheets = () => {
   const [debouncedTitle] = useDebounce(title, 1000);
   const initialValue = useMemo(
     () =>
-     sheetData && deserializeSheetSegments(sheetData?.content?.segments) || defaultValue,
+     sheetData && convertSegmentsToSlate(sheetData?.content?.segments) || defaultValue,
     []
   )
-
   return (
     <div className="sheets-wrapper">
       <input type="text" 
