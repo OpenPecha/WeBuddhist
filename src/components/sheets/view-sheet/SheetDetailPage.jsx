@@ -39,7 +39,7 @@ const SheetDetailPage = () => {
   // const sheetId = sheetSlugAndId.split('-').pop();
   const {t}=useTranslate();
   const navigate=useNavigate();
-  const sheetId= "b9c3acff-4e78-44b9-8e92-5fbdc1424d74"//remove this once samdup work is done
+  const sheetId= "61fd4793-de30-4901-9498-d07b40ff7c28"//remove this once samdup work is done
   const {data:sheetData, isLoading} = useQuery({
     queryKey:['sheetData',sheetId],
     queryFn:()=>fetchSheetData(sheetId)
@@ -76,7 +76,6 @@ const SheetDetailPage = () => {
       case 'content':
         return (
           <div className="segment segment-text" key={segment.segment_id}>
-            
             <p className="text-content" dangerouslySetInnerHTML={{ __html: segment.content }}/>
           </div>
         );

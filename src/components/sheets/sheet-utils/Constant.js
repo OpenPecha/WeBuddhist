@@ -4,7 +4,9 @@ const LIST_TYPES = ["ordered-list", "unordered-list"];
 const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
 
 const extractSpotifyInfo = (url) => {
-  const match = url.match(/spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/);
+  const match = url.match(
+    /spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/
+  );
   return match ? { type: match[1], id: match[2] } : null;
 };
 
@@ -80,11 +82,11 @@ export {
 
 export const createPayload = (value, title, is_published = false) => {
   const source = value.map((node, i) => {
-    if (["image", "audio", "video"].includes(node.type)) {
+    if (["image", "audio", "video", "youtube"].includes(node.type)) {
       return {
         position: i,
-        type: node.type,
-        content: node.src,
+        type: node.type == "youtube" ? "video" : node.type,
+        content: node.type == "youtube" ? node.youtubeId : node.src,
       };
     }
     if (node.type === "pecha") {
