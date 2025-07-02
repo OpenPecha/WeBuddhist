@@ -11,6 +11,7 @@ import { extractSpotifyInfo } from '../sheet-utils/Constant';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
 import { useTranslate } from '@tolgee/react';
+import { SheetDeleteModal } from '../local-components/modals/sheet-delete/sheet_delete';
 
 export const fetchSheetData=async(id)=>{
 const {data}=await axiosInstance.get(`/api/v1/sheets/${id}`,{
@@ -46,6 +47,14 @@ const SheetDetailPage = () => {
   const [segmentId, setSegmentId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } = usePanelContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openDeleteModal = () => setIsModalOpen(true);
+  const closeDeleteModal = () => setIsModalOpen(false);
+  const handleDeleteSheet = () => {
+    console.log("Story deleted");
+    closeDeleteModal();
+  }
 
   const handleSidePanelToggle = (segmentId) => {
     setSegmentId(segmentId);
@@ -126,6 +135,7 @@ const SheetDetailPage = () => {
         </header>
     );
   };
+
   const renderViewToolbar=()=>{
     return(
       <div className="view-toolbar">
@@ -139,7 +149,7 @@ const SheetDetailPage = () => {
           <FiPrinter/>
           <FiShare/>
           <FiEdit />
-          <FiTrash />
+          <FiTrash onClick={() => openDeleteModal()}/>
         </div>
       </div>
     )
@@ -183,6 +193,11 @@ const SheetDetailPage = () => {
           handleClose={closeResourcesPanel}
         />
       )}
+      <SheetDeleteModal
+        isOpen={isModalOpen}
+        onClose={closeDeleteModal}
+        onDelete={handleDeleteSheet}
+      />
     </div>
   );
 };

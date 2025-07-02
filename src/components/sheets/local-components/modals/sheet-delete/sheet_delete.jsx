@@ -1,10 +1,10 @@
-import React, { useState } from 'https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js';
-import ReactDOM from 'https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js';
+import React from 'react';
+import { createPortal } from 'react-dom';
 
-const Modal = ({ isOpen, onClose, onDelete }) => {
+export const SheetDeleteModal = ({ isOpen, onClose, onDelete }) => {
   if (!isOpen) return null;
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <div className="modal-overlay">
       <div className="modal-content">
         <button
@@ -37,30 +37,3 @@ const Modal = ({ isOpen, onClose, onDelete }) => {
     document.body
   );
 };
-
-const App = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleDelete = () => {
-    console.log("Story deleted");
-    setIsModalOpen(false);
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="px-4 py-2 bg-blue-500 text-white rounded"
-      >
-        Open Modal
-      </button>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onDelete={handleDelete}
-      />
-    </div>
-  );
-};
-
-ReactDOM.render(<App />, document.getElementById('root'));
