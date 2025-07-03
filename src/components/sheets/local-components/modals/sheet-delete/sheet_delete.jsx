@@ -1,16 +1,16 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import "./sheet-delete.scss";
+import './sheet-delete.scss';
 
 export const SheetDeleteModal = ({ isOpen, onClose, onDelete }) => {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <div className="sheet-delete-modal-overlay">
+      <div className="sheet-delete-modal-content">
         <button
           onClick={onClose}
-          className="close-button"
+          className="sheet-delete-close-button"
         >
           ×
         </button>
@@ -19,16 +19,16 @@ export const SheetDeleteModal = ({ isOpen, onClose, onDelete }) => {
           Deletion is not reversible, and the sheet will be completely deleted. If you do not
           want to delete, you can unlist the sheet.
         </p>
-        <div className="button-group">
+        <div className="sheet-delete-button-group">
           <button
             onClick={onClose}
-            className="cancel-button"
+            className="sheet-delete-cancel-button"
           >
             Cancel
           </button>
           <button
             onClick={onDelete}
-            className="delete-button"
+            className="sheet-delete-delete-button"
           >
             Delete
           </button>
