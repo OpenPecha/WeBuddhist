@@ -109,6 +109,41 @@ export const createPayload = (value, title, is_published = false) => {
   };
 };
 
+function htmlToSlate(domNode, marks = {}) {
+  if (domNode.nodeType === 3) {
+    if (!domNode.textContent) return null;
+    return { text: domNode.textContent, ...marks };
+  }
+  if (domNode.nodeType !== 1) return null;
+
+  let newMarks = { ...marks };
+  const tag = domNode.nodeName.toLowerCase();
+  if (tag === "strong" || tag === "b") newMarks.bold = true;
+  if (tag === "em" || tag === "i") newMarks.italic = true;
+  if (tag === "u") newMarks.underline = true;
+  if (tag === "span" && domNode.style) {
+    if (
+      domNode.style.fontWeight === "bold" ||
+      domNode.style.fontWeight === "700"
+    )
+      newMarks.bold = true;
+    if (domNode.style.fontStyle === "italic") newMarks.italic = true;
+    if (domNode.style.textDecoration.includes("underline"))
+      newMarks.underline = true;
+    if (domNode.style.color) newMarks.color = domNode.style.color;
+  }
+  let children = [];
+  domNode.childNodes.forEach((child) => {
+    const slateNode = htmlToSlate(child, newMarks);
+    if (Array.isArray(slateNode)) {
+      children.push(...slateNode);
+    } else if (slateNode) {
+      children.push(slateNode);
+    }
+  });
+  return children;
+}
+
 export function convertSegmentsToSlate(segments) {
   if (segments.length === 0) {
     return [{ type: "paragraph", align: "left", children: [{ text: "" }] }];
@@ -123,20 +158,29 @@ export function convertSegmentsToSlate(segments) {
           "text/html"
         );
         const body = doc.body;
-        const child = body.firstChild;
-        if (child && child.nodeName === "DIV") {
-          const align = child.style.textAlign || "left";
-          const text = child.textContent || "";
-          return {
-            type: "paragraph",
-            align,
-            children: [{ text }],
-          };
+        let align = "left";
+        let children = [];
+        if (body.firstChild && body.firstChild.nodeName === "DIV") {
+          const div = body.firstChild;
+          align = div.style.textAlign || "left";
+          children = htmlToSlate(div) || [];
+        } else {
+          body.childNodes.forEach((node) => {
+            const slateNodes = htmlToSlate(node);
+            if (Array.isArray(slateNodes)) {
+              children.push(...slateNodes);
+            } else if (slateNodes) {
+              children.push(slateNodes);
+            }
+          });
+        }
+        if (!children.length || !children.some((n) => n.text !== undefined)) {
+          children = [{ text: "" }];
         }
         return {
           type: "paragraph",
-          align: "left",
-          children: [{ text: body.textContent || "" }],
+          align,
+          children,
         };
       } else {
         return {

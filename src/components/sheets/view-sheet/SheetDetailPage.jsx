@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useParams,useNavigate, useSearchParams } from 'react-router-dom';
-import {  USER_NOT_FOUND } from '../../../utils/Constants';
 import pechaIcon from '../../../assets/icons/pecha_icon.png';
 import './SheetDetailPage.scss';
 import YouTube from 'react-youtube';
@@ -40,7 +39,7 @@ const SheetDetailPage = () => {
   // const sheetId = sheetSlugAndId.split('-').pop();
   const {t}=useTranslate();
   const navigate=useNavigate();
-  const sheetId= "455f346e-a73f-4d86-9e05-19b24bce2984"//remove this once samdup work is done
+  const sheetId= "4743346e-4af1-4b87-b321-620b0b4625be"//remove this once samdup work is done
   const {data:sheetData, isLoading} = useQuery({
     queryKey:['sheetData',sheetId],
     queryFn:()=>fetchSheetData(sheetId)
@@ -151,9 +150,6 @@ const SheetDetailPage = () => {
     return(
       <div className="user-info">
         <img src={avatar_url}
-        onError={(e)=>{
-          e.target.src=USER_NOT_FOUND
-        }}
          alt="user" className='user-info-avatar' />
         <div className="user-info-text">
           <p>{name}</p>
