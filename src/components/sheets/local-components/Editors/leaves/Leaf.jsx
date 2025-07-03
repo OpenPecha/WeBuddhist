@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 const Leaf = props => {
   return (
     <span
@@ -14,3 +15,12 @@ const Leaf = props => {
 }
 
 export default Leaf
+Leaf.propTypes = {
+  attributes: PropTypes.object.isRequired, 
+  children: PropTypes.node.isRequired, 
+  leaf: PropTypes.shape({
+    bold: PropTypes.bool, 
+    italic: PropTypes.bool, 
+    underline: PropTypes.bool
+  }).isRequired
+}

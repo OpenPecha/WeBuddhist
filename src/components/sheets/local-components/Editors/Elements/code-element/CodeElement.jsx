@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 const CodeElement = props => {
   const { attributes, children, element } = props;
   const quoteStyle = {
@@ -16,3 +17,10 @@ const CodeElement = props => {
   }
   
   export default CodeElement
+  CodeElement.propTypes = {
+    attributes: PropTypes.object.isRequired, 
+    children: PropTypes.node.isRequired, 
+    element: PropTypes.shape({
+        align: PropTypes.string
+    }).isRequired
+  }

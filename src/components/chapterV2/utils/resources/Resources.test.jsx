@@ -4,8 +4,14 @@ import * as reactQuery from "react-query";
 import {fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router} from "react-router-dom";
 import {TolgeeProvider} from "@tolgee/react";
-import {mockTolgee} from "../../test-utils/CommonMocks.js";
-import axiosInstance from "../../config/axios-config.js";
+import Resources, {fetchSidePanelData} from "./Resources.jsx";
+import {mockTolgee} from "../../../../test-utils/CommonMocks.js";
+import axiosInstance from "../../../../config/axios-config.js";
+
+vi.mock("../../../../utils/helperFunctions.jsx", () => ({
+  mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
+}));
+
 
 const mockContext = {
   isResourcesPanelOpen: true,
@@ -18,12 +24,11 @@ const mockContext = {
   toggleTranslationSource: vi.fn()
 };
 
-vi.mock("../../context/PanelContext.jsx", () => ({
+vi.mock("../../../../context/PanelContext.jsx", () => ({
   usePanelContext: () => mockContext,
-  PanelProvider: ({ children }) => children
 }));
 
-import Resources, {fetchSidePanelData} from "./Resources.jsx";
+
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -35,10 +40,9 @@ vi.mock("@tolgee/react", async () => {
   };
 });
 
-vi.mock("../../utils/Constants.js", () => ({
+vi.mock("../../../../utils/constants.js", () => ({
   LANGUAGE: "LANGUAGE",
-  mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
-  menuItems: [
+  MENU_ITEMS: [
     { label: "common.share", icon: vi.fn() },
     { label: "menu.item2", icon: vi.fn(), isHeader: true }
   ],
@@ -97,7 +101,8 @@ describe("Resources Side Panel", () => {
             fallback={"Loading tolgee..."}
             tolgee={mockTolgee}
           >
-            <Resources segmentId={"test123"} addChapter={() => vi.fn()} setVersionId={() => vi.fn()} versionId={"version1"}/>
+              <Resources segmentId={"test123"} addChapter={() => vi.fn()} setVersionId={() => vi.fn()}
+                         versionId={"version1"}/>
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>

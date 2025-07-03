@@ -1,10 +1,10 @@
 import "./Versions.scss"
 import {useTranslate} from "@tolgee/react";
-import {getLanguageClass} from "../../../utils/Constants.js";
 import {Link} from "react-router-dom";
 import React from "react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
-
+import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
+import PropTypes from "prop-types";
 const Versions = ({ versionsData, pagination, setPagination }) => {
   const { t } = useTranslate();
   const languageMap = {
@@ -42,7 +42,7 @@ const Versions = ({ versionsData, pagination, setPagination }) => {
             <div className="version">
               <div>
                 <Link
-                  to={`/texts/text-details?text_id=${version.id}&contentId=${version.table_of_contents[0]}&versionId=${version.id}&contentIndex=0`}
+                  to={`/chapter?text_id=${version.id}&contentId=${version.table_of_contents[0]}&versionId=${version.id}&contentIndex=0`}
                   className="section-title"
                 >
                   <div className={`${getLanguageClass(version.language)} titleversion`}>
@@ -73,3 +73,20 @@ const Versions = ({ versionsData, pagination, setPagination }) => {
   )
 }
 export default Versions
+Versions.propTypes = {
+  versionsData: PropTypes.shape({
+    versions: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
+        language: PropTypes.string.isRequired,
+        table_of_contents: PropTypes.array.isRequired
+      })
+    ).isRequired
+  }), 
+  pagination: PropTypes.shape({
+    currentPage: PropTypes.number.isRequired,
+    limit: PropTypes.number.isRequired
+  }).isRequired, 
+  setPagination: PropTypes.func.isRequired
+}

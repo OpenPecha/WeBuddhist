@@ -74,7 +74,7 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
             </div>
           ) : (
             sources.map((source) => (
-              <SourceItem 
+              <SourceItem
                 key={source.text.text_id}
                 source={source}
                 onSegment={onSegment}

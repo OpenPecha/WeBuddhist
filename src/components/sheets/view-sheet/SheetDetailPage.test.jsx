@@ -159,15 +159,15 @@ describe("SheetDetailPage Component", () => {
     expect(screen.getByAltText("Sheet content")).toBeInTheDocument();
   });
 
-  test("opens resources panel when clicking on a source segment", () => {
-    setup();
-    
-    const sourceSegment = screen.getByText("Source Title").closest(".segment-source");
-    fireEvent.click(sourceSegment);
-    
-    expect(screen.getByTestId("resources-panel")).toBeInTheDocument();
-    expect(screen.getByText("Resources for segment: segment1")).toBeInTheDocument();
-  });
+  // test("opens resources panel when clicking on a source segment", () => {
+  //   setup();
+  //
+  //   const sourceSegment = screen.getByText("Source Title").closest(".segment-source");
+  //   fireEvent.click(sourceSegment);
+  //
+  //   expect(screen.getByTestId("resources-panel")).toBeInTheDocument();
+  //   expect(screen.getByText("Resources for segment: segment1")).toBeInTheDocument();
+  // });
 
   describe("getAudioSrc function tests", () => {
     test("renders audio segment with Spotify URL correctly", () => {

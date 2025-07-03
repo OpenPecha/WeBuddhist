@@ -9,7 +9,7 @@ import { useDebounce } from 'use-debounce';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../../config/axios-config';
 import { createPayload } from '../../sheet-utils/Constant';
-
+import PropTypes from "prop-types";
 export const createSheet = async (payload) => {
   const accessToken = sessionStorage.getItem('accessToken');
   const { data } = await axiosInstance.post('/api/v1/sheets', payload, {
@@ -114,3 +114,8 @@ Editor.Input = EditorInput;
 Editor.Toolbar = Toolsbar;
 
 export default Editor;
+Editor.propTypes = {
+  initialValue: PropTypes.array, 
+  children: PropTypes.node, 
+  title: PropTypes.string
+}

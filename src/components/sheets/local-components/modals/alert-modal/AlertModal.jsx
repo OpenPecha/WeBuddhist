@@ -2,7 +2,7 @@ import React from 'react';
 import './AlertModal.scss';
 import pechaIcon from "../../../../../assets/icons/pecha_icon.png"
 import { IoClose } from 'react-icons/io5';
-
+import PropTypes from "prop-types";
 const AlertModal = ({ type, message, onClose }) => {
   const isSuccess = type === 'success';
 
@@ -32,3 +32,8 @@ const AlertModal = ({ type, message, onClose }) => {
 };
 
 export default AlertModal;
+AlertModal.propTypes = {
+  type: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
+}
