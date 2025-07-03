@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PropTypes from "prop-types";
 const QuoteElement = (props) => {
   const { attributes, children, element } = props;
   
@@ -20,3 +20,10 @@ const QuoteElement = (props) => {
 };
 
 export default QuoteElement;
+QuoteElement.propTypes = {
+  attributes: PropTypes.object.isRequired, 
+  children: PropTypes.node.isRequired, 
+  element: PropTypes.shape({
+    align: PropTypes.string
+  }).isRequired
+}

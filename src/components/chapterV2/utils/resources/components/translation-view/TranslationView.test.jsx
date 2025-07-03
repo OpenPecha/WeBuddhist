@@ -1,14 +1,15 @@
 import React from "react";
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../../../test-utils/CommonMocks.js";
 import {QueryClient, QueryClientProvider} from "react-query";
 import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
-import {fireEvent, render, screen} from "@testing-library/react";
+import {fireEvent, render} from "@testing-library/react";
 import TranslationView, {fetchTranslationsData} from "./TranslationView.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
-import axiosInstance from "../../../../config/axios-config.js";
-import { PanelProvider } from "../../../../context/PanelContext.jsx";
+import {mockReactQuery, mockAxios, mockTolgee, mockUseAuth} from "../../../../../../test-utils/CommonMocks.js";
+
+import axiosInstance from "../../../../../../config/axios-config.js";
+import {PanelProvider} from "../../../../../../context/PanelContext.jsx";
 
 mockAxios();
 mockUseAuth();
@@ -24,7 +25,7 @@ vi.mock("@tolgee/react", async () => {
   };
 });
 
-vi.mock("../../../../utils/Constants.js", () => ({
+vi.mock("../../../../utils/constants.js", () => ({
   getLanguageClass: (language) => `lang-${language}`,
 }));
 

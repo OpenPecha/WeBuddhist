@@ -1,12 +1,12 @@
 import { IoMdClose } from "react-icons/io";
 import { useTranslate } from "@tolgee/react";
-import { getLanguageClass } from "../../../../utils/Constants.js";
 import { GoLinkExternal } from "react-icons/go";
 import "./TranslationView.scss";
 import { useQuery } from "react-query";
-import axiosInstance from "../../../../config/axios-config.js";
-import { usePanelContext } from "../../../../context/PanelContext.jsx";
-
+import axiosInstance from "../../../../../../config/axios-config.js";
+import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
+import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
+import PropTypes from "prop-types";
 export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {
     params: {
@@ -32,7 +32,7 @@ const TranslationView = ({
   const {closeResourcesPanel} = usePanelContext();
   const {data: sidePanelTranslationsData} = useQuery(
     ["sidePanelTranslations",segmentId],
-    () => fetchTranslationsData(segmentId), //send segmentId later todo
+    () => fetchTranslationsData(segmentId),
     {
       refetchOnWindowFocus: false,
     }
@@ -105,7 +105,7 @@ const TranslationView = ({
                   textId: translation.text_id, 
                   segmentId: translation.segment_id,
                   // contentIndex: sectionindex !== null ? sectionindex : 0
-                  contentIndex: 0 //todo : change this to above when pagination on version is added
+                  contentIndex: 0
                 });
                 closeResourcesPanel();
               }}
@@ -164,3 +164,13 @@ const TranslationView = ({
 };
 
 export default TranslationView;
+TranslationView.propTypes = {
+  segmentId: PropTypes.string.isRequired, 
+  setIsTranslationView: PropTypes.func.isRequired, 
+  expandedTranslations: PropTypes.object.isRequired, 
+  setExpandedTranslations: PropTypes.func.isRequired, 
+  setVersionId: PropTypes.func.isRequired, 
+  versionId: PropTypes.string, 
+  addChapter: PropTypes.func.isRequired, 
+  sectionindex: PropTypes.number
+}

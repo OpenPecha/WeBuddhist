@@ -14,8 +14,7 @@ mockAxios();
 mockUseAuth();
 mockReactQuery();
 
-vi.mock("../../../utils/Constants.js", () => ({
-  LANGUAGE: "LANGUAGE",
+vi.mock("../../../utils/helperFunctions.jsx", () => ({
   mapLanguageCode: () => "bo",
   getLanguageClass: (language) => {
     switch (language) {
@@ -29,6 +28,10 @@ vi.mock("../../../utils/Constants.js", () => ({
         return "en-text";
     }
   }
+}));
+
+vi.mock("../../../utils/constants.js", () => ({
+  LANGUAGE: "language",
 }));
 
 vi.mock("react-router-dom", async () => {

@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslate } from '@tolgee/react';
 import './Sources.scss';
-import { getLanguageClass } from '../../../utils/Constants';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
+import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 
 
 export const fetchSources = async(query, skip, pagination) => {

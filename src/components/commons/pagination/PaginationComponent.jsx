@@ -1,7 +1,7 @@
 import React from "react";
 import { Pagination, Form } from "react-bootstrap";
 import "./PaginationComponent.scss"
-
+import PropTypes from "prop-types";
 const PaginationComponent = ({ pagination, totalPages, handlePageChange, setPagination }) => {
   return (
     <div className="pagination-container">
@@ -41,3 +41,12 @@ const PaginationComponent = ({ pagination, totalPages, handlePageChange, setPagi
 };
 
 export default PaginationComponent;
+PaginationComponent.propTypes = {
+  pagination: PropTypes.shape({
+    currentPage: PropTypes.number.isRequired, 
+    limit: PropTypes.number.isRequired
+  }).isRequired, 
+  totalPages: PropTypes.number.isRequired, 
+  handlePageChange: PropTypes.func.isRequired, 
+  setPagination: PropTypes.func.isRequired
+}

@@ -34,7 +34,7 @@ const UserLogin = () => {
                 const accessToken = data.auth.access_token;
                 const refreshToken = data.auth.refresh_token;
                 login(accessToken, refreshToken);
-                navigate("/texts");
+                navigate("/collections");
             },
             onError: (error) => {
                 console.error("Login failed", error);
@@ -85,8 +85,8 @@ const UserLogin = () => {
 
     const loginWithGoogle = async () => {
         try {
-            const redirectPath ="/texts";
-            
+            const redirectPath ="/collections";
+
             await loginWithRedirect({
                 authorizationParams: {
                     connection: 'google-oauth2',
@@ -103,8 +103,8 @@ const UserLogin = () => {
 
     const loginWithApple = async () => {
         try {
-            const redirectPath = "/texts";
-            
+            const redirectPath = "/collections";
+
             await loginWithRedirect({
                 authorizationParams: {
                     connection: 'apple'
@@ -214,17 +214,17 @@ const UserLogin = () => {
                             </Link>
                             <hr/>
                             <div className="social-login-buttons">
-                                <Button 
-                                    variant="outline-dark" 
-                                    className="social-btn" 
+                                <Button
+                                    variant="outline-dark"
+                                    className="social-btn"
                                     onClick={loginWithGoogle}
                                 >
                                     <FaGoogle />
                                     Google
                                 </Button>
-                                <Button 
-                                    variant="outline-dark" 
-                                    className="social-btn" 
+                                <Button
+                                    variant="outline-dark"
+                                    className="social-btn"
                                     onClick={loginWithApple}
                                 >
                                     <FaApple />

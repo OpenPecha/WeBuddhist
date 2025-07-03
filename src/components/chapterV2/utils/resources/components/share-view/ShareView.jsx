@@ -5,9 +5,9 @@ import { BsFacebook, BsTwitter } from "react-icons/bs";
 import { useTranslate } from "@tolgee/react";
 import "./ShareView.scss";
 import { useQuery } from "react-query";
-import axiosInstance from "../../../../config/axios-config";
 import { useSearchParams } from "react-router-dom";
-
+import axiosInstance from "../../../../../../config/axios-config.js";
+import PropTypes from "prop-types";
 export const fetchShortUrl = async (url,segmentId) => {
   const { data } = await axiosInstance.post('/api/v1/share', 
     { 
@@ -83,3 +83,6 @@ const ShareView = ({ setIsShareView }) => {
 };
 
 export default ShareView;
+ShareView.propTypes = {
+  setIsShareView: PropTypes.func.isRequired
+}

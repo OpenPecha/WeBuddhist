@@ -2,7 +2,8 @@ import React from 'react';
 import './DefaultElement.scss';
 import { MdDragIndicator } from "react-icons/md";
 import { useSelected } from 'slate-react';
-import { getLanguageClass } from '../../../../../../utils/Constants';
+import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
+import PropTypes from "prop-types";
 const DefaultElement = props => {
     const { element, attributes, children } = props;
     const selected=useSelected()
@@ -24,3 +25,10 @@ const DefaultElement = props => {
   }
 
 export default DefaultElement
+DefaultElement.propTypes = {
+  attributes: PropTypes.object.isRequired, 
+  children: PropTypes.node.isRequired, 
+  element: PropTypes.shape({
+      align: PropTypes.string
+  }).isRequired
+}

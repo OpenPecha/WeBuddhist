@@ -5,7 +5,7 @@ import UserProfile ,{fetchsheet} from "./UserProfile.jsx";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
-import { ACCESS_TOKEN } from "../../utils/Constants.js";
+import { ACCESS_TOKEN } from "../../utils/constants.js";
 import * as ReactRouterDom from "react-router-dom";
 import axiosInstance from "../../config/axios-config.js";
 

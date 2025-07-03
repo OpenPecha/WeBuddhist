@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "../utils/Constants.js";
+import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "../utils/constants.js";
 
 const AuthContext = createContext();
 

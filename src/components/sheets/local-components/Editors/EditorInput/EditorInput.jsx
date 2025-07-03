@@ -14,7 +14,7 @@ import Heading from '../Elements/style-elements/Heading'
 import List from '../Elements/style-elements/List'
 import ListItem from '../Elements/style-elements/ListItem'
 import './EditorInput.scss'
-
+import PropTypes from "prop-types";
 const EditorInput = (prop) => {
     const { editor } = prop
     const customEditor = useCustomEditor();
@@ -113,3 +113,6 @@ const EditorInput = (prop) => {
 }
 
 export default EditorInput
+EditorInput.propTypes = {
+  editor: PropTypes.object.isRequired
+}

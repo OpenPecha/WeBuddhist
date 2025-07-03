@@ -1,5 +1,5 @@
 import React from 'react'
-
+import PropTypes from "prop-types";
 const List = (props) => {
   const { attributes, children, element } = props
 
@@ -25,3 +25,11 @@ const List = (props) => {
 }
 
 export default List
+List.propTypes = {
+  attributes: PropTypes.object.isRequired, 
+  children: PropTypes.node.isRequired, 
+  element: PropTypes.shape({
+    align: PropTypes.string, 
+    type: PropTypes.string
+  }).isRequired
+}
