@@ -1,4 +1,3 @@
-
 .works-container {
   display: flex;
   justify-content: space-around;
@@ -34,25 +33,20 @@
           flex-wrap: wrap;
           gap: 3rem;
 
-
           .root-text {
             width: 20rem;
             text-decoration: none;
             cursor: pointer;
             transition: color 0.2s ease;
             text-align: left;
-
             font-size: 1.2rem;
             line-height: 1.4;
             color: #333;
             padding-top: 1rem;
             font-weight: 400;
-
             &:hover {
               text-decoration: underline;
             }
-
-
             .divider {
               height: 1px;
               background-color: #e0e0e0;
@@ -60,6 +54,9 @@
               width: 100%
             }
           }
+        }
+        .no-content {
+          text-align: left;
         }
       }
     }
@@ -85,18 +82,14 @@
             cursor: pointer;
             transition: color 0.2s ease;
             text-align: left;
-
             font-size: 1.2rem;
             line-height: 1.4;
             color: #333;
             padding-top: 1rem;
             font-weight: 400;
-
             &:hover {
               text-decoration: underline;
             }
-
-
             .divider {
               height: 1px;
               background-color: #e0e0e0;
@@ -104,6 +97,9 @@
               width: 100%
             }
           }
+        }
+        .no-content {
+          text-align: left;
         }
       }
     }

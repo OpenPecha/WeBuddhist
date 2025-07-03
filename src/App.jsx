@@ -22,7 +22,7 @@ const UserRegistration = lazy(() => import("./components/user-registration/UserR
 const Topics = lazy(() => import("./components/topics/Topics.jsx"));
 const CommunityPage = lazy(() => import("./components/community/CommunityPage.jsx"));
 const Pages = lazy(() => import("./components/pages/Pages.jsx"));
-const Book = lazy(() => import("./components/works/Works.jsx"));
+const Works = lazy(() => import("./components/works/Works.jsx"));
 const SubCollections = lazy(() => import("./components/sub-collections/SubCollections.jsx"));
 const Chapters = lazy(() => import("./components/chapter/Chapters.jsx"));
 // const ChaptersV2 = lazy(() => import("./components/chapterV2/Chapters"));
@@ -130,7 +130,7 @@ function App() {
               <Route path="/community" element={<CommunityPage/>}/>
               <Route path="/pages/:id" element={<Pages/>}/>
               <Route path="/collections/:id" element={<SubCollections/>}/>
-              <Route path="/works/:id" element={<Book/>}/>
+              <Route path="/works/:id" element={<Works/>}/>
               <Route path="/chapter" element={<Chapters/>}/>
               {/*<Route path="/chapter-v2" element={<ChaptersV2/>}/>/!*TODO :    should be removed *!/*/}
               <Route path="/search" element={<SearchResultsPage/>}/>
