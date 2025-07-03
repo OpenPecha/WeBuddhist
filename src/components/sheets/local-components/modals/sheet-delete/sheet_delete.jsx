@@ -2,7 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import './sheet-delete.scss';
 
-export const SheetDeleteModal = ({ isOpen, onClose, onDelete }) => {
+export const SheetDeleteModal = ({ isOpen, onClose, onDelete, isLoading }) => {
   if (!isOpen) return null;
 
   return createPortal(
@@ -11,6 +11,7 @@ export const SheetDeleteModal = ({ isOpen, onClose, onDelete }) => {
         <button
           onClick={onClose}
           className="sheet-delete-close-button"
+          disabled={isLoading}
         >
           ×
         </button>
@@ -23,14 +24,16 @@ export const SheetDeleteModal = ({ isOpen, onClose, onDelete }) => {
           <button
             onClick={onClose}
             className="sheet-delete-cancel-button"
+            disabled={isLoading}
           >
             Cancel
           </button>
           <button
             onClick={onDelete}
             className="sheet-delete-delete-button"
+            disabled={isLoading}
           >
-            Delete
+            {isLoading ? 'Deleting...' : 'Delete'}
           </button>
         </div>
       </div>
