@@ -7,6 +7,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import Versions from "./Versions.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
+import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 
 mockAxios();
 mockUseAuth();
@@ -22,7 +23,7 @@ vi.mock("@tolgee/react", async () => {
   };
 });
 
-vi.mock("../../../utils/Constants.js", () => ({
+vi.mock("../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: (lang) => `language-${lang}`,
 }));
 
@@ -149,7 +150,7 @@ describe("Versions Component", () => {
     expect(links.length).toBe(3);
     
     expect(links[0].getAttribute("href")).toBe(
-      "/texts/text-details?text_id=version1&contentId=content1&versionId=version1&contentIndex=0"
+      "/chapter?text_id=version1&contentId=content1&versionId=version1&contentIndex=0"
     );
   });
 

@@ -2,17 +2,18 @@ import React, {useEffect, useRef} from "react";
 import {Form} from "react-bootstrap";
 import "./TranslationSource.scss";
 import {useTranslate} from "@tolgee/react";
-import {sourceTranslationOptionsMapper} from "../../../../utils/Constants.js";
+import {SOURCE_TRANSLATION_OPTIONS_MAPPER} from "../../../../utils/constants.js";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
+import PropTypes from "prop-types";
 
 const TranslationSource = ({selectedOption, onOptionChange, onClose, hasTranslation = false}) => {
   const { closeResourcesPanel } = usePanelContext();
   const panelRef = useRef(null);
   const {t} = useTranslate()
   const options = [
-    {id: sourceTranslationOptionsMapper.source, label: "text.reader_option_menu.source", disabled: false},
-    {id: sourceTranslationOptionsMapper.translation, label: "text.reader_option_menu.translation", disabled: !hasTranslation},
-    {id: sourceTranslationOptionsMapper.source_translation, label: "text.reader_option_menu.source_with_translation", disabled: !hasTranslation},
+    {id: SOURCE_TRANSLATION_OPTIONS_MAPPER.source, label: "text.reader_option_menu.source", disabled: false},
+    {id: SOURCE_TRANSLATION_OPTIONS_MAPPER.translation, label: "text.reader_option_menu.translation", disabled: !hasTranslation},
+    {id: SOURCE_TRANSLATION_OPTIONS_MAPPER.source_translation, label: "text.reader_option_menu.source_with_translation", disabled: !hasTranslation},
   ];
 
   useEffect(() => {
@@ -63,3 +64,9 @@ const TranslationSource = ({selectedOption, onOptionChange, onClose, hasTranslat
 };
 
 export default TranslationSource;
+TranslationSource.propTypes = {
+  selectedOption: PropTypes.string.isRequired, 
+  onOptionChange: PropTypes.func.isRequired, 
+  onClose: PropTypes.func.isRequired, 
+  hasTranslation: PropTypes.bool.isRequired
+}

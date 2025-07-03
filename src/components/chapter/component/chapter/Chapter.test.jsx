@@ -14,7 +14,15 @@ import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import { fetchTextDetails } from "./Chapter.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
+import {TolgeeProvider} from "@tolgee/react";
+import {mockTolgee} from "../../../../test-utils/CommonMocks.js";
 
+vi.mock("../../../../utils/helperFunctions.jsx", () => ({
+  getLanguageClass: () => "language-class",
+  findAndScrollToSegment: vi.fn(),
+  findAndScrollToSection: vi.fn(),
+  checkSectionsForTranslation: vi.fn().mockReturnValue(true),
+}));
 vi.mock("../chapter-header/ChapterHeader.jsx", () => ({
   default: ({ selectedOption, setSelectedOption }) => (
     <div data-testid="chapter-header">
@@ -37,7 +45,7 @@ vi.mock("../left-side-panel/LeftSidePanel.jsx", () => ({
   ),
 }));
 
-vi.mock("../../../resources-side-panel/Resources.jsx", () => ({
+vi.mock("../../../resources/Resources.jsx", () => ({
   default: ({ segmentId }) => (
     <div data-testid="resources-panel">Resources for {segmentId}</div>
   ),
@@ -64,16 +72,16 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("../../../../utils/Constants.js", () => ({
-  getLanguageClass: () => "language-class",
-  sourceTranslationOptionsMapper: {
+vi.mock("../../../../utils/constants.js", () => ({
+  SOURCE_TRANSLATION_OPTIONS_MAPPER: {
     source: "source",
     translation: "translation",
     source_translation: "source_translation",
   },
-  findAndScrollToSegment: vi.fn(),
-  findAndScrollToSection: vi.fn(),
-  checkSectionsForTranslation: vi.fn().mockReturnValue(true),
+  MENU_ITEMS: [
+    { label: "common.share", icon: vi.fn() },
+    { label: "menu.item2", icon: vi.fn(), isHeader: true }
+  ],
 }));
 
 vi.mock("../../../../config/axios-config.js", () => ({
@@ -158,7 +166,9 @@ describe("Chapter Component", () => {
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
+          <TolgeeProvider tolgee={mockTolgee}>
           <Chapter {...defaultProps} {...props} />
+          </TolgeeProvider>
         </QueryClientProvider>
       </Router>
     );

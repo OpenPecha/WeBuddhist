@@ -1,12 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import "./CommunityPage.scss";
 import { useTranslate } from '@tolgee/react';
-import { LANGUAGE, mapLanguageCode } from '../../utils/Constants';
+import { LANGUAGE } from '../../utils/constants.js';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config.js';
 import { useNavigate,Link } from 'react-router-dom';
 import { useAuth } from '../../config/AuthContext.jsx';
 import { useAuth0 } from '@auth0/auth0-react';
+import {mapLanguageCode} from "../../utils/helperFunctions.jsx";
+
 export const fetchsheet = async (userid="", limit, skip) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";

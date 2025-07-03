@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import "./ImageCropModal.scss";
+import PropTypes from "prop-types";
 const createImage = (url) =>
   new Promise((resolve, reject) => {
     const image = new Image();
@@ -133,3 +134,8 @@ const ImageCropContent = ({ imageSrc, onBack, onCropComplete }) => {
 };
 
 export default ImageCropContent; 
+ImageCropContent.propTypes = {
+  imageSrc: PropTypes.string.isRequired, 
+  onBack: PropTypes.func.isRequired, 
+  onCropComplete: PropTypes.func.isRequired
+}

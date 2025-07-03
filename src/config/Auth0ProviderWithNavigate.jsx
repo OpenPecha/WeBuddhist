@@ -1,6 +1,6 @@
 import {Auth0Provider} from "@auth0/auth0-react";
 import {useNavigate} from "react-router-dom";
-import {LOGGED_IN_VIA} from "../utils/Constants.js";
+import {LOGGED_IN_VIA} from "../utils/constants.js";
 import PropTypes from "prop-types";
 import {useQuery} from "react-query";
 import axiosInstance from "./axios-config.js";

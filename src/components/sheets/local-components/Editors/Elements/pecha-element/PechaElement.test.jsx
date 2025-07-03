@@ -6,14 +6,14 @@ import PechaElement, { fetchSegmentDetails } from "./PechaElement";
 import { vi } from "vitest";
 import { mockAxios, mockReactQuery } from "../../../../../../test-utils/CommonMocks.js";
 import * as reactQuery from "react-query";
-import { getLanguageClass } from '../../../../../../utils/Constants';
 import { removeFootnotes } from '../../../../sheet-utils/Constant';
 import axiosInstance from '../../../../../../config/axios-config';
+import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 
 mockAxios();
 mockReactQuery();
 
-vi.mock('../../../../../../utils/Constants', () => ({
+vi.mock('../../../../../../utils/helperFunctions.jsx', () => ({
   getLanguageClass: vi.fn(() => 'tibetan-class')
 }));
 

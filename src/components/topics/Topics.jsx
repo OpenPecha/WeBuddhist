@@ -1,4 +1,4 @@
-import {LANGUAGE, mapLanguageCode} from "../../utils/Constants.js";
+import {LANGUAGE} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {useMemo, useState} from "react";
@@ -9,6 +9,7 @@ import React from "react";
 import {useTranslate} from "@tolgee/react";
 import {useDebounce} from "use-debounce";
 import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
+import {mapLanguageCode} from "../../utils/helperFunctions.jsx";
 
 export const fetchTopics = async (parentId, searchFilter, limit, skip, hierarchy) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);

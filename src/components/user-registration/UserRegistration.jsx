@@ -26,7 +26,7 @@ const UserRegistration = () => {
   const { loginWithRedirect, isAuthenticated } = useAuth0();
 
   if (isLoggedIn || isAuthenticated) {
-    navigate("/texts")
+    navigate("/collections")
   }
 
   const registerMutation = useMutation(
@@ -42,7 +42,7 @@ const UserRegistration = () => {
         setRegistrationError("");
         const { access_token, refresh_token } = data.auth;
         login(access_token, refresh_token);
-        navigate('/texts')
+        navigate('/collections')
       },
       onError: (error) => {
         setRegistrationError(error.response.data.detail);
@@ -114,7 +114,7 @@ const UserRegistration = () => {
     try {
       await loginWithRedirect({
         appState: {
-          returnTo: "/texts",
+          returnTo: "/collections",
         },
       })
     } catch (error) {

@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { getLanguageClass } from "../../../../../utils/Constants";
 import pechaIcon from "../../../../../assets/icons/pecha_icon.png";
 import SegmentItem from "./SegmentItem";
+import {getLanguageClass} from "../../../../../utils/helperFunctions.jsx";
 
 const SourceItem = ({ source, onSegment }) => {
   return (

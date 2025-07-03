@@ -9,7 +9,7 @@ import { PechaAuthProvider } from "./config/AuthContext.jsx";
 import { BackendFetch, DevTools, FormatSimple, Tolgee, TolgeeProvider } from "@tolgee/react";
 import localeEn from "./i18n/en.json";
 import localeBoIn from "./i18n/bo-IN.json";
-import { LANGUAGE } from "./utils/Constants.js";
+import { LANGUAGE } from "./utils/constants.js";
 
 const queryClient = new QueryClient();
 const defaultLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE || "bo-IN";
