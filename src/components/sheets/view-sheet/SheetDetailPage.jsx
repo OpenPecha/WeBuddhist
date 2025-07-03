@@ -39,7 +39,7 @@ const SheetDetailPage = () => {
   // const sheetId = sheetSlugAndId.split('-').pop();
   const {t}=useTranslate();
   const navigate=useNavigate();
-  const sheetId= "48ff874c-795b-4cca-ac4e-f20e62ee3e98"//remove this once samdup work is done
+  const sheetId= "455f346e-a73f-4d86-9e05-19b24bce2984"//remove this once samdup work is done
   const {data:sheetData, isLoading} = useQuery({
     queryKey:['sheetData',sheetId],
     queryFn:()=>fetchSheetData(sheetId)
