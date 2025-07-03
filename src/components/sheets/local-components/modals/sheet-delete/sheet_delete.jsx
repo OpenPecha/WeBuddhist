@@ -1,8 +1,10 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import './sheet-delete.scss';
+import { useTranslate } from '@tolgee/react';
 
 export const SheetDeleteModal = ({ isOpen, onClose, onDelete, isLoading }) => {
+  const {t}=useTranslate();
   if (!isOpen) return null;
 
   return createPortal(
@@ -15,10 +17,9 @@ export const SheetDeleteModal = ({ isOpen, onClose, onDelete, isLoading }) => {
         >
           ×
         </button>
-        <h2>Delete sheet</h2>
+        <h2>{t('sheet.delete_header')}</h2>
         <p>
-          Deletion is not reversible, and the sheet will be completely deleted. If you do not
-          want to delete, you can unlist the sheet.
+          {t('sheet.delete_warning_message')}
         </p>
         <div className="sheet-delete-button-group">
           <button
@@ -26,14 +27,14 @@ export const SheetDeleteModal = ({ isOpen, onClose, onDelete, isLoading }) => {
             className="sheet-delete-cancel-button"
             disabled={isLoading}
           >
-            Cancel
+            {t('sheet.delete_cancel')}
           </button>
           <button
             onClick={onDelete}
             className="sheet-delete-delete-button"
             disabled={isLoading}
           >
-            {isLoading ? 'Deleting...' : 'Delete'}
+            {isLoading ? t('sheet.deleting.message') : t('sheet.delete_button')}
           </button>
         </div>
       </div>
