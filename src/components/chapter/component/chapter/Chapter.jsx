@@ -220,6 +220,30 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
     const currentContainer = containerRef.current;
     if (!currentContainer) return;
 
+    // To handle the core scroll up logic
+    const handleScrollUpLoading = (firstSectionNumber) => {
+      isLoadingTopRef.current = true;
+      isScrollLoadingRef.current = true;
+      
+      const targetSkipValue = Math.max(0, firstSectionNumber - 2);
+      const isTargetSkipCovered = skipsCoveredRef.current.has(targetSkipValue);
+      const newSkip = isTargetSkipCovered ? skipDetails.skip : targetSkipValue;
+      
+      const isSkipValidForLoading = newSkip >= 0 && !skipsCoveredRef.current.has(newSkip);
+      
+      if (isSkipValidForLoading) {
+        if (!isPanelNavigationRef.current) {
+          setSkipDetails({
+            skip: newSkip,
+            direction: 'up'
+          });
+        }
+      } else {
+        isLoadingTopRef.current = false;
+        isScrollLoadingRef.current = false;
+      }
+    };
+
     const handleScrollDown = (scrollTop, scrollHeight, clientHeight) => {
       const bottomScrollPosition = (scrollTop + clientHeight) / scrollHeight;
       if (bottomScrollPosition > 0.99 && !isLoadingRef.current && totalContentRef.current > 0) {
@@ -244,29 +268,24 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
       }
     };
 
+    // Check if scroll up should be handled
+    const checkShouldHandleScrollUp = (scrollTop, isScrollingUp) => {
+      return scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0;
+    };
+
+    // Check if first section is valid for scroll up
+    const checkFirstSectionForScrollUp = (firstSectionNumber) => {
+      return firstSectionNumber && firstSectionNumber > 1;
+    };
+
     const handleScrollUp = (scrollTop, isScrollingUp) => {
-      const shouldHandleScrollUp = scrollTop < 10 && isScrollingUp && !isLoadingTopRef.current && contents.length > 0;
-      if (shouldHandleScrollUp) {
-        const firstSectionNumber = contents[0]?.section_number;
-        if (firstSectionNumber && firstSectionNumber > 1) {
-          isLoadingTopRef.current = true;
-          isScrollLoadingRef.current = true; // Set flag when loading due to scroll
-          const newSkip = skipsCoveredRef.current.has(Math.max(0, firstSectionNumber - 2))
-            ? skipDetails.skip
-            : Math.max(0, firstSectionNumber - 2);
-          
-          if (newSkip >= 0 && !skipsCoveredRef.current.has(newSkip)) {
-            if (!isPanelNavigationRef.current) {
-              setSkipDetails({
-                skip: newSkip,
-                direction: 'up'
-              });
-            }
-          } else {
-            isLoadingTopRef.current = false;
-            isScrollLoadingRef.current = false; // Reset flag when not loading
-          }
-        }
+      if (!checkShouldHandleScrollUp(scrollTop, isScrollingUp)) {
+        return;
+      }
+      
+      const firstSectionNumber = contents[0]?.section_number;
+      if (checkFirstSectionForScrollUp(firstSectionNumber)) {
+        handleScrollUpLoading(firstSectionNumber);
       }
     };
 
