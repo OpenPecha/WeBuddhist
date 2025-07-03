@@ -1,5 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
+import "./sheet-delete.scss";
 
 export const SheetDeleteModal = ({ isOpen, onClose, onDelete }) => {
   if (!isOpen) return null;
@@ -13,10 +14,10 @@ export const SheetDeleteModal = ({ isOpen, onClose, onDelete }) => {
         >
           ×
         </button>
-        <h2>Delete story</h2>
+        <h2>Delete sheet</h2>
         <p>
-          Deletion is not reversible, and the story will be completely deleted. If you do not
-          want to delete, you can unlist the story.
+          Deletion is not reversible, and the sheet will be completely deleted. If you do not
+          want to delete, you can unlist the sheet.
         </p>
         <div className="button-group">
           <button
