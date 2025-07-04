@@ -78,6 +78,8 @@ describe("UserProfile Component", () => {
     Object.defineProperty(window, "sessionStorage", {
       value: {
         removeItem: vi.fn(),
+        getItem: vi.fn(),
+        setItem: vi.fn(),
       },
       writable: true,
     });
@@ -222,9 +224,31 @@ describe("UserProfile Component", () => {
      expect(sheetTitle).toBeInTheDocument()
     
   });
-  test("fetches sheet with correct parameters", async () => {
+  
+  test("fetches sheet with correct parameters when access token exists", async () => {
     window.localStorage.getItem.mockReturnValue("en");
-    
+    window.sessionStorage.getItem.mockReturnValue("test-access-token");
+    axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
+    const result = await fetchsheet("test@gmail.com", 10, 0);
+    expect(window.sessionStorage.getItem).toHaveBeenCalledWith("accessToken");
+    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+      headers: {
+        Authorization: "Bearer test-access-token"
+      },
+      params: {
+        language: "en",
+        email: "test@gmail.com",
+        limit: 10,
+        skip: 0,
+      }
+    });
+  
+    expect(result).toEqual(mockSheetsData);
+  });
+
+  test("fetches sheet with correct parameters when no access token exists", async () => {
+    window.localStorage.getItem.mockReturnValue("en");
+    window.sessionStorage.getItem.mockReturnValue(null);
     axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
     const result = await fetchsheet("test@gmail.com", 10, 0);
   
