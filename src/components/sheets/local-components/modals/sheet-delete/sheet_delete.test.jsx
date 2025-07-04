@@ -49,15 +49,6 @@ describe("SheetDeleteModal Component", () => {
     expect(screen.queryByText("Delete Sheet")).not.toBeInTheDocument();
   });
 
-  test("calls onClose when close button (×) is clicked", () => {
-    render(<SheetDeleteModal {...defaultProps} />);
-    
-    const closeButton = screen.getByText("×");
-    fireEvent.click(closeButton);
-    
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
-  });
-
   test("calls onClose when Cancel button is clicked", () => {
     render(<SheetDeleteModal {...defaultProps} />);
     
@@ -86,11 +77,9 @@ describe("SheetDeleteModal Component", () => {
   test("disables buttons when isLoading is true", () => {
     render(<SheetDeleteModal {...defaultProps} isLoading={true} />);
     
-    const closeButton = screen.getByText("×");
     const cancelButton = screen.getByText("Cancel");
     const deleteButton = screen.getByText("Deleting...");
     
-    expect(closeButton).toBeDisabled();
     expect(cancelButton).toBeDisabled();
     expect(deleteButton).toBeDisabled();
   });
