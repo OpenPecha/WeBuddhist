@@ -31,6 +31,14 @@ vi.mock("../../resources-side-panel/Resources", () => ({
   ),
 }));
 
+vi.mock("react-youtube", () => ({
+  default: ({ videoId }) => (
+    <div data-testid="youtube-player" data-videoid={videoId}>
+      YouTube Player: {videoId}
+    </div>
+  ),
+}));
+
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
@@ -167,6 +175,33 @@ describe("SheetDetailPage Component", () => {
 
     setup();
     expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
+  });
+
+  test("renders video segment correctly", () => {
+    const videoSheetData = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "video1",
+            type: "video",
+            content: "dQw4w9WgXcQ",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: videoSheetData,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    const youtubePlayer = screen.getByTestId("youtube-player");
+    expect(youtubePlayer).toBeInTheDocument();
+    expect(youtubePlayer).toHaveAttribute("data-videoid", "dQw4w9WgXcQ");
+    expect(screen.getByText("YouTube Player: dQw4w9WgXcQ")).toBeInTheDocument();
   });
 
   test("renders different segment types correctly", () => {
