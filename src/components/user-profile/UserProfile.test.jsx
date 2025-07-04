@@ -229,6 +229,9 @@ describe("UserProfile Component", () => {
     const result = await fetchsheet("test@gmail.com", 10, 0);
   
     expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+      headers: {
+        Authorization: "Bearer None"
+      },
       params: {
         language: "en",
         email: "test@gmail.com",

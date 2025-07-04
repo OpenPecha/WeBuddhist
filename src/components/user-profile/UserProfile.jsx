@@ -15,6 +15,9 @@ export const fetchsheet = async (email, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
   const { data } = await axiosInstance.get("api/v1/sheets", {
+    headers: {
+      Authorization:  "Bearer None"
+    },
     params: {
       language,
       email: email,
