@@ -63,42 +63,47 @@ const Works = () => {
     return <h1 className="overalltext">{worksData.term?.title}</h1>
   }
   const renderRootTexts = () => {
-    const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>
-    return !rootTexts || rootTexts.length === 0 ?
-      <div className="no-content">{t("text_category.message.notfound")}</div>
-      :
+    const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>;
+    return (
       <div className="root-text-section">
         {renderTitle()}
-        <div className="root-text-list">
-          {rootTexts.map((text) => (
-            <Link key={text.id} to={`/pages/${text.id}?type=${encodeURIComponent(text.type)}`}
-                  className={`${getLanguageClass(text.language)} root-text`}>
-              <div className="divider"></div>
-              <p>{text.title}</p>
-            </Link>
-          ))}
-        </div>
+        {rootTexts.length === 0 ? (
+          <div className="no-content">{t("text.root_text_not_found")}</div>
+        ) : (
+          <div className="root-text-list">
+            {rootTexts.map((text) => (
+              <Link key={text.id} to={`/pages/${text.id}?type=${encodeURIComponent(text.type)}`}
+                    className={`${getLanguageClass(text.language)} root-text`}>
+                <div className="divider"></div>
+                <p>{text.title}</p>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
+    );
   }
 
   const renderCommentaryTexts = () => {
-    const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>
-
-    return !commentaryTexts || commentaryTexts.length === 0 ?
-      <div className="no-content">{t("text_category.message.notfound")}</div>
-      :
+    const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>;
+    return (
       <div className="commentary-section">
         {renderTitle()}
-        <div className="commentary-list">
-          {commentaryTexts.map((text) => (
-            <Link key={text.id} to={`/pages/${text.id}?type=${encodeURIComponent(text.type)}`}
-                  className={`${getLanguageClass(text.language)} commentary-text`}>
-              <div className="divider"></div>
-              <p>{text.title}</p>
-            </Link>
-          ))}
-        </div>
+        {commentaryTexts.length === 0 ? (
+          <div className="no-content">{t("text.commentary_text_not_found")}</div>
+        ) : (
+          <div className="commentary-list">
+            {commentaryTexts.map((text) => (
+              <Link key={text.id} to={`/pages/${text.id}?type=${encodeURIComponent(text.type)}`}
+                    className={`${getLanguageClass(text.language)} commentary-text`}>
+                <div className="divider"></div>
+                <p>{text.title}</p>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
+    );
   }
 
   return (

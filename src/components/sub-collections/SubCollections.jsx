@@ -39,7 +39,7 @@ const SubCollections = () => {
   if (earlyReturn) return earlyReturn;
 
   // ----------------------------------- renderers ---------------------------------------
-  const renderTitle = () =>  <h1>{subCollectionsData?.parent?.title?.toUpperCase()}</h1>
+  const renderTitle = () =>  <h1 className="listtitle">{subCollectionsData?.parent?.title?.toUpperCase()}</h1>
 
   const renderSubCollections = () => {
 
@@ -57,7 +57,7 @@ const SubCollections = () => {
     const subCollectionTitle = subCollectionsData?.parent?.title
 
     return <div className="about-content">
-      <h1 className="about-title">{t('common.about')} {subCollectionTitle}</h1>
+      <h1 className="listsubtitle about-title">{t('common.about')} {subCollectionTitle}</h1>
       <div className="divider"></div>
     </div>
   }

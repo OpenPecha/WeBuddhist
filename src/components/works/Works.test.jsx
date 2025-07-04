@@ -150,7 +150,8 @@ describe("Works Component", () => {
     }));
 
     setup();
-    expect(screen.getAllByText("text_category.message.notfound")).toHaveLength(2)
+    expect(screen.getByText("text.root_text_not_found")).toBeInTheDocument();
+    expect(screen.getByText("text.commentary_text_not_found")).toBeInTheDocument();
   });
 
   test("displays empty text sections when texts array is empty", () => {
@@ -162,7 +163,8 @@ describe("Works Component", () => {
 
     const { container } = setup();
     expect(screen.getByText("Empty Category")).toBeInTheDocument();
-    expect(screen.getAllByText("text_category.message.notfound")).toHaveLength(2);
+    expect(screen.getByText("text.root_text_not_found")).toBeInTheDocument();
+    expect(screen.getByText("text.commentary_text_not_found")).toBeInTheDocument();
 
   });
 
