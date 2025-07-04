@@ -2,6 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import './sheet-delete.scss';
 import { useTranslate } from '@tolgee/react';
+import { FaTimes } from 'react-icons/fa';
 
 export const SheetDeleteModal = ({ isOpen, onClose, onDelete, isLoading }) => {
   const {t}=useTranslate();
@@ -15,7 +16,7 @@ export const SheetDeleteModal = ({ isOpen, onClose, onDelete, isLoading }) => {
           className="sheet-delete-close-button"
           disabled={isLoading}
         >
-          ×
+          <FaTimes />
         </button>
         <h2>{t('sheet.delete_header')}</h2>
         <p>
