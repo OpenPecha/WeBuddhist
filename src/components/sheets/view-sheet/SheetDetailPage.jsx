@@ -9,6 +9,8 @@ import { extractSpotifyInfo } from '../sheet-utils/Constant';
 import axiosInstance from '../../../config/axios-config';
 import { useQuery, useMutation } from 'react-query';
 import { useTranslate } from '@tolgee/react';
+import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
+import Resources from "../../chapterV2/utils/resources/Resources.jsx";
 import { SheetDeleteModal } from '../local-components/modals/sheet-delete/sheet_delete';
 
 export const fetchSheetData=async(id)=>{
