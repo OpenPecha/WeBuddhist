@@ -344,12 +344,106 @@ describe("SheetDetailPage Component", () => {
   });
 
   test("opens delete modal when trash icon is clicked", () => {
-    setup();
-    
-    const trashIcon = screen.getByRole("main").querySelector('[data-testid="trash-icon"]') || 
-                      screen.getByRole("main");
+  setup();
+  
+  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+  
+  const trashIcon = screen.getByRole("main").querySelector('svg[data-testid="trash-icon"]');
+  
+  const toolbarItems = screen.getByRole("main").querySelectorAll('.view-toolbar-item');
+  const trashButton = toolbarItems[1]; 
+  const trashIconElement = trashButton.querySelector('svg:last-child'); 
+  
+  fireEvent.click(trashIconElement);
+  
+  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+  expect(screen.getByTestId("cancel-delete")).toBeInTheDocument();
+  expect(screen.getByTestId("confirm-delete")).toBeInTheDocument();
+  });
 
+  test("opens delete modal by clicking trash icon alternative approach", () => {
+  setup();
+  
+  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+  
+  const svgElements = screen.getAllByRole("main").flatMap(element => 
+    Array.from(element.querySelectorAll('svg'))
+  );
+  
+  const trashIcon = svgElements.find(svg => {
+    const paths = svg.querySelectorAll('path');
+    return paths.length > 0; 
+  });
+
+  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+  const trashElement = toolbarContainer.querySelector('svg:last-child');
+  
+  fireEvent.click(trashElement);
+
+  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+  });
+
+  test("modal state management - open and close", () => {
+  setup();
+
+  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+
+  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+  const trashIcon = toolbarContainer.querySelector('svg:last-child');
+  fireEvent.click(trashIcon);
+
+  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+
+  const cancelButton = screen.getByTestId("cancel-delete");
+  fireEvent.click(cancelButton);
+
+  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+  });
+
+  test("delete modal remains closed initially", () => {
+  setup();
+
+  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+  
+  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+  const trashIcon = toolbarContainer.querySelector('svg:last-child');
+  expect(trashIcon).toBeInTheDocument();
+  
+  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+  });
+
+  test("can open and close modal multiple times", () => {
+  setup();
+  
+  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+  const trashIcon = toolbarContainer.querySelector('svg:last-child');
+
+  fireEvent.click(trashIcon);
+  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+  
+  fireEvent.click(screen.getByTestId("cancel-delete"));
+  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+
+  fireEvent.click(trashIcon);
+  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+  
+  fireEvent.click(screen.getByTestId("cancel-delete"));
+  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+  });
+
+  test("other toolbar icons don't trigger delete modal", () => {
+  setup();
+  
+  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+  const allIcons = toolbarContainer.querySelectorAll('svg');
+
+  for (let i = 0; i < allIcons.length - 1; i++) {
+    fireEvent.click(allIcons[i]);
     expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+  }
+
+  fireEvent.click(allIcons[allIcons.length - 1]);
+  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
   });
 
   test("closes delete modal when cancel is clicked", () => {
@@ -472,6 +566,183 @@ describe("SheetDetailPage Component", () => {
 
     setup();
     expect(screen.getByText("Test Sheet")).toBeInTheDocument();
+  });
+
+  describe("handleDeleteSheet function tests", () => {
+  test("handleDeleteSheet calls deleteSheetMutation when confirm delete button is clicked", () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: false,
+    }));
+
+    setup();
+
+    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+    fireEvent.click(trashIcon);
+
+    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+
+    const confirmButton = screen.getByTestId("confirm-delete");
+    fireEvent.click(confirmButton);
+  
+    expect(mockMutate).toHaveBeenCalledTimes(1);
+    expect(mockMutate).toHaveBeenCalledWith(); 
+  });
+
+  test("handleDeleteSheet is called with correct context", () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: false,
+    }));
+
+    setup();
+
+    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+
+    fireEvent.click(trashIcon);
+    fireEvent.click(screen.getByTestId("confirm-delete"));
+    expect(mockMutate).toHaveBeenCalledTimes(1);
+  });
+
+  test("handleDeleteSheet works when mutation is in loading state", () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: true, 
+    }));
+
+    setup();
+
+    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+    fireEvent.click(trashIcon);
+
+    const confirmButton = screen.getByTestId("confirm-delete");
+    fireEvent.click(confirmButton);
+
+    expect(mockMutate).toHaveBeenCalledTimes(1);
+  });
+
+  test("handleDeleteSheet function is properly bound to confirm button", () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: false,
+    }));
+
+    setup();
+
+    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+    fireEvent.click(trashIcon);
+
+    const confirmButton = screen.getByTestId("confirm-delete");
+    expect(confirmButton).toBeInTheDocument();
+
+    const cancelButton = screen.getByTestId("cancel-delete");
+    fireEvent.click(cancelButton);
+    expect(mockMutate).not.toHaveBeenCalled();
+
+    fireEvent.click(trashIcon);
+    fireEvent.click(screen.getByTestId("confirm-delete"));
+    expect(mockMutate).toHaveBeenCalledTimes(1);
+  });
+
+  test("handleDeleteSheet function doesn't interfere with other modal actions", () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: false,
+    }));
+
+    setup();
+
+    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+    fireEvent.click(trashIcon);
+
+    const cancelButton = screen.getByTestId("cancel-delete");
+    fireEvent.click(cancelButton);
+    fireEvent.click(cancelButton);
+    
+    expect(mockMutate).not.toHaveBeenCalled();
+
+    fireEvent.click(trashIcon);
+    fireEvent.click(screen.getByTestId("confirm-delete"));
+    
+    expect(mockMutate).toHaveBeenCalledTimes(1);
+  });
+
+  test("handleDeleteSheet maintains function reference integrity", () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: false,
+    }));
+    const { rerender } = render(
+      <Router>
+        <QueryClientProvider client={new QueryClient()}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+            <SheetDetailPageWithPanelContext />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
+    );
+
+    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+    fireEvent.click(trashIcon);
+    fireEvent.click(screen.getByTestId("confirm-delete"));
+    
+    expect(mockMutate).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <Router>
+        <QueryClientProvider client={new QueryClient()}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+            <SheetDetailPageWithPanelContext />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
+    );
+
+    fireEvent.click(trashIcon);
+    fireEvent.click(screen.getByTestId("confirm-delete"));
+    
+    expect(mockMutate).toHaveBeenCalledTimes(2);
+  });
+  });
+
+  test("handleDeleteSheet error handling", () => {
+  const mockMutate = vi.fn();
+  const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  let onErrorCallback;
+  
+  vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
+    onErrorCallback = config.onError;
+    return {
+      mutate: mockMutate,
+      isLoading: false,
+    };
+  });
+
+  setup();
+
+  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
+  const trashIcon = toolbarContainer.querySelector('svg:last-child');
+  fireEvent.click(trashIcon);
+  fireEvent.click(screen.getByTestId("confirm-delete"));
+
+  const testError = new Error("Delete failed");
+  onErrorCallback(testError);
+
+  expect(consoleSpy).toHaveBeenCalledWith("Error deleting sheet:", testError);
+  
+  consoleSpy.mockRestore();
   });
 
   describe("getAudioSrc function tests", () => {
