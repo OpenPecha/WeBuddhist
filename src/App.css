@@ -112,8 +112,5 @@ div::-webkit-scrollbar {
 /* For Firefox */
 * {
   scrollbar-width: none;
-}
-
-* {
   -ms-overflow-style: none;
 }
