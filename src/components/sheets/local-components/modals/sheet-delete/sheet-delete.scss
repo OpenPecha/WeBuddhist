@@ -9,57 +9,60 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-}
 
-.sheet-delete-modal-content {
-  background-color: #ffffff !important;
-  padding: 20px;
-  border-radius: 5px;
-  max-width: 700px;
-  width: 600px;
-  position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
+  .sheet-delete-modal-content {
+    background-color: #ffffff !important;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 700px;
+    width: 600px;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
-.sheet-delete-close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
+    .sheet-delete-close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      
+      &:hover {
+        opacity: 0.7;
+      }
+    }
 
-.sheet-delete-button-group {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
+    .sheet-delete-button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+      
+      .sheet-delete-cancel-button {
+        padding: 8px 16px;
+        background-color: #f0f0f0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        
+        &:hover {
+          background-color: #e0e0e0;
+        }
+      } 
 
-.sheet-delete-cancel-button {
-  padding: 8px 16px;
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.sheet-delete-delete-button {
-  padding: 8px 16px;
-  background-color: #ff4d4f;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.error-message {
-  color: #ff4d4f;
-  margin-bottom: 15px;
-  padding: 8px;
-  background-color: #fff1f0;
-  border: 1px solid #ffccc7;
-  border-radius: 4px;
+      .sheet-delete-delete-button {
+        padding: 8px 16px;
+        background-color: #ff4d4f;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        
+        &:hover {
+          background-color: #ff7875;
+        }
+      }
+    }
+  }
 }
