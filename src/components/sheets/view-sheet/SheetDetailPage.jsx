@@ -12,6 +12,14 @@ import { useTranslate } from '@tolgee/react';
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import Resources from "../../chapterV2/utils/resources/Resources.jsx";
 
+export const getUserInfo=async()=>{
+  const {data}=await axiosInstance.get(`/api/v1/users/info`,{
+    headers:{
+      Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
+    }
+  })
+  return data
+}
 export const fetchSheetData=async(id)=>{
 const {data}=await axiosInstance.get(`/api/v1/sheets/${id}`,{
   params:{
@@ -35,10 +43,16 @@ const getAudioSrc = (url) => {
   
 
 const SheetDetailPage = () => {
+  let i=0;
   // const { sheetSlugAndId } = useParams();
   // const sheetId = sheetSlugAndId.split('-').pop();
   const {t}=useTranslate();
   const navigate=useNavigate();
+  const {data:userInfo}=useQuery({
+    queryKey:['userInfo'],
+    queryFn:getUserInfo,
+    enabled:!!sessionStorage.getItem('accessToken')
+  })
   const sheetId= "4743346e-4af1-4b87-b321-620b0b4625be"//remove this once samdup work is done
   const {data:sheetData, isLoading} = useQuery({
     queryKey:['sheetData',sheetId],
@@ -60,6 +74,7 @@ const SheetDetailPage = () => {
       case 'source':
         return (
           <button
+            key={segment.segment_id}
             className={`segment segment-source ${isResourcesPanelOpen && segmentId === segment.segment_id ? 'selected' : ''}`}
             onClick={() => handleSidePanelToggle(segment.segment_id)}
           >
@@ -74,7 +89,7 @@ const SheetDetailPage = () => {
         );
       case 'content':
         return (
-          <div className="segment segment-text" key={segment.segment_id}>
+          <div className="segment segment-text" key={`${segment.segment_id}-${i++}`}>
             <p className="text-content" dangerouslySetInnerHTML={{ __html: segment.content }}/>
           </div>
         );
@@ -137,9 +152,11 @@ const SheetDetailPage = () => {
         <div className="view-toolbar-item">
           <FiPrinter/>
           <FiShare/>
+          {sheetData.publisher.email === userInfo?.email && (
           <FiEdit onClick={()=>{
             navigate(`/sheets/${sheetId}`)
           }}/>
+          )}
           <FiTrash />
         </div>
       </div>
