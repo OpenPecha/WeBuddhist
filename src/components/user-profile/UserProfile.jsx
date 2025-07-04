@@ -14,9 +14,10 @@ import {mapLanguageCode} from "../../utils/helperFunctions.jsx";
 export const fetchsheet = async (email, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+  const accessToken = sessionStorage.getItem('accessToken');
   const { data } = await axiosInstance.get("api/v1/sheets", {
     headers: {
-      Authorization:  "Bearer None"
+      Authorization: accessToken ? `Bearer ${accessToken}` : "Bearer None"
     },
     params: {
       language,
