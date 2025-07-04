@@ -151,77 +151,76 @@ export function convertSegmentsToSlate(segments) {
   const parser = typeof window !== "undefined" ? new window.DOMParser() : null;
   return segments.map((segment) => {
     const { type, content } = segment;
-    if (type === "content") {
-      if (parser && /<\/?[a-z][\s\S]*>/i.test(content)) {
-        const doc = parser.parseFromString(
-          `<body>${content}</body>`,
-          "text/html"
-        );
-        const body = doc.body;
-        let align = "left";
-        let children = [];
-        if (body.firstChild && body.firstChild.nodeName === "DIV") {
-          const div = body.firstChild;
-          align = div.style.textAlign || "left";
-          children = htmlToSlate(div) || [];
+    switch (type) {
+      case "content": {
+        if (parser && /<\/?[a-z][\s\S]*>/i.test(content)) {
+          const doc = parser.parseFromString(
+            `<body>${content}</body>`,
+            "text/html"
+          );
+          const body = doc.body;
+          let align = "left";
+          let children = [];
+          if (body.firstChild && body.firstChild.nodeName === "DIV") {
+            const div = body.firstChild;
+            align = div.style.textAlign || "left";
+            children = htmlToSlate(div) || [];
+          } else {
+            body.childNodes.forEach((node) => {
+              const slateNodes = htmlToSlate(node);
+              if (Array.isArray(slateNodes)) {
+                children.push(...slateNodes);
+              } else if (slateNodes) {
+                children.push(slateNodes);
+              }
+            });
+          }
+          if (!children.length || !children.some((n) => n.text !== undefined)) {
+            children = [{ text: "" }];
+          }
+          return {
+            type: "paragraph",
+            align,
+            children,
+          };
         } else {
-          body.childNodes.forEach((node) => {
-            const slateNodes = htmlToSlate(node);
-            if (Array.isArray(slateNodes)) {
-              children.push(...slateNodes);
-            } else if (slateNodes) {
-              children.push(slateNodes);
-            }
-          });
+          return {
+            type: "paragraph",
+            align: "left",
+            children: [{ text: content || "" }],
+          };
         }
-        if (!children.length || !children.some((n) => n.text !== undefined)) {
-          children = [{ text: "" }];
-        }
+      }
+      case "video":
         return {
-          type: "paragraph",
-          align,
-          children,
+          type: "youtube",
+          youtubeId: content,
+          children: [{ text: "" }],
         };
-      } else {
+      case "image":
+        return {
+          type: "image",
+          src: content,
+          children: [{ text: "" }],
+        };
+      case "audio":
+        return {
+          type: "audio",
+          src: content,
+          children: [{ text: "" }],
+        };
+      case "source":
+        return {
+          type: "pecha",
+          src: segment.segment_id,
+          children: [{ text: "" }],
+        };
+      default:
         return {
           type: "paragraph",
           align: "left",
           children: [{ text: content || "" }],
         };
-      }
     }
-    if (type === "video") {
-      return {
-        type: "youtube",
-        youtubeId: content,
-        children: [{ text: "" }],
-      };
-    }
-    if (type === "image") {
-      return {
-        type: "image",
-        src: content,
-        children: [{ text: "" }],
-      };
-    }
-    if (type === "audio") {
-      return {
-        type: "audio",
-        src: content,
-        children: [{ text: "" }],
-      };
-    }
-    if (type === "source") {
-      return {
-        type: "pecha",
-        src: segment.segment_id,
-        children: [{ text: "" }],
-      };
-    }
-    return {
-      type: "paragraph",
-      align: "left",
-      children: [{ text: content || "" }],
-    };
   });
 }
