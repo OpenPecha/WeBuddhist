@@ -54,7 +54,7 @@ describe("SheetDetailPage Component", () => {
     publisher: {
       name: "Test User",
       username: "testuser",
-      avatar_url: "https://example.com/avatar.jpg"
+      avatar_url: "https://example.com/avatar.jpg",
     },
     content: {
       segments: [
@@ -63,20 +63,20 @@ describe("SheetDetailPage Component", () => {
           type: "source",
           content: "Source content",
           language: "bo",
-          text_title: "Source Title"
+          text_title: "Source Title",
         },
         {
           segment_id: "segment2",
           type: "content",
-          content: "Text content"
+          content: "Text content",
         },
         {
           segment_id: "segment3",
           type: "image",
-          content: "https://example.com/image.jpg"
-        }
-      ]
-    }
+          content: "https://example.com/image.jpg",
+        },
+      ],
+    },
   };
 
   let extractSpotifyInfoSpy;
@@ -87,8 +87,9 @@ describe("SheetDetailPage Component", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockSheetData,
       isLoading: false,
+      error: null,
     }));
-    extractSpotifyInfoSpy = vi.spyOn(Constants, 'extractSpotifyInfo').mockImplementation(() => null);
+    extractSpotifyInfoSpy = vi.spyOn(Constants, "extractSpotifyInfo").mockImplementation(() => null);
   });
 
   afterEach(() => {
@@ -120,6 +121,7 @@ describe("SheetDetailPage Component", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: null,
       isLoading: true,
+      error: null,
     }));
 
     setup();
@@ -130,6 +132,7 @@ describe("SheetDetailPage Component", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: null,
       isLoading: false,
+      error: null,
     }));
 
     setup();
@@ -140,14 +143,27 @@ describe("SheetDetailPage Component", () => {
     const emptySheetData = {
       ...mockSheetData,
       content: {
-        segments: []
-      }
+        segments: [],
+      },
     };
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: emptySheetData,
       isLoading: false,
+      error: null,
     }));
+
+    setup();
+    expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
+  });
+
+  test("displays not found message when fetchSheetData fails", async () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: null,
+      isLoading: false,
+      error: new Error("Failed to fetch sheet"),
+    }));
+    axiosInstance.get.mockRejectedValueOnce(new Error("Failed to fetch sheet"));
 
     setup();
     expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
