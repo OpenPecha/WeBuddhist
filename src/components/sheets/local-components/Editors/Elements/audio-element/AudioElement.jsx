@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PropTypes from "prop-types";
 const AudioElement = props => {
     const { attributes, children, element } = props;
     const { src, url } = element; 
@@ -33,3 +33,12 @@ const AudioElement = props => {
 };
 
 export default AudioElement;
+AudioElement.propTypes = {
+    attributes: PropTypes.object.isRequired, 
+    children: PropTypes.node.isRequired, 
+    element: PropTypes.shape({
+        src: PropTypes.string, 
+        url: PropTypes.string, 
+        error: PropTypes.string
+    }).isRequired
+}

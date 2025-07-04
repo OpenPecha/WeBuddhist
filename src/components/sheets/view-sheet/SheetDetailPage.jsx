@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { getLanguageClass } from '../../../utils/Constants';
 import pechaIcon from '../../../assets/icons/pecha_icon.png';
 import './SheetDetailPage.scss';
 import YouTube from 'react-youtube';
 import { FiEdit, FiTrash, FiEye, FiShare, FiPrinter } from "react-icons/fi";
-import Resources from '../../resources-side-panel/Resources';
 import { usePanelContext, PanelProvider } from '../../../context/PanelContext';
 import { extractSpotifyInfo } from '../sheet-utils/Constant';
 import axiosInstance from '../../../config/axios-config';
@@ -206,7 +204,7 @@ const SheetDetailPage = () => {
         </article>
       </main>
       {isResourcesPanelOpen && segmentId && (
-        <Resources 
+        <Resources
           segmentId={segmentId}
           handleClose={closeResourcesPanel}
         />

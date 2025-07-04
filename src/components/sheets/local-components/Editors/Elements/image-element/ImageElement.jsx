@@ -1,5 +1,5 @@
 import React from 'react';
-
+import PropTypes from "prop-types";
 const ImageElement = props => {
     const { attributes, children, element } = props;
     const { src, url } = element;
@@ -35,3 +35,12 @@ const ImageElement = props => {
 };
 
 export default ImageElement;
+ImageElement.propTypes = {
+    attributes: PropTypes.object.isRequired, 
+    children: PropTypes.node.isRequired, 
+    element: PropTypes.shape({
+        src: PropTypes.string, 
+        url: PropTypes.string, 
+        error: PropTypes.string
+    }).isRequired
+}

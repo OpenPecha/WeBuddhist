@@ -1,5 +1,5 @@
 import './CustomPecha.scss';
-
+import PropTypes from "prop-types";
 const CustomPecha = props => {
     const {attributes,children,element} = props
     if (!element.src) return null
@@ -15,3 +15,12 @@ const CustomPecha = props => {
   }
   
   export default CustomPecha
+  CustomPecha.propTypes = {
+    attributes: PropTypes.object.isRequired, 
+    children: PropTypes.node.isRequired, 
+    element: PropTypes.shape({
+        src: PropTypes.string, 
+        url: PropTypes.string, 
+        segmentId: PropTypes.string
+    }).isRequired
+  }

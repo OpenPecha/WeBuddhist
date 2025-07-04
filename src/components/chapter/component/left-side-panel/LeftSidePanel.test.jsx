@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
-
 vi.mock("@tolgee/react", () => ({
   useTranslate: () => ({
     t: (key) => key,
@@ -28,10 +27,13 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("../../../../utils/Constants.js", () => ({
-  LANGUAGE: "LANGUAGE",
+vi.mock("../../../../utils/helperFunctions.jsx", () => ({
   mapLanguageCode: (lang) => lang,
-  getLanguageClass: () => "language-class",
+  getLanguageClass: (language) => language === "bo" ? "bo-text" : "en-text"
+}));
+
+vi.mock("../../../../utils/constants.js", () => ({
+  LANGUAGE: "language"
 }));
 
 describe("LeftSidePanel Component", () => {

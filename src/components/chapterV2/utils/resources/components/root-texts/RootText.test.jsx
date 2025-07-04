@@ -4,12 +4,11 @@ import * as reactQuery from "react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
-import { mockTolgee } from "../../../../test-utils/CommonMocks.js";
 import RootTextView, { fetchRootTextData } from "./RootText.jsx";
-import axiosInstance from "../../../../config/axios-config.js";
 import "@testing-library/jest-dom";
-import { PanelProvider } from "../../../../context/PanelContext.jsx";
-
+import {mockTolgee} from "../../../../../../test-utils/CommonMocks.js";
+import axiosInstance from "../../../../../../config/axios-config.js";
+import {PanelProvider} from "../../../../../../context/PanelContext.jsx";
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
   return {
@@ -20,7 +19,7 @@ vi.mock("@tolgee/react", async () => {
   };
 });
 
-vi.mock("../../../../utils/Constants.js", () => ({
+vi.mock("../../../../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: (language) => {
     switch (language) {
       case "bo":

@@ -1,5 +1,3 @@
-import {LANGUAGE, mapLanguageCode, menuItems} from "../../utils/Constants.js";
-import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {IoMdClose} from "react-icons/io";
 import { IoLanguage, IoNewspaperOutline,} from "react-icons/io5";
@@ -11,10 +9,13 @@ import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import RootTextView from "./components/root-texts/RootText.jsx";
-import { usePanelContext } from "../../context/PanelContext.jsx";
 import { useSearchParams } from "react-router-dom";
 import "./Resources.scss"
-
+import axiosInstance from "../../../../config/axios-config.js";
+import {usePanelContext} from "../../../../context/PanelContext.jsx";
+import {MENU_ITEMS, LANGUAGE} from "../../../../utils/constants.js";
+import {mapLanguageCode} from "../../../../utils/helperFunctions.jsx";
+import PropTypes from "prop-types";
 export const fetchSidePanelData = async (segmentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -76,7 +77,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
           </p>
         )}
 
-        {sidePanelData?.segment_info.related_text && (sidePanelData?.segment_info?.related_text?.commentaries > 0 || sidePanelData?.segment_info?.related_text?.root_text > 0) && (
+        {sidePanelData?.segment_info?.related_text && (sidePanelData?.segment_info?.related_text?.commentaries > 0 || sidePanelData?.segment_info?.related_text?.root_text > 0) && (
           <>
             <p className='textgreat'>{t("text.related_texts")}</p>
             <div className='related-texts-container'>
@@ -106,7 +107,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
           </>
         )}
 
-        {menuItems.map((item) => (
+        {MENU_ITEMS.map((item) => (
           <div
             key={item.label}
             className={item.isHeader ? 'textgreat' : ''}
@@ -186,3 +187,11 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
 }
 
 export default Resources;
+Resources.propTypes = {
+  segmentId: PropTypes.string.isRequired, 
+  setVersionId: PropTypes.func.isRequired, 
+  versionId: PropTypes.string, 
+  addChapter: PropTypes.func.isRequired, 
+  sectionindex: PropTypes.number.isRequired, 
+  handleClose: PropTypes.func
+}

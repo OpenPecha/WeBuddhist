@@ -1,5 +1,4 @@
 import React from "react";
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../../../test-utils/CommonMocks.js";
 import { BrowserRouter as Router } from "react-router-dom";
 import {QueryClient, QueryClientProvider} from "react-query";
 import * as reactQuery from "react-query";
@@ -8,6 +7,7 @@ import {fireEvent, render, screen} from "@testing-library/react";
 import ShareView from "./ShareView.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
+import {mockUseAuth, mockAxios, mockReactQuery, mockTolgee} from "../../../../../../test-utils/CommonMocks.js";
 
 mockAxios();
 mockUseAuth();

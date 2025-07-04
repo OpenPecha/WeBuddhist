@@ -5,25 +5,28 @@ import { useMutation } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.jsx";
 import { useEffect, useState , Suspense, lazy} from "react";
 import axiosInstance from "./config/axios-config.js";
-import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "./utils/Constants.js";
+import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "./utils/constants.js";
 import { useAuth } from "./config/AuthContext.jsx";
 import EditUserProfile from "./components/edit-user-profile/EditUserProfile.jsx";
 import UserProfile from "./components/user-profile/UserProfile.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
+// import ContentsChapter from "./components/chapterV2/chapter/ContentsChapter.jsx";
 import Sheets from "./components/sheets/Sheets.jsx";
 import SheetDetailPage from "./components/sheets/view-sheet/SheetDetailPage.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
-const HomePage = lazy(() => import("./components/home/HomePage.jsx"));
+const Collections = lazy(() => import("./components/collections/Collections.jsx"));
 const UserLogin = lazy(() => import("./components/user-login/UserLogin.jsx"));
 const UserRegistration = lazy(() => import("./components/user-registration/UserRegistration.jsx"));
 const Topics = lazy(() => import("./components/topics/Topics.jsx"));
 const CommunityPage = lazy(() => import("./components/community/CommunityPage.jsx"));
 const Pages = lazy(() => import("./components/pages/Pages.jsx"));
-const Book = lazy(() => import("./components/book/Book.jsx"));
-const Library = lazy(() => import("./components/library/Library.jsx"));
+const Works = lazy(() => import("./components/works/Works.jsx"));
+const SubCollections = lazy(() => import("./components/sub-collections/SubCollections.jsx"));
 const Chapters = lazy(() => import("./components/chapter/Chapters.jsx"));
+// const ChaptersV2 = lazy(() => import("./components/chapterV2/Chapters"));
+
 const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword.jsx"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword.jsx"));
 const SearchResultsPage = lazy(() => import("./components/search/SearchResultsPage.jsx"));
@@ -48,7 +51,7 @@ function App() {
                         isLoggedIn && pechaLogout()
                         isAuthenticated && await logout({
                             logoutParams: {
-                                returnTo: window.location.origin + "/texts",
+                                returnTo: window.location.origin + "/collections",
                             },
                         });
                     } else {
@@ -113,8 +116,9 @@ function App() {
       <Suspense>
           <NavigationBar/>
           <Routes>
-              <Route path="/" element={<HomePage/>}/>
-              <Route path="/texts" element={<HomePage/>}/>
+              <Route path="/" element={<Collections/>}/>
+              <Route path="/collections" element={<Collections/>}/>
+              {/*<Route path="/chapter-header" element={<ContentsChapter/>}/> /!*TODO :    should be removed *!/*/}
               <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
               <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
               <Route path="/reset-password" element={<ResetPassword/>}/>
@@ -124,14 +128,15 @@ function App() {
               <Route path="/topics" element={<Topics/>}/>
               <Route path="/topics/:id" element={<Topics/>}/>
               <Route path="/community" element={<CommunityPage/>}/>
-              <Route path="/text-detail/:id" element={<Pages/>}/>
-              <Route path="/texts/text-child/:id" element={<Library/>}/>
-              <Route path="/texts/text-category/:id" element={<Book/>}/>
-              <Route path="/texts/text-details" element={<Chapters/>}/>
+              <Route path="/pages/:id" element={<Pages/>}/>
+              <Route path="/collections/:id" element={<SubCollections/>}/>
+              <Route path="/works/:id" element={<Works/>}/>
+              <Route path="/chapter" element={<Chapters/>}/>
+              {/*<Route path="/chapter-v2" element={<ChaptersV2/>}/>/!*TODO :    should be removed *!/*/}
               <Route path="/search" element={<SearchResultsPage/>}/>
+              <Route path="*" element={<Collections/>}/>
               <Route path="/sheets/:id" element={<Sheets/>}/>
               <Route path="/temporary" element={<SheetDetailPage/>}/>
-              <Route path="*" element={<HomePage/>}/>
           </Routes>
       </Suspense>
     );

@@ -6,7 +6,7 @@ import eyeClose from "../../assets/icons/eye-closed.svg";
 import { useMutation } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useLocation } from "react-router-dom";
-import { RESET_PASSWORD_TOKEN } from "../../utils/Constants.js";
+import { RESET_PASSWORD_TOKEN } from "../../utils/constants.js";
 import { useTranslate } from "@tolgee/react";
 
 const ResetPassword = () => {

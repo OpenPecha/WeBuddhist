@@ -6,11 +6,10 @@ import { useTranslate } from '@tolgee/react';
 import Versions from "./versions/Versions.jsx";
 import Content from "./content/Content.jsx";
 import {useParams, Link, useSearchParams} from 'react-router-dom';
-import { getLanguageClass } from '../../utils/Constants';
-import {LANGUAGE} from '../../utils/Constants';
-import {mapLanguageCode} from '../../utils/Constants';
+import {LANGUAGE} from '../../utils/constants.js';
 import axiosInstance from '../../config/axios-config';
 import { useQuery } from 'react-query';
+import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 
 export const fetchVersions = async (id, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -55,7 +54,7 @@ const Pages = () => {
               {type ? t(`text.type.${type}`) : ""}
             </div>
             <Link
-            to={`/texts/text-details?text_id=${textId}&contentId=${contentId}&versionId=&contentIndex=${0}`}
+            to={`/chapter?text_id=${textId}&contentId=${contentId}&versionId=&contentIndex=${0}`}
               className="continue-button navbaritems"
             >
               {t("text.button.continue_reading")}

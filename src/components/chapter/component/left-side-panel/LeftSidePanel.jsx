@@ -3,10 +3,11 @@ import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import { useQuery } from "react-query";
 import axiosInstance from "../../../../config/axios-config.js";
-import { LANGUAGE, mapLanguageCode, getLanguageClass } from "../../../../utils/Constants.js";
+import { LANGUAGE } from "../../../../utils/constants.js";
 import "./LeftSidePanel.scss";
 import { useTranslate } from "@tolgee/react";
 import { useSearchParams } from "react-router-dom";
+import {getLanguageClass, mapLanguageCode} from "../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
 
 const fetchTextContent = async (textId) => {
@@ -186,26 +187,26 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
       </div>
     );
   };
-  
+
   const renderSegment = (segment, index, contentIndex, content) => {
     const hasChildren = segment.sections && segment.sections.length > 0;
     return (
-      <div 
-        key={`content-${contentIndex}-segment-${segment.id}-${index}`} 
+      <div
+        key={`content-${contentIndex}-segment-${segment.id}-${index}`}
         className="section-container"
       >
-        <div 
+        <div
           className={`section-header ${activeSectionId === segment.id ? 'active-section' : ''}`}
           onClick={() => toggleSection(segment.id)}
         >
           {getToggleIcon(hasChildren, sectionHierarchyState[segment.id])}
-          <button 
+          <button
             className={`section-title ${getLanguageClass(tocData.text_detail.language)} ${activeSectionId === segment.id ? 'active' : ''}`}
             data-section-id={segment.id}
             onClick={(e) => {
               e.stopPropagation();
-              const validIndex = index !== undefined && !isNaN(parseInt(index, 10)) 
-                ? parseInt(index, 10) 
+              const validIndex = index !== undefined && !isNaN(parseInt(index, 10))
+                ? parseInt(index, 10)
                 : 0;
               handleSectionClick("", validIndex);
             }}
@@ -215,7 +216,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
         </div>
         {sectionHierarchyState[segment.id] && hasChildren && (
           <div className="nested-content">
-            {segment.sections.map((section) => 
+            {segment.sections.map((section) =>
               renderSection(section, 1, content.id, index)
             )}
           </div>
@@ -225,7 +226,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
   };
 
   const renderMainPanel = () => {
-    
+
     return (
       <>
         <div className="headerthing">

@@ -1,12 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import './Content.scss';
 import { FiChevronDown, FiChevronRight } from 'react-icons/fi';
-import { LANGUAGE, mapLanguageCode, getLanguageClass } from '../../../utils/Constants';
-import axiosInstance from '../../../config/axios-config';
+import { LANGUAGE } from '../../../utils/constants.js';
 import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { useTranslate } from "@tolgee/react";
+import {getLanguageClass, mapLanguageCode} from "../../../utils/helperFunctions.jsx";
+import axiosInstance from "../../../config/axios-config.js";
+import PropTypes from "prop-types";
 export const fetchTextContent = async (text_id, skip, pagination) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -87,7 +89,7 @@ const Content = ({textId, setContentId}) => {
               <FiChevronRight size={16} className="toggle-icon" />
           ) : <span className="empty-icon"></span>}
           <Link
-            to={`/texts/text-details?text_id=${id}&contentId=${contentId}&versionId=&contentIndex=${parentIndex}&sectionId=${section.id}`}
+            to={`/chapter?text_id=${id}&contentId=${contentId}&versionId=&contentIndex=${parentIndex}&sectionId=${section.id}`}
             className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
           >
             {section.title}
@@ -131,7 +133,7 @@ const Content = ({textId, setContentId}) => {
                       <FiChevronRight size={16} className="toggle-icon" />
                   ) : <span className="empty-icon"></span>}
                   <Link 
-                    to={`/texts/text-details?text_id=${id}&contentId=${content.id}&versionId=&contentIndex=${index}`}
+                    to={`/chapter?text_id=${id}&contentId=${content.id}&versionId=&contentIndex=${index}`}
                     className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
                   >
                     {segment.title}
@@ -162,3 +164,7 @@ const Content = ({textId, setContentId}) => {
 };
 
 export default Content;
+Content.propTypes = {
+  textId: PropTypes.string.isRequired, 
+  setContentId: PropTypes.func.isRequired
+}
