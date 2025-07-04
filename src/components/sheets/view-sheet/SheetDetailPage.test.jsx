@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import * as reactQuery from "react-query";
 import "@testing-library/jest-dom";
 import {
@@ -11,7 +11,7 @@ import {
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import axiosInstance from "../../../config/axios-config.js";
-import SheetDetailPageWithPanelContext, { fetchSheetData } from "./SheetDetailPage.jsx";
+import SheetDetailPageWithPanelContext, { fetchSheetData, deleteSheet } from "./SheetDetailPage.jsx";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
 import * as Constants from "../sheet-utils/Constant";
@@ -19,6 +19,8 @@ import * as Constants from "../sheet-utils/Constant";
 mockAxios();
 mockUseAuth();
 mockReactQuery();
+
+axiosInstance.delete = vi.fn();
 
 vi.mock("../../resources-side-panel/Resources", () => ({
   default: ({ segmentId, handleClose }) => (
@@ -38,8 +40,11 @@ vi.mock("react-router-dom", async () => {
       new URLSearchParams(),
       vi.fn(),
     ]),
+    useNavigate: vi.fn(() => mockNavigate),
   };
 });
+
+const mockNavigate = vi.fn();
 
 describe("SheetDetailPage Component", () => {
   const queryClient = new QueryClient();
@@ -270,5 +275,62 @@ describe("SheetDetailPage Component", () => {
         limit: 10,
       }
     });
+  });
+
+  test("deleteSheet calls the correct API endpoint", async () => {
+    axiosInstance.delete.mockClear();
+    axiosInstance.delete.mockImplementationOnce(() => Promise.resolve({ status: 200 }));
+    
+    const sheetId = "test-id";
+    const result = await deleteSheet(sheetId);
+    
+    expect(axiosInstance.delete).toHaveBeenCalledWith(`/api/v1/sheets/${sheetId}`);
+    expect(result).toBe(true);
+  });
+
+  test("deleteSheetMutation navigates to community page on success", async () => {
+    const navigateMock = vi.fn();
+    const closeModalMock = vi.fn();
+    
+    const onSuccess = () => {
+      closeModalMock();
+      navigateMock('/community');
+    };
+    
+    axiosInstance.delete.mockClear();
+    axiosInstance.delete.mockImplementationOnce(() => Promise.resolve({ status: 200 }));
+    
+    await deleteSheet("626ddc35-a146-4bca-a3a3-b8221c501df3");
+    onSuccess();
+    
+    expect(axiosInstance.delete).toHaveBeenCalledWith(
+      "/api/v1/sheets/626ddc35-a146-4bca-a3a3-b8221c501df3"
+    );
+    expect(closeModalMock).toHaveBeenCalled();
+    expect(navigateMock).toHaveBeenCalledWith("/community");
+  });
+
+  test("deleteSheetMutation handles error properly", async () => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    
+    axiosInstance.delete.mockClear();
+    axiosInstance.delete.mockImplementationOnce(() => Promise.reject(new Error("Delete failed")));
+    
+    const onError = (error) => {
+      console.error("Error deleting sheet:", error);
+    };
+    
+    try {
+      await deleteSheet("626ddc35-a146-4bca-a3a3-b8221c501df3");
+    } catch (error) {
+      onError(error);
+    }
+    
+    expect(axiosInstance.delete).toHaveBeenCalledWith(
+      "/api/v1/sheets/626ddc35-a146-4bca-a3a3-b8221c501df3"
+    );
+    expect(consoleSpy).toHaveBeenCalledWith("Error deleting sheet:", expect.any(Error));
+    
+    consoleSpy.mockRestore();
   });
 });
