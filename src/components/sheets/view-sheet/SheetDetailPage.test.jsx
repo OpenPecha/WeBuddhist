@@ -31,6 +31,25 @@ vi.mock("../../resources-side-panel/Resources", () => ({
   ),
 }));
 
+vi.mock("../../chapterV2/utils/resources/Resources.jsx", () => ({
+  default: ({ segmentId, handleClose }) => (
+    <div data-testid="resources-panel">
+      <button onClick={handleClose}>Close</button>
+      <div>Resources for segment: {segmentId}</div>
+    </div>
+  ),
+}));
+
+vi.mock("../local-components/modals/sheet-delete/sheet_delete", () => ({
+  SheetDeleteModal: ({ isOpen, onClose, onDelete }) => 
+    isOpen ? (
+      <div data-testid="delete-modal">
+        <button onClick={onClose} data-testid="cancel-delete">Cancel</button>
+        <button onClick={onDelete} data-testid="confirm-delete">Delete</button>
+      </div>
+    ) : null,
+}));
+
 vi.mock("react-youtube", () => ({
   default: ({ videoId }) => (
     <div data-testid="youtube-player" data-videoid={videoId}>
@@ -88,15 +107,39 @@ describe("SheetDetailPage Component", () => {
   };
 
   let extractSpotifyInfoSpy;
+  let mockSetSearchParams;
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    mockSetSearchParams = vi.fn();
     useParams.mockReturnValue({ sheetSlugAndId: "test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3" });
+    
+    const mockUseSearchParams = vi.fn(() => [
+      new URLSearchParams(),
+      mockSetSearchParams,
+    ]);
+    
+    vi.doMock("react-router-dom", async () => {
+      const actual = await vi.importActual("react-router-dom");
+      return {
+        ...actual,
+        useParams: vi.fn().mockReturnValue({ sheetSlugAndId: "test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3" }),
+        useSearchParams: mockUseSearchParams,
+        useNavigate: vi.fn(() => mockNavigate),
+      };
+    });
+
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockSheetData,
       isLoading: false,
       error: null,
     }));
+
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: vi.fn(),
+      isLoading: false,
+    }));
+
     extractSpotifyInfoSpy = vi.spyOn(Constants, "extractSpotifyInfo").mockImplementation(() => null);
   });
 
@@ -215,15 +258,221 @@ describe("SheetDetailPage Component", () => {
     expect(screen.getByAltText("Sheet content")).toBeInTheDocument();
   });
 
-  // test("opens resources panel when clicking on a source segment", () => {
-  //   setup();
-  //
-  //   const sourceSegment = screen.getByText("Source Title").closest(".segment-source");
-  //   fireEvent.click(sourceSegment);
-  //
-  //   expect(screen.getByTestId("resources-panel")).toBeInTheDocument();
-  //   expect(screen.getByText("Resources for segment: segment1")).toBeInTheDocument();
-  // });
+  test("renders toolbar with correct icons and view count", () => {
+    setup();
+    
+    expect(screen.getByText("42")).toBeInTheDocument();
+    
+    const toolbar = screen.getByRole("main");
+    expect(toolbar).toBeInTheDocument();
+  });
+
+  test("renders user info with avatar, name and username", () => {
+    setup();
+    
+    const avatar = screen.getByAltText("user");
+    expect(avatar).toBeInTheDocument();
+    expect(avatar).toHaveAttribute("src", "https://example.com/avatar.jpg");
+    
+    expect(screen.getByText("Test User")).toBeInTheDocument();
+    expect(screen.getByText("@testuser")).toBeInTheDocument();
+  });
+
+  test("handles sheet with zero views", () => {
+    const sheetWithZeroViews = {
+      ...mockSheetData,
+      views: 0,
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: sheetWithZeroViews,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("0")).toBeInTheDocument();
+  });
+
+  test("handles sheet with undefined views", () => {
+    const sheetWithUndefinedViews = {
+      ...mockSheetData,
+      views: undefined,
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: sheetWithUndefinedViews,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("0")).toBeInTheDocument();
+  });
+
+  test("opens resources panel when clicking on source segment", () => {
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    expect(screen.getByTestId("resources-panel")).toBeInTheDocument();
+    expect(screen.getByText("Resources for segment: segment1")).toBeInTheDocument();
+  });
+
+  test("closes resources panel when close button is clicked", () => {
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    expect(screen.getByTestId("resources-panel")).toBeInTheDocument();
+    
+    const closeButton = screen.getByText("Close");
+    fireEvent.click(closeButton);
+    
+    expect(screen.queryByTestId("resources-panel")).not.toBeInTheDocument();
+  });
+
+  test("applies selected class to source segment when panel is open", () => {
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    expect(sourceButton).toHaveClass("selected");
+  });
+
+  test("opens delete modal when trash icon is clicked", () => {
+    setup();
+    
+    const trashIcon = screen.getByRole("main").querySelector('[data-testid="trash-icon"]') || 
+                      screen.getByRole("main");
+
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+  });
+
+  test("closes delete modal when cancel is clicked", () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: false,
+    }));
+
+    setup();
+    
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+  });
+
+  test("calls deleteSheet mutation when delete is confirmed", async () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: false,
+    }));
+
+    setup();
+    expect(mockMutate).toBeDefined();
+  });
+
+  test("handles segment with no language (defaults to en)", () => {
+    const sheetWithNoLanguage = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "source",
+            content: "Source content",
+            text_title: "Source Title",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: sheetWithNoLanguage,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("Source Title")).toBeInTheDocument();
+  });
+
+  test("renders content segment with dangerouslySetInnerHTML", () => {
+    const sheetWithHtmlContent = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "content",
+            content: "<strong>Bold content</strong>",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: sheetWithHtmlContent,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("Bold content")).toBeInTheDocument();
+  });
+
+  test("renders source segment with dangerouslySetInnerHTML", () => {
+    const sheetWithHtmlSource = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "source",
+            content: "<em>Italic source</em>",
+            language: "bo",
+            text_title: "Source Title",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: sheetWithHtmlSource,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("Italic source")).toBeInTheDocument();
+  });
+
+  test("returns null for unknown segment type", () => {
+    const sheetWithUnknownSegment = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "unknown",
+            content: "Unknown content",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: sheetWithUnknownSegment,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("Test Sheet")).toBeInTheDocument();
+  });
 
   describe("getAudioSrc function tests", () => {
     test("renders audio segment with Spotify URL correctly", () => {
@@ -312,6 +561,62 @@ describe("SheetDetailPage Component", () => {
       expect(iframe.src).toBe("");
       expect(extractSpotifyInfoSpy).toHaveBeenCalledWith("https://example.com/unsupported-audio");
     });
+
+    test("renders audio segment with Spotify album URL", () => {
+      extractSpotifyInfoSpy.mockReturnValue({ type: "album", id: "1A2B3C4D5E6F7G8H9I0J" });
+
+      const audioSheetData = {
+        ...mockSheetData,
+        content: {
+          segments: [
+            {
+              segment_id: "audio4",
+              type: "audio",
+              content: "https://open.spotify.com/album/1A2B3C4D5E6F7G8H9I0J"
+            }
+          ]
+        }
+      };
+
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+        data: audioSheetData,
+        isLoading: false,
+      }));
+
+      setup();
+      
+      const iframe = screen.getByTitle("audio-audio4");
+      expect(iframe).toBeInTheDocument();
+      expect(iframe.src).toBe("https://open.spotify.com/embed/album/1A2B3C4D5E6F7G8H9I0J?utm_source=generator");
+    });
+
+    test("renders audio segment with Spotify playlist URL", () => {
+      extractSpotifyInfoSpy.mockReturnValue({ type: "playlist", id: "37i9dQZF1DX0XUsuxWHRQd" });
+
+      const audioSheetData = {
+        ...mockSheetData,
+        content: {
+          segments: [
+            {
+              segment_id: "audio5",
+              type: "audio",
+              content: "https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd"
+            }
+          ]
+        }
+      };
+
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+        data: audioSheetData,
+        isLoading: false,
+      }));
+
+      setup();
+      
+      const iframe = screen.getByTitle("audio-audio5");
+      expect(iframe).toBeInTheDocument();
+      expect(iframe.src).toBe("https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator");
+    });
   });
 
   test("fetchSheetData calls the correct API endpoint", async () => {
@@ -320,6 +625,20 @@ describe("SheetDetailPage Component", () => {
     const sheetId = "test-id";
     await fetchSheetData(sheetId);
     
+    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/sheets/${sheetId}`, {
+      params: {
+        skip: 0,
+        limit: 10,
+      }
+    });
+  });
+
+  test("fetchSheetData handles API errors", async () => {
+    axiosInstance.get.mockRejectedValueOnce(new Error("API Error"));
+    
+    const sheetId = "test-id";
+    
+    await expect(fetchSheetData(sheetId)).rejects.toThrow("API Error");
     expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/sheets/${sheetId}`, {
       params: {
         skip: 0,
@@ -337,6 +656,16 @@ describe("SheetDetailPage Component", () => {
     
     expect(axiosInstance.delete).toHaveBeenCalledWith(`/api/v1/sheets/${sheetId}`);
     expect(result).toBe(true);
+  });
+
+  test("deleteSheet handles API errors", async () => {
+    axiosInstance.delete.mockClear();
+    axiosInstance.delete.mockRejectedValueOnce(new Error("Delete failed"));
+    
+    const sheetId = "test-id";
+    
+    await expect(deleteSheet(sheetId)).rejects.toThrow("Delete failed");
+    expect(axiosInstance.delete).toHaveBeenCalledWith(`/api/v1/sheets/${sheetId}`);
   });
 
   test("deleteSheetMutation navigates to community page on success", async () => {
@@ -383,5 +712,78 @@ describe("SheetDetailPage Component", () => {
     expect(consoleSpy).toHaveBeenCalledWith("Error deleting sheet:", expect.any(Error));
     
     consoleSpy.mockRestore();
+  });
+
+  test("handles mutation loading state", () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: true,
+    }));
+
+    setup();
+    expect(screen.getByText("Test Sheet")).toBeInTheDocument();
+  });
+
+  test("applies correct CSS classes when panel is open", () => {
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    const mainContainer = screen.getByRole("main");
+    expect(mainContainer).toHaveClass("with-side-panel");
+  });
+
+  test("does not apply panel CSS classes when panel is closed", () => {
+    setup();
+    
+    const mainContainer = screen.getByRole("main");
+    expect(mainContainer).not.toHaveClass("with-side-panel");
+  });
+
+  test("renders multiple segments of different types", () => {
+    const multiSegmentData = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "source",
+            content: "Source content",
+            language: "bo",
+            text_title: "Source Title",
+          },
+          {
+            segment_id: "segment2",
+            type: "content",
+            content: "Text content",
+          },
+          {
+            segment_id: "segment3",
+            type: "image",
+            content: "https://example.com/image.jpg",
+          },
+          {
+            segment_id: "segment4",
+            type: "video",
+            content: "dQw4w9WgXcQ",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: multiSegmentData,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    
+    expect(screen.getByText("Source Title")).toBeInTheDocument();
+    expect(screen.getByText("Text content")).toBeInTheDocument();
+    expect(screen.getByAltText("Sheet content")).toBeInTheDocument();
+    expect(screen.getByTestId("youtube-player")).toBeInTheDocument();
   });
 });

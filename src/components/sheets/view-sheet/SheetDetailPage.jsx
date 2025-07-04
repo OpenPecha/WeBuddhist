@@ -23,7 +23,6 @@ const {data}=await axiosInstance.get(`/api/v1/sheets/${id}`,{
 return data
 }
 
-// Delete a sheet function
 export const deleteSheet = async (id) => {
   await axiosInstance.delete(`/api/v1/sheets/${id}`);
   return true;
@@ -56,7 +55,6 @@ const SheetDetailPage = () => {
   const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } = usePanelContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Mutation for deleting sheet
   const { mutate: deleteSheetMutation, isLoading: isDeleting } = useMutation({
     mutationFn: () => deleteSheet(sheetId),
     onSuccess: () => {
