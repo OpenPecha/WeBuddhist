@@ -9,13 +9,12 @@ import { useAuth } from '../../config/AuthContext.jsx';
 import { useAuth0 } from '@auth0/auth0-react';
 import {mapLanguageCode} from "../../utils/helperFunctions.jsx";
 
-export const fetchsheet = async (userid="", limit, skip) => {
+export const fetchsheet = async (limit, skip) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
     const { data } = await axiosInstance.get("api/v1/sheets", {
       params: {
         language,
-        ...(userid && { user_id: userid }),
         limit,
         skip,
       },
@@ -40,7 +39,7 @@ const CommunityPage = () => {
     isLoading: sheetsIsLoading 
   } = useQuery(
     ["sheets", currentPage, limit], 
-    () => fetchsheet("tenzin_tsering.7233", limit, skip), 
+    () => fetchsheet(limit, skip), 
     { refetchOnWindowFocus: false }
   );
   const userIsLoggedIn = isLoggedIn || isAuthenticated;
