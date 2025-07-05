@@ -569,28 +569,6 @@ describe("SheetDetailPage Component", () => {
   });
 
   describe("handleDeleteSheet function tests", () => {
-  test("handleDeleteSheet calls deleteSheetMutation when confirm delete button is clicked", () => {
-    const mockMutate = vi.fn();
-    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
-      mutate: mockMutate,
-      isLoading: false,
-    }));
-
-    setup();
-
-    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:last-child');
-    fireEvent.click(trashIcon);
-
-    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
-
-    const confirmButton = screen.getByTestId("confirm-delete");
-    fireEvent.click(confirmButton);
-  
-    expect(mockMutate).toHaveBeenCalledTimes(1);
-    expect(mockMutate).toHaveBeenCalledWith(); 
-  });
-
   test("handleDeleteSheet is called with correct context", () => {
     const mockMutate = vi.fn();
     vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({

@@ -45,7 +45,7 @@ const SheetDetailPage = () => {
   // const sheetId = sheetSlugAndId.split('-').pop();
   const {t}=useTranslate();
   const navigate = useNavigate();
-  const sheetId= "48140f50-a61d-4815-8904-434de63cd86d"//remove this once samdup work is done
+  const sheetId= "c4cbbfac-75cc-415a-8cb9-792e611197e7"//remove this once samdup work is done
   const {data:sheetData, isLoading} = useQuery({
     queryKey:['sheetData',sheetId],
     queryFn:()=>fetchSheetData(sheetId)
@@ -55,22 +55,16 @@ const SheetDetailPage = () => {
   const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } = usePanelContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { mutate: deleteSheetMutation, isLoading: isDeleting } = useMutation({
+  const { mutate: deleteSheetMutation } = useMutation({
     mutationFn: () => deleteSheet(sheetId),
     onSuccess: () => {
-      closeDeleteModal();
+      setIsModalOpen(false);
       navigate('/community');
     },
     onError: (error) => {
       console.error("Error deleting sheet:", error);
     }
   });
-
-  const openDeleteModal = () => setIsModalOpen(true);
-  const closeDeleteModal = () => setIsModalOpen(false);
-  const handleDeleteSheet = () => {
-    deleteSheetMutation();
-  }
 
   const handleSidePanelToggle = (segmentId) => {
     setSegmentId(segmentId);
@@ -165,7 +159,7 @@ const SheetDetailPage = () => {
           <FiPrinter/>
           <FiShare/>
           <FiEdit />
-          <FiTrash onClick={() => openDeleteModal()}/>
+          <FiTrash onClick={() => setIsModalOpen(true)} />
         </div>
       </div>
     )
@@ -211,8 +205,8 @@ const SheetDetailPage = () => {
       )}
       <SheetDeleteModal
         isOpen={isModalOpen}
-        onClose={closeDeleteModal}
-        onDelete={handleDeleteSheet}
+        onClose={() => setIsModalOpen(false)}
+        onDelete={deleteSheetMutation}
       />
     </div>
   );
