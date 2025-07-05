@@ -25,7 +25,7 @@ vi.mock("./local-components/UserProfileCard/ProfileCard", () => ({
 
 vi.mock("./local-components/Editors/EditorWrapper", () => {
   const Editor = ({ children, title, initialValue }) => (
-    <div data-testid="editor" data-title={title}>
+    <div data-testid="editor" data-title={title} data-initialvalue={JSON.stringify(initialValue)}>
       {children}
     </div>
   );
@@ -50,6 +50,45 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+vi.mock('./view-sheet/SheetDetailPage', () => ({
+  fetchSheetData: vi.fn(() => Promise.resolve({
+    sheet_title: 'Fetched Title',
+    content: { segments: [{ type: 'paragraph', children: [{ text: 'Fetched content' }], align: 'left' }] },
+  })),
+}));
+
+vi.mock('./sheet-utils/Constant', () => ({
+  convertSegmentsToSlate: vi.fn((segments) => segments || [
+    { type: 'paragraph', children: [{ text: '' }], align: 'left' }
+  ]),
+}));
+
+const defaultValue = [
+  { type: 'paragraph', children: [{ text: '' }], align: 'left' }
+];
+
+const mockUseQuery = vi.fn((opts) => {
+  if (opts && opts.enabled === false) return { data: undefined };
+  if (opts && opts.queryKey && opts.queryKey[1] === 'new') return { data: undefined };
+  return {
+    data: {
+      sheet_title: 'Fetched Title',
+      content: { segments: [
+        { type: 'paragraph', children: [{ text: 'Fetched content' }], align: 'left' }
+      ] },
+    },
+  };
+});
+
+vi.mock('react-query', async () => {
+  const actual = await vi.importActual('react-query');
+  return {
+    ...actual,
+    useQuery: (...args) => mockUseQuery(...args),
+    QueryClient: actual.QueryClient,
+    QueryClientProvider: actual.QueryClientProvider,
+  };
+});
 
 mockUseAuth();
 
@@ -118,8 +157,8 @@ describe("Sheets Component", () => {
 
   test("passes default initialValue to Editor", () => {
     setup();
-    
-    expect(screen.getByTestId("editor")).toBeInTheDocument();
+    const editor = screen.getByTestId("editor");
+    expect(editor.getAttribute("data-initialvalue")).toContain('paragraph');
   });
 
   test("title state updates correctly", () => {

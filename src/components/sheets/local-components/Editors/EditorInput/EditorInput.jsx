@@ -114,5 +114,5 @@ const EditorInput = (prop) => {
 
 export default EditorInput
 EditorInput.propTypes = {
-  editor: PropTypes.object.isRequired
+  editor: PropTypes.object
 }
