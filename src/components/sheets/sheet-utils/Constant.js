@@ -4,7 +4,9 @@ const LIST_TYPES = ["ordered-list", "unordered-list"];
 const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
 
 const extractSpotifyInfo = (url) => {
-  const match = url.match(/spotify\.com\/(track|album|playlist)\/([a-zA-Z0-9]+)/);
+  const match = url.match(
+    /spotify\.com\/(?:embed\/)?(track|album|playlist)\/([a-zA-Z0-9]+)/
+  );
   return match ? { type: match[1], id: match[2] } : null;
 };
 
@@ -80,11 +82,11 @@ export {
 
 export const createPayload = (value, title, is_published = false) => {
   const source = value.map((node, i) => {
-    if (["image", "audio", "video"].includes(node.type)) {
+    if (["image", "audio", "video", "youtube"].includes(node.type)) {
       return {
         position: i,
-        type: node.type,
-        content: node.src,
+        type: node.type == "youtube" ? "video" : node.type,
+        content: node.type == "youtube" ? node.youtubeId : node.src,
       };
     }
     if (node.type === "pecha") {
@@ -106,3 +108,119 @@ export const createPayload = (value, title, is_published = false) => {
     is_published,
   };
 };
+
+function htmlToSlate(domNode, marks = {}) {
+  if (domNode.nodeType === 3) {
+    if (!domNode.textContent) return null;
+    return { text: domNode.textContent, ...marks };
+  }
+  if (domNode.nodeType !== 1) return null;
+
+  let newMarks = { ...marks };
+  const tag = domNode.nodeName.toLowerCase();
+  if (tag === "strong" || tag === "b") newMarks.bold = true;
+  if (tag === "em" || tag === "i") newMarks.italic = true;
+  if (tag === "u") newMarks.underline = true;
+  if (tag === "span" && domNode.style) {
+    if (
+      domNode.style.fontWeight === "bold" ||
+      domNode.style.fontWeight === "700"
+    )
+      newMarks.bold = true;
+    if (domNode.style.fontStyle === "italic") newMarks.italic = true;
+    if (domNode.style.textDecoration.includes("underline"))
+      newMarks.underline = true;
+    if (domNode.style.color) newMarks.color = domNode.style.color;
+  }
+  let children = [];
+  domNode.childNodes.forEach((child) => {
+    const slateNode = htmlToSlate(child, newMarks);
+    if (Array.isArray(slateNode)) {
+      children.push(...slateNode);
+    } else if (slateNode) {
+      children.push(slateNode);
+    }
+  });
+  return children;
+}
+
+export function convertSegmentsToSlate(segments) {
+  if (segments.length === 0) {
+    return [{ type: "paragraph", align: "left", children: [{ text: "" }] }];
+  }
+  const parser = typeof window !== "undefined" ? new window.DOMParser() : null;
+  return segments.map((segment) => {
+    const { type, content } = segment;
+    switch (type) {
+      case "content": {
+        if (parser && /<\/?[a-z][\s\S]*>/i.test(content)) {
+          const doc = parser.parseFromString(
+            `<body>${content}</body>`,
+            "text/html"
+          );
+          const body = doc.body;
+          let align = "left";
+          let children = [];
+          if (body.firstChild && body.firstChild.nodeName === "DIV") {
+            const div = body.firstChild;
+            align = div.style.textAlign || "left";
+            children = htmlToSlate(div) || [];
+          } else {
+            body.childNodes.forEach((node) => {
+              const slateNodes = htmlToSlate(node);
+              if (Array.isArray(slateNodes)) {
+                children.push(...slateNodes);
+              } else if (slateNodes) {
+                children.push(slateNodes);
+              }
+            });
+          }
+          if (!children.length || !children.some((n) => n.text !== undefined)) {
+            children = [{ text: "" }];
+          }
+          return {
+            type: "paragraph",
+            align,
+            children,
+          };
+        } else {
+          return {
+            type: "paragraph",
+            align: "left",
+            children: [{ text: content || "" }],
+          };
+        }
+      }
+      case "video":
+        return {
+          type: "youtube",
+          youtubeId: content,
+          children: [{ text: "" }],
+        };
+      case "image":
+        return {
+          type: "image",
+          src: content,
+          children: [{ text: "" }],
+        };
+      case "audio":
+        return {
+          type: "audio",
+          src: content,
+          children: [{ text: "" }],
+        };
+      case "source":
+        return {
+          type: "pecha",
+          src: segment.segment_id,
+          children: [{ text: "" }],
+        };
+      default:
+        return {
+          type: "paragraph",
+          align: "left",
+          children: [{ text: content || "" }],
+        };
+    }
+  });
+}
