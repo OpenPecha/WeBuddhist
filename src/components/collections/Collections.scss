@@ -36,15 +36,15 @@ $font-size-content-sm: 14px;
       }
     }
 
-    .explore-collections-button {
+    .explore-collections-button,
+    .explore-collections-button.btn {
+      font-family: var(--listtitle-font-family) !important;
       background-color: $button-color;
       border: none;
       padding: 0.5rem 1rem;
       white-space: nowrap;
-      font-size: $font-size-button !important;
 
       @media (max-width: 576px) {
-        font-size: $font-size-button-sm !important;
         padding: 0.4rem 0.8rem;
       }
     }
