@@ -42,6 +42,7 @@ const CommunityPage = () => {
     () => fetchsheet(limit, skip), 
     { refetchOnWindowFocus: false }
   );
+
   const userIsLoggedIn = isLoggedIn || isAuthenticated;
   return (
     <div className='container-community'>
@@ -63,13 +64,14 @@ const CommunityPage = () => {
                             </div>
                             </Link>
                             <div className="sheet-metadata content">
-                                {sheet.publisher.image_url ? (
-                            <img src={sheet.publisher.image_url} alt={sheet.publisher.name} />
+                                {sheet.publisher.avatar_url ? (
+                            <img src={sheet.publisher.avatar_url} alt={sheet.publisher.name.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()} className='avatar-image' />
                          ) : (
                          <div className="avatar-initials">
                               {sheet.publisher.name.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()}
                          </div>
                          )}
+                         <div className='sheet-publisher-name'>{sheet.publisher.name}</div>
                          <span className="sheet-dot">·</span>
                          <span className="sheet-date ">{sheet.time_passed}</span>
                         </div>

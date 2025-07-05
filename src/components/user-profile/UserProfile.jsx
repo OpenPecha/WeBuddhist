@@ -229,16 +229,12 @@ const UserProfile = () => {
                     ) : (
                       sheetsData?.sheets.map((sheet) => (
                         <div key={sheet.id} className="sheet-item">
-                          <div className="sheet-content listtitle">
+                          <div className="sheet-content listsubtitle">
                             <h4 className="sheet-title">{sheet.title}</h4>
                             <div className="sheet-metadata content">
                               <span className="sheet-views">{sheet.views}  { t("sheet.view_count") }</span>
                               <span className="sheet-dot">·</span>
                               <span className="sheet-date">{sheet.published_date?.split(' ')[0]}</span>
-                              <span className="sheet-dot">·</span>
-                              <span className="sheet-topics ">
-                                {sheet.topics?.join(', ') || 'No topics'}
-                              </span>
                             </div>
                           </div>
                         </div>
