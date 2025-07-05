@@ -7,10 +7,11 @@ import { FiEdit, FiTrash, FiEye, FiShare, FiPrinter } from "react-icons/fi";
 import { usePanelContext, PanelProvider } from '../../../context/PanelContext';
 import { extractSpotifyInfo } from '../sheet-utils/Constant';
 import axiosInstance from '../../../config/axios-config';
-import { useQuery } from 'react-query';
+import { useQuery, useMutation } from 'react-query';
 import { useTranslate } from '@tolgee/react';
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import Resources from "../../chapterV2/utils/resources/Resources.jsx";
+import { SheetDeleteModal } from '../local-components/modals/sheet-delete/sheet_delete';
 
 export const getUserInfo=async()=>{
   const {data}=await axiosInstance.get(`/api/v1/users/info`,{
@@ -28,6 +29,11 @@ const {data}=await axiosInstance.get(`/api/v1/sheets/${id}`,{
   }
 })
 return data
+}
+
+export const deleteSheet = async (id) => {
+  await axiosInstance.delete(`/api/v1/sheets/${id}`);
+  return true;
 }
 
 const getAudioSrc = (url) => {
@@ -61,6 +67,18 @@ const SheetDetailPage = () => {
   const [segmentId, setSegmentId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } = usePanelContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { mutate: deleteSheetMutation } = useMutation({
+    mutationFn: () => deleteSheet(sheetId),
+    onSuccess: () => {
+      setIsModalOpen(false);
+      navigate('/community');
+    },
+    onError: (error) => {
+      console.error("Error deleting sheet:", error);
+    }
+  });
 
   const handleSidePanelToggle = (segmentId) => {
     setSegmentId(segmentId);
@@ -140,6 +158,7 @@ const SheetDetailPage = () => {
         </header>
     );
   };
+
   const renderViewToolbar=()=>{
     return(
       <div className="view-toolbar">
@@ -157,7 +176,7 @@ const SheetDetailPage = () => {
             navigate(`/sheets/${sheetId}`)
           }}/>
           )}
-          <FiTrash />
+          <FiTrash onClick={() => setIsModalOpen(true)} />
         </div>
       </div>
     )
@@ -202,6 +221,11 @@ const SheetDetailPage = () => {
           handleClose={closeResourcesPanel}
         />
       )}
+      <SheetDeleteModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onDelete={deleteSheetMutation}
+      />
     </div>
   );
 };
