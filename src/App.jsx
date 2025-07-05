@@ -21,7 +21,7 @@ const UserLogin = lazy(() => import("./components/user-login/UserLogin.jsx"));
 const UserRegistration = lazy(() => import("./components/user-registration/UserRegistration.jsx"));
 const Topics = lazy(() => import("./components/topics/Topics.jsx"));
 const CommunityPage = lazy(() => import("./components/community/CommunityPage.jsx"));
-const Pages = lazy(() => import("./components/pages/Pages.jsx"));
+const Texts = lazy(() => import("./components/texts/Texts"));
 const Works = lazy(() => import("./components/works/Works.jsx"));
 const SubCollections = lazy(() => import("./components/sub-collections/SubCollections.jsx"));
 const Chapters = lazy(() => import("./components/chapter/Chapters.jsx"));
@@ -128,7 +128,7 @@ function App() {
               <Route path="/topics" element={<Topics/>}/>
               <Route path="/topics/:id" element={<Topics/>}/>
               <Route path="/community" element={<CommunityPage/>}/>
-              <Route path="/pages/:id" element={<Pages/>}/>
+              <Route path="/texts/:id" element={<Texts/>}/>
               <Route path="/collections/:id" element={<SubCollections/>}/>
               <Route path="/works/:id" element={<Works/>}/>
               <Route path="/chapter" element={<Chapters/>}/>
