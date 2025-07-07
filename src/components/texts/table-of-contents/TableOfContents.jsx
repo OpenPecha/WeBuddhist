@@ -1,5 +1,5 @@
 
-import React, {useMemo, useState} from 'react'
+import React, {useState} from 'react'
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import {useTranslate} from "@tolgee/react";
 import {FiChevronDown, FiChevronRight} from "react-icons/fi";
@@ -7,15 +7,18 @@ import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link} from "react-router-dom";
 
 
-const TableOfContents = ({textId, setContentId}) => {
+const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) => {
   const [expandedSections, setExpandedSections] = useState({});
   const { t } = useTranslate();
-  const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
-  const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
 
 
   // -------------------------------------------- helpers ----------------------------------------------
 
+  const contents = tableOfContents?.contents;
+  const totalSections = contents.reduce((total, content) => {
+    return total + (content?.sections?.length || 0);
+  }, 0);
+  const totalPages = Math.ceil(totalSections / pagination.limit);
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -29,42 +32,45 @@ const TableOfContents = ({textId, setContentId}) => {
 
   // --------------------------------------------- renderers -------------------------------------------
 
-  const renderSection = (section, level = 0, contentId, parentIndex, isTopLevel = false) => {
+  const renderContentTree = (section, level = 0, contentId, parentIndex, isTopLevel = false) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
     const keyPrefix = isTopLevel ? `content-${contentId}-segment` : `section`;
 
-    return (
-      <div key={`${keyPrefix}-${section.id}-${parentIndex}`} className="section-container">
-        <div
-          className="section-header"
-          onClick={(e) => {
-            // Prevent toggling if clicking the link
-            if (e.target.tagName !== 'A') {
-              toggleSection(section.id);
-            }
-          }}
-        >
-          {hasChildren ? (
-            isExpanded ?
-              <FiChevronDown size={16} className="toggle-icon" /> :
-              <FiChevronRight size={16} className="toggle-icon" />
-          ) : <span className="empty-icon"></span>}
-          <Link
-            to={`/chapter?text_id=${textId}&contentId=${contentId}&versionId=&contentIndex=${parentIndex}${!isTopLevel ? `&sectionId=${section.id}` : ''}`}
-            className={`section-title ${getLanguageClass(apiData.text_detail.language)}`}
-          >
-            {section.title}
-          </Link>
-        </div>
+    const renderContentTitle = () => {
+      return <Link
+        to={`/chapter?text_id=${textId}&contentId=${contentId}&versionId=&contentIndex=${parentIndex}${!isTopLevel ? `&sectionId=${section.id}` : ''}`}
+        className={`toc-title ${getLanguageClass(tableOfContents.text_detail.language)}`}>
+        {section.title}
+      </Link>
+    }
 
-        {isExpanded && hasChildren && (
-          <div className="nested-content">
-            {section.sections.map((childSection, childIndex) =>
-              renderSection(childSection, level + 1, contentId, isTopLevel ? childIndex : parentIndex, false)
-            )}
-          </div>
-        )}
+    const renderDropIcons = () => {
+      return hasChildren ? (
+        isExpanded ?
+          <FiChevronDown size={16} className="toggle-icon" /> :
+          <FiChevronRight size={16} className="toggle-icon" />
+      ) : <span className="empty-icon"></span>
+    }
+
+    const renderRecursiveSubContents = () => {
+      return isExpanded && hasChildren && (
+        <div className="nested-content">
+          {section.sections.map((childSection, childIndex) =>
+            renderContentTree(childSection, level + 1, contentId, isTopLevel ? childIndex : parentIndex, false)
+          )}
+        </div>
+      )
+    }
+    return (
+      <div key={`${keyPrefix}-${section.id}-${parentIndex}`} className="toc-list-container">
+        <div className="toc-header"
+          // Prevent toggling if clicking the link
+             onClick={(e) => e.target.tagName !== 'A' && toggleSection(section.id)}>
+          {renderDropIcons()}
+          {renderContentTitle()}
+        </div>
+        {renderRecursiveSubContents()}
       </div>
     );
   };
@@ -72,7 +78,7 @@ const TableOfContents = ({textId, setContentId}) => {
   const renderContents = () => {
     return contents.map((content, contentIndex) => (
       content.sections && content.sections.map((segment, index) =>
-        renderSection(segment, 0, content.id, index, true)
+        renderContentTree(segment, 0, content.id, index, true)
       )
     ));
   };
@@ -88,7 +94,7 @@ const TableOfContents = ({textId, setContentId}) => {
   };
 
   return (
-    <div className="contents-container">
+    <div className="toc-container">
       {renderContents()}
       {renderPagination()}
     </div>

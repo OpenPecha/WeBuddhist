@@ -94,7 +94,7 @@ const Texts = () => {
       <div className="tab-content">
         {activeTab === 'contents' && (
           <div className="tab-panel">
-            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination}/>
+            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={id}/>
           </div>
         )}
         {activeTab === 'versions' && (
