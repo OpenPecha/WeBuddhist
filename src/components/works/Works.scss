@@ -72,12 +72,16 @@
 
       .commentary-section {
         .commentary-list {
-          display: flex;
-          flex-wrap: wrap;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
           gap: 3rem;
 
+          @media (max-width: 910px) {
+            grid-template-columns: 1fr;
+          }
+
           .commentary-text {
-            width: 20rem;
+            width: 100%;
             text-decoration: none;
             cursor: pointer;
             transition: color 0.2s ease;
@@ -121,7 +125,7 @@
 
     .left-section {
       width: auto;
-      margin-bottom: 2rem;
+      margin: 3rem 3rem 0 0;
 
     }
 
