@@ -27,7 +27,7 @@ export const fetchsheet = async (limit, skip) => {
     return data;
   };
 const CommunityPage = () => {
-    const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
+    const [pagination, setPagination] = useState({ currentPage: 1, limit: 5 });
     const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
 
     const handlePageChange = (pageNumber) => {
