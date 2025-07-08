@@ -42,7 +42,6 @@ const CommunityPage = () => {
     const { isAuthenticated } = useAuth0();
     const {t}=useTranslate();
 
-console.log(sortOrder)
   const { 
     data: sheetsData, 
     isLoading: sheetsIsLoading 

@@ -283,6 +283,10 @@
     }
   }
 
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 .sheets-list {
@@ -290,8 +294,9 @@
     text-align: start;
     border-bottom: 1px solid #f0f0f0;
     padding: 15px 0;
-
+    width: fit-content;
     .sheet-content {
+      cursor: pointer;
       .sheet-title {
         color: #333;
         margin-bottom: 5px;
