@@ -7,7 +7,8 @@ import axiosInstance from '../../config/axios-config.js';
 import { useNavigate,Link } from 'react-router-dom';
 import { useAuth } from '../../config/AuthContext.jsx';
 import { useAuth0 } from '@auth0/auth0-react';
-import {mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
 
 export const fetchsheet = async (limit, skip) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -18,19 +19,23 @@ export const fetchsheet = async (limit, skip) => {
         limit,
         skip,
       },
+      headers: {
+        Authorization: "Bearer None"
+      },
     });
   
     return data;
   };
 const CommunityPage = () => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
+    const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
+
+    const handlePageChange = (pageNumber) => {
+      setPagination(prev => ({ ...prev, currentPage: pageNumber }));
+    };
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
     const { isAuthenticated } = useAuth0();
-      const skip = useMemo(() =>{
-        return (currentPage - 1) * limit;
-      },[currentPage])
     const {t}=useTranslate();
 
 
@@ -38,11 +43,11 @@ const CommunityPage = () => {
     data: sheetsData, 
     isLoading: sheetsIsLoading 
   } = useQuery(
-    ["sheets", currentPage, limit], 
-    () => fetchsheet(limit, skip), 
+    ["sheets", pagination.currentPage, pagination.limit], 
+    () => fetchsheet(pagination.limit, skip), 
     { refetchOnWindowFocus: false }
   );
-
+  const totalPages = Math.ceil((sheetsData?.total || 0) / pagination.limit);
   const userIsLoggedIn = isLoggedIn || isAuthenticated;
   return (
     <div className='container-community'>
@@ -59,7 +64,7 @@ const CommunityPage = () => {
                           <div className="sheet-content">
                           <Link to={`/${encodeURIComponent(sheet.publisher.name)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}-${sheet.id}`}>
                             <div className='sheet-title-container'>
-                            <h4 className="sheet-title listtitle">{sheet.title}</h4>
+                            <h4 className={`sheet-title listtitle ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
                             <p className=' navbaritems'>{sheet.summary}</p>
                             </div>
                             </Link>
@@ -80,6 +85,14 @@ const CommunityPage = () => {
                       ))
                     )}
       </div>
+      {sheetsData?.sheets?.length > 0 && (
+        <PaginationComponent
+          pagination={pagination}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          setPagination={setPagination}
+        />
+      )}
         </div>
       </div>
 
