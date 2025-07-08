@@ -9,7 +9,6 @@ import { useAuth } from '../../config/AuthContext.jsx';
 import { useAuth0 } from '@auth0/auth0-react';
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
-import { Dropdown } from 'react-bootstrap';
 
 export const fetchsheet = async (limit, skip, sort_order) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -37,6 +36,9 @@ const CommunityPage = () => {
     const handlePageChange = (pageNumber) => {
       setPagination(prev => ({ ...prev, currentPage: pageNumber }));
     };
+    const handleSortChange = (e) => {
+      setSortOrder(e.target.value);
+    };
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
     const { isAuthenticated } = useAuth0();
@@ -57,15 +59,14 @@ const CommunityPage = () => {
       <div className='sheet-community'>
         <div className='community-header'>
         <h2 className='section-title listtitle'> {t("community.sheets.recently_published")}</h2>
-          <Dropdown>
-            <Dropdown.Toggle className="community-dropdown" variant="outline-primary" id="dropdown-basic">
-               Order by
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={()=>setSortOrder('asc')}>Ascending</Dropdown.Item>
-              <Dropdown.Item onClick={()=>setSortOrder('desc')}>Descending</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+          <select
+            className="community-dropdown navbaritems"
+            value={sortOrder}
+            onChange={handleSortChange}
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
         </div>
        
         <div className='published-list'>
