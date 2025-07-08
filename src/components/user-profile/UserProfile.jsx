@@ -9,18 +9,23 @@ import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../util
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMemo, useState } from "react";
-import { mapLanguageCode } from "../../utils/helperFunctions.jsx";
 import { FaTimes } from "react-icons/fa";
 import { SheetDeleteModal } from "../sheets/local-components/modals/sheet-delete/sheet_delete.jsx";
 import { deleteSheet } from "../sheets/view-sheet/SheetDetailPage.jsx";
+import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
 
-export const fetchsheet = async (userid, limit, skip) => {
+export const fetchsheet = async (email, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+  const accessToken = sessionStorage.getItem('accessToken');
   const { data } = await axiosInstance.get("api/v1/sheets", {
+    headers: {
+      Authorization: accessToken ? `Bearer ${accessToken}` : "Bearer None"
+    },
     params: {
       language,
-      ...(userid && { user_id: userid }),
+      email: email,
       limit,
       skip,
     },
@@ -54,11 +59,13 @@ const UserProfile = () => {
   const { t } = useTranslate();
   const { isLoggedIn, logout: pechaLogout } = useAuth();
   const { isAuthenticated, logout } = useAuth0();
-    const [currentPage, setCurrentPage] = useState(1);
-    const [limit, setLimit] = useState(10);
-      const skip = useMemo(() =>{
-        return (currentPage - 1) * limit;
-      },[currentPage])
+  const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
+  const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
+
+  const handlePageChange = (pageNumber) => {
+    setPagination(prev => ({ ...prev, currentPage: pageNumber }));
+  };
+
   const uploadProfileImageMutation = useMutation(uploadProfileImage, {
     onSuccess: async () => {
       alert("Image uploaded successfully!");
@@ -172,10 +179,11 @@ const UserProfile = () => {
     data: sheetsData, 
     isLoading: sheetsIsLoading 
   } = useQuery(
-    ["sheets", currentPage, limit], 
-    () => fetchsheet("tenzin_tsering.7233", limit, skip), 
-    { refetchOnWindowFocus: false }
+    ["sheets", pagination.currentPage, pagination.limit], 
+    () => fetchsheet(userInfo?.email, pagination.limit, skip), 
+    { refetchOnWindowFocus: false, enabled: !!userInfo?.email }
   );
+  const totalPages = Math.ceil((sheetsData?.total || 0) / pagination.limit);
   return (
     <>
       { !userInfoIsLoading ?
@@ -245,9 +253,9 @@ const UserProfile = () => {
                     ) : (
                       sheetsData?.sheets.map((sheet) => (
                         <div key={sheet.id} className="sheet-item">
-                          <div className="sheet-content listtitle">
+                          <div className="sheet-content listsubtitle">
                             <div className="sheet-header">
-                              <h4 className="sheet-title">{sheet.title}</h4>
+                              <h4 className={`sheet-title ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
                               <button className="sheet-delete">
                               <FaTimes onClick={() => setIsModalOpen(true)} /></button>
                             </div>
@@ -265,6 +273,16 @@ const UserProfile = () => {
                       ))
                     )}
                   </div>
+      
+      {sheetsData?.sheets?.length > 0 && (
+        <PaginationComponent
+          pagination={pagination}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          setPagination={setPagination}
+        />
+      )}
+
                   </div>
                 </Tab>
                 <Tab

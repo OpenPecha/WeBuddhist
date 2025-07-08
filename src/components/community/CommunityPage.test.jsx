@@ -23,7 +23,7 @@ describe("CommunityPage Component", () => {
         summary: "This is a test sheet summary",
         publisher: {
           name: "Test User",
-          image_url: "https://example.com/image.jpg"
+          avatar_url: "https://example.com/image.jpg"
         },
         time_passed: "2 days ago"
       },
@@ -33,7 +33,7 @@ describe("CommunityPage Component", () => {
         summary: "Another test summary content",
         publisher: {
           name: "John Doe",
-          image_url: null
+          avatar_url: null
         },
         time_passed: "5 hours ago"
       }
@@ -101,7 +101,7 @@ describe("CommunityPage Component", () => {
 
   test("renders publisher image when available", () => {
     setup();
-    const publisherImage = screen.getByAltText("Test User");
+    const publisherImage = screen.getByAltText("TU");
     expect(publisherImage).toBeInTheDocument();
     expect(publisherImage).toHaveAttribute("src", "https://example.com/image.jpg");
   });
@@ -135,15 +135,17 @@ describe("CommunityPage Component", () => {
   test("fetches sheet with correct parameters", async () => {
     vi.spyOn(window.localStorage, "getItem").mockReturnValue("en");    
     axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
-    const result = await fetchsheet("123", 10, 0);
+    const result = await fetchsheet(10, 0);
   
     expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
       params: {
         language: "en",
-        user_id: "123",
         limit: 10,
         skip: 0,
-      }
+      },
+      headers: {
+        Authorization: "Bearer None"
+      },
     });
   
     expect(result).toEqual(mockSheetsData);
