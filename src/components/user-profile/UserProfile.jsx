@@ -105,13 +105,13 @@ const UserProfile = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const sheetId = "04f12175-7d9d-45ea-8018-22da60bd0c02"
+  const sheetId = "21c6d24f-eed1-4f9f-95f4-623d2cc1c5f1"
   
   const { mutate: deleteSheetMutation } = useMutation({
       mutationFn: () => deleteSheet(sheetId),
       onSuccess: () => {
         setIsModalOpen(false);
-        navigate('/community');
+        navigate('/profile');
       },
       onError: (error) => {
         console.error("Error deleting sheet:", error);
