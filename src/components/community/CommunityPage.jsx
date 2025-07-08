@@ -62,7 +62,7 @@ const CommunityPage = () => {
                       sheetsData?.sheets.map((sheet) => (
                         <div key={sheet.id} className="sheet-item">
                           <div className="sheet-content">
-                          <Link to={`/${encodeURIComponent(sheet.publisher.name)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}-${sheet.id}`}>
+                          <Link to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}_${sheet.id}`}>
                             <div className='sheet-title-container'>
                             <h4 className={`sheet-title listtitle ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
                             <p className=' navbaritems'>{sheet.summary}</p>

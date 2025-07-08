@@ -50,8 +50,8 @@ const getAudioSrc = (url) => {
 
 const SheetDetailPage = () => {
   let i=0;
-  // const { sheetSlugAndId } = useParams();
-  // const sheetId = sheetSlugAndId.split('-').pop();
+  const { sheetSlugAndId } = useParams();
+  const sheetId = sheetSlugAndId.split('_').pop();
   const {t}=useTranslate();
   const navigate=useNavigate();
   const {data:userInfo}=useQuery({
@@ -59,7 +59,6 @@ const SheetDetailPage = () => {
     queryFn:getUserInfo,
     enabled:!!sessionStorage.getItem('accessToken')
   })
-  const sheetId= "4743346e-4af1-4b87-b321-620b0b4625be"//remove this once samdup work is done
   const {data:sheetData, isLoading} = useQuery({
     queryKey:['sheetData',sheetId],
     queryFn:()=>fetchSheetData(sheetId)
