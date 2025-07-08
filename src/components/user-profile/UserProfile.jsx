@@ -9,7 +9,10 @@ import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../util
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMemo, useState } from "react";
-import {mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import { mapLanguageCode } from "../../utils/helperFunctions.jsx";
+import { FaTimes } from "react-icons/fa";
+import { SheetDeleteModal } from "../sheets/local-components/modals/sheet-delete/sheet_delete.jsx";
+import { deleteSheet } from "../sheets/view-sheet/SheetDetailPage.jsx";
 
 export const fetchsheet = async (userid, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -22,6 +25,8 @@ export const fetchsheet = async (userid, limit, skip) => {
       skip,
     },
   });
+
+  console.log("data", data)
 
   return data;
 };
@@ -90,6 +95,21 @@ const UserProfile = () => {
       uploadProfileImageMutation.mutateAsync(file)
     }
   };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const sheetId = "04f12175-7d9d-45ea-8018-22da60bd0c02"
+  
+  const { mutate: deleteSheetMutation } = useMutation({
+      mutationFn: () => deleteSheet(sheetId),
+      onSuccess: () => {
+        setIsModalOpen(false);
+        navigate('/community');
+      },
+      onError: (error) => {
+        console.error("Error deleting sheet:", error);
+      }
+  });
 
 
   const handleEditProfile = () => {
@@ -226,13 +246,17 @@ const UserProfile = () => {
                       sheetsData?.sheets.map((sheet) => (
                         <div key={sheet.id} className="sheet-item">
                           <div className="sheet-content listtitle">
-                            <h4 className="sheet-title">{sheet.title}</h4>
+                            <div className="sheet-header">
+                              <h4 className="sheet-title">{sheet.title}</h4>
+                              <button className="sheet-delete">
+                              <FaTimes onClick={() => setIsModalOpen(true)} /></button>
+                            </div>
                             <div className="sheet-metadata content">
                               <span className="sheet-views">{sheet.views}  { t("sheet.view_count") }</span>
                               <span className="sheet-dot">·</span>
                               <span className="sheet-date">{sheet.published_date?.split(' ')[0]}</span>
                               <span className="sheet-dot">·</span>
-                              <span className="sheet-topics ">
+                              <span className="sheet-topics">
                                 {sheet.topics?.join(', ') || 'No topics'}
                               </span>
                             </div>
@@ -240,8 +264,7 @@ const UserProfile = () => {
                         </div>
                       ))
                     )}
-      </div>
-
+                  </div>
                   </div>
                 </Tab>
                 <Tab
@@ -285,9 +308,15 @@ const UserProfile = () => {
                 </Tab>
               </Tabs>
             </div>
+            
           </div>
         </div>
         : <p className="listsubtitle">{t("common.loading")}</p> }
+        <SheetDeleteModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onDelete={deleteSheetMutation}
+        />
     </>
   );
 };

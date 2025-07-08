@@ -292,9 +292,22 @@
     padding: 15px 0;
 
     .sheet-content {
-      .sheet-title {
+      .sheet-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+        .sheet-title {
         color: #333;
         margin-bottom: 5px;
+      }
+        .sheet-delete {
+          background: transparent;
+          border: none;
+          color: grey;
+          font-size: 18px;
+          cursor: pointer;
+          padding: 0;
       }
 
       .sheet-summary {
