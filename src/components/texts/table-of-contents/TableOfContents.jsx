@@ -11,7 +11,6 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) 
   const [expandedSections, setExpandedSections] = useState({});
   const { t } = useTranslate();
 
-
   // -------------------------------------------- helpers ----------------------------------------------
 
   const contents = tableOfContents?.contents;
