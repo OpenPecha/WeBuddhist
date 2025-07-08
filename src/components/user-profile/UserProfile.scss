@@ -265,18 +265,18 @@
       }
 
       .tab-content {
-        padding: 20px;
+        padding: 5px 20px 20px 20px;
         font-size: 16px;
         width: 100%;
         min-height: 200px;
 
         @media (max-width: 768px) {
-          padding: 15px;
+          padding: 5px 15px 15px 15px;
           min-height: 150px;
         }
 
         @media (max-width: 480px) {
-          padding: 10px;
+          padding: 5px 10px 10px 10px;
           font-size: 14px;
         }
       }
