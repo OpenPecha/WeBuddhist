@@ -136,7 +136,7 @@ function App() {
               <Route path="/search" element={<SearchResultsPage/>}/>
               <Route path="*" element={<Collections/>}/>
               <Route path="/sheets/:id" element={<Sheets/>}/>
-              <Route path="/temporary" element={<SheetDetailPage/>}/>
+              <Route path="/:username/:sheetSlugAndId" element={<SheetDetailPage/>}/>
           </Routes>
       </Suspense>
     );
