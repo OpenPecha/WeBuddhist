@@ -30,9 +30,6 @@ export const fetchsheet = async (email, limit, skip) => {
       skip,
     },
   });
-
-  console.log("data", data)
-
   return data;
 };
 
@@ -104,11 +101,10 @@ const UserProfile = () => {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const sheetId = "21c6d24f-eed1-4f9f-95f4-623d2cc1c5f1"
+  const [ selectedSheetId, setSelectedSheetId ] = useState(null);
   
   const { mutate: deleteSheetMutation } = useMutation({
-      mutationFn: () => deleteSheet(sheetId),
+      mutationFn: () => deleteSheet(selectedSheetId),
       onSuccess: () => {
         setIsModalOpen(false);
         navigate('/profile');
@@ -257,7 +253,11 @@ const UserProfile = () => {
                             <div className="sheet-header">
                               <h4 className={`sheet-title ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
                               <button className="sheet-delete">
-                              <FaTimes onClick={() => setIsModalOpen(true)} /></button>
+                              <FaTimes onClick={() => {
+                                setSelectedSheetId(sheet.id);
+                                setIsModalOpen(true);
+                                }} />
+                              </button>
                             </div>
                             <div className="sheet-metadata content">
                               <span className="sheet-views">{sheet.views}  { t("sheet.view_count") }</span>
