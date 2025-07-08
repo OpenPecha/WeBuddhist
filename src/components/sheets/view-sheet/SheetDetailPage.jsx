@@ -171,11 +171,14 @@ const SheetDetailPage = () => {
           <FiPrinter/>
           <FiShare/>
           {sheetData.publisher.email === userInfo?.email && (
+            <>
           <FiEdit onClick={()=>{
             navigate(`/sheets/${sheetId}`)
           }}/>
-          )}
+         
           <FiTrash onClick={() => setIsModalOpen(true)} />
+          </>
+        )}
         </div>
       </div>
     )
