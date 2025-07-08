@@ -5,7 +5,7 @@ import {useTranslate} from "@tolgee/react";
 import {FiChevronDown, FiChevronRight} from "react-icons/fi";
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link} from "react-router-dom";
-
+import "./TableOfContents.scss"
 
 const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) => {
   const [expandedSections, setExpandedSections] = useState({});
@@ -32,14 +32,14 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) 
 
   // --------------------------------------------- renderers -------------------------------------------
 
-  const renderContentTree = (section, level = 0, contentId, parentIndex, isTopLevel = false) => {
+  const renderContentTree = (section, level = 0, tocId, parentIndex, isTopLevel = false) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
-    const keyPrefix = isTopLevel ? `content-${contentId}-segment` : `section`;
+    const keyPrefix = isTopLevel ? `content-${tocId}-segment` : `section`;
 
     const renderContentTitle = () => {
       return <Link
-        to={`/chapter?text_id=${textId}&contentId=${contentId}&versionId=&contentIndex=${parentIndex}${!isTopLevel ? `&sectionId=${section.id}` : ''}`}
+        to={`/chapter?text_id=${textId}&contentId=${tocId}&versionId=&contentIndex=${parentIndex}${!isTopLevel ? `&sectionId=${section.id}` : ''}`}
         className={`toc-title ${getLanguageClass(tableOfContents.text_detail.language)}`}>
         {section.title}
       </Link>
@@ -57,7 +57,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) 
       return isExpanded && hasChildren && (
         <div className="nested-content">
           {section.sections.map((childSection, childIndex) =>
-            renderContentTree(childSection, level + 1, contentId, isTopLevel ? childIndex : parentIndex, false)
+            renderContentTree(childSection, level + 1, tocId, isTopLevel ? childIndex : parentIndex, false)
           )}
         </div>
       )
