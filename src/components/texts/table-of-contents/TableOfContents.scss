@@ -2,8 +2,8 @@ $tablet-breakpoint: 768px;
 
 
 .toc-container {
-  .toc-list-container{
-    .toc-header{
+  .toc-list-container {
+    .toc-header {
       display: flex;
       align-items: center;
       padding: 0.5rem 0.75rem;
@@ -12,13 +12,15 @@ $tablet-breakpoint: 768px;
       text-align: left;
       border-radius: 4px;
       transition: background-color 0.2s ease;
+
       .toggle-icon {
         margin-right: 0.5rem;
         min-width: 16px;
         display: flex;
         align-items: center;
       }
-      .toc-title{
+
+      .toc-title {
         width: 100%;
         text-decoration: none;
         font-size: 16px;
@@ -29,21 +31,22 @@ $tablet-breakpoint: 768px;
         padding: 0;
         display: inline;
       }
+
       &:hover {
         background-color: rgba(0, 0, 0, 0.05);
       }
+
       .nested-content {
         margin-left: 1.25rem;
 
       }
     }
-    .nested-content{
-      .toc-list-container{
+
+    .nested-content {
+      .toc-list-container {
         padding-left: 1.5rem;
       }
-
     }
   }
-
 }
 

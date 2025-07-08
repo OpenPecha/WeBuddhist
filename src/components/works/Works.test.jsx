@@ -189,9 +189,9 @@ describe("Works Component", () => {
     setup();
     const links = screen.getAllByTestId("router-link");
     expect(links).toHaveLength(3);
-    expect(links[0].getAttribute("href")).toBe("/pages/text1?type=root_text");
-    expect(links[1].getAttribute("href")).toBe("/pages/text2?type=root_text");
-    expect(links[2].getAttribute("href")).toBe("/pages/text3?type=commentary");
+    expect(links[0].getAttribute("href")).toBe("/texts/text1");
+    expect(links[1].getAttribute("href")).toBe("/texts/text2");
+    expect(links[2].getAttribute("href")).toBe("/texts/text3");
   });
 
   // test("handles query error gracefully", () => {

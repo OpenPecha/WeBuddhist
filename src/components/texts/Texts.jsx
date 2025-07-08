@@ -10,7 +10,7 @@ import {useParams} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
-const fetchTableOfContents = async (textId, skip, limit) => {
+export const fetchTableOfContents = async (textId, skip, limit) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
   const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/contents`, {
@@ -45,14 +45,14 @@ const Texts = () => {
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
     const renderTitle = () => {
-      return <h3 className={`${getLanguageClass(tableOfContents.text_detail.language)}`}>
-        {tableOfContents.text_detail.title}
+      return <h3 className={`${getLanguageClass(tableOfContents?.text_detail.language)}`}>
+        {tableOfContents?.text_detail.title}
       </h3>
     }
 
     const renderType = () => {
       return <div className="navbaritems subcom">
-        {t(`text.type.${tableOfContents.text_detail.type}`)}
+        {t(`text.type.${tableOfContents?.text_detail.type}`)}
       </div>
     }
 
