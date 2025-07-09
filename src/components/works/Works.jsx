@@ -72,7 +72,7 @@ const Works = () => {
         ) : (
           <div className="root-text-list">
             {rootTexts.map((text) => (
-              <Link key={text.id} to={`/texts/${text.id}`}
+              <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
                     className={`${getLanguageClass(text.language)} root-text`}>
                 <div className="divider"></div>
                 <p>{text.title}</p>
@@ -94,7 +94,7 @@ const Works = () => {
         ) : (
           <div className="commentary-list">
             {commentaryTexts.map((text) => (
-              <Link key={text.id} to={`/texts/${text.id}`}
+              <Link key={text.id} to={`/texts/${text.id}?type=commentary`}
                     className={`${getLanguageClass(text.language)} commentary-text`}>
                 <div className="divider"></div>
                 <p>{text.title}</p>

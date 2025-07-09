@@ -6,7 +6,7 @@ import "./Texts.scss"
 import {LANGUAGE} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useTranslate} from "@tolgee/react";
-import {useParams} from "react-router-dom";
+import {useParams, useSearchParams} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
@@ -26,6 +26,8 @@ export const fetchTableOfContents = async (textId, skip, limit) => {
 const Texts = () => {
   const { t } = useTranslate();
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get('type') || "";
   const [activeTab, setActiveTab] = useState('contents');
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
@@ -52,7 +54,7 @@ const Texts = () => {
 
     const renderType = () => {
       return <div className="navbaritems subcom">
-        {t(`text.type.${tableOfContents?.text_detail.type}`)}
+        {t(`text.type.${type}`)}
       </div>
     }
 
