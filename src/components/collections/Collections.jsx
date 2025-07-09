@@ -11,7 +11,7 @@ import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 export const fetchCollections = async () => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const {data} = await axiosInstance.get("api/v1/terms", {
+  const {data} = await axiosInstance.get("api/v1/collections", {
     params: {
       language,
       limit: 10,
@@ -30,7 +30,7 @@ const Collections = () => {
 
   // ----------------------------- helpers ---------------------------------------
 
-  const earlyReturn = getEarlyReturn({ termsIsLoading: collectionsIsLoading, collectionsError, t });
+  const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, collectionsError, t });
   if (earlyReturn) return earlyReturn;
 
   // ----------------------------- renderers -------------------------------------
@@ -46,20 +46,20 @@ const Collections = () => {
   };
 
   const renderCollections = () => {
-    const renderCollectionNames = (term) => {
-      return term.has_child ?
-        <Link to={`/collections/${term.id}`} className="listtitle collection-link">
-          {term.title}
+    const renderCollectionNames = (collection) => {
+      return collection.hasChild ?
+        <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
+          {collection.title}
         </Link> :
-        term.title
+        collection.title
     }
     return (
       <div className="collections-list-container">
-        {collectionsData?.terms.map((term, index) => (
-          <div className="collections" key={term.id}>
+        {collectionsData?.collections.map((collection, index) => (
+          <div className="collections" key={collection.id}>
             <div className={"red-line"}></div>
-              {renderCollectionNames(term)}
-              <p className="content collections-description">{term.description}</p>
+              {renderCollectionNames(collection)}
+              <p className="content collections-description">{collection.description}</p>
           </div>
         ))}
       </div>

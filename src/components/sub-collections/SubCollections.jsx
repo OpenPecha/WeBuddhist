@@ -10,7 +10,7 @@ import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 export const fetchSubCollections = async (parentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const { data } = await axiosInstance.get("/api/v1/terms", {
+  const { data } = await axiosInstance.get("/api/v1/collections", {
     params: {
       language,
       ...(parentId && { parent_id: parentId }),
@@ -35,7 +35,7 @@ const SubCollections = () => {
   }
   // ----------------------------------- helpers -----------------------------------------
 
-  const earlyReturn = getEarlyReturn({ termsIsLoading: subCollectionsDataIsLoading, subCollectionsError, t });
+  const earlyReturn = getEarlyReturn({ isLoading: subCollectionsDataIsLoading, subCollectionsError, t });
   if (earlyReturn) return earlyReturn;
 
   // ----------------------------------- renderers ---------------------------------------
@@ -44,10 +44,10 @@ const SubCollections = () => {
   const renderSubCollections = () => {
 
     return <div className="sub-collections-list-container">
-      {subCollectionsData?.terms?.map((term) =>
-        <Link key={term.id} to={`/works/${term.id}`} className="text-item overalltext sub-collection">
+      {subCollectionsData?.collections?.map((collection) =>
+        <Link key={collection.id} to={`/works/${collection.id}`} className="text-item overalltext sub-collection">
           <div className="divider"></div>
-          <p>{term.title}</p>
+          <p>{collection.title}</p>
         </Link>
       )}
     </div>
