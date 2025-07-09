@@ -38,7 +38,7 @@ export const fetchUserInfo = async () => {
   return data;
 };
 
-const uploadProfileImage = async (file) => {
+export const uploadProfileImage = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
   const { data } = await axiosInstance.post("api/v1/users/upload", formData);

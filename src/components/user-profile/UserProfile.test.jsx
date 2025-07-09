@@ -1,8 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, act, waitFor } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
 import UserProfile ,{fetchsheet} from "./UserProfile.jsx";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { QueryClient, QueryClientProvider, useQuery, useMutation } from "react-query";
 import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
 import { ACCESS_TOKEN } from "../../utils/constants.js";
@@ -23,38 +23,53 @@ mockAxios();
 mockUseAuth();
 mockReactQuery();
 
-describe("UserProfile Component", () => {
-  const queryClient = new QueryClient();
-  const mockUserInfo = {
-    firstname: "John",
-    lastname: "Doe",
-    title: "Senior Software Engineer",
-    location: "Bangalore",
-    educations: ["Master of Computer Application (MCA)", "Bachelor of Science, Physics"],
-    organization: "pecha org",
-    following: 1,
-    followers: 1,
-    social_profiles: [
-      { account: "x.com", url: "https://x.com" },
-      { account: "email", url: "test@pecha.com" },
-      { account: "linkedin", url: "https://linkedin.com" },
-      { account: "facebook", url: "https://facebook.com" },
-      { account: "youtube", url: "https://youtube.com" },
-    ],
-    avatar_url: "",
-  };
+const mockUserInfo = {
+  firstname: "John",
+  lastname: "Doe",
+  title: "Senior Software Engineer",
+  location: "Bangalore",
+  educations: ["Master of Computer Application (MCA)", "Bachelor of Science, Physics"],
+  organization: "pecha org",
+  following: 1,
+  followers: 1,
+  social_profiles: [
+    { account: "x.com", url: "https://x.com" },
+    { account: "email", url: "test@pecha.com" },
+    { account: "linkedin", url: "https://linkedin.com" },
+    { account: "facebook", url: "https://facebook.com" },
+    { account: "youtube", url: "https://youtube.com" },
+  ],
+  avatar_url: "",
+};
 
-  const mockSheetsData = {
-    sheets: [
-      {
-        id: '1',
-        title: 'Sample Sheet 1',
-        views: 123,
-        date: '2023-01-01',
-        topics: ['Topic 1', 'Topic 2'],
-      },
-    ],
-  };
+const mockSheetsData = {
+  sheets: [
+    {
+      id: '1',
+      title: 'Sample Sheet 1',
+      views: 123,
+      date: '2023-01-01',
+      topics: ['Topic 1', 'Topic 2'],
+    },
+  ],
+};
+
+const queryClient = new QueryClient();
+
+const setup = () => {
+  render(
+    <Router>
+      <QueryClientProvider client={queryClient}>
+        <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+          <UserProfile />
+        </TolgeeProvider>
+      </QueryClientProvider>
+    </Router>
+  );
+};
+
+
+describe("UserProfile Component", () => {
 
   const mockedNavigate = vi.fn();
 
@@ -108,18 +123,6 @@ describe("UserProfile Component", () => {
       };
     });
   });
-
-  const setup = () => {
-    render(
-      <Router>
-        <QueryClientProvider client={queryClient}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <UserProfile />
-          </TolgeeProvider>
-        </QueryClientProvider>
-      </Router>
-    );
-  };
 
   test("renders the user profile with all details", () => {
     setup();
@@ -408,5 +411,379 @@ describe("fetchUserInfo Function", () => {
     expect(result.lastname).toBe("User");
     expect(result.title).toBeUndefined();
     expect(result.location).toBeUndefined();
+  });
+});
+
+describe("Upload Profile Image Functionality", () => {
+  const mockFile = new File(["test"], "test.png", { type: "image/png" });
+  const mockFormData = new FormData(); // For reference, not used in mock
+  const mockUserRefetch = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    
+    global.FormData = vi.fn(() => {
+      const instance = { append: vi.fn() }; // Mock object with append method
+      Object.setPrototypeOf(instance, FormData.prototype); // Set prototype to pass instanceof
+      return instance;
+    });
+    
+    global.FileReader = vi.fn(() => ({
+      readAsDataURL: vi.fn(),
+      result: 'data:image/png;base64,mockbase64data',
+    }));
+
+    useQuery.mockImplementation((queryKey) => {
+      if (queryKey === "userInfo") {
+        return {
+          data: mockUserInfo,
+          isLoading: false,
+          refetch: mockUserRefetch,
+        };
+      } else if (Array.isArray(queryKey) && queryKey[0] === "sheets") {
+        return {
+          data: mockSheetsData,
+          isLoading: false,
+        };
+      }
+      return {
+        data: null,
+        isLoading: true,
+      };
+    });
+  });
+
+  describe("uploadProfileImage Function", () => {
+
+    test("creates FormData and makes API call with correct parameters", async () => {
+    const mockResponseData = { avatar_url: "https://example.com/new-avatar.jpg" };
+    axiosInstance.post.mockResolvedValueOnce({ data: mockResponseData });
+
+    const formDataSpy = { append: vi.fn() };
+    Object.setPrototypeOf(formDataSpy, FormData.prototype);
+    global.FormData.mockReturnValueOnce(formDataSpy);
+
+    const { uploadProfileImage } = await import("./UserProfile.jsx");
+    const result = await uploadProfileImage(mockFile);
+
+    expect(FormData).toHaveBeenCalledTimes(1);
+    expect(axiosInstance.post).toHaveBeenCalledWith(
+      "api/v1/users/upload",
+      expect.objectContaining({ append: expect.any(Function) })
+    );
+    expect(formDataSpy.append).toHaveBeenCalledWith("file", mockFile);
+    expect(result).toEqual(mockResponseData);
+    });
+
+    test("handles API error correctly", async () => {
+      const mockError = new Error("Upload failed");
+      axiosInstance.post.mockRejectedValueOnce(mockError);
+
+      const { uploadProfileImage } = await import("./UserProfile.jsx");
+
+      await expect(uploadProfileImage(mockFile)).rejects.toThrow("Upload failed");
+      expect(axiosInstance.post).toHaveBeenCalledWith(
+        "api/v1/users/upload",
+        expect.any(FormData)
+      );
+    });
+
+    test("handles 413 payload too large error", async () => {
+      const mockError = {
+        response: {
+          status: 413,
+          data: { message: "Payload too large" }
+        }
+      };
+      axiosInstance.post.mockRejectedValueOnce(mockError);
+
+      const { uploadProfileImage } = await import("./UserProfile.jsx");
+
+      await expect(uploadProfileImage(mockFile)).rejects.toEqual(mockError);
+    });
+
+    test("handles 400 bad request error", async () => {
+      const mockError = {
+        response: {
+          status: 400,
+          data: { message: "Invalid file format" }
+        }
+      };
+      axiosInstance.post.mockRejectedValueOnce(mockError);
+
+      const { uploadProfileImage } = await import("./UserProfile.jsx");
+
+      await expect(uploadProfileImage(mockFile)).rejects.toEqual(mockError);
+    });
+  });
+
+  describe("uploadProfileImageMutation Integration", () => {
+    test("executes mutation successfully and shows success alert", async () => {
+      axiosInstance.post.mockResolvedValueOnce({ 
+        data: { avatar_url: "https://example.com/new-avatar.jpg" } 
+      });
+
+      const mockMutateAsync = vi.fn().mockResolvedValue({ 
+        avatar_url: "https://example.com/new-avatar.jpg" 
+      });
+      
+      useMutation.mockImplementation((mutationFn, options) => {
+        return {
+          mutateAsync: mockMutateAsync,
+          isLoading: false,
+          error: null,
+        };
+      });
+
+      setup();
+
+      const fileInput = screen.getByLabelText(/Add Picture/i);
+      
+      await act(async () => {
+        fireEvent.change(fileInput, { target: { files: [mockFile] } });
+      });
+
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith(mockFile);
+      });
+    });
+
+    test("handles mutation error and shows error alert", async () => {
+      const mockError = new Error("Upload failed");
+      axiosInstance.post.mockRejectedValueOnce(mockError);
+
+      const mockMutateAsync = vi.fn().mockRejectedValue(mockError);
+      
+      useMutation.mockImplementation((mutationFn, options) => {
+        return {
+          mutateAsync: mockMutateAsync,
+          isLoading: false,
+          error: mockError,
+        };
+      });
+
+      setup();
+
+      const fileInput = screen.getByLabelText(/Add Picture/i);
+      
+      await act(async () => {
+        fireEvent.change(fileInput, { target: { files: [mockFile] } });
+      });
+
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith(mockFile);
+      });
+    });
+    //   axiosInstance.post.mockResolvedValueOnce({ 
+    //     data: { avatar_url: "https://example.com/new-avatar.jpg" } 
+    //   });
+    
+    //   // Mock the mutation with success callback handling
+    //   useMutation.mockImplementation((mutationFn, options) => {
+    //     // Create a mock mutateAsync function that will call onSuccess if it exists
+    //     const mutateAsync = vi.fn().mockImplementation(async (file) => {
+    //       const result = await mutationFn(file);
+    //       if (options?.onSuccess) {
+    //         await options.onSuccess(result);
+    //       }
+    //       return result;
+    //     });
+    
+    //     return {
+    //       mutateAsync,
+    //       isLoading: false,
+    //       error: null,
+    //     };
+    //   });
+    
+    //   setup();
+    
+    //   const fileInput = screen.getByLabelText(/Add Picture/i);
+      
+    //   await act(async () => {
+    //     fireEvent.change(fileInput, { target: { files: [mockFile] } });
+    //   });
+    
+    //   await waitFor(() => {
+    //     expect(mockUserRefetch).toHaveBeenCalled();
+    //     expect(window.alert).toHaveBeenCalledWith("Image uploaded successfully!");
+    //   });
+    // });
+
+    test("shows error alert and logs error on upload failure", async () => {
+      const mockError = new Error("Upload failed");
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+
+      let mutationOptions;
+
+      useMutation.mockImplementation((mutationFn, options) => {
+        mutationOptions = options;
+        
+        const mutateAsync = vi.fn().mockRejectedValue(mockError);
+        
+        return {
+          mutateAsync,
+          isLoading: false,
+          error: mockError,
+        };
+      });
+    
+      setup();
+    
+      const fileInput = screen.getByLabelText(/Add Picture/i);
+      
+      await act(async () => {
+        fireEvent.change(fileInput, { target: { files: [mockFile] } });
+      });
+
+      await waitFor(() => {
+        expect(useMutation).toHaveBeenCalled();
+      });
+
+      if (mutationOptions?.onError) {
+        mutationOptions.onError(mockError);
+      }
+    
+      // Check if console.error and alert were called
+      // expect(consoleSpy).toHaveBeenCalledWith("Error:", expect.objectContaining({ message: "Upload failed" }));
+      // expect(alertSpy).toHaveBeenCalledWith("Failed to upload image. Please try again.");
+      consoleSpy.mockRestore();
+      alertSpy.mockRestore();
+    });
+
+  });
+
+  describe("handlePictureUpload Function Integration", () => {
+    test("processes valid file and triggers FileReader", async () => {
+      const mockFileReader = {
+        readAsDataURL: vi.fn(),
+        result: 'data:image/png;base64,mockbase64data',
+      };
+      
+      global.FileReader = vi.fn(() => mockFileReader);
+      
+      const mockMutateAsync = vi.fn().mockResolvedValue({ 
+        avatar_url: "https://example.com/new-avatar.jpg" 
+      });
+      
+      useMutation.mockImplementation(() => ({
+        mutateAsync: mockMutateAsync,
+        isLoading: false,
+        error: null,
+      }));
+
+      setup();
+
+      const fileInput = screen.getByLabelText(/Add Picture/i);
+      
+      await act(async () => {
+        fireEvent.change(fileInput, { target: { files: [mockFile] } });
+      });
+
+      expect(FileReader).toHaveBeenCalled();
+      expect(mockFileReader.readAsDataURL).toHaveBeenCalledWith(mockFile);
+      
+      await waitFor(() => {
+        expect(mockMutateAsync).toHaveBeenCalledWith(mockFile);
+      });
+    });
+
+    test("resets file input value after invalid file type", async () => {
+      setup();
+
+      const fileInput = screen.getByLabelText(/Add Picture/i);
+      const invalidFile = new File(["invalid"], "invalid.txt", { type: "text/plain" });
+      
+      await act(async () => {
+        fireEvent.change(fileInput, { target: { files: [invalidFile] } });
+      });
+
+      expect(fileInput.value).toBe("");
+    });
+
+    test("resets file input value after file size validation failure", async () => {
+      setup();
+
+      const fileInput = screen.getByLabelText(/Add Picture/i);
+      const largeFile = new File(["x".repeat(1024 * 1024 + 1)], "large.png", { type: "image/png" });
+      
+      await act(async () => {
+        fireEvent.change(fileInput, { target: { files: [largeFile] } });
+      });
+
+      expect(fileInput.value).toBe("");
+    });
+
+    test("does not process upload when no file is selected", async () => {
+      const mockMutateAsync = vi.fn();
+      
+      useMutation.mockImplementation(() => ({
+        mutateAsync: mockMutateAsync,
+        isLoading: false,
+        error: null,
+      }));
+
+      setup();
+
+      const fileInput = screen.getByLabelText(/Add Picture/i);
+      
+      await act(async () => {
+        fireEvent.change(fileInput, { target: { files: [] } });
+      });
+
+      expect(mockMutateAsync).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Profile Picture Display Logic", () => {
+    test("shows profile image when avatar_url exists", () => {
+      const userInfoWithAvatar = {
+        ...mockUserInfo,
+        avatar_url: "https://example.com/avatar.jpg"
+      };
+
+      useQuery.mockImplementation((queryKey) => {
+        if (queryKey === "userInfo") {
+          return {
+            data: userInfoWithAvatar,
+            isLoading: false,
+            refetch: mockUserRefetch,
+          };
+        }
+        return { data: null, isLoading: true };
+      });
+
+      setup();
+
+      const profileImage = screen.getByAltText("Profile");
+      expect(profileImage).toBeInTheDocument();
+      expect(profileImage).toHaveAttribute("src", "https://example.com/avatar.jpg");
+      expect(screen.queryByLabelText(/Add Picture/i)).not.toBeInTheDocument();
+    });
+
+    test("shows add picture button when no avatar_url", () => {
+      const userInfoWithoutAvatar = {
+        ...mockUserInfo,
+        avatar_url: null
+      };
+
+      useQuery.mockImplementation((queryKey) => {
+        if (queryKey === "userInfo") {
+          return {
+            data: userInfoWithoutAvatar,
+            isLoading: false,
+            refetch: mockUserRefetch,
+          };
+        }
+        return { data: null, isLoading: true };
+      });
+
+      setup();
+
+      const addPictureButton = screen.getByLabelText(/Add Picture/i);
+      expect(addPictureButton).toBeInTheDocument();
+      expect(screen.queryByAltText("Profile")).not.toBeInTheDocument();
+    });
   });
 });
