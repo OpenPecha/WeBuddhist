@@ -135,13 +135,15 @@ describe("CommunityPage Component", () => {
   test("fetches sheet with correct parameters", async () => {
     vi.spyOn(window.localStorage, "getItem").mockReturnValue("en");    
     axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
-    const result = await fetchsheet(10, 0);
+    const result = await fetchsheet(10, 0, "desc");
   
     expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
       params: {
         language: "en",
         limit: 10,
         skip: 0,
+        sort_by: "published_date",
+        sort_order: "desc",
       },
       headers: {
         Authorization: "Bearer None"

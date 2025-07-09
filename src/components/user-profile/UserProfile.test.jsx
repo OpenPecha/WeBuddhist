@@ -69,7 +69,22 @@ const setup = () => {
 };
 
 
+
 describe("UserProfile Component", () => {
+
+  const mockSheetsData = {
+    sheets: [
+      {
+        id: '1',
+        title: 'Sample Sheet 1',
+        views: 123,
+        published_date: '2023-01-01 12:00:00',
+        language: 'en',
+        publisher: { username: 'johndoe' },
+      },
+    ],
+    total: 1,
+  };
 
   const mockedNavigate = vi.fn();
 
@@ -111,7 +126,7 @@ describe("UserProfile Component", () => {
           isLoading: false,
           refetch: vi.fn(),
         };
-      } else if (Array.isArray(queryKey) && queryKey[0] === "sheets") {
+      } else if (Array.isArray(queryKey) && queryKey[0] === "sheets-user-profile") {
         return {
           data: mockSheetsData,
           isLoading: false,
@@ -222,11 +237,17 @@ describe("UserProfile Component", () => {
   test("renders sheets data correctly in Sheets tab", () => {
     setup();
 
+    // Check for sheet title
     const sheetTitle = screen.getByText(/Sample Sheet 1/i);
-    
-     // Check sheet metadata
-     expect(sheetTitle).toBeInTheDocument()
-    
+    expect(sheetTitle).toBeInTheDocument();
+
+    // Check for sheet views
+    const sheetViews = screen.getByText(/123/);
+    expect(sheetViews).toBeInTheDocument();
+
+    // Check for published date (only date part)
+    const sheetDate = screen.getByText('2023-01-01');
+    expect(sheetDate).toBeInTheDocument();
   });
   
   test("fetches sheet with correct parameters when access token exists", async () => {

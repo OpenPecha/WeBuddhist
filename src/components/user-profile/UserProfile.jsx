@@ -1,7 +1,7 @@
 import "./UserProfile.scss";
 import { Tab, Tabs } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useTranslate } from "@tolgee/react";
@@ -175,7 +175,7 @@ const UserProfile = () => {
     data: sheetsData, 
     isLoading: sheetsIsLoading 
   } = useQuery(
-    ["sheets", pagination.currentPage, pagination.limit], 
+    ["sheets-user-profile", pagination.currentPage, pagination.limit], 
     () => fetchsheet(userInfo?.email, pagination.limit, skip), 
     { refetchOnWindowFocus: false, enabled: !!userInfo?.email }
   );
@@ -248,11 +248,13 @@ const UserProfile = () => {
                       <p>Loading sheets...</p>
                     ) : (
                       sheetsData?.sheets.map((sheet) => (
-                        <div key={sheet.id} className="sheet-item">
-                          <div className="sheet-content listsubtitle">
+                        <div key={sheet.id} className="sheet-item" >
+             <Link to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}_${sheet.id}`}>
+                          <div className="sheet-content listsubtitle ">
                             <div className="sheet-header">
-                              <h4 className={`sheet-title ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
-                              <button className="sheet-delete">
+
+                            <h4  className={`sheet-title ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
+                            <button className="sheet-delete">
                               <FaTimes onClick={() => {
                                 setSelectedSheetId(sheet.id);
                                 setIsModalOpen(true);
@@ -269,6 +271,7 @@ const UserProfile = () => {
                               </span>
                             </div>
                           </div>
+                          </Link>
                         </div>
                       ))
                     )}

@@ -31,7 +31,7 @@ const Toolsbar = (prop) => {
       await updateSheet(sheetId, payload);
       setAlert({ open: true, type: 'success', message: t('Sheet published successfully!') });
       setTimeout(() => {
-        navigate('/');
+        navigate('/community');
       }, 2000);
     } catch (error) {
       setAlert({ open: true, type: 'error', message: t('Failed to publish sheet.',error)});
