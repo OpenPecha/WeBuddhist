@@ -249,11 +249,11 @@ const UserProfile = () => {
                     ) : (
                       sheetsData?.sheets.map((sheet) => (
                         <div key={sheet.id} className="sheet-item" >
-             <Link to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}_${sheet.id}`}>
                           <div className="sheet-content listsubtitle ">
-                            <div className="sheet-header">
-
+                            <div className="sheet-header ">
+                            <Link to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}_${sheet.id}`}>
                             <h4  className={`sheet-title ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
+                            </Link>
                             <button className="sheet-delete">
                               <FaTimes onClick={() => {
                                 setSelectedSheetId(sheet.id);
@@ -271,7 +271,7 @@ const UserProfile = () => {
                               </span>
                             </div>
                           </div>
-                          </Link>
+                         
                         </div>
                       ))
                     )}
