@@ -185,4 +185,5 @@ const Texts = () => {
   )
 }
 
+export { fetchVersions };
 export default Texts
