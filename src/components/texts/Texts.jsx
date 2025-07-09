@@ -109,13 +109,14 @@ const Texts = () => {
 
   const renderDownloadTextOptions = () => {
     const renderTitle = () => {
-      return <p className="download-text-title">{t("side_nav.download_text")}</p>
+      return <p className="download-text-title navbaritems">{t("side_nav.download_text")}</p>
     }
     const renderSelectVersion = () => {
       return <div className="select-version">
-        <label>{t("side_nav.download_text.select_version")}</label>
+        <label className="navbaritems">{t("side_nav.download_text.select_version")}</label>
         <div className="select-wrapper">
           <select
+            className="navbaritems"
             value={downloadOptionSelections.version}
             onChange={(e) =>
               setDownloadOptionSelections(prev =>
@@ -133,9 +134,10 @@ const Texts = () => {
 
     const renderSelectFormat = () => {
       return <div className="select-format">
-        <label>{t("side_nav.download_text.select_format")}</label>
+        <label className="navbaritems">{t("side_nav.download_text.select_format")}</label>
         <div className="select-wrapper">
           <select
+            className="navbaritems"
             value={downloadOptionSelections.format}
             onChange={(e) =>
               setDownloadOptionSelections((prev) => ({...prev, format: e.target.value}))
