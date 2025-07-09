@@ -8,6 +8,7 @@ import { TolgeeProvider } from "@tolgee/react";
 import { ACCESS_TOKEN } from "../../utils/constants.js";
 import * as ReactRouterDom from "react-router-dom";
 import axiosInstance from "../../config/axios-config.js";
+import { fetchUserInfo } from "./UserProfile.jsx";
 
 // Mock react-router-dom for the navigation test
 vi.mock("react-router-dom", async () => {
@@ -265,5 +266,147 @@ describe("UserProfile Component", () => {
     });
   
     expect(result).toEqual(mockSheetsData);
+  });
+});
+
+describe("fetchUserInfo Function", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test("successfully fetches user info", async () => {
+    const mockUserData = {
+      firstname: "John",
+      lastname: "Doe",
+      title: "Senior Software Engineer",
+      location: "Bangalore",
+      educations: ["Master of Computer Application (MCA)"],
+      organization: "pecha org",
+      following: 1,
+      followers: 1,
+      avatar_url: "https://example.com/avatar.jpg",
+      social_profiles: [
+        { account: "linkedin", url: "https://linkedin.com/johndoe" }
+      ]
+    };
+
+    axiosInstance.get.mockResolvedValueOnce({ data: mockUserData });
+
+    const result = await fetchUserInfo();
+
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/users/info");
+    expect(axiosInstance.get).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(mockUserData);
+  });
+
+  test("handles API error correctly", async () => {
+    const mockError = new Error("Network Error");
+    axiosInstance.get.mockRejectedValueOnce(mockError);
+
+    await expect(fetchUserInfo()).rejects.toThrow("Network Error");
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/users/info");
+    expect(axiosInstance.get).toHaveBeenCalledTimes(1);
+  });
+
+  test("handles 401 unauthorized error", async () => {
+    const mockError = {
+      response: {
+        status: 401,
+        data: { message: "Unauthorized" }
+      }
+    };
+    axiosInstance.get.mockRejectedValueOnce(mockError);
+
+    await expect(fetchUserInfo()).rejects.toEqual(mockError);
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/users/info");
+  });
+
+  test("handles 404 not found error", async () => {
+    const mockError = {
+      response: {
+        status: 404,
+        data: { message: "User not found" }
+      }
+    };
+    axiosInstance.get.mockRejectedValueOnce(mockError);
+
+    await expect(fetchUserInfo()).rejects.toEqual(mockError);
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/users/info");
+  });
+
+  test("handles server error (500)", async () => {
+    const mockError = {
+      response: {
+        status: 500,
+        data: { message: "Internal Server Error" }
+      }
+    };
+    axiosInstance.get.mockRejectedValueOnce(mockError);
+
+    await expect(fetchUserInfo()).rejects.toEqual(mockError);
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/users/info");
+  });
+
+  test("returns data with correct structure", async () => {
+    const mockUserData = {
+      firstname: "Jane",
+      lastname: "Smith",
+      title: "Product Manager",
+      location: "Mumbai",
+      educations: ["MBA", "B.Tech"],
+      organization: "tech company",
+      following: 25,
+      followers: 100,
+      avatar_url: null,
+      social_profiles: []
+    };
+
+    axiosInstance.get.mockResolvedValueOnce({ data: mockUserData });
+
+    const result = await fetchUserInfo();
+
+    expect(result).toHaveProperty('firstname');
+    expect(result).toHaveProperty('lastname');
+    expect(result).toHaveProperty('title');
+    expect(result).toHaveProperty('location');
+    expect(result).toHaveProperty('educations');
+    expect(result).toHaveProperty('organization');
+    expect(result).toHaveProperty('following');
+    expect(result).toHaveProperty('followers');
+    expect(result).toHaveProperty('avatar_url');
+    expect(result).toHaveProperty('social_profiles');
+
+    expect(typeof result.firstname).toBe('string');
+    expect(typeof result.lastname).toBe('string');
+    expect(typeof result.following).toBe('number');
+    expect(typeof result.followers).toBe('number');
+    expect(Array.isArray(result.educations)).toBe(true);
+    expect(Array.isArray(result.social_profiles)).toBe(true);
+  });
+
+  test("handles empty response data", async () => {
+    axiosInstance.get.mockResolvedValueOnce({ data: null });
+
+    const result = await fetchUserInfo();
+
+    expect(result).toBeNull();
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/users/info");
+  });
+
+  test("handles partial user data", async () => {
+    const partialUserData = {
+      firstname: "Test",
+      lastname: "User"
+    };
+
+    axiosInstance.get.mockResolvedValueOnce({ data: partialUserData });
+
+    const result = await fetchUserInfo();
+
+    expect(result).toEqual(partialUserData);
+    expect(result.firstname).toBe("Test");
+    expect(result.lastname).toBe("User");
+    expect(result.title).toBeUndefined();
+    expect(result.location).toBeUndefined();
   });
 });

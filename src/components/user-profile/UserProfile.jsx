@@ -33,7 +33,7 @@ export const fetchsheet = async (email, limit, skip) => {
   return data;
 };
 
-const fetchUserInfo = async () => {
+export const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
   return data;
 };
