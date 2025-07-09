@@ -266,9 +266,6 @@ const UserProfile = () => {
                               <span className="sheet-dot">·</span>
                               <span className="sheet-date">{sheet.published_date?.split(' ')[0]}</span>
                               <span className="sheet-dot">·</span>
-                              <span className="sheet-topics">
-                                {sheet.topics?.join(', ') || 'No topics'}
-                              </span>
                             </div>
                           </div>
                          
