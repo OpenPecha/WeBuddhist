@@ -7,7 +7,6 @@ import axiosInstance from "../../config/axios-config.js";
 import {render, screen} from "@testing-library/react";
 import {TolgeeProvider} from "@tolgee/react";
 import React from "react";
-import {LANGUAGE} from "../../utils/constants.js";
 import Texts, {fetchTableOfContents} from "./Texts.jsx";
 
 mockAxios();

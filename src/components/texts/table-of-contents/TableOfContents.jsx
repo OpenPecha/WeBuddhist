@@ -6,6 +6,8 @@ import {FiChevronDown, FiChevronRight} from "react-icons/fi";
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link} from "react-router-dom";
 import "./TableOfContents.scss"
+import PropTypes from "prop-types";
+import Content from "../../pages/content/Content.jsx";
 
 const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) => {
   const [expandedSections, setExpandedSections] = useState({});
@@ -101,3 +103,13 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) 
 };
 
 export default React.memo(TableOfContents);
+
+TableOfContents.propTypes = {
+  textId: PropTypes.string.isRequired,
+  pagination: PropTypes.shape({
+    currentPage: PropTypes.number.isRequired,
+    limit: PropTypes.number.isRequired
+  }).isRequired,
+  setPagination: PropTypes.func.isRequired,
+  tableOfContents : PropTypes.object
+}
