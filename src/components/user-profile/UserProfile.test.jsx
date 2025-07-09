@@ -49,10 +49,12 @@ describe("UserProfile Component", () => {
         id: '1',
         title: 'Sample Sheet 1',
         views: 123,
-        date: '2023-01-01',
-        topics: ['Topic 1', 'Topic 2'],
+        published_date: '2023-01-01 12:00:00',
+        language: 'en',
+        publisher: { username: 'johndoe' },
       },
     ],
+    total: 1,
   };
 
   const mockedNavigate = vi.fn();
@@ -78,6 +80,8 @@ describe("UserProfile Component", () => {
     Object.defineProperty(window, "sessionStorage", {
       value: {
         removeItem: vi.fn(),
+        getItem: vi.fn(),
+        setItem: vi.fn(),
       },
       writable: true,
     });
@@ -93,7 +97,7 @@ describe("UserProfile Component", () => {
           isLoading: false,
           refetch: vi.fn(),
         };
-      } else if (Array.isArray(queryKey) && queryKey[0] === "sheets") {
+      } else if (Array.isArray(queryKey) && queryKey[0] === "sheets-user-profile") {
         return {
           data: mockSheetsData,
           isLoading: false,
@@ -216,22 +220,53 @@ describe("UserProfile Component", () => {
   test("renders sheets data correctly in Sheets tab", () => {
     setup();
 
+    // Check for sheet title
     const sheetTitle = screen.getByText(/Sample Sheet 1/i);
-    
-     // Check sheet metadata
-     expect(sheetTitle).toBeInTheDocument()
-    
+    expect(sheetTitle).toBeInTheDocument();
+
+    // Check for sheet views
+    const sheetViews = screen.getByText(/123/);
+    expect(sheetViews).toBeInTheDocument();
+
+    // Check for published date (only date part)
+    const sheetDate = screen.getByText('2023-01-01');
+    expect(sheetDate).toBeInTheDocument();
   });
-  test("fetches sheet with correct parameters", async () => {
-    window.localStorage.getItem.mockReturnValue("en");
-    
-    axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
-    const result = await fetchsheet("123", 10, 0);
   
+  test("fetches sheet with correct parameters when access token exists", async () => {
+    window.localStorage.getItem.mockReturnValue("en");
+    window.sessionStorage.getItem.mockReturnValue("test-access-token");
+    axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
+    const result = await fetchsheet("test@gmail.com", 10, 0);
+    expect(window.sessionStorage.getItem).toHaveBeenCalledWith("accessToken");
     expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+      headers: {
+        Authorization: "Bearer test-access-token"
+      },
       params: {
         language: "en",
-        user_id: "123",
+        email: "test@gmail.com",
+        limit: 10,
+        skip: 0,
+      }
+    });
+  
+    expect(result).toEqual(mockSheetsData);
+  });
+
+  test("fetches sheet with correct parameters when no access token exists", async () => {
+    window.localStorage.getItem.mockReturnValue("en");
+    window.sessionStorage.getItem.mockReturnValue(null);
+    axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
+    const result = await fetchsheet("test@gmail.com", 10, 0);
+  
+    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+      headers: {
+        Authorization: "Bearer None"
+      },
+      params: {
+        language: "en",
+        email: "test@gmail.com",
         limit: 10,
         skip: 0,
       }

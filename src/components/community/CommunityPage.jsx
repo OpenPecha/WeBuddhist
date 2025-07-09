@@ -7,48 +7,68 @@ import axiosInstance from '../../config/axios-config.js';
 import { useNavigate,Link } from 'react-router-dom';
 import { useAuth } from '../../config/AuthContext.jsx';
 import { useAuth0 } from '@auth0/auth0-react';
-import {mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
 
-export const fetchsheet = async (userid="", limit, skip) => {
+export const fetchsheet = async (limit, skip, sort_order) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
     const { data } = await axiosInstance.get("api/v1/sheets", {
       params: {
         language,
-        ...(userid && { user_id: userid }),
         limit,
         skip,
+        sort_by:"published_date",
+        sort_order
+      },
+      headers: {
+        Authorization: "Bearer None"
       },
     });
   
     return data;
   };
 const CommunityPage = () => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [sortOrder, setSortOrder] = useState('desc');
+    const [pagination, setPagination] = useState({ currentPage: 1, limit: 5 });
+    const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
+
+    const handlePageChange = (pageNumber) => {
+      setPagination(prev => ({ ...prev, currentPage: pageNumber }));
+    };
+    const handleSortChange = (e) => {
+      setSortOrder(e.target.value);
+    };
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
     const { isAuthenticated } = useAuth0();
-      const skip = useMemo(() =>{
-        return (currentPage - 1) * limit;
-      },[currentPage])
     const {t}=useTranslate();
-
 
   const { 
     data: sheetsData, 
     isLoading: sheetsIsLoading 
   } = useQuery(
-    ["sheets", currentPage, limit], 
-    () => fetchsheet("tenzin_tsering.7233", limit, skip), 
+    ["sheets", pagination.currentPage, pagination.limit, sortOrder], 
+    () => fetchsheet(pagination.limit, skip, sortOrder), 
     { refetchOnWindowFocus: false }
   );
+  const totalPages = Math.ceil((sheetsData?.total || 0) / pagination.limit);
   const userIsLoggedIn = isLoggedIn || isAuthenticated;
   return (
     <div className='container-community'>
       <div className='sheet-community'>
+        <div className='community-header'>
         <h2 className='section-title listtitle'> {t("community.sheets.recently_published")}</h2>
-        
+          <select
+            className="community-dropdown navbaritems"
+            value={sortOrder}
+            onChange={handleSortChange}
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+       
         <div className='published-list'>
         <div className="sheets-list">
                     {sheetsIsLoading ? (
@@ -57,20 +77,21 @@ const CommunityPage = () => {
                       sheetsData?.sheets.map((sheet) => (
                         <div key={sheet.id} className="sheet-item">
                           <div className="sheet-content">
-                          <Link to={`/${encodeURIComponent(sheet.publisher.name)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}-${sheet.id}`}>
+                          <Link to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}_${sheet.id}`}>
                             <div className='sheet-title-container'>
-                            <h4 className="sheet-title listtitle">{sheet.title}</h4>
+                            <h4 className={`sheet-title listtitle ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
                             <p className=' navbaritems'>{sheet.summary}</p>
                             </div>
                             </Link>
                             <div className="sheet-metadata content">
-                                {sheet.publisher.image_url ? (
-                            <img src={sheet.publisher.image_url} alt={sheet.publisher.name} />
+                                {sheet.publisher.avatar_url ? (
+                            <img src={sheet.publisher.avatar_url} alt={sheet.publisher.name.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()} className='avatar-image' />
                          ) : (
                          <div className="avatar-initials">
                               {sheet.publisher.name.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()}
                          </div>
                          )}
+                         <div className='sheet-publisher-name'>{sheet.publisher.name}</div>
                          <span className="sheet-dot">·</span>
                          <span className="sheet-date ">{sheet.time_passed}</span>
                         </div>
@@ -79,6 +100,14 @@ const CommunityPage = () => {
                       ))
                     )}
       </div>
+      {sheetsData?.sheets?.length > 0 && (
+        <PaginationComponent
+          pagination={pagination}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          setPagination={setPagination}
+        />
+      )}
         </div>
       </div>
 
