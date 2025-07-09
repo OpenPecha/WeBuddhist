@@ -107,10 +107,6 @@ const Content = ({textId, setContentId}) => {
     );
   };
 
-  const handleLimitChange = (e) => {
-    setPagination({ currentPage: 1, limit: Number(e.target.value) });
-  };
-
   return (
     <>
       {contents.map((content, contentIndex) => (

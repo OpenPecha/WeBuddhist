@@ -58,10 +58,6 @@ const Topics = () => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
 
-  const handleLimitChange = (e) => {
-    setPagination({ currentPage: 1, limit: Number(e.target.value) });
-  };
-
   const handleTopicClick = (topic) => {
     if (topic?.has_child) {
       setSearchParams({ id: topic.id });

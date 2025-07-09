@@ -30,10 +30,6 @@ const Versions = ({ versionsData, pagination, setPagination }) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
 
-  const handleLimitChange = (e) => {
-    setPagination({ currentPage: 1, limit: Number(e.target.value) });
-  };
-
   return (
     <div className="versions-container">
       {
