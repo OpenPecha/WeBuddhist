@@ -1,21 +1,44 @@
 
-import React, {useState} from 'react'
+import React, {useState, useMemo} from 'react'
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import {useTranslate} from "@tolgee/react";
 import {FiChevronDown, FiChevronRight} from "react-icons/fi";
-import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
+import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../../utils/helperFunctions.jsx";
 import {Link} from "react-router-dom";
 import "./TableOfContents.scss"
 import PropTypes from "prop-types";
-import Content from "../../pages/content/Content.jsx";
+import axiosInstance from "../../../config/axios-config.js";
+import {LANGUAGE} from "../../../utils/constants.js";
+import {useQuery} from "react-query";
 
-const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) => {
+const fetchTextContent = async (textId, skip, pagination) => {
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
+  const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/contents`, {
+    params: {
+      language,
+      limit: pagination.limit,
+      skip: skip
+    }
+  });
+  return data;
+};
+
+const TableOfContents = ({textId, pagination, setPagination, versionsData}) => {
   const [expandedSections, setExpandedSections] = useState({});
   const { t } = useTranslate();
+  const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
+  const { data: apiData, isLoading:tocIsLoading, error:tocHasError } = useQuery(
+    ["texts-content", textId, skip, pagination, localStorage.getItem(LANGUAGE)],
+    () => fetchTextContent(textId, skip, pagination),
+    { refetchOnWindowFocus: false, enabled: !!textId }
+  );
 
   // -------------------------------------------- helpers ----------------------------------------------
 
-  const contents = tableOfContents?.contents;
+const earlyReturn = getEarlyReturn({isLoading:tocIsLoading , error: tocHasError, t});
+if (earlyReturn) return earlyReturn;
+  const contents = apiData?.contents || [];
   const totalSections = contents.reduce((total, content) => {
     return total + (content?.sections?.length || 0);
   }, 0);
@@ -41,7 +64,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) 
     const renderContentTitle = () => {
       return <Link
         to={`/chapter?text_id=${textId}&contentId=${tocId}&versionId=&contentIndex=${parentIndex}${!isTopLevel ? `&sectionId=${section.id}` : ''}`}
-        className={`toc-title ${getLanguageClass(tableOfContents.text_detail.language)}`}>
+        className={`toc-title ${getLanguageClass(versionsData?.text?.language)}`}>
         {section.title}
       </Link>
     }
@@ -111,5 +134,5 @@ TableOfContents.propTypes = {
     limit: PropTypes.number.isRequired
   }).isRequired,
   setPagination: PropTypes.func.isRequired,
-  tableOfContents : PropTypes.object
+  versionsData: PropTypes.object
 }

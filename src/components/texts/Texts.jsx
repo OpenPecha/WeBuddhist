@@ -10,14 +10,15 @@ import {useParams, useSearchParams} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
-export const fetchTableOfContents = async (textId, skip, limit) => {
+
+const fetchVersions = async (id, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/contents`, {
-    params: {
-      language,
-      limit: limit,
-      skip: skip
+  const { data } = await axiosInstance.get(`/api/v1/texts/${id}/versions`, {
+    params: { 
+      language, 
+      limit, 
+      skip
     }
   });
   return data;
@@ -25,31 +26,30 @@ export const fetchTableOfContents = async (textId, skip, limit) => {
 }
 const Texts = () => {
   const { t } = useTranslate();
-  const { id } = useParams();
+  const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type') || "";
   const [activeTab, setActiveTab] = useState('contents');
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
-  const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
-  const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
+  const [contentsPagination, setContentsPagination] = useState({ currentPage: 1, limit: 10 });
+  const [versionsPagination, setVersionsPagination] = useState({ currentPage: 1, limit: 10 });
+  const skipVersions = useMemo(() => (versionsPagination.currentPage - 1) * versionsPagination.limit, [versionsPagination]);
 
-  const {data: tableOfContents, isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError} = useQuery(
-    ["table-of-contents", skip],
-    () => fetchTableOfContents(id, skip, pagination.limit),
-    {refetchOnWindowFocus: false, enabled: !!id}
+  const { data: versionsData, isLoading: versionsIsLoading, error: versionsIsError } = useQuery(
+    ["texts-versions", urlId, versionsPagination.currentPage, versionsPagination.limit, localStorage.getItem(LANGUAGE)],
+    () => fetchVersions(urlId, versionsPagination.limit, skipVersions),
+    { refetchOnWindowFocus: false, enabled: !!urlId }
   );
 
-  // -------------------------------------------- helpers ----------------------------------------------
+  const textId = versionsData?.text?.id;
 
-  const earlyReturn = getEarlyReturn({isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError, t});
+  const earlyReturn = getEarlyReturn({isLoading: versionsIsLoading, error: versionsIsError, t});
   if (earlyReturn) return earlyReturn;
 
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
     const renderTitle = () => {
-      return <h3 className={`${getLanguageClass(tableOfContents?.text_detail.language)}`}>
-        {tableOfContents?.text_detail.title}
-      </h3>
+      return <h3 className={`${getLanguageClass(versionsData?.text?.language)}`}>{versionsData?.text?.title}</h3>
     }
 
     const renderType = () => {
@@ -96,12 +96,12 @@ const Texts = () => {
       <div className="tab-content">
         {activeTab === 'contents' && (
           <div className="tab-panel">
-            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={id}/>
+            <TableOfContents textId={textId} pagination={contentsPagination} setPagination={setContentsPagination} versionsData={versionsData} />
           </div>
         )}
         {activeTab === 'versions' && (
           <div className="tab-panel">
-            <Versions />
+            <Versions versionsData={versionsData} pagination={versionsPagination} setPagination={setVersionsPagination} />
           </div>
         )}
       </div>
