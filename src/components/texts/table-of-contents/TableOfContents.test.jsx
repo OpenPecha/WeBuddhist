@@ -6,7 +6,8 @@ import {fireEvent, render, screen} from "@testing-library/react";
 import {TolgeeProvider} from "@tolgee/react";
 import React from "react";
 import TableOfContents from "./TableOfContents.jsx";
-import * as reactQuery from "react-query";
+
+
 
 mockAxios();
 mockUseAuth();
@@ -25,12 +26,7 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
       default:
         return "en-text";
     }
-  },
-  getEarlyReturn: ({ isLoading, error, t }) => {
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>Error occurred</div>;
-    return null;
-  },
+  }
 }));
 
 vi.mock("../../../utils/constants.js", () => ({
@@ -110,25 +106,13 @@ const mockContentData = {
   }
 };
 
-const mockVersionsData = {
-  text: { language: "bo" }
-};
-
 const setup = ({
-  apiData = mockContentData,
-  setPagination = vi.fn(),
-  textId = "123",
-  currentPage = 1,
-  limit = 10,
-  versionsData = mockVersionsData,
-  isLoading = false,
-  error = null
-} = {}) => {
-  vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-    data: apiData,
-    isLoading,
-    error
-  }));
+                 tableOfContents = mockContentData,
+                 setPagination = vi.fn(),
+                 textId = "123",
+                 currentPage = 1,
+                 limit = 10
+               } = {}) => {
   return render(
     <Router>
       <QueryClientProvider client={queryClient}>
@@ -137,7 +121,7 @@ const setup = ({
             textId={textId}
             pagination={{ currentPage, limit }}
             setPagination={setPagination}
-            versionsData={versionsData}
+            tableOfContents={tableOfContents}
           />
         </TolgeeProvider>
       </QueryClientProvider>
@@ -182,7 +166,7 @@ describe("TableOfContents Component", () => {
       text_detail: { language: "bo" }
     };
 
-    setup({ apiData: updatedMockData });
+    setup({ tableOfContents: updatedMockData });
 
     expect(screen.getByText("Section 1")).toBeInTheDocument();
     expect(screen.getByText("Section 2")).toBeInTheDocument();
@@ -191,7 +175,7 @@ describe("TableOfContents Component", () => {
   test("does not render pagination component when no contents exist", () => {
     const emptyData = { contents: [], text_detail: { language: "bo" } };
 
-    setup({ apiData: emptyData });
+    setup({ tableOfContents: emptyData });
 
     expect(screen.queryByTestId("pagination")).not.toBeInTheDocument();
   });
@@ -218,7 +202,7 @@ describe("TableOfContents Component", () => {
       text_detail: { language: "bo" }
     };
 
-    setup({ apiData: dataWithManySections, limit: 5 });
+    setup({ tableOfContents: dataWithManySections, limit: 5 });
 
     expect(screen.getByTestId("current-page")).toHaveTextContent("Page 1 of 3");
   });
@@ -271,7 +255,7 @@ describe("TableOfContents Component", () => {
       text_detail: { language: "bo" }
     };
 
-    setup({ apiData: nestedData });
+    setup({ tableOfContents: nestedData });
 
     // Initially, child section should not be visible
     expect(screen.queryByText("Child Section")).not.toBeInTheDocument();
@@ -345,6 +329,20 @@ describe("TableOfContents Component", () => {
     expect(section1Link).toHaveClass("toc-title", "bo-text");
   });
 
+  test("handles different language classes correctly", () => {
+    const englishData = {
+      ...mockContentData,
+      text_detail: { language: "en" }
+    };
+
+    setup({ tableOfContents: englishData });
+
+    const section1Link = screen.getByText("Section 1");
+    expect(section1Link).toHaveClass("toc-title", "en-text");
+  });
+
+
+
   test("handles deeply nested sections", () => {
     const deepNestedData = {
       contents: [
@@ -380,7 +378,7 @@ describe("TableOfContents Component", () => {
       text_detail: { language: "bo" }
     };
 
-    setup({ apiData: deepNestedData });
+    setup({ tableOfContents: deepNestedData });
 
     // Expand each level
     fireEvent.click(screen.getByText("Level 1").closest(".toc-header"));
@@ -412,7 +410,7 @@ describe("TableOfContents Component", () => {
       text_detail: { language: "bo" }
     };
 
-    setup({ apiData: multipleContentsData });
+    setup({ tableOfContents: multipleContentsData });
 
     expect(screen.getByText("Content 1 Section 1")).toBeInTheDocument();
     expect(screen.getByText("Content 2 Section 1")).toBeInTheDocument();
@@ -429,7 +427,7 @@ describe("TableOfContents Component", () => {
       text_detail: { language: "bo" }
     };
 
-    setup({ apiData: emptyData });
+    setup({ tableOfContents: emptyData });
 
     expect(screen.queryByTestId("pagination")).not.toBeInTheDocument();
   });
@@ -452,7 +450,7 @@ describe("TableOfContents Component", () => {
               textId="123"
               pagination={{ currentPage: 1, limit: 10 }}
               setPagination={vi.fn()}
-              versionsData={mockVersionsData}
+              tableOfContents={mockContentData}
             />
           </TolgeeProvider>
         </QueryClientProvider>
