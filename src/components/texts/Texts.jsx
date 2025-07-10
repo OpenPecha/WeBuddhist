@@ -6,7 +6,7 @@ import "./Texts.scss"
 import {LANGUAGE} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useTranslate} from "@tolgee/react";
-import {useParams, useSearchParams} from "react-router-dom";
+import {Link, useParams, useSearchParams} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
@@ -67,10 +67,10 @@ const Texts = () => {
   }
 
   const renderContinueReadingButton = () => {
-
-    return <button className="navbaritems continue-reading-button">
+    return <Link className="navbaritems continue-reading-button"
+                 to={`/chapter?text_id=${id}&contentId=${tableOfContents?.contents[0].id}&versionId=&contentIndex=${0}`}>
       {t("text.button.continue_reading")}
-    </button>
+    </Link>
 
   }
 
@@ -163,10 +163,15 @@ const Texts = () => {
       </div>
     }
 
+    const renderDownloadButton = () => {
+      return  <button className="download-button">{t("text.download")}</button>
+    }
+
     return <div className="download-options-container">
       {renderTitle()}
       {renderSelectVersion()}
       {renderSelectFormat()}
+      {renderDownloadButton()}
     </div>
 
   }

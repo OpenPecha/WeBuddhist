@@ -29,6 +29,8 @@ $primary-color: hsl(42, 49%, 46%);;
       cursor: pointer;
       width: 10rem;
       height: 2.5rem;
+      text-decoration: none;
+      align-content: center;
 
       &:hover {
         background-color: rgba($primary-color, 0.9);
@@ -106,47 +108,63 @@ $primary-color: hsl(42, 49%, 46%);;
     width: 30%;
     margin-top: 5rem;
 
-    .download-text-title{
-      text-align: left;
-    }
-
-    .select-version,
-    .select-format {
-      text-align: left;
-      margin-bottom: 1rem;
-
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
+    .download-options-container{
+      .download-text-title{
+        text-align: left;
       }
 
-      .select-wrapper {
-        position: relative;
-        width: 100%;
+      .select-version,
+      .select-format {
+        text-align: left;
+        margin-bottom: 1rem;
 
-        select {
+        label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+        }
+
+        .select-wrapper {
+          position: relative;
           width: 100%;
-          padding: 0.75rem;
-          border: 1px solid #e5e5e5;
-          border-radius: 4px;
-          background-color: white;
-          appearance: none;
-          font-size: 0.9rem;
-          cursor: pointer;
-        }
 
-        svg {
-          position: absolute;
-          right: 10px;
-          top: 50%;
-          transform: translateY(-50%);
-          pointer-events: none;
-          color: #777;
+          select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            background-color: white;
+            appearance: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+          }
+
+          svg {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #777;
+          }
+        }
+      }
+
+      .download-button {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: $primary-color;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        cursor: pointer;
+
+        &:hover {
+          background-color: rgba($primary-color, 0.9);
         }
       }
     }
-
   }
 }
 

@@ -46,7 +46,10 @@ describe("Texts Component", () => {
     text_detail: {
       title: "Test Title",
       type: "Test Type"
-    }
+    },
+    contents:[{
+      id:"sdfasdfasdf"
+    }]
   };
 
   beforeEach(() => {
