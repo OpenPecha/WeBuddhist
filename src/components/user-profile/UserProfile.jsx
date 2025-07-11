@@ -8,12 +8,14 @@ import { useTranslate } from "@tolgee/react";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState } from "react";
 import { FaTimes,FaEdit } from "react-icons/fa";
 import { SheetDeleteModal } from "../sheets/local-components/modals/sheet-delete/sheet_delete.jsx";
 import { deleteSheet } from "../sheets/view-sheet/SheetDetailPage.jsx";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
+import { createPortal } from "react-dom";
+import ImageUploadModal from "../sheets/local-components/modals/image-upload-modal/ImageUploadModal.jsx";
 
 export const fetchsheet = async (email, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -38,17 +40,11 @@ export const fetchUserInfo = async () => {
   return data;
 };
 
-export const uploadProfileImage = async (file) => {
-  const formData = new FormData();
-  formData.append("file", file);
-  const { data } = await axiosInstance.post("api/v1/users/upload", formData);
-  return data
-}
+
 
 
 const UserProfile = () => {
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
   const {
     data: userInfo,
     isLoading: userInfoIsLoading,
@@ -58,51 +54,29 @@ const UserProfile = () => {
   const { isLoggedIn, logout: pechaLogout } = useAuth();
   const { isAuthenticated, logout } = useAuth0();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
+  const [isImageUploadModalOpen, setIsImageUploadModalOpen] = useState(false);
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
 
   const handlePageChange = (pageNumber) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
 
-  const uploadProfileImageMutation = useMutation(uploadProfileImage, {
-    onSuccess: async () => {
-      alert("Image uploaded successfully!");
-      await userInfoRefetch()
+  const handleEditImageClick = () => {
+    setIsImageUploadModalOpen(true);
+  };
 
-    },
-    onError: (error) => {
-      alert("Failed to upload image. Please try again.");
-      console.error("Error:", error);
-    }
-  })
-
-  const handlePictureUpload = async (event) => {
-    const fileInput = event.target;
-    const file = fileInput.files[0];
-    const maxSizeInBytes = 1024 * 1024;
-    const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-
-    if (file) {
-      if (!allowedTypes.includes(file.type)) {
-        alert("Allowed file types are PNG, JPEG, and JPG.");
-        fileInput.value = "";
-        return;
-      }
-
-      if (file.size > maxSizeInBytes) {
-        alert("File size should be less than 1MB.");
-        fileInput.value = "";
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      uploadProfileImageMutation.mutateAsync(file)
+  const handleImageUpload = async (imageUrl, fileName) => {
+    try {
+      await userInfoRefetch();
+      setIsImageUploadModalOpen(false);
+    } catch (error) {
+      console.error("Error refreshing user info:", error);
+      alert("Image uploaded but failed to refresh. Please reload the page.");
     }
   };
 
-  const handleEditImageClick = () => {
-    fileInputRef.current?.click();
+  const handleCloseImageUploadModal = () => {
+    setIsImageUploadModalOpen(false);
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -229,14 +203,6 @@ const UserProfile = () => {
                       { t("profile.picture.add_picture") }
                     </div>
                   ) }
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={ handlePictureUpload }
-                    ref={fileInputRef}
-                    style={ { display: "none" } }
-                    aria-label="Add Picture"
-                  />
                 </div>
               </div>
             </div>
@@ -347,6 +313,13 @@ const UserProfile = () => {
           onClose={() => setIsModalOpen(false)}
           onDelete={deleteSheetMutation}
         />
+        {isImageUploadModalOpen && createPortal(
+          <ImageUploadModal
+            onClose={handleCloseImageUploadModal}
+            onUpload={handleImageUpload}
+          />,
+          document.body
+        )}
     </>
   );
 };

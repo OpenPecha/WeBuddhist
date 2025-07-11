@@ -6,7 +6,7 @@ import { FaCropSimple } from "react-icons/fa6";
 import { MdDeleteOutline } from "react-icons/md";
 import ImageCropContent from "../image-crop-modal/ImageCropModal";
 import axiosInstance from "../../../../../config/axios-config";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import "./ImageUpload.scss";
 import PropTypes from "prop-types";
 export const UploadImageToS3= async(file,sheetId)=>{
@@ -21,13 +21,22 @@ export const UploadImageToS3= async(file,sheetId)=>{
   );
   return data;
 }
+
+export const uploadProfileImage = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const { data } = await axiosInstance.post("api/v1/users/upload", formData);
+  return data;
+}
 const ImageUploadModal = ({ onClose, onUpload }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
   const [croppedFile, setCroppedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const {id}=useParams();
+  const location = useLocation();
   const sheetId=id || "";
+  const isProfilePage = location.pathname === '/profile';
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "image/*": [] },
     onDrop: (acceptedFiles) => {
@@ -42,9 +51,15 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
     if (!file) return;
     setIsUploading(true);
     try {
-      const data = await UploadImageToS3(file,sheetId);
-      if (data && data.url) {
-        onUpload(data.url, file.name);
+      let data;
+      if (isProfilePage) {
+        data = await uploadProfileImage(file);
+        onUpload(data, file.name);
+      } else {
+        data = await UploadImageToS3(file, sheetId);
+        if (data && data.url) {
+          onUpload(data.url, file.name);
+        }
       }
     } catch (error) {
       console.error('Upload failed', error);
@@ -77,7 +92,7 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
 
     return (
       <>
-        <p>Upload Image</p>
+       {isProfilePage ? <p>Upload Profile Image</p> : <p>Upload Image</p>}
         <button
           className="close-button"
           onClick={onClose}
@@ -171,6 +186,7 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
         imageSrc={URL.createObjectURL(selectedFile)}
         onBack={() => setIsCropping(false)}
         onCropComplete={handleCropComplete}
+        isProfilePage={isProfilePage}
       />
     );
   };
