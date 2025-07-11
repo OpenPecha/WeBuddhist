@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter as Router } from "react-router-dom";
 import { expect } from "vitest";
@@ -136,5 +136,19 @@ describe("UserRegistration Component", () => {
     
     await userEvent.click(confirmToggleButton);
     expect(confirmPasswordInput).toHaveAttribute("type", "password");
+  });
+
+  test("handles Google login button click", async () => {
+    setup();
+    const googleLoginButton = screen.getByText("Google");
+    fireEvent.click(googleLoginButton);
+    expect(googleLoginButton).toBeInTheDocument();
+  });
+
+  test("handles Apple login button click", async () => {
+    setup();
+    const appleLoginButton = screen.getByText("Apple");
+    fireEvent.click(appleLoginButton);
+    expect(appleLoginButton).toBeInTheDocument();
   });
 });
