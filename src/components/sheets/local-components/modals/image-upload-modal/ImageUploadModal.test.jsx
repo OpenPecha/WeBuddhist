@@ -278,7 +278,7 @@ describe("ImageUploadModal", () => {
   test("renders profile page upload modal correctly", () => {
     mockUseLocation.mockReturnValue({ pathname: "/profile" });
     
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} isCameFromProfile={true} />);
     expect(screen.getByText("Upload Profile Image")).toBeInTheDocument();
   });
   
