@@ -40,6 +40,7 @@ const mockUserInfo = {
     { account: "youtube", url: "https://youtube.com" },
   ],
   avatar_url: "",
+  email: "test@pecha.com",
 };
 
 const mockSheetsData = {
@@ -48,10 +49,12 @@ const mockSheetsData = {
       id: '1',
       title: 'Sample Sheet 1',
       views: 123,
-      date: '2023-01-01',
-      topics: ['Topic 1', 'Topic 2'],
+      published_date: '2023-01-01 12:00:00',
+      language: 'en',
+      publisher: { username: 'johndoe' },
     },
   ],
+  total: 1,
 };
 
 const queryClient = new QueryClient();
@@ -68,24 +71,7 @@ const setup = () => {
   );
 };
 
-
-
 describe("UserProfile Component", () => {
-
-  const mockSheetsData = {
-    sheets: [
-      {
-        id: '1',
-        title: 'Sample Sheet 1',
-        views: 123,
-        published_date: '2023-01-01 12:00:00',
-        language: 'en',
-        publisher: { username: 'johndoe' },
-      },
-    ],
-    total: 1,
-  };
-
   const mockedNavigate = vi.fn();
 
   beforeAll(() => {
@@ -95,6 +81,7 @@ describe("UserProfile Component", () => {
   afterAll(() => {
     window.alert.mockRestore();
   });
+
   beforeEach(() => {
     // Mock localStorage and sessionStorage methods
     Object.defineProperty(window, "localStorage", {
@@ -114,8 +101,7 @@ describe("UserProfile Component", () => {
       },
       writable: true,
     });
-  });
-  beforeEach(() => {
+
     vi.clearAllMocks();
     ReactRouterDom.useNavigate.mockImplementation(() => mockedNavigate);
 
@@ -222,7 +208,6 @@ describe("UserProfile Component", () => {
     // Verify that sessionStorage.removeItem was called with the correct key
     expect(window.sessionStorage.removeItem).toHaveBeenCalledWith(ACCESS_TOKEN);
   });
-  
 
   test("navigates to edit profile page with user info when edit button is clicked", () => {
     setup();
@@ -461,7 +446,7 @@ describe("Upload Profile Image Functionality", () => {
           isLoading: false,
           refetch: mockUserRefetch,
         };
-      } else if (Array.isArray(queryKey) && queryKey[0] === "sheets") {
+      } else if (Array.isArray(queryKey) && queryKey[0] === "sheets-user-profile") {
         return {
           data: mockSheetsData,
           isLoading: false,
@@ -771,6 +756,11 @@ describe("Upload Profile Image Functionality", () => {
             isLoading: false,
             refetch: mockUserRefetch,
           };
+        } else if (Array.isArray(queryKey) && queryKey[0] === "sheets-user-profile") {
+          return {
+            data: mockSheetsData,
+            isLoading: false,
+          };
         }
         return { data: null, isLoading: true };
       });
@@ -780,7 +770,7 @@ describe("Upload Profile Image Functionality", () => {
       const profileImage = screen.getByAltText("Profile");
       expect(profileImage).toBeInTheDocument();
       expect(profileImage).toHaveAttribute("src", "https://example.com/avatar.jpg");
-      expect(screen.queryByLabelText(/Add Picture/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Add Picture/i)).not.toBeInTheDocument();
     });
 
     test("shows add picture button when no avatar_url", () => {
@@ -796,13 +786,18 @@ describe("Upload Profile Image Functionality", () => {
             isLoading: false,
             refetch: mockUserRefetch,
           };
+        } else if (Array.isArray(queryKey) && queryKey[0] === "sheets-user-profile") {
+          return {
+            data: mockSheetsData,
+            isLoading: false,
+          };
         }
         return { data: null, isLoading: true };
       });
 
       setup();
 
-      const addPictureButton = screen.getByLabelText(/Add Picture/i);
+      const addPictureButton = screen.getByText(/Add Picture/i);
       expect(addPictureButton).toBeInTheDocument();
       expect(screen.queryByAltText("Profile")).not.toBeInTheDocument();
     });

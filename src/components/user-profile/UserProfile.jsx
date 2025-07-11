@@ -8,8 +8,8 @@ import { useTranslate } from "@tolgee/react";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useMemo, useState } from "react";
-import { FaTimes } from "react-icons/fa";
+import { useMemo, useState, useRef } from "react";
+import { FaTimes,FaEdit } from "react-icons/fa";
 import { SheetDeleteModal } from "../sheets/local-components/modals/sheet-delete/sheet_delete.jsx";
 import { deleteSheet } from "../sheets/view-sheet/SheetDetailPage.jsx";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
@@ -48,6 +48,7 @@ export const uploadProfileImage = async (file) => {
 
 const UserProfile = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const {
     data: userInfo,
     isLoading: userInfoIsLoading,
@@ -98,6 +99,10 @@ const UserProfile = () => {
       reader.readAsDataURL(file);
       uploadProfileImageMutation.mutateAsync(file)
     }
+  };
+
+  const handleEditImageClick = () => {
+    fileInputRef.current?.click();
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -213,18 +218,25 @@ const UserProfile = () => {
               <div className="profile-right">
                 <div className="profile-picture">
                   { userInfo?.avatar_url ? (
-                    <img src={ userInfo.avatar_url } alt="Profile" className="profile-image" />
+                    <div className="profile-image-container">
+                      <img src={ userInfo.avatar_url } alt="Profile" className="profile-image" />
+                      <div className="edit-overlay">
+                        <FaEdit onClick={handleEditImageClick} />
+                      </div>
+                    </div>
                   ) : (
-                    <label className="add-picture-btn">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={ handlePictureUpload }
-                        style={ { display: "none" } }
-                      />
+                    <div className="add-picture-btn" onClick={handleEditImageClick}>
                       { t("profile.picture.add_picture") }
-                    </label>
+                    </div>
                   ) }
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={ handlePictureUpload }
+                    ref={fileInputRef}
+                    style={ { display: "none" } }
+                    aria-label="Add Picture"
+                  />
                 </div>
               </div>
             </div>
