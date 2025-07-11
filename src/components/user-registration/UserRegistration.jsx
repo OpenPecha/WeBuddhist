@@ -111,40 +111,32 @@ const UserRegistration = () => {
       });
     }
   };
-  const loginWithGoogle = async () => {
+  const handleSocialLogin = async (connection) => {
     try {
       const redirectPath = "/collections";
-      
-      await loginWithRedirect({
-        authorizationParams: {
+      const authParams = {
+        appState: { returnTo: redirectPath }
+      };
+
+      if (connection === 'google-oauth2') {
+        authParams.authorizationParams = {
           connection: 'google-oauth2',
           prompt: 'select_account'
-        },
-        appState: {
-          returnTo: redirectPath,
-        },
-      });
-    } catch (error) {
-      console.error("Google login failed:", error);
-    }
-  };
-
-  const loginWithApple = async () => {
-    try {
-      const redirectPath = "/collections";
-
-      await loginWithRedirect({
-        authorizationParams: {
+        };
+      } else if (connection === 'apple') {
+        authParams.authorizationParams = {
           connection: 'apple'
-        },
-        appState: {
-          returnTo: redirectPath,
-        },
-      });
+        };
+      }
+
+      await loginWithRedirect(authParams);
     } catch (error) {
-      console.error("Apple login failed:", error);
+      console.error(`${connection} login failed:`, error);
     }
   };
+
+  const loginWithGoogle = () => handleSocialLogin('google-oauth2');
+  const loginWithApple = () => handleSocialLogin('apple');
 
   return (
     <Container
