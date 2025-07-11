@@ -148,9 +148,10 @@ const UserProfile = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="add-picture-btn" onClick={handleEditImageClick}>
+
+                    <button className="add-picture-btn" onClick={handleEditImageClick}>
                       { t("profile.picture.add_picture") }
-                    </div>
+                    </button>
                   ) }
                 </div>
               </div>

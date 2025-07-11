@@ -256,7 +256,8 @@
             color: #666;
             border-radius: 50%;
             font-size: 14px;
-
+            border: none;
+            outline: none;
             @media (max-width: 480px) {
               font-size: 12px;
             }
