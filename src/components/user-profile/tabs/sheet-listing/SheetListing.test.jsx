@@ -3,9 +3,9 @@ import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../../../
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import SheetListing from "./SheetListing";
+import SheetListing, { fetchsheet } from "./SheetListing";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../../../config/axios-config.js";
@@ -33,6 +33,11 @@ vi.mock("../../../../utils/constants.js", () => ({
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
 }));
 
+vi.mock("../../../../config/axios-config.js", () => ({
+  default: {
+    get: vi.fn(),
+  },
+}));
 const mockLocalStorage = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -158,5 +163,51 @@ describe("SheetListing Component", () => {
 
     setup();
     expect(screen.getByText("sheet.not_found")).toBeInTheDocument();
+  });
+
+  test("fetches sheet data successfully", async () => {
+    const result = await fetchsheet("test@example.com", 10, 0);
+    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+      headers: {
+        Authorization: "Bearer mock-token",
+      },
+      params: {
+        language: "bo",
+        email: "test@example.com",
+        limit: 10,
+        skip: 0,
+      },
+    });
+    expect(result).toEqual(mockSheetsData);
+  });
+
+  test("handle page change", () => {
+    setup();
+    const pageChangeButton = screen.getByText("2");
+    fireEvent.click(pageChangeButton);
+    expect(screen.getByText("2")).toBeInTheDocument();
+  });
+
+  test("opens delete modal when delete button is clicked", () => {
+    setup();
+    const deleteButtons = document.querySelectorAll(".sheet-delete svg");
+    expect(deleteButtons.length).toBeGreaterThan(0);
+
+    fireEvent.click(deleteButtons[0]);
+
+    expect(document.querySelector(".sheet-delete-modal-overlay")).toBeInTheDocument();
+  });
+
+  test("closes delete modal when cancel button is clicked", () => {
+    setup();
+    const deleteButtons = document.querySelectorAll(".sheet-delete svg");
+    
+    fireEvent.click(deleteButtons[0]);
+    expect(document.querySelector(".sheet-delete-modal-overlay")).toBeInTheDocument();
+    const cancelButton = document.querySelector(".sheet-delete-cancel-button");
+
+    fireEvent.click(cancelButton);
+
+    expect(document.querySelector(".sheet-delete-modal-overlay")).not.toBeInTheDocument();
   });
 });

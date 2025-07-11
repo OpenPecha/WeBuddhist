@@ -390,4 +390,17 @@ describe("fetchUserInfo Function", () => {
     result = await fetchUserInfo();
     expect(result).toEqual(partialData);
   });
+  
+  test("handles logout correctly", async () => {
+    setup();
+    
+    const logoutElement = screen.getByText("Log Out");
+    await act(async () => {
+      fireEvent.click(logoutElement);
+    });
+
+    expect(localStorage.removeItem).toHaveBeenCalledWith(LOGGED_IN_VIA);
+    expect(sessionStorage.removeItem).toHaveBeenCalledWith(ACCESS_TOKEN);
+    expect(localStorage.removeItem).toHaveBeenCalledWith(REFRESH_TOKEN);
+  });
 });
