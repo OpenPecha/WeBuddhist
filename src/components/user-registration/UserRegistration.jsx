@@ -9,6 +9,7 @@ import eyeClose from "../../assets/icons/eye-closed.svg";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useTranslate } from "@tolgee/react";
+import { FaGoogle, FaApple } from "react-icons/fa";
 
 const UserRegistration = () => {
   const { t } = useTranslate();
@@ -110,15 +111,38 @@ const UserRegistration = () => {
       });
     }
   };
-  const loginWithSocial = async () => {
+  const loginWithGoogle = async () => {
     try {
+      const redirectPath = "/collections";
+      
       await loginWithRedirect({
-        appState: {
-          returnTo: "/collections",
+        authorizationParams: {
+          connection: 'google-oauth2',
+          prompt: 'select_account'
         },
-      })
+        appState: {
+          returnTo: redirectPath,
+        },
+      });
     } catch (error) {
-      console.error("Social login failed:", error);
+      console.error("Google login failed:", error);
+    }
+  };
+
+  const loginWithApple = async () => {
+    try {
+      const redirectPath = "/collections";
+
+      await loginWithRedirect({
+        authorizationParams: {
+          connection: 'apple'
+        },
+        appState: {
+          returnTo: redirectPath,
+        },
+      });
+    } catch (error) {
+      console.error("Apple login failed:", error);
     }
   };
 
@@ -280,8 +304,21 @@ const UserRegistration = () => {
             </div>
             <hr />
             <div className="social-login-buttons">
-              <Button variant="outline-dark" className="w-100 mb-2" onClick={ loginWithSocial }>
-                { t("login.social_logins") }
+              <Button
+                variant="outline-dark"
+                className="social-btn"
+                onClick={loginWithGoogle}
+              >
+                <FaGoogle />
+                Google
+              </Button>
+              <Button
+                variant="outline-dark"
+                className="social-btn"
+                onClick={loginWithApple}
+              >
+                <FaApple />
+                Apple
               </Button>
             </div>
             { registrationError && <div className="content registration-error">
