@@ -9,6 +9,9 @@ import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../util
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMemo, useState } from "react";
+import { FaTimes } from "react-icons/fa";
+import { SheetDeleteModal } from "../sheets/local-components/modals/sheet-delete/sheet_delete.jsx";
+import { deleteSheet } from "../sheets/view-sheet/SheetDetailPage.jsx";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
 
@@ -27,16 +30,15 @@ export const fetchsheet = async (email, limit, skip) => {
       skip,
     },
   });
-
   return data;
 };
 
-const fetchUserInfo = async () => {
+export const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
   return data;
 };
 
-const uploadProfileImage = async (file) => {
+export const uploadProfileImage = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
   const { data } = await axiosInstance.post("api/v1/users/upload", formData);
@@ -97,6 +99,20 @@ const UserProfile = () => {
       uploadProfileImageMutation.mutateAsync(file)
     }
   };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [ selectedSheetId, setSelectedSheetId ] = useState(null);
+  
+  const { mutate: deleteSheetMutation } = useMutation({
+      mutationFn: () => deleteSheet(selectedSheetId),
+      onSuccess: () => {
+        setIsModalOpen(false);
+        navigate('/profile');
+      },
+      onError: (error) => {
+        console.error("Error deleting sheet:", error);
+      }
+  });
 
 
   const handleEditProfile = () => {
@@ -233,20 +249,31 @@ const UserProfile = () => {
                     ) : (
                       sheetsData?.sheets.map((sheet) => (
                         <div key={sheet.id} className="sheet-item" >
-             <Link to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}_${sheet.id}`}>
                           <div className="sheet-content listsubtitle ">
+                            <div className="sheet-header ">
+                            <Link to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}_${sheet.id}`}>
                             <h4  className={`sheet-title ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
+                            </Link>
+                            <button className="sheet-delete">
+                              <FaTimes onClick={() => {
+                                setSelectedSheetId(sheet.id);
+                                setIsModalOpen(true);
+                                }} />
+                              </button>
+                            </div>
                             <div className="sheet-metadata content">
                               <span className="sheet-views">{sheet.views}  { t("sheet.view_count") }</span>
                               <span className="sheet-dot">·</span>
                               <span className="sheet-date">{sheet.published_date?.split(' ')[0]}</span>
+                              <span className="sheet-dot">·</span>
                             </div>
                           </div>
-                          </Link>
+                         
                         </div>
                       ))
                     )}
-      </div>
+                  </div>
+      
       {sheetsData?.sheets?.length > 0 && (
         <PaginationComponent
           pagination={pagination}
@@ -299,9 +326,15 @@ const UserProfile = () => {
                 </Tab>
               </Tabs>
             </div>
+            
           </div>
         </div>
         : <p className="listsubtitle">{t("common.loading")}</p> }
+        <SheetDeleteModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onDelete={deleteSheetMutation}
+        />
     </>
   );
 };
