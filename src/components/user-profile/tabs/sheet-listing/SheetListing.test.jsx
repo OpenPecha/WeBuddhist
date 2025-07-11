@@ -157,6 +157,6 @@ describe("SheetListing Component", () => {
     }));
 
     setup();
-    expect(document.querySelector(".sheets-list")).toBeInTheDocument();
+    expect(screen.getByText("sheet.not_found")).toBeInTheDocument();
   });
 });

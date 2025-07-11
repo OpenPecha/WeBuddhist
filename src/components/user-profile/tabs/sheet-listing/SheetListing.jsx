@@ -63,6 +63,9 @@ const SheetListing = ({ userInfo }) => {
   
 
   const totalPages = Math.ceil((sheetsData?.total || 0) / pagination.limit);
+  if (sheetsIsLoading) {
+    return <p>Loading sheets...</p>;
+  }
   if (!sheetsData?.sheets?.length) {
     return <p>{t("sheet.not_found")}</p>;
   }
