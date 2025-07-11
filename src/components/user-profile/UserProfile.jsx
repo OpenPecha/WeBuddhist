@@ -180,7 +180,8 @@ const UserProfile = () => {
           <ImageUploadModal
             onClose={handleCloseImageUploadModal}
             onUpload={handleImageUpload}
-          />,
+            isCameFromProfile={true}
+          />, 
           document.body
         )}
     </>

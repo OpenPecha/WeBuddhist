@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "react-query";
 import { useTranslate } from "@tolgee/react";
-import { FaTimes } from "react-icons/fa";
+import { MdDeleteOutline } from "react-icons/md";
 import axiosInstance from "../../../../config/axios-config.js";
 import { LANGUAGE } from "../../../../utils/constants.js";
 import { getLanguageClass, mapLanguageCode } from "../../../../utils/helperFunctions.jsx";
@@ -83,7 +83,7 @@ const SheetListing = ({ userInfo }) => {
                     <h4 className={`sheet-title ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
                   </Link>
                   <button className="sheet-delete">
-                    <FaTimes onClick={() => {
+                    <MdDeleteOutline onClick={() => {
                       setSelectedSheetId(sheet.id);
                       setIsModalOpen(true);
                     }} />

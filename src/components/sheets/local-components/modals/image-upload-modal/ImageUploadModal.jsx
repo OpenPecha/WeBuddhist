@@ -6,7 +6,7 @@ import { FaCropSimple } from "react-icons/fa6";
 import { MdDeleteOutline } from "react-icons/md";
 import ImageCropContent from "../image-crop-modal/ImageCropModal";
 import axiosInstance from "../../../../../config/axios-config";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import "./ImageUpload.scss";
 import PropTypes from "prop-types";
 export const UploadImageToS3= async(file,sheetId)=>{
@@ -28,15 +28,13 @@ export const uploadProfileImage = async (file) => {
   const { data } = await axiosInstance.post("api/v1/users/upload", formData);
   return data;
 }
-const ImageUploadModal = ({ onClose, onUpload }) => {
+const ImageUploadModal = ({ onClose, onUpload, isCameFromProfile = false }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
   const [croppedFile, setCroppedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const {id}=useParams();
-  const location = useLocation();
   const sheetId=id || "";
-  const isProfilePage = location.pathname === '/profile';
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "image/*": [] },
     onDrop: (acceptedFiles) => {
@@ -52,7 +50,7 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
     setIsUploading(true);
     try {
       let data;
-      if (isProfilePage) {
+      if (isCameFromProfile) {
         data = await uploadProfileImage(file);
         onUpload(data, file.name);
       } else {
@@ -92,7 +90,7 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
 
     return (
       <>
-       {isProfilePage ? <p>Upload Profile Image</p> : <p>Upload Image</p>}
+       {isCameFromProfile ? <p>Upload Profile Image</p> : <p>Upload Image</p>}
         <button
           className="close-button"
           onClick={onClose}
@@ -186,7 +184,7 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
         imageSrc={URL.createObjectURL(selectedFile)}
         onBack={() => setIsCropping(false)}
         onCropComplete={handleCropComplete}
-        isProfilePage={isProfilePage}
+        isProfilePage={isCameFromProfile}
       />
     );
   };
@@ -209,4 +207,5 @@ export default ImageUploadModal;
 ImageUploadModal.propTypes={
   onClose: PropTypes.func.isRequired,
   onUpload: PropTypes.func.isRequired,
+  isCameFromProfile: PropTypes.bool,
 }; 
