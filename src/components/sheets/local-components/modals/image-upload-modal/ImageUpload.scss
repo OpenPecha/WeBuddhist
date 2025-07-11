@@ -114,7 +114,6 @@
       justify-content: start;
       flex-direction: column;
       .cropped-indicator {
-        padding: 2px 0;
         border: 1px solid #A9080E;
         color: #A9080E;
         font-size: 12px;
@@ -149,7 +148,6 @@
   border: none;
   border-radius: 4px;
   width: 100%;
-  color: #555;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 14px;
