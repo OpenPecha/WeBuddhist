@@ -1,6 +1,7 @@
 import './CustomPecha.scss';
 import PropTypes from "prop-types";
 const CustomPecha = props => {
+  // eslint-disable-next-line no-unused-vars
     const {attributes,children,element} = props
     if (!element.src) return null
     return (
