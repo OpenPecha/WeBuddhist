@@ -21,7 +21,14 @@ export const UploadImageToS3= async(file,sheetId)=>{
   );
   return data;
 }
-const ImageUploadModal = ({ onClose, onUpload }) => {
+
+export const uploadProfileImage = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const { data } = await axiosInstance.post("api/v1/users/upload", formData);
+  return data;
+}
+const ImageUploadModal = ({ onClose, onUpload, isCameFromProfile = false }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isCropping, setIsCropping] = useState(false);
   const [croppedFile, setCroppedFile] = useState(null);
@@ -42,9 +49,15 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
     if (!file) return;
     setIsUploading(true);
     try {
-      const data = await UploadImageToS3(file,sheetId);
-      if (data && data.url) {
-        onUpload(data.url, file.name);
+      let data;
+      if (isCameFromProfile) {
+        data = await uploadProfileImage(file);
+        onUpload(data, file.name);
+      } else {
+        data = await UploadImageToS3(file, sheetId);
+        if (data && data.url) {
+          onUpload(data.url, file.name);
+        }
       }
     } catch (error) {
       console.error('Upload failed', error);
@@ -77,7 +90,7 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
 
     return (
       <>
-        <p>Upload Image</p>
+       {isCameFromProfile ? <p>Upload Profile Image</p> : <p>Upload Image</p>}
         <button
           className="close-button"
           onClick={onClose}
@@ -171,6 +184,7 @@ const ImageUploadModal = ({ onClose, onUpload }) => {
         imageSrc={URL.createObjectURL(selectedFile)}
         onBack={() => setIsCropping(false)}
         onCropComplete={handleCropComplete}
+        isProfilePage={isCameFromProfile}
       />
     );
   };
@@ -193,4 +207,5 @@ export default ImageUploadModal;
 ImageUploadModal.propTypes={
   onClose: PropTypes.func.isRequired,
   onUpload: PropTypes.func.isRequired,
+  isCameFromProfile: PropTypes.bool,
 }; 
