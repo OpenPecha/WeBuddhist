@@ -1,47 +1,26 @@
 import "./UserProfile.scss";
 import { Tab, Tabs } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { Link, useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "react-query";
+import { useNavigate } from "react-router-dom";
+import { useQuery } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useTranslate } from "@tolgee/react";
-import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
+import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useMemo, useState } from "react";
-import { FaTimes,FaEdit } from "react-icons/fa";
-import { SheetDeleteModal } from "../sheets/local-components/modals/sheet-delete/sheet_delete.jsx";
-import { deleteSheet } from "../sheets/view-sheet/SheetDetailPage.jsx";
-import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
-import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
+import { useState } from "react";
+import { FaEdit } from "react-icons/fa";
 import { createPortal } from "react-dom";
 import ImageUploadModal from "../sheets/local-components/modals/image-upload-modal/ImageUploadModal.jsx";
-
-export const fetchsheet = async (email, limit, skip) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
-  const accessToken = sessionStorage.getItem('accessToken');
-  const { data } = await axiosInstance.get("api/v1/sheets", {
-    headers: {
-      Authorization: accessToken ? `Bearer ${accessToken}` : "Bearer None"
-    },
-    params: {
-      language,
-      email: email,
-      limit,
-      skip,
-    },
-  });
-  return data;
-};
+import SheetListing from "./tabs/sheet-listing/SheetListing.jsx";
+import CollectionsTab from "./tabs/collections/CollectionsTab.jsx";
+import Notes from "./tabs/notes/Notes.jsx";
+import BuddhistTracker from "./tabs/buddhist-tracker/BuddhistTracker.jsx";
 
 export const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
   return data;
 };
-
-
-
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -53,13 +32,7 @@ const UserProfile = () => {
   const { t } = useTranslate();
   const { isLoggedIn, logout: pechaLogout } = useAuth();
   const { isAuthenticated, logout } = useAuth0();
-  const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const [isImageUploadModalOpen, setIsImageUploadModalOpen] = useState(false);
-  const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
-
-  const handlePageChange = (pageNumber) => {
-    setPagination(prev => ({ ...prev, currentPage: pageNumber }));
-  };
 
   const handleEditImageClick = () => {
     setIsImageUploadModalOpen(true);
@@ -79,26 +52,11 @@ const UserProfile = () => {
     setIsImageUploadModalOpen(false);
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [ selectedSheetId, setSelectedSheetId ] = useState(null);
-  
-  const { mutate: deleteSheetMutation } = useMutation({
-      mutationFn: () => deleteSheet(selectedSheetId),
-      onSuccess: () => {
-        setIsModalOpen(false);
-        navigate('/profile');
-      },
-      onError: (error) => {
-        console.error("Error deleting sheet:", error);
-      }
-  });
-
-
   const handleEditProfile = () => {
     navigate("/edit-profile", { state: { userInfo } });
   };
 
-  function handleLogout(e) {
+  const handleLogout = (e) => {
     e.preventDefault()
     localStorage.removeItem(LOGGED_IN_VIA);
     sessionStorage.removeItem(ACCESS_TOKEN);
@@ -111,7 +69,7 @@ const UserProfile = () => {
     });
   }
 
-  function renderSocialLinks(socialProfiles) {
+  const renderSocialLinks = (socialProfiles) => {
     const socialIcons = {
       linkedin: { class: "bi bi-linkedin", color: "#0A66C2" },
       "x.com": { class: "bi bi-twitter", color: "#1DA1F2" },
@@ -150,15 +108,6 @@ const UserProfile = () => {
     );
   }
 
-  const { 
-    data: sheetsData, 
-    isLoading: sheetsIsLoading 
-  } = useQuery(
-    ["sheets-user-profile", pagination.currentPage, pagination.limit], 
-    () => fetchsheet(userInfo?.email, pagination.limit, skip), 
-    { refetchOnWindowFocus: false, enabled: !!userInfo?.email }
-  );
-  const totalPages = Math.ceil((sheetsData?.total || 0) / pagination.limit);
   return (
     <>
       { !userInfoIsLoading ?
@@ -194,7 +143,7 @@ const UserProfile = () => {
                   { userInfo?.avatar_url ? (
                     <div className="profile-image-container">
                       <img src={ userInfo.avatar_url } alt="Profile" className="profile-image" />
-                      <div className="edit-overlay">
+                      <div className="edit-overlay" data-testid="edit-overlay">
                         <FaEdit onClick={handleEditImageClick} />
                       </div>
                     </div>
@@ -209,98 +158,17 @@ const UserProfile = () => {
 
             <div className="section2 listtitle">
               <Tabs defaultActiveKey="sheets" id="user-profile-tabs" className="mb-3">
-                <Tab
-                  eventKey="sheets"
-                  title={
-                    <>
-                      <i className="bi bi-file-earmark"></i> { t("profile.tab.sheets") }
-                    </>
-                  }
-                >
-                  <div className="tab-content">
-
-                    {/* <h3>{ t("profile.tab.sheets") }</h3>
-                    <p>{ t("profile.sheet_description") }</p> */}
-                    <div className="sheets-list">
-                    {sheetsIsLoading ? (
-                      <p>Loading sheets...</p>
-                    ) : (
-                      sheetsData?.sheets.map((sheet) => (
-                        <div key={sheet.id} className="sheet-item" >
-                          <div className="sheet-content listsubtitle ">
-                            <div className="sheet-header ">
-                            <Link to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}_${sheet.id}`}>
-                            <h4  className={`sheet-title ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
-                            </Link>
-                            <button className="sheet-delete">
-                              <FaTimes onClick={() => {
-                                setSelectedSheetId(sheet.id);
-                                setIsModalOpen(true);
-                                }} />
-                              </button>
-                            </div>
-                            <div className="sheet-metadata content">
-                              <span className="sheet-views">{sheet.views}  { t("sheet.view_count") }</span>
-                              <span className="sheet-dot">·</span>
-                              <span className="sheet-date">{sheet.published_date?.split(' ')[0]}</span>
-                              <span className="sheet-dot">·</span>
-                            </div>
-                          </div>
-                         
-                        </div>
-                      ))
-                    )}
-                  </div>
-      
-      {sheetsData?.sheets?.length > 0 && (
-        <PaginationComponent
-          pagination={pagination}
-          totalPages={totalPages}
-          handlePageChange={handlePageChange}
-          setPagination={setPagination}
-        />
-      )}
-
-                  </div>
+                <Tab eventKey="sheets" title={<><i className="bi bi-file-earmark"></i> { t("profile.tab.sheets") }</>}>
+                  <SheetListing userInfo={userInfo} />
                 </Tab>
-                <Tab
-                  eventKey="collections"
-                  title={
-                    <>
-                      <i className="bi bi-stack"></i> { t("profile.tab.collection") }
-                    </>
-                  }
-                >
-                  <div className="tab-content">
-                    <h3>{ t("profile.tab.collection") }</h3>
-                    <p>{ t("profile.tab.collection.description") }</p>
-                  </div>
+                <Tab eventKey="collections" title={<><i className="bi bi-stack"></i> { t("profile.tab.collection") }</>}>
+                  <CollectionsTab />
                 </Tab>
-                <Tab
-                  eventKey="notes"
-                  title={
-                    <>
-                      <i className="bi bi-pencil"></i> { t("user_profile.notes") }
-                    </>
-                  }
-                >
-                  <div className="tab-content">
-                    <h3>{ t("user_profile.notes") }</h3>
-                    <p>{ t("profile.notes.description") }</p>
-                  </div>
+                <Tab eventKey="notes" title={<><i className="bi bi-pencil"></i> { t("user_profile.notes") }</>}>
+                  <Notes />
                 </Tab>
-                <Tab
-                  eventKey="tracker"
-                  title={
-                    <>
-                      <i className="bi bi-reception-4"></i> { t("profile.buddhish_text_tracker") }
-                    </>
-                  }
-                >
-                  <div className="tab-content">
-                    <h3>{ t("profile.buddhish_text_tracker") }</h3>
-                    <p>{ t("profile.text_tracker.descriptions") }</p>
-                  </div>
+                <Tab eventKey="tracker" title={<><i className="bi bi-reception-4"></i> { t("profile.buddhish_text_tracker") }</>}>
+                  <BuddhistTracker />
                 </Tab>
               </Tabs>
             </div>
@@ -308,11 +176,6 @@ const UserProfile = () => {
           </div>
         </div>
         : <p className="listsubtitle">{t("common.loading")}</p> }
-        <SheetDeleteModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onDelete={deleteSheetMutation}
-        />
         {isImageUploadModalOpen && createPortal(
           <ImageUploadModal
             onClose={handleCloseImageUploadModal}
