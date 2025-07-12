@@ -74,11 +74,16 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) 
   };
 
   const renderContents = () => {
-    return contents.map((content, contentIndex) => (
-      content.sections && content.sections.map((segment, index) =>
-        renderContentTree(segment, content.id, index, 0,true)
+    if (!contents || contents.length === 0) {
+      return <div className="no-content listtitle">No content found</div>;
+    }
+
+    return contents.map((content, contentIndex) =>
+      content.sections &&
+      content.sections.map((segment, index) =>
+        renderContentTree(segment, content.id, index, 0, true)
       )
-    ));
+    );
   };
 
   const renderPagination = () => {

@@ -44,6 +44,9 @@ const Texts = () => {
   const earlyReturn = getEarlyReturn({isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError, t});
   if (earlyReturn) return earlyReturn;
 
+  const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
+
+
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
     const renderTitle = () => {
@@ -108,65 +111,58 @@ const Texts = () => {
     </div>
   }
 
+  const renderVersionsDropdown = () => <div className="select-version">
+    <label className="navbaritems">{t("side_nav.download_text.select_version")}</label>
+    <div className="select-wrapper">
+      <select
+        className="navbaritems"
+        value={downloadOptionSelections.version}
+        onChange={(e) => handleOptionChange(e, "version")}>
+        <option value="" disabled>
+          {t("side_nav.download_text.select_version")}
+        </option>
+        <option value="version1">Sample version</option>
+      </select>
+      <FiChevronDown size={16}/>
+    </div>
+  </div>
+
+  const renderFormatDropdown = () => <div className="select-format">
+    <label className="navbaritems">{t("side_nav.download_text.select_format")}</label>
+    <div className="select-wrapper">
+      <select
+        className="navbaritems"
+        value={downloadOptionSelections.format}
+        onChange={(e) => handleOptionChange(e, "format")}>
+        <option value="" disabled>
+          {t("side_nav.download_text.select_format")}
+        </option>
+        <option value="textwithtag">
+          {t("side_nav.download_text.text_with_tag")}
+        </option>
+        <option value="textwithouttag">
+          {t("side_nav.download_text.text_without_tag")}
+        </option>
+        <option value="epub">
+          {t("side_nav.download_text.json")}
+        </option>
+        <option value="csv">{t("side_nav.download_text.csv")}</option>
+      </select>
+      <FiChevronDown size={16}/>
+    </div>
+  </div>
 
   const renderDownloadTextOptions = () => {
 
-    const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
     const renderTitle = () => {
       return <p className="download-text-title navbaritems">{t("side_nav.download_text")}</p>
     }
-
-    const renderSelectVersion = () => {
-
-      return <div className="select-version">
-        <label className="navbaritems">{t("side_nav.download_text.select_version")}</label>
-        <div className="select-wrapper">
-          <select
-            className="navbaritems"
-            value={downloadOptionSelections.version}
-            onChange={(e) => handleOptionChange(e, "version")}>
-            <option value="" disabled>
-              {t("side_nav.download_text.select_version")}
-            </option>
-            <option value="version1">Sample version</option>
-          </select>
-          <FiChevronDown size={16}/>
-        </div>
-      </div>
-    }
-
-    const renderSelectFormat = () => <div className="select-format">
-      <label className="navbaritems">{t("side_nav.download_text.select_format")}</label>
-      <div className="select-wrapper">
-        <select
-          className="navbaritems"
-          value={downloadOptionSelections.format}
-          onChange={(e) => handleOptionChange(e, "format")}>
-        <option value="" disabled>
-            {t("side_nav.download_text.select_format")}
-          </option>
-          <option value="textwithtag">
-            {t("side_nav.download_text.text_with_tag")}
-          </option>
-          <option value="textwithouttag">
-            {t("side_nav.download_text.text_without_tag")}
-          </option>
-          <option value="epub">
-            {t("side_nav.download_text.json")}
-          </option>
-          <option value="csv">{t("side_nav.download_text.csv")}</option>
-        </select>
-        <FiChevronDown size={16}/>
-      </div>
-    </div>
-
-
     const renderDownloadButton = () => <button className="download-button">{t("text.download")}</button>
 
     return <div className="download-options-container">
       {renderTitle()}
-      {renderSelectVersion()}
-      {renderSelectFormat()}
+      {renderVersionsDropdown()}
+      {renderFormatDropdown()}
       {renderDownloadButton()}
     </div>
 
