@@ -1,7 +1,6 @@
 
 import React, {useState} from 'react'
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
-import {useTranslate} from "@tolgee/react";
 import {FiChevronDown, FiChevronRight} from "react-icons/fi";
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link} from "react-router-dom";
@@ -10,7 +9,6 @@ import PropTypes from "prop-types";
 
 const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) => {
   const [expandedSections, setExpandedSections] = useState({});
-  const { t } = useTranslate();
 
   // -------------------------------------------- helpers ----------------------------------------------
 
@@ -32,7 +30,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) 
 
   // --------------------------------------------- renderers -------------------------------------------
 
-  const renderContentTree = (section, level = 0, tocId, parentIndex, isTopLevel = false) => {
+  const renderContentTree = (section, tocId, parentIndex, level = 0, isTopLevel = false) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
     const keyPrefix = isTopLevel ? `content-${tocId}-segment` : `section`;
@@ -57,7 +55,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) 
       return isExpanded && hasChildren && (
         <div className="nested-content">
           {section.sections.map((childSection, childIndex) =>
-            renderContentTree(childSection, level + 1, tocId, isTopLevel ? childIndex : parentIndex, false)
+            renderContentTree(childSection, tocId, isTopLevel ? childIndex : parentIndex,level + 1, false)
           )}
         </div>
       )
@@ -78,7 +76,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) 
   const renderContents = () => {
     return contents.map((content, contentIndex) => (
       content.sections && content.sections.map((segment, index) =>
-        renderContentTree(segment, 0, content.id, index, true)
+        renderContentTree(segment, content.id, index, 0,true)
       )
     ));
   };

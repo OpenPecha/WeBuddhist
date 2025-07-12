@@ -68,7 +68,7 @@ const Texts = () => {
 
   const renderContinueReadingButton = () => {
     return <Link className="navbaritems continue-reading-button"
-                 to={`/chapter?text_id=${id}&contentId=${tableOfContents?.contents[0].id}&versionId=&contentIndex=${0}`}>
+                 to={`/chapter?text_id=${id}&contentId=${tableOfContents?.contents[0]?.id}&versionId=&contentIndex=${0}`}>
       {t("text.button.continue_reading")}
     </Link>
 
@@ -113,17 +113,20 @@ const Texts = () => {
     const renderTitle = () => {
       return <p className="download-text-title navbaritems">{t("side_nav.download_text")}</p>
     }
+
     const renderSelectVersion = () => {
+      const handleOptionChange = (e) => {
+        setDownloadOptionSelections(prev =>
+          ({...prev, version: e.target.value}))
+      }
+
       return <div className="select-version">
         <label className="navbaritems">{t("side_nav.download_text.select_version")}</label>
         <div className="select-wrapper">
           <select
             className="navbaritems"
             value={downloadOptionSelections.version}
-            onChange={(e) =>
-              setDownloadOptionSelections(prev =>
-                ({...prev, version: e.target.value}))
-            }>
+            onChange={handleOptionChange}>
             <option value="" disabled>
               {t("side_nav.download_text.select_version")}
             </option>
@@ -134,38 +137,35 @@ const Texts = () => {
       </div>
     }
 
-    const renderSelectFormat = () => {
-      return <div className="select-format">
-        <label className="navbaritems">{t("side_nav.download_text.select_format")}</label>
-        <div className="select-wrapper">
-          <select
-            className="navbaritems"
-            value={downloadOptionSelections.format}
-            onChange={(e) =>
-              setDownloadOptionSelections((prev) => ({...prev, format: e.target.value}))
-            }>
-            <option value="" disabled>
-              {t("side_nav.download_text.select_format")}
-            </option>
-            <option value="textwithtag">
-              {t("side_nav.download_text.text_with_tag")}
-            </option>
-            <option value="textwithouttag">
-              {t("side_nav.download_text.text_without_tag")}
-            </option>
-            <option value="epub">
-              {t("side_nav.download_text.json")}
-            </option>
-            <option value="csv">{t("side_nav.download_text.csv")}</option>
-          </select>
-          <FiChevronDown size={16}/>
-        </div>
+    const renderSelectFormat = () => <div className="select-format">
+      <label className="navbaritems">{t("side_nav.download_text.select_format")}</label>
+      <div className="select-wrapper">
+        <select
+          className="navbaritems"
+          value={downloadOptionSelections.format}
+          onChange={(e) =>
+            setDownloadOptionSelections((prev) => ({...prev, format: e.target.value}))
+          }>
+          <option value="" disabled>
+            {t("side_nav.download_text.select_format")}
+          </option>
+          <option value="textwithtag">
+            {t("side_nav.download_text.text_with_tag")}
+          </option>
+          <option value="textwithouttag">
+            {t("side_nav.download_text.text_without_tag")}
+          </option>
+          <option value="epub">
+            {t("side_nav.download_text.json")}
+          </option>
+          <option value="csv">{t("side_nav.download_text.csv")}</option>
+        </select>
+        <FiChevronDown size={16}/>
       </div>
-    }
+    </div>
 
-    const renderDownloadButton = () => {
-      return  <button className="download-button">{t("text.download")}</button>
-    }
+
+    const renderDownloadButton = () => <button className="download-button">{t("text.download")}</button>
 
     return <div className="download-options-container">
       {renderTitle()}
