@@ -37,11 +37,7 @@ const NavigationBar = () => {
    sessionStorage.removeItem(ACCESS_TOKEN);
    localStorage.removeItem(REFRESH_TOKEN)
    isLoggedIn && pechaLogout()
-   isAuthenticated && logout({
-     logoutParams: {
-       returnTo: window.location.origin + '/login',
-     },
-   });
+   isAuthenticated && logout();
    
    if (isLoggedIn && !isAuthenticated) {
      navigate('/login');

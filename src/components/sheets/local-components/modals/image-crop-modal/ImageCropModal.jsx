@@ -42,7 +42,7 @@ const getCroppedImg = async (imageSrc, pixelCrop) => {
   });
 };
 
-const ImageCropContent = ({ imageSrc, onBack, onCropComplete }) => {
+const ImageCropContent = ({ imageSrc, onBack, onCropComplete, isProfilePage = false }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -77,7 +77,7 @@ const ImageCropContent = ({ imageSrc, onBack, onCropComplete }) => {
           onCropChange={setCrop}
           onCropComplete={handleCropComplete}
           onZoomChange={setZoom}
-          cropShape="rect"
+          cropShape={isProfilePage ? "round" : "rect"}
           showGrid={true}
         />
       </div>
@@ -137,5 +137,6 @@ export default ImageCropContent;
 ImageCropContent.propTypes = {
   imageSrc: PropTypes.string.isRequired, 
   onBack: PropTypes.func.isRequired, 
-  onCropComplete: PropTypes.func.isRequired
+  onCropComplete: PropTypes.func.isRequired,
+  isProfilePage: PropTypes.bool
 }
