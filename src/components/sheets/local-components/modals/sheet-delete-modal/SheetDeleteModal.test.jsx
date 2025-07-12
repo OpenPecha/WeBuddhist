@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
-import { SheetDeleteModal } from "./sheet_delete";
+import { SheetDeleteModal } from "./SheetDeleteModal";
 
 vi.mock("@tolgee/react", () => ({
   useTranslate: () => ({

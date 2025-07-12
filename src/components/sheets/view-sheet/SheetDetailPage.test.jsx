@@ -40,7 +40,7 @@ vi.mock("../../chapterV2/utils/resources/Resources.jsx", () => ({
   ),
 }));
 
-vi.mock("../local-components/modals/sheet-delete/sheet_delete", () => ({
+vi.mock("../local-components/modals/sheet-delete-modal/SheetDeleteModal", () => ({
   SheetDeleteModal: ({ isOpen, onClose, onDelete }) => 
     isOpen ? (
       <div data-testid="delete-modal">

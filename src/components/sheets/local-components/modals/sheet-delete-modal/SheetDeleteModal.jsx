@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import './sheet-delete.scss';
+import './SheetDelete.scss';
 import { useTranslate } from '@tolgee/react';
 import { FaTimes } from 'react-icons/fa';
 import logo from '../../../../../assets/icons/pecha_icon.png';
