@@ -7,7 +7,6 @@ import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link} from "react-router-dom";
 import "./TableOfContents.scss"
 import PropTypes from "prop-types";
-import Content from "../../pages/content/Content.jsx";
 
 const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) => {
   const [expandedSections, setExpandedSections] = useState({});
