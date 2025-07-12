@@ -7,7 +7,7 @@ import axiosInstance from "../../../../config/axios-config.js";
 import { LANGUAGE } from "../../../../utils/constants.js";
 import { getLanguageClass, mapLanguageCode } from "../../../../utils/helperFunctions.jsx";
 import PaginationComponent from "../../../commons/pagination/PaginationComponent.jsx";
-import { SheetDeleteModal } from "../../../sheets/local-components/modals/sheet-delete/sheet_delete.jsx";
+import { SheetDeleteModal } from "../../../sheets/local-components/modals/sheet-delete-modal/SheetDeleteModal.jsx";
 import { deleteSheet } from "../../../sheets/view-sheet/SheetDetailPage.jsx";
 
 export const fetchsheet = async (email, limit, skip) => {
