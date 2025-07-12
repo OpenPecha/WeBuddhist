@@ -187,8 +187,14 @@ const SheetDetailPage = () => {
     const { name, username, avatar_url } = sheetData.publisher;
     return(
       <div className="user-info">
+        {avatar_url ? (
         <img src={avatar_url}
          alt="user" className='user-info-avatar' />
+        ) : (
+          <div className="avatar-initials">
+            {sheetData.publisher.name.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()}
+          </div>
+        )}
         <div className="user-info-text">
           <p>{name}</p>
           <p>@{username}</p>
