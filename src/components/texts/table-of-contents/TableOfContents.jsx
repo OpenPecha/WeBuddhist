@@ -62,12 +62,12 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) 
     }
     return (
       <div key={`${keyPrefix}-${section.id}-${parentIndex}`} className="toc-list-container">
-        <div className="toc-header"
+        <button className="toc-header"
           // Prevent toggling if clicking the link
              onClick={(e) => e.target.tagName !== 'A' && toggleSection(section.id)}>
           {renderDropIcons()}
           {renderContentTitle()}
-        </div>
+        </button>
         {renderRecursiveSubContents()}
       </div>
     );

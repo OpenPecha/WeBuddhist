@@ -12,6 +12,8 @@ $tablet-breakpoint: 768px;
       text-align: left;
       border-radius: 4px;
       transition: background-color 0.2s ease;
+      background-color: transparent;
+      border: none;
 
       .toggle-icon {
         margin-right: 0.5rem;
@@ -32,9 +34,9 @@ $tablet-breakpoint: 768px;
         display: inline;
       }
 
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-      }
+      //&:hover {
+      //  background-color: rgba(0, 0, 0, 0.05);
+      //}
 
       .nested-content {
         margin-left: 1.25rem;
