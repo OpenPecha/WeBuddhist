@@ -96,24 +96,26 @@ const TranslationView = ({
           </p>
 
           <div className="linkselect navbaritems">
-            <div
-              className="linkicons"
-              onClick={() => {
-                addChapter({ 
-                  contentId: "", 
-                  versionId: "", 
-                  textId: translation.text_id, 
-                  segmentId: translation.segment_id,
-                  // contentIndex: sectionindex !== null ? sectionindex : 0
-                  contentIndex: 0
-                });
-                closeResourcesPanel();
-              }}
+            {addChapter && (
+              <div
+                className="linkicons"
+                onClick={() => {
+                  addChapter({ 
+                    contentId: "", 
+                    versionId: "", 
+                    textId: translation.text_id, 
+                    segmentId: translation.segment_id,
+                    // contentIndex: sectionindex !== null ? sectionindex : 0
+                    contentIndex: 0
+                  });
+                  closeResourcesPanel();
+                }}
               >
-              <GoLinkExternal />
-              {t("text.translation.open_text")}
-            </div>
-
+                <GoLinkExternal />
+                {t("text.translation.open_text")}
+              </div>
+            )}
+            {setVersionId && (
             <p
               onClick={() => setVersionId(translation.text_id)}
               className="selectss navbaritems"
@@ -122,6 +124,7 @@ const TranslationView = ({
                 ? t("text.translation.current_selected")
                 : t("common.select")}
             </p>
+            )}
           </div>
         </div>
       </div>
