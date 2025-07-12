@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import "./CommunityPage.scss";
 import { useTranslate } from '@tolgee/react';
 import { LANGUAGE } from '../../utils/constants.js';
@@ -30,7 +30,15 @@ export const fetchsheet = async (limit, skip, sort_order) => {
   };
 const CommunityPage = () => {
     const [sortOrder, setSortOrder] = useState('desc');
-    const [pagination, setPagination] = useState({ currentPage: 1, limit: 5 });
+    const [pagination, setPagination] = useState(() => {
+      const stored = localStorage.getItem('community-pagination');
+      return stored ? JSON.parse(stored) : { currentPage: 1, limit: 5 };
+    });
+
+    useEffect(() => {
+      localStorage.setItem('community-pagination', JSON.stringify(pagination));
+    }, [pagination]);
+
     const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
 
     const handlePageChange = (pageNumber) => {
