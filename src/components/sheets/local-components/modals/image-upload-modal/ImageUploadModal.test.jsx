@@ -1,40 +1,46 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import ImageUploadModal, { UploadImageToS3 } from "./ImageUploadModal";
+import ImageUploadModal from "./ImageUploadModal";
+import * as uploadFunctions from "./ImageUploadModal";
 import "@testing-library/jest-dom";
 
-vi.mock("./ImageUploadModal", async () => {
-  const actual = await vi.importActual("./ImageUploadModal");
-  return {
-    ...actual,
-    UploadImageToS3: vi.fn()
-  };
-});
+// Mock axios config first
+vi.mock("../../../../../config/axios-config", () => ({
+  default: {
+    post: vi.fn().mockResolvedValue({ data: { url: "http://test.com/image.jpg" } })
+  }
+}));
+
 let mockOnDrop;
+let mockGetRootProps;
+let mockGetInputProps;
+
 vi.mock("react-dropzone", () => ({
   useDropzone: ({ onDrop }) => {
-    mockOnDrop = onDrop; 
+    mockOnDrop = onDrop;
+    mockGetRootProps = vi.fn(() => ({
+      className: "upload-area",
+      onClick: vi.fn(),
+    }));
+    mockGetInputProps = vi.fn(() => ({
+      type: "file",
+      accept: { "image/*": [] },
+    }));
     return {
-      getRootProps: () => ({
-        onClick: vi.fn(),
-      }),
-      getInputProps: () => ({
-        onChange: vi.fn(),
-        type: "file",
-        accept: { "image/*": [] },
-      }),
+      getRootProps: mockGetRootProps,
+      getInputProps: mockGetInputProps,
     };
   },
 }));
 
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
-  return {
-    ...actual,
-    useParams: () => ({ id: "sheet123" }),
-  };
-});
+const mockUseParams = vi.fn();
+const mockUseLocation = vi.fn();
+
+vi.mock("react-router-dom", () => ({
+  useParams: () => mockUseParams(),
+  useLocation: () => mockUseLocation(),
+}));
 
 vi.mock("../image-crop-modal/ImageCropModal", () => ({
   __esModule: true,
@@ -46,10 +52,21 @@ vi.mock("../image-crop-modal/ImageCropModal", () => ({
   ),
 }));
 
-vi.mock("../../../../../config/axios-config", () => ({
-  default: {
-    post: vi.fn().mockResolvedValue({ data: { url: "http://test.com/image.jpg" } })
-  }
+// Mock react-icons
+vi.mock("react-icons/io5", () => ({
+  IoClose: () => <span data-testid="close-icon">×</span>
+}));
+
+vi.mock("react-icons/fa", () => ({
+  FaRegImages: () => <span data-testid="image-icon">📷</span>
+}));
+
+vi.mock("react-icons/fa6", () => ({
+  FaCropSimple: ({ onClick }) => <span data-testid="crop-icon" onClick={onClick}>✂️</span>
+}));
+
+vi.mock("react-icons/md", () => ({
+  MdDeleteOutline: ({ onClick }) => <span data-testid="delete-icon" onClick={onClick}>🗑️</span>
 }));
 
 describe("ImageUploadModal", () => {
@@ -58,53 +75,54 @@ describe("ImageUploadModal", () => {
   const mockFile = new File(["dummy"], "test.png", { type: "image/png" });
   const mockUrl = "http://test.com/image.jpg";
 
+  // Mock the upload functions using vi.spyOn after import
+  let mockUploadImageToS3;
+  let mockUploadProfileImage;
+
   beforeEach(() => {
     vi.clearAllMocks();
-    UploadImageToS3.mockResolvedValue({ url: mockUrl });
+    
+    // Setup default mocks
+    mockUseParams.mockReturnValue({ id: "sheet123" });
+    mockUseLocation.mockReturnValue({ pathname: "/sheets/sheet123" });
+
+    // Mock the upload functions using vi.spyOn on the imported module
+    mockUploadImageToS3 = vi.spyOn(uploadFunctions, 'UploadImageToS3').mockResolvedValue({ url: mockUrl });
+    mockUploadProfileImage = vi.spyOn(uploadFunctions, 'uploadProfileImage').mockResolvedValue({ url: mockUrl });
 
     global.URL.createObjectURL = vi.fn(() => "blob:mock-url");
     global.URL.revokeObjectURL = vi.fn();
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     delete global.URL.createObjectURL;
     delete global.URL.revokeObjectURL;
   });
 
-  const setup = () => {
-    const utils = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
-    return {
-      ...utils,
-      uploadFile: async () => {
-        const input = screen.getByRole("button").parentElement.querySelector('input[type="file"]');
-        Object.defineProperty(input, "files", {
-          value: [mockFile],
-          configurable: true,
-        });
-        fireEvent.change(input);
-        return mockFile;
-      },
-    };
-  };
-
   test("renders modal and close button", () => {
-    setup();
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
     expect(screen.getByText("Upload Image")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "" })).toBeInTheDocument();
+    expect(screen.getByTestId("close-icon")).toBeInTheDocument();
   });
 
   test("calls onClose when overlay or close button is clicked", () => {
-    setup();
-    fireEvent.click(screen.getByText("Upload Image").closest(".image-upload-overlay"));
+    const { container } = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    
+    // Click overlay
+    const overlay = container.querySelector(".image-upload-overlay");
+    fireEvent.click(overlay);
     expect(onClose).toHaveBeenCalledTimes(1);
 
-    fireEvent.click(screen.getByRole("button", { name: "" }));
+    // Click close button
+    const closeButton = container.querySelector(".close-button");
+    fireEvent.click(closeButton);
     expect(onClose).toHaveBeenCalledTimes(2);
   });
 
   test("shows upload area and drag text", () => {
-    setup();
-    expect(screen.getByText(/Drag and drop an image/i)).toBeInTheDocument();
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    expect(screen.getByText(/Drag and drop an image here/i)).toBeInTheDocument();
   });
 
   test("displays selected file information and upload button after file drop", async () => {
@@ -124,7 +142,7 @@ describe("ImageUploadModal", () => {
   });
 
   test("removes selected file when delete button clicked", async () => {
-    const { container } = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
     
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -134,7 +152,7 @@ describe("ImageUploadModal", () => {
       expect(screen.getByText(`Selected: ${mockFile.name}`)).toBeInTheDocument();
     });
     
-    const deleteButton = container.querySelector('.delete-icon');
+    const deleteButton = screen.getByTestId("delete-icon");
     expect(deleteButton).toBeInTheDocument();
     
     fireEvent.click(deleteButton);
@@ -147,7 +165,7 @@ describe("ImageUploadModal", () => {
   });
 
   test("opens crop modal when crop button clicked", async () => {
-    const { container } = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
     
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -157,9 +175,8 @@ describe("ImageUploadModal", () => {
       expect(screen.getByText(`Selected: ${mockFile.name}`)).toBeInTheDocument();
     });
     
-    const cropButton = container.querySelector('.crop-icon');
+    const cropButton = screen.getByTestId("crop-icon");
     expect(cropButton).toBeInTheDocument();
-    
     fireEvent.click(cropButton);
     
     await waitFor(() => {
@@ -168,7 +185,7 @@ describe("ImageUploadModal", () => {
   });
 
   test("updates image and shows cropped indicator after crop completion", async () => {
-    const { container } = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
     
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -178,7 +195,7 @@ describe("ImageUploadModal", () => {
       expect(screen.getByText(`Selected: ${mockFile.name}`)).toBeInTheDocument();
     });
     
-    const cropButton = container.querySelector('.crop-icon');
+    const cropButton = screen.getByTestId("crop-icon");
     fireEvent.click(cropButton);
     
     await waitFor(() => {
@@ -207,12 +224,11 @@ describe("ImageUploadModal", () => {
     }
     
     expect(screen.getByText(/Drag and drop an image here/i)).toBeInTheDocument();
-    
     expect(screen.queryByRole("button", { name: "Upload Image" })).not.toBeInTheDocument();
   });
 
   test("returns to file selection when crop back button clicked", async () => {
-    const { container } = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
     
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -222,7 +238,7 @@ describe("ImageUploadModal", () => {
       expect(screen.getByText(`Selected: ${mockFile.name}`)).toBeInTheDocument();
     });
     
-    const cropButton = container.querySelector('.crop-icon');
+    const cropButton = screen.getByTestId("crop-icon");
     fireEvent.click(cropButton);
     
     await waitFor(() => {
@@ -254,6 +270,40 @@ describe("ImageUploadModal", () => {
     const uploadButton = screen.getByRole("button", { name: "Upload Image" });
     fireEvent.click(uploadButton);
 
-    expect(screen.getByRole("button", { name: "Uploading..." })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Uploading..." })).toBeInTheDocument();
+    });
   });
+
+  test("renders profile page upload modal correctly", () => {
+    mockUseLocation.mockReturnValue({ pathname: "/profile" });
+    
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} isCameFromProfile={true} />);
+    expect(screen.getByText("Upload Profile Image")).toBeInTheDocument();
+  });
+  
+  test("handles upload error gracefully", async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mockUploadImageToS3.mockRejectedValue(new Error('Upload failed'));
+    
+    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    
+    if (mockOnDrop) {
+      mockOnDrop([mockFile]);
+    }
+    
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Upload Image" })).toBeInTheDocument();
+    });
+    
+    const uploadButton = screen.getByRole("button", { name: "Upload Image" });
+    fireEvent.click(uploadButton);
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith('Upload failed', expect.any(Error));
+    });
+    
+    consoleSpy.mockRestore();
+  });
+
 });

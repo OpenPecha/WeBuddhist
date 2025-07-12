@@ -1,11 +1,11 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, act, waitFor } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
-import UserProfile ,{fetchsheet} from "./UserProfile.jsx";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import UserProfile, { fetchUserInfo } from "./UserProfile.jsx";
+import { QueryClient, QueryClientProvider, useQuery, useMutation } from "react-query";
 import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
-import { ACCESS_TOKEN } from "../../utils/constants.js";
+import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
 import * as ReactRouterDom from "react-router-dom";
 import axiosInstance from "../../config/axios-config.js";
 
@@ -18,45 +18,94 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
+// Mock createPortal to avoid portal-related test issues
+vi.mock("react-dom", async () => {
+  const actual = await vi.importActual("react-dom");
+  return {
+    ...actual,
+    createPortal: vi.fn((element) => element),
+  };
+});
+
+// Mock SheetListing component
+vi.mock("./tabs/sheet-listing/SheetListing.jsx", () => ({
+  default: ({ userInfo }) => (
+    <div data-testid="sheet-listing">
+      <div>Sample Sheet 1</div>
+      <div>123</div>
+      <div>2023-01-01</div>
+    </div>
+  ),
+}));
+
+// Mock other tab components
+vi.mock("./tabs/collections/CollectionsTab.jsx", () => ({
+  default: () => <div data-testid="collections-tab">profile.tab.collection.description</div>,
+}));
+
+vi.mock("./tabs/notes/Notes.jsx", () => ({
+  default: () => <div data-testid="notes-tab">profile.notes.description</div>,
+}));
+
+vi.mock("./tabs/buddhist-tracker/BuddhistTracker.jsx", () => ({
+  default: () => <div data-testid="buddhist-tracker-tab">profile.text_tracker.descriptions</div>,
+}));
+
+// Mock ImageUploadModal
+vi.mock("../sheets/local-components/modals/image-upload-modal/ImageUploadModal.jsx", () => ({
+  default: ({ onClose, onUpload }) => (
+    <div role="dialog" data-testid="image-upload-modal">
+      <button onClick={onClose}>Close</button>
+      <button onClick={() => onUpload("test-url", "test-file.jpg")}>Upload</button>
+    </div>
+  ),
+}));
+
 mockAxios();
 mockUseAuth();
 mockReactQuery();
 
+const mockUserInfo = {
+  firstname: "John",
+  lastname: "Doe",
+  title: "Senior Software Engineer",
+  location: "Bangalore",
+  educations: ["Master of Computer Application (MCA)", "Bachelor of Science, Physics"],
+  organization: "pecha org",
+  following: 1,
+  followers: 1,
+  social_profiles: [
+    { account: "x.com", url: "https://x.com" },
+    { account: "email", url: "test@pecha.com" },
+    { account: "linkedin", url: "https://linkedin.com" },
+    { account: "facebook", url: "https://facebook.com" },
+    { account: "youtube", url: "https://youtube.com" },
+  ],
+  avatar_url: "",
+  email: "test@pecha.com",
+};
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
+const setup = () => {
+  return render(
+    <Router>
+      <QueryClientProvider client={queryClient}>
+        <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+          <UserProfile />
+        </TolgeeProvider>
+      </QueryClientProvider>
+    </Router>
+  );
+};
+
 describe("UserProfile Component", () => {
-  const queryClient = new QueryClient();
-  const mockUserInfo = {
-    firstname: "John",
-    lastname: "Doe",
-    title: "Senior Software Engineer",
-    location: "Bangalore",
-    educations: ["Master of Computer Application (MCA)", "Bachelor of Science, Physics"],
-    organization: "pecha org",
-    following: 1,
-    followers: 1,
-    social_profiles: [
-      { account: "x.com", url: "https://x.com" },
-      { account: "email", url: "test@pecha.com" },
-      { account: "linkedin", url: "https://linkedin.com" },
-      { account: "facebook", url: "https://facebook.com" },
-      { account: "youtube", url: "https://youtube.com" },
-    ],
-    avatar_url: "",
-  };
-
-  const mockSheetsData = {
-    sheets: [
-      {
-        id: '1',
-        title: 'Sample Sheet 1',
-        views: 123,
-        published_date: '2023-01-01 12:00:00',
-        language: 'en',
-        publisher: { username: 'johndoe' },
-      },
-    ],
-    total: 1,
-  };
-
   const mockedNavigate = vi.fn();
 
   beforeAll(() => {
@@ -66,28 +115,28 @@ describe("UserProfile Component", () => {
   afterAll(() => {
     window.alert.mockRestore();
   });
+
   beforeEach(() => {
+    // Reset all mocks before each test
+    vi.clearAllMocks();
+    
     // Mock localStorage and sessionStorage methods
+    const mockStorage = {
+      removeItem: vi.fn(),
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+    };
+
     Object.defineProperty(window, "localStorage", {
-      value: {
-        removeItem: vi.fn(),
-        getItem: vi.fn(),
-        setItem: vi.fn(),
-      },
+      value: mockStorage,
       writable: true,
     });
 
     Object.defineProperty(window, "sessionStorage", {
-      value: {
-        removeItem: vi.fn(),
-        getItem: vi.fn(),
-        setItem: vi.fn(),
-      },
+      value: mockStorage,
       writable: true,
     });
-  });
-  beforeEach(() => {
-    vi.clearAllMocks();
+
     ReactRouterDom.useNavigate.mockImplementation(() => mockedNavigate);
 
     useQuery.mockImplementation((queryKey) => {
@@ -97,30 +146,25 @@ describe("UserProfile Component", () => {
           isLoading: false,
           refetch: vi.fn(),
         };
-      } else if (Array.isArray(queryKey) && queryKey[0] === "sheets-user-profile") {
-        return {
-          data: mockSheetsData,
-          isLoading: false,
-        };
       }
       return {
         data: null,
         isLoading: true,
       };
     });
+
+    useMutation.mockImplementation(() => ({
+      mutate: vi.fn(),
+      mutateAsync: vi.fn(),
+      isLoading: false,
+      error: null,
+    }));
   });
 
-  const setup = () => {
-    render(
-      <Router>
-        <QueryClientProvider client={queryClient}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <UserProfile />
-          </TolgeeProvider>
-        </QueryClientProvider>
-      </Router>
-    );
-  };
+  afterEach(() => {
+    // Clean up after each test
+    queryClient.clear();
+  });
 
   test("renders the user profile with all details", () => {
     setup();
@@ -129,9 +173,11 @@ describe("UserProfile Component", () => {
     expect(screen.getByText("Senior Software Engineer")).toBeInTheDocument();
     expect(screen.getByText("Bangalore")).toBeInTheDocument();
     expect(screen.getByText("Master of Computer Application (MCA) Bachelor of Science, Physics")).toBeInTheDocument();
+    expect(screen.getByText("1 Followers")).toBeInTheDocument();
+    expect(screen.getByText("1 Following")).toBeInTheDocument();
   });
 
-  test("renders all social media links with correct attributes", () => {
+  test("renders all social media links with correct attributes and icons", () => {
     setup();
 
     const twitterLink = screen.getByLabelText("x.com");
@@ -145,133 +191,216 @@ describe("UserProfile Component", () => {
     expect(linkedInLink).toHaveAttribute("href", "https://linkedin.com");
     expect(facebookLink).toHaveAttribute("href", "https://facebook.com");
     expect(emailLink).toHaveAttribute("href", "mailto:test@pecha.com");
+
+    // Check for icons
+    expect(twitterLink.querySelector(".bi-twitter")).toBeInTheDocument();
+    expect(youtubeLink.querySelector(".bi-youtube")).toBeInTheDocument();
+    expect(linkedInLink.querySelector(".bi-linkedin")).toBeInTheDocument();
+    expect(facebookLink.querySelector(".bi-facebook")).toBeInTheDocument();
+    expect(emailLink.querySelector(".bi-envelope")).toBeInTheDocument();
   });
 
-  test("renders tabs and their content", () => {
+  test("renders and switches between tabs correctly", async () => {
     setup();
 
-    const sheetsTab = screen.getByRole('tab', { name: /Sheets/i });
-    const collectionsTab = screen.getByRole('tab', { name: /Collections/i });
-    const notesTab = screen.getByRole('tab', { name: /Notes/i });
-    const trackerTab = screen.getByRole('tab', { name: /Buddhist Text Tracker/i });
+    const sheetsTab = screen.getByRole('tab', { name: /sheets/i });
+    const collectionsTab = screen.getByRole('tab', { name: /collections/i });
+    const notesTab = screen.getByRole('tab', { name: /notes/i });
+    const trackerTab = screen.getByRole('tab', { name: "Buddhist Text Tracker" });
 
-    expect(sheetsTab).toBeInTheDocument();
-    expect(collectionsTab).toBeInTheDocument();
-    expect(notesTab).toBeInTheDocument();
-    expect(trackerTab).toBeInTheDocument();
+    // Check initial state (Sheets tab should be active)
+    expect(screen.getByTestId("sheet-listing")).toBeInTheDocument();
 
-    fireEvent.click(collectionsTab);
-    expect(screen.getByText(/Collections can be shared privately or made public on Pecha/i)).toBeInTheDocument();
+    // Switch to Collections tab
+    await act(async () => {
+      fireEvent.click(collectionsTab);
+    });
+    expect(screen.getByTestId("collections-tab")).toBeInTheDocument();
 
-    fireEvent.click(notesTab);
-    expect(screen.getByText(/profile.notes.description/i)).toBeInTheDocument();
+    // Switch to Notes tab
+    await act(async () => {
+      fireEvent.click(notesTab);
+    });
+    expect(screen.getByTestId("notes-tab")).toBeInTheDocument();
 
-    fireEvent.click(trackerTab);
-    expect(screen.getByText(/profile.text_tracker.descriptions/i)).toBeInTheDocument();
+    // Switch to Buddhist Tracker tab
+    await act(async () => {
+      fireEvent.click(trackerTab);
+    });
+    expect(screen.getByTestId("buddhist-tracker-tab")).toBeInTheDocument();
+
+    // Switch back to Sheets tab
+    await act(async () => {
+      fireEvent.click(sheetsTab);
+    });
+    expect(screen.getByTestId("sheet-listing")).toBeInTheDocument();
   });
 
-  test("handles picture upload correctly with valid and invalid files", async () => {
+  test("handles image upload modal and image upload process", async () => {
+    const mockRefetch = vi.fn();
+    useQuery.mockImplementation(() => ({
+      data: mockUserInfo,
+      isLoading: false,
+      refetch: mockRefetch,
+    }));
+
     setup();
 
-    const fileInput = screen.getByLabelText(/Add Picture/i);
+    // Test opening modal
+    const addPictureButton = screen.getByText("Add Picture");
+    await act(async () => {
+      fireEvent.click(addPictureButton);
+    });
 
-    // Valid file
-    const validFile = new File(["valid"], "valid.png", { type: "image/png" });
-    fireEvent.change(fileInput, { target: { files: [validFile] } });
+    expect(screen.getByTestId("image-upload-modal")).toBeInTheDocument();
 
-    // Invalid file type
-    const invalidFileType = new File(["invalid"], "invalid.txt", { type: "text/plain" });
-    fireEvent.change(fileInput, { target: { files: [invalidFileType] } });
+    // Test successful upload
+    await act(async () => {
+      fireEvent.click(screen.getByText("Upload"));
+    });
 
-    // Large file size
-    const largeFileSize = new File(["large".repeat(1024 * 1024)], "large.png", { type: "image/png" });
-    fireEvent.change(fileInput, { target: { files: [largeFileSize] } });
+    expect(mockRefetch).toHaveBeenCalled();
+    expect(screen.queryByTestId("image-upload-modal")).not.toBeInTheDocument();
 
-    // Check alerts
-    expect(window.alert).toHaveBeenCalledTimes(2); // Invalid type and size
+    // Test closing modal
+    await act(async () => {
+      fireEvent.click(addPictureButton);
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByText("Close"));
+    });
+    expect(screen.queryByTestId("image-upload-modal")).not.toBeInTheDocument();
   });
 
-  test("handles logout correctly", () => {
-    setup();
-  
-    const logoutButton = screen.getByText(/Log Out/i);
-  
-    fireEvent.click(logoutButton);
-  
-    // Verify that localStorage.removeItem was called with the correct keys
-    expect(window.localStorage.removeItem).toHaveBeenCalledWith("loggedInVia");
-    expect(window.localStorage.removeItem).toHaveBeenCalledWith("refreshToken");
-  
-    // Verify that sessionStorage.removeItem was called with the correct key
-    expect(window.sessionStorage.removeItem).toHaveBeenCalledWith(ACCESS_TOKEN);
-  });
   
 
-  test("navigates to edit profile page with user info when edit button is clicked", () => {
+  test("handles edit profile navigation correctly", async () => {
     setup();
 
-    const editButton = screen.getByText(/Edit Profile/i);
-
-    fireEvent.click(editButton);
+    const editButton = screen.getByText("Edit Profile");
+    await act(async () => {
+      fireEvent.click(editButton);
+    });
 
     expect(mockedNavigate).toHaveBeenCalledWith("/edit-profile", { state: { userInfo: mockUserInfo } });
   });
 
-  test("renders sheets data correctly in Sheets tab", () => {
+  test("shows loading state when user info is loading", () => {
+    useQuery.mockImplementation(() => ({
+      data: null,
+      isLoading: true,
+      refetch: vi.fn(),
+    }));
+
+    setup();
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
+  });
+
+  test("displays profile image with edit overlay when avatar_url exists", () => {
+    const userInfoWithAvatar = {
+      ...mockUserInfo,
+      avatar_url: "https://example.com/avatar.jpg"
+    };
+
+    useQuery.mockImplementation(() => ({
+      data: userInfoWithAvatar,
+      isLoading: false,
+      refetch: vi.fn(),
+    }));
+
     setup();
 
-    // Check for sheet title
-    const sheetTitle = screen.getByText(/Sample Sheet 1/i);
-    expect(sheetTitle).toBeInTheDocument();
-
-    // Check for sheet views
-    const sheetViews = screen.getByText(/123/);
-    expect(sheetViews).toBeInTheDocument();
-
-    // Check for published date (only date part)
-    const sheetDate = screen.getByText('2023-01-01');
-    expect(sheetDate).toBeInTheDocument();
+    const profileImage = screen.getByAltText("Profile");
+    expect(profileImage).toHaveAttribute("src", "https://example.com/avatar.jpg");
+    expect(screen.getByRole("img")).toBeInTheDocument();
+    
+    // Check for edit overlay
+    const editOverlay = screen.getByTestId("edit-overlay");
+    expect(editOverlay).toBeInTheDocument();
   });
-  
-  test("fetches sheet with correct parameters when access token exists", async () => {
-    window.localStorage.getItem.mockReturnValue("en");
-    window.sessionStorage.getItem.mockReturnValue("test-access-token");
-    axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
-    const result = await fetchsheet("test@gmail.com", 10, 0);
-    expect(window.sessionStorage.getItem).toHaveBeenCalledWith("accessToken");
-    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
-      headers: {
-        Authorization: "Bearer test-access-token"
-      },
-      params: {
-        language: "en",
-        email: "test@gmail.com",
-        limit: 10,
-        skip: 0,
-      }
-    });
-  
-    expect(result).toEqual(mockSheetsData);
+});
+
+describe("fetchUserInfo Function", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  test("fetches sheet with correct parameters when no access token exists", async () => {
-    window.localStorage.getItem.mockReturnValue("en");
-    window.sessionStorage.getItem.mockReturnValue(null);
-    axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
-    const result = await fetchsheet("test@gmail.com", 10, 0);
+  test("successfully fetches user info", async () => {
+    const mockUserData = {
+      firstname: "John",
+      lastname: "Doe",
+      title: "Senior Software Engineer",
+      location: "Bangalore",
+      educations: ["Master of Computer Application (MCA)"],
+      organization: "pecha org",
+      following: 1,
+      followers: 1,
+      avatar_url: "https://example.com/avatar.jpg",
+      social_profiles: [
+        { account: "linkedin", url: "https://linkedin.com/johndoe" }
+      ]
+    };
+
+    axiosInstance.get.mockResolvedValueOnce({ data: mockUserData });
+
+    const result = await fetchUserInfo();
+
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/users/info");
+    expect(result).toEqual(mockUserData);
+  });
+
+  test("handles API error correctly", async () => {
+    const mockError = new Error("Network Error");
+    axiosInstance.get.mockRejectedValueOnce(mockError);
+
+    await expect(fetchUserInfo()).rejects.toThrow("Network Error");
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/users/info");
+  });
+
+  test("handles various HTTP error responses", async () => {
+    const errorCases = [
+      { status: 401, message: "Unauthorized" },
+      { status: 404, message: "User not found" },
+      { status: 500, message: "Internal Server Error" }
+    ];
+
+    for (const errorCase of errorCases) {
+      const mockError = {
+        response: {
+          status: errorCase.status,
+          data: { message: errorCase.message }
+        }
+      };
+      axiosInstance.get.mockRejectedValueOnce(mockError);
+
+      await expect(fetchUserInfo()).rejects.toEqual(mockError);
+      expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/users/info");
+    }
+  });
+
+  test("handles empty and partial response data", async () => {
+    // Test null response
+    axiosInstance.get.mockResolvedValueOnce({ data: null });
+    let result = await fetchUserInfo();
+    expect(result).toBeNull();
+
+    // Test partial data
+    const partialData = { firstname: "Test", lastname: "User" };
+    axiosInstance.get.mockResolvedValueOnce({ data: partialData });
+    result = await fetchUserInfo();
+    expect(result).toEqual(partialData);
+  });
   
-    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
-      headers: {
-        Authorization: "Bearer None"
-      },
-      params: {
-        language: "en",
-        email: "test@gmail.com",
-        limit: 10,
-        skip: 0,
-      }
+  test("handles logout correctly", async () => {
+    setup();
+    
+    const logoutElement = screen.getByText("Log Out");
+    await act(async () => {
+      fireEvent.click(logoutElement);
     });
-  
-    expect(result).toEqual(mockSheetsData);
+
+    expect(localStorage.removeItem).toHaveBeenCalledWith(LOGGED_IN_VIA);
+    expect(sessionStorage.removeItem).toHaveBeenCalledWith(ACCESS_TOKEN);
+    expect(localStorage.removeItem).toHaveBeenCalledWith(REFRESH_TOKEN);
   });
 });
