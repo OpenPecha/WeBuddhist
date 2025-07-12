@@ -72,8 +72,8 @@ const CommunityPage = () => {
             value={sortOrder}
             onChange={handleSortChange}
           >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
+            <option value="asc">{t("community.sheets.ascending")}</option>
+            <option value="desc">{t("community.sheets.descending")}</option>
           </select>
         </div>
        
