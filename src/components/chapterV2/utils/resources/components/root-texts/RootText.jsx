@@ -153,6 +153,6 @@ RootTextView.propTypes = {
   setIsRootTextView: PropTypes.func.isRequired, 
   expandedRootTexts: PropTypes.object.isRequired, 
   setExpandedRootTexts: PropTypes.func.isRequired, 
-  addChapter: PropTypes.func.isRequired, 
+  addChapter: PropTypes.func, 
   sectionindex: PropTypes.number
 } 

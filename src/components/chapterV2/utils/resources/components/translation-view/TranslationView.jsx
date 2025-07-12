@@ -169,8 +169,8 @@ TranslationView.propTypes = {
   setIsTranslationView: PropTypes.func.isRequired, 
   expandedTranslations: PropTypes.object.isRequired, 
   setExpandedTranslations: PropTypes.func.isRequired, 
-  setVersionId: PropTypes.func.isRequired, 
+  setVersionId: PropTypes.func, 
   versionId: PropTypes.string, 
-  addChapter: PropTypes.func.isRequired, 
+  addChapter: PropTypes.func, 
   sectionindex: PropTypes.number
 }

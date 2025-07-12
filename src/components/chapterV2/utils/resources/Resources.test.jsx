@@ -116,7 +116,7 @@ describe("Resources Side Panel", () => {
 
     const result = await fetchSidePanelData(segmentId);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/segments/${segmentId}/infos`, {
+    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/segments/${segmentId}/info`, {
       params: {
         language: "bo",
         segmentId
