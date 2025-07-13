@@ -33,10 +33,13 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("../../utils/constants.js", () => ({
-  getAlphabet: () => ["A", "B", "C", "T"],
-  LANGUAGE: "LANGUAGE",
+vi.mock("../../utils/helperFunctions.jsx", () => ({
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
+  getEarlyReturn: () => null
+}));
+
+vi.mock("../../utils/constants.js", () => ({
+  LANGUAGE: "LANGUAGE"
 }));
 
 describe("Collections Component", () => {
