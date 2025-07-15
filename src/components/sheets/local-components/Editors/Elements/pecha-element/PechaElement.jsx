@@ -15,8 +15,7 @@ export const fetchSegmentDetails = async (segmentId) => {
 };
 
 const PechaElement = props => {
-  // eslint-disable-next-line no-unused-vars
-  const { attributes, children, element } = props;
+  const { attributes, element } = props;
   const segmentId = element.src;
 
   const { data: segmentData, isLoading } = useQuery(

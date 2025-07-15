@@ -24,7 +24,7 @@ const EditorInput = (prop) => {
       }, [])
 
     const renderElement = useCallback(props => {
-        switch (props.element.type) {
+        switch (props?.element?.type) {
           case 'code':
             return <CodeElement {...props} />
           case 'heading-one':
@@ -53,12 +53,6 @@ const EditorInput = (prop) => {
             return <DefaultElement {...props} />
         }
       }, [])
-
-      renderElement.propTypes = {
-        element: PropTypes.shape({
-          type: PropTypes.string.isRequired
-        }).isRequired
-      }
   return (
     <Editable
       autoFocus
