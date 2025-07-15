@@ -2,7 +2,7 @@ import React from 'react'
 import { useSlate } from 'slate-react';
 import { useCustomEditor } from '../../sheet-utils/CustomEditor';
 
-const blockButton = (prop) => {
+const BlockButton = (prop) => {
     const {format, children, className} = prop 
     const editor = useSlate()
     const customEditor = useCustomEditor();
@@ -20,4 +20,4 @@ const blockButton = (prop) => {
     )
 }
 
-export default blockButton
+export default BlockButton

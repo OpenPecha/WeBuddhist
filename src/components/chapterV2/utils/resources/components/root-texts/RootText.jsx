@@ -108,7 +108,7 @@ const {closeResourcesPanel} = usePanelContext();
 
                         <div className="root-text-actions">
                           <div className="root-text-buttons">
-                            <div className="root-text-button"
+                            <button className="root-text-button"
                                  onClick={() => {
                                   addChapter({
                                    contentId: "", 
@@ -121,7 +121,7 @@ const {closeResourcesPanel} = usePanelContext();
                                  }}>
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
-                            </div>
+                            </button>
 
                             <div className="root-text-button">
                               <IoAddCircleOutline size={14} className="mr-1"/>

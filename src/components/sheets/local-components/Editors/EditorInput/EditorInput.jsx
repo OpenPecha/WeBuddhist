@@ -53,7 +53,12 @@ const EditorInput = (prop) => {
             return <DefaultElement {...props} />
         }
       }, [])
-      
+
+      renderElement.propTypes = {
+        element: PropTypes.shape({
+          type: PropTypes.string.isRequired
+        }).isRequired
+      }
   return (
     <Editable
       autoFocus
@@ -114,5 +119,5 @@ const EditorInput = (prop) => {
 
 export default EditorInput
 EditorInput.propTypes = {
-  editor: PropTypes.object
+  editor: PropTypes.object.isRequired
 }

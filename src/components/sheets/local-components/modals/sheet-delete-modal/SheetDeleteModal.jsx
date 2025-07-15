@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import './SheetDelete.scss';
 import { useTranslate } from '@tolgee/react';
 import { FaTimes } from 'react-icons/fa';
+import { PropTypes } from 'prop-types';
 import logo from '../../../../../assets/icons/pecha_icon.png';
 
 export const SheetDeleteModal = ({ isOpen, onClose, onDelete, isLoading }) => {
@@ -46,4 +47,11 @@ export const SheetDeleteModal = ({ isOpen, onClose, onDelete, isLoading }) => {
     </div>,
     document.body
   );
+};
+
+SheetDeleteModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired
 };

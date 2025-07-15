@@ -161,7 +161,8 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
         key={`section-${section.id}`} 
         className="section-container"
       >
-        <div
+        <button
+          type="button"
           className={`section-header ${isActive ? 'active-section' : ''}`}
           onClick={() => toggleSection(section.id)}
         >
@@ -176,7 +177,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
           >
             {section.title}
           </button>
-        </div>
+        </button>
         {isExpanded && hasChildren && (
           <div className="nested-content">
             {section.sections.map((childSection) =>
@@ -195,7 +196,8 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
         key={`content-${contentIndex}-segment-${segment.id}-${index}`}
         className="section-container"
       >
-        <div
+        <button
+          type="button"
           className={`section-header ${activeSectionId === segment.id ? 'active-section' : ''}`}
           onClick={() => toggleSection(segment.id)}
         >
@@ -213,7 +215,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
           >
             {segment.title}
           </button>
-        </div>
+        </button>
         {sectionHierarchyState[segment.id] && hasChildren && (
           <div className="nested-content">
             {segment.sections.map((section) =>
@@ -253,7 +255,7 @@ const LeftSidePanel = ({ updateChapter, currentChapter, activeSectionId }) => {
 
   return (
     <>
-      {showPanel && <div className="panel-backdrop" onClick={() => closeLeftPanel()}></div>}
+      {showPanel && <button className="panel-backdrop" onClick={() => closeLeftPanel()}></button>}
       <div className={`left-panel navbaritems ${showPanel ? 'show' : ''}`}>
         {renderMainPanel()}
       </div>

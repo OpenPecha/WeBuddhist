@@ -2,7 +2,7 @@ import {LANGUAGE} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {useMemo, useState} from "react";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {useSearchParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Pagination, Row} from "react-bootstrap";
 import "./Topics.scss"
 import React from "react";
@@ -31,7 +31,6 @@ export const fetchTopics = async (parentId, searchFilter, limit, skip, hierarchy
 
 const Topics = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { t } = useTranslate();
 
   const parentId = searchParams.get("id") || null;

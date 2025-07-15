@@ -9,6 +9,7 @@ import { getLanguageClass, mapLanguageCode } from "../../../../utils/helperFunct
 import PaginationComponent from "../../../commons/pagination/PaginationComponent.jsx";
 import { SheetDeleteModal } from "../../../sheets/local-components/modals/sheet-delete-modal/SheetDeleteModal.jsx";
 import { deleteSheet } from "../../../sheets/view-sheet/SheetDetailPage.jsx";
+import { PropTypes } from "prop-types";
 
 export const fetchsheet = async (email, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -120,3 +121,8 @@ const SheetListing = ({ userInfo }) => {
 };
 
 export default SheetListing;
+SheetListing.propTypes = {
+  userInfo: PropTypes.shape({
+    email: PropTypes.string
+  })
+};

@@ -74,7 +74,8 @@ const Content = ({textId, setContentId}) => {
     return (
       <div key={`section-${section.id}`} className="section-container">
      
-        <div
+        <button
+          type="button"
           className="section-header"
           onClick={(e) => {
             // Prevent toggling if clicking the link
@@ -94,7 +95,7 @@ const Content = ({textId, setContentId}) => {
           >
             {section.title}
           </Link>
-        </div>
+        </button>
 
         {isExpanded && hasChildren && (
           <div className="nested-content">
@@ -119,7 +120,8 @@ const Content = ({textId, setContentId}) => {
 
           return (
               <div key={`content-${contentIndex}-segment-${segment.id}-${index}`} className="section-container">
-                <div 
+                <button
+                  type="button"
                   className="section-header"
                   onClick={(e) => {
                     if (e.target.tagName !== 'A') {
@@ -138,7 +140,7 @@ const Content = ({textId, setContentId}) => {
                   >
                     {segment.title}
                   </Link>
-                </div>
+                </button>
 
                 {expandedSections[segment.id] && hasChildren && (
                   <div className="nested-content">
