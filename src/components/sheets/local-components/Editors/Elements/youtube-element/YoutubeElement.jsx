@@ -1,8 +1,7 @@
 import YoutubeEmbed from 'react-youtube'
 import PropTypes from "prop-types";
 const YoutubeElement = props => {
-  // eslint-disable-next-line no-unused-vars
-    const {attributes,children,element} = props
+    const {attributes, children: _children, element} = props
     const {youtubeId} = element
     return (
       <div {...attributes}>
