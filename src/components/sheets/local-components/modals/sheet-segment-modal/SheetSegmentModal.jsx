@@ -104,7 +104,6 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
         onKeyDown={(e) => e.key === 'Escape' && onClose()}
         role="dialog"
         aria-modal="true"
-        tabIndex={0}
       >
         {renderModalHeader()}
         {renderSegmentContent()}
