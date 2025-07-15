@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 import { createEditor } from "slate";
 import { Slate, withReact } from "slate-react";
-import blockButton from "./blockButton";
+import BlockButton from "./blockButton";
 import "@testing-library/jest-dom";
 
 const mockIsBlockActive = vi.fn();
@@ -29,7 +29,7 @@ vi.mock("slate-react", async () => {
   };
 });
 
-describe("blockButton", () => {
+describe("BlockButton", () => {
   let mockEditor;
   let useSlate;
 
@@ -61,7 +61,6 @@ describe("blockButton", () => {
   };
 
   test("displays button with children content", () => {
-    const BlockButton = blockButton;
     renderWithSlate(<BlockButton {...defaultProps} />);
     
     expect(screen.getByRole("button", { name: "H1" })).toBeInTheDocument();
@@ -70,7 +69,6 @@ describe("blockButton", () => {
   test("applies active class when block format is active", () => {
     mockIsBlockActive.mockReturnValue(true);
     
-    const BlockButton = blockButton;
     renderWithSlate(<BlockButton {...defaultProps} />);
     
     const button = screen.getByRole("button", { name: "H1" });
@@ -78,7 +76,6 @@ describe("blockButton", () => {
   });
 
   test("applies custom className when provided", () => {
-    const BlockButton = blockButton;
     renderWithSlate(<BlockButton {...defaultProps} className="custom-class" />);
     
     const button = screen.getByRole("button", { name: "H1" });
@@ -86,7 +83,6 @@ describe("blockButton", () => {
   });
 
   test("toggles block format when button clicked", () => {
-    const BlockButton = blockButton;
     renderWithSlate(<BlockButton {...defaultProps} />);
     
     const button = screen.getByRole("button", { name: "H1" });
@@ -96,7 +92,6 @@ describe("blockButton", () => {
   });
 
   test("checks if block format is active on render", () => {
-    const BlockButton = blockButton;
     const format = "heading-two";
     
     renderWithSlate(<BlockButton format={format} children="H2" />);

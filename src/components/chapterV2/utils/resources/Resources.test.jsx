@@ -116,7 +116,7 @@ describe("Resources Side Panel", () => {
 
     const result = await fetchSidePanelData(segmentId);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/segments/${segmentId}/infos`, {
+    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/segments/${segmentId}/info`, {
       params: {
         language: "bo",
         segmentId
@@ -236,7 +236,7 @@ describe("Resources Side Panel", () => {
     setup();
 
     const headerItem = screen.getByText("menu.item2");
-    expect(headerItem.closest("div")).toHaveClass("textgreat");
+    expect(headerItem.closest("button")).toHaveClass("textgreat");
   });
 
   test("renders the panel backdrop that closes the panel when clicked", () => {

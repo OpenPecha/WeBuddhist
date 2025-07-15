@@ -130,7 +130,7 @@ const UserProfile = () => {
                   <button className="settings-btn">
                     <span className="icon">⚙️</span> { t("profile.setting") }
                   </button>
-                  <p onClick={ handleLogout } className="logout-text">{ t("profile.log_out") }</p>
+                  <button onClick={ handleLogout } className="logout-text">{ t("profile.log_out") }</button>
                 </div>
                 <div className="followers">
                   <span className="number-followers">{ userInfo?.followers } { t("common.followers") }</span>

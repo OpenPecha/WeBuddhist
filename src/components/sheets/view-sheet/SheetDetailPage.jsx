@@ -11,7 +11,7 @@ import { useQuery, useMutation } from 'react-query';
 import { useTranslate } from '@tolgee/react';
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import Resources from "../../chapterV2/utils/resources/Resources.jsx";
-import { SheetDeleteModal } from '../local-components/modals/sheet-delete/sheet_delete';
+import { SheetDeleteModal } from '../local-components/modals/sheet-delete-modal/SheetDeleteModal';
 
 export const getUserInfo=async()=>{
   const {data}=await axiosInstance.get(`/api/v1/users/info`,{
@@ -187,8 +187,14 @@ const SheetDetailPage = () => {
     const { name, username, avatar_url } = sheetData.publisher;
     return(
       <div className="user-info">
+        {avatar_url ? (
         <img src={avatar_url}
          alt="user" className='user-info-avatar' />
+        ) : (
+          <div className="avatar-initials">
+            {sheetData.publisher.name.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()}
+          </div>
+        )}
         <div className="user-info-text">
           <p>{name}</p>
           <p>@{username}</p>

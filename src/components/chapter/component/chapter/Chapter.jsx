@@ -40,7 +40,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
   const containerRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isResourcesPanelOpen, openResourcesPanel, isLeftPanelOpen } = usePanelContext();
-  const [versionId, setVersionId] = useState(currentChapter.versionId); // TODO: check whether this is really required
+  const [versionId, setVersionId] = useState(currentChapter.versionId); 
   const isLoadingRef = useRef(false);
   const isLoadingTopRef = useRef(false);
   const totalContentRef = useRef(0);
@@ -374,7 +374,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
         return null;
       }
       return (
-        <div
+        <button
         key={segment.segment_id}
         data-segment-id={segment.segment_id}
         className={`text-segment ${isResourcesPanelOpen && selectedSegmentId === segment.segment_id ? 'selected' : ''} ${selectedSegmentId === segment.segment_id ? 'highlighted-segment' : ''}`}
@@ -399,7 +399,7 @@ const Chapter = ({addChapter, removeChapter, updateChapter, currentChapter, tota
             <div className={`translation-content ${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{__html: segment.translation.content}}/>
           )}
         </div>
-      </div>
+      </button>
     );
   });
   };

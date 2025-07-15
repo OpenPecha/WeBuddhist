@@ -30,12 +30,20 @@
           display: flex;
           align-items: center;
           cursor: pointer;
+          background: none;
+          border: none;
+          width: 100%;
+          
           .section-title {
             padding: 0.5rem 0.75rem;
             width: 100%;
             font-size: 16px;
             color: #666;
             cursor: pointer; 
+            background: none;
+            border: none;
+            text-align: left;
+            
             &.selected {
               color: #4a90e2;
               font-weight: 500;

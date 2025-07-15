@@ -124,7 +124,7 @@ const ImageUploadModal = ({ onClose, onUpload, isCameFromProfile = false }) => {
           <div className="selected-file-container">
             <img 
               src={imageToDisplay} 
-              className="selected-file-image" 
+              className={croppedFile ? "selected-file-image-cropped" : "selected-file-image"}
               alt="Selected" 
             />
           </div>
@@ -190,15 +190,15 @@ const ImageUploadModal = ({ onClose, onUpload, isCameFromProfile = false }) => {
   };
 
   return (
-    <div className="image-upload-overlay" onClick={onClose}>
-      <div
+    <div className="image-upload-overlay">
+      <dialog
         className={`image-upload-modal ${isCropping ? 'cropping-mode' : ''}`}
-        onClick={(e) => e.stopPropagation()}
+        open
       >
         {renderModalHeader()}
         {renderUploadSection()}
         {renderImageCropSection()}
-      </div>
+      </dialog>
     </div>
   );
 };

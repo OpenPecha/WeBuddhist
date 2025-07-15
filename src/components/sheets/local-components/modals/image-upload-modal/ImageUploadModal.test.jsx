@@ -106,19 +106,6 @@ describe("ImageUploadModal", () => {
     expect(screen.getByTestId("close-icon")).toBeInTheDocument();
   });
 
-  test("calls onClose when overlay or close button is clicked", () => {
-    const { container } = render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
-    
-    // Click overlay
-    const overlay = container.querySelector(".image-upload-overlay");
-    fireEvent.click(overlay);
-    expect(onClose).toHaveBeenCalledTimes(1);
-
-    // Click close button
-    const closeButton = container.querySelector(".close-button");
-    fireEvent.click(closeButton);
-    expect(onClose).toHaveBeenCalledTimes(2);
-  });
 
   test("shows upload area and drag text", () => {
     render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);

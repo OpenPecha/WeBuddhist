@@ -1,7 +1,7 @@
 import YoutubeEmbed from 'react-youtube'
 import PropTypes from "prop-types";
 const YoutubeElement = props => {
-    const {attributes,children,element} = props
+    const {attributes, element} = props
     const {youtubeId} = element
     return (
       <div {...attributes}>

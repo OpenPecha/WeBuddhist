@@ -96,32 +96,35 @@ const TranslationView = ({
           </p>
 
           <div className="linkselect navbaritems">
-            <div
-              className="linkicons"
-              onClick={() => {
-                addChapter({ 
-                  contentId: "", 
-                  versionId: "", 
-                  textId: translation.text_id, 
-                  segmentId: translation.segment_id,
-                  // contentIndex: sectionindex !== null ? sectionindex : 0
-                  contentIndex: 0
-                });
-                closeResourcesPanel();
-              }}
+            {addChapter && (
+              <button
+                className="linkicons"
+                onClick={() => {
+                  addChapter({ 
+                    contentId: "", 
+                    versionId: "", 
+                    textId: translation.text_id, 
+                    segmentId: translation.segment_id,
+                    // contentIndex: sectionindex !== null ? sectionindex : 0
+                    contentIndex: 0
+                  });
+                  closeResourcesPanel();
+                }}
               >
-              <GoLinkExternal />
-              {t("text.translation.open_text")}
-            </div>
-
-            <p
+                <GoLinkExternal />
+                {t("text.translation.open_text")}
+              </button>
+            )}
+            {setVersionId && (
+            <button
               onClick={() => setVersionId(translation.text_id)}
               className="selectss navbaritems"
             >
               {translation.text_id === versionId
                 ? t("text.translation.current_selected")
                 : t("common.select")}
-            </p>
+            </button>
+            )}
           </div>
         </div>
       </div>
@@ -169,8 +172,8 @@ TranslationView.propTypes = {
   setIsTranslationView: PropTypes.func.isRequired, 
   expandedTranslations: PropTypes.object.isRequired, 
   setExpandedTranslations: PropTypes.func.isRequired, 
-  setVersionId: PropTypes.func.isRequired, 
+  setVersionId: PropTypes.func, 
   versionId: PropTypes.string, 
-  addChapter: PropTypes.func.isRequired, 
+  addChapter: PropTypes.func, 
   sectionindex: PropTypes.number
 }

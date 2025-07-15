@@ -65,7 +65,7 @@ const Sources = (query) => {
         <span className='en-text'>{source.text.published_date}</span>
         <div className="segments">
           {source.segment_match.map((segment) => (
-            <div key={segment.segment_id} className="segment" 
+            <button type="button" key={segment.segment_id} className="segment" 
             onClick={() => {
               if (segment.segment_id && source.text?.text_id) {
                 navigate(`/texts/text-details?textId=${source.text.text_id}&segmentId=${segment.segment_id}`);
@@ -73,7 +73,7 @@ const Sources = (query) => {
             }}
             >
               <p dangerouslySetInnerHTML={{__html : highlightSearchMatch(segment.content, searchText, 'highlighted-text')}} />
-            </div>
+            </button>
           ))}
         </div>
       </div>
