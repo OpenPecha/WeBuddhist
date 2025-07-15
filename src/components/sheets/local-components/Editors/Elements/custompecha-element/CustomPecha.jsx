@@ -1,7 +1,7 @@
 import './CustomPecha.scss';
 import PropTypes from "prop-types";
 const CustomPecha = props => {
-    const {attributes, children: _children, element} = props
+    const {attributes, element} = props
     if (!element.src) return null
     return (
       <div {...attributes} className="custom-pecha-container">
