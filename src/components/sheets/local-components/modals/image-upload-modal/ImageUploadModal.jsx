@@ -191,20 +191,17 @@ const ImageUploadModal = ({ onClose, onUpload, isCameFromProfile = false }) => {
 
   return (
     <div className="image-upload-overlay">
-      <dialog
+      <div
         className={`image-upload-modal ${isCropping ? 'cropping-mode' : ''}`}
         onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.stopPropagation();
-          }
-        }}
-        open
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        role="dialog"
+        aria-modal="true"
       >
         {renderModalHeader()}
         {renderUploadSection()}
         {renderImageCropSection()}
-      </dialog>
+      </div>
     </div>
   );
 };
