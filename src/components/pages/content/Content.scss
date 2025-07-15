@@ -16,6 +16,10 @@
         cursor: pointer;
         border-radius: 4px;
         transition: background-color 0.2s ease;
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
 
         .section-title {
           width: 100%;

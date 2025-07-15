@@ -164,15 +164,16 @@ const EditUserProfile = () => {
                         placeholder={ t("profile.enter-your-education") }
                       />
                       { index !== 0 && (
-                        <span
+                        <button
+                          type="button"
                           className="remove-icon"
                           onClick={ () => {
                             const updatedEducation = formData.educations.filter((_, i) => i !== index);
                             setFormData({ ...formData, educations: updatedEducation });
                           } }
                         >
-              ✕
-            </span>
+                          ✕
+                        </button>
                       ) }
                     </Col>
                   </div>

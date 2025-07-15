@@ -44,6 +44,7 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
         <button
           className="close-button"
           onClick={onClose}
+          aria-label="Close search segment modal"
         >
           <IoClose />
         </button>
@@ -100,8 +101,10 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
       <div
         className="sheet-segment-modal"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
         role="dialog"
         aria-modal="true"
+        tabIndex={0}
       >
         {renderModalHeader()}
         {renderSegmentContent()}

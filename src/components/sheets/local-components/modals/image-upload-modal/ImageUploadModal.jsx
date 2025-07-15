@@ -194,6 +194,14 @@ const ImageUploadModal = ({ onClose, onUpload, isCameFromProfile = false }) => {
       <div
         className={`image-upload-modal ${isCropping ? 'cropping-mode' : ''}`}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.stopPropagation();
+          }
+        }}
+        role="dialog"
+        aria-modal="true"
+        tabIndex={0}
       >
         {renderModalHeader()}
         {renderUploadSection()}

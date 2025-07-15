@@ -71,10 +71,10 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
         <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
 
         {sidePanelData?.segment_info?.translations > 0 && (
-          <p onClick={() => setActiveView("translation")}>
+          <button type="button" onClick={() => setActiveView("translation")}>
             <IoLanguage className="m-2"/>
             {`${t("connection_pannel.translations")} (${sidePanelData.segment_info.translations})`}
-          </p>
+          </button>
         )}
 
         {sidePanelData?.segment_info?.related_text && (sidePanelData?.segment_info?.related_text?.commentaries > 0 || sidePanelData?.segment_info?.related_text?.root_text > 0) && (
@@ -82,16 +82,16 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
             <p className='textgreat'>{t("text.related_texts")}</p>
             <div className='related-texts-container'>
               {sidePanelData?.segment_info?.related_text?.commentaries > 0 && (
-                <p className='related-text-item' onClick={() => setActiveView("commentary")}>
+                <button className='related-text-item' onClick={() => setActiveView("commentary")}>
                   <BiBookOpen className="m-2"/>
                   {`${t("text.commentary")} (${sidePanelData?.segment_info?.related_text?.commentaries})`}
-                </p>
+                </button>
               )}
               {sidePanelData?.segment_info?.related_text?.root_text > 0 && (
-                <p className='related-text-item' onClick={() => setActiveView("root_text")}>
+                <button className='related-text-item' onClick={() => setActiveView("root_text")}>
                   <BiBookOpen className="m-2"/>
                   {`${t("text.root_text")} (${sidePanelData?.segment_info?.related_text?.root_text})`}
-                </p>
+                </button>
               )}
             </div>
           </>
@@ -108,7 +108,8 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
         )}
 
         {MENU_ITEMS.map((item) => (
-          <div
+          <button
+            type="button"
             key={item.label}
             className={item.isHeader ? 'textgreat' : ''}
             onClick={() => {
@@ -117,11 +118,9 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
               }
             }}
           >
-            <p>
-              {item.icon && <item.icon className='m-2'/>}
-              {t(`${item.label}`)}
-            </p>
-          </div>
+            {item.icon && <item.icon className='m-2'/>}
+            {t(`${item.label}`)}
+          </button>
         ))}
       </div>
     </>
@@ -178,7 +177,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
 
   return(
     <>
-      {showPanel && <div className="panel-backdrop" onClick={() => closeResourcesPanel()}></div>}
+      {showPanel && <button className="panel-backdrop" onClick={() => closeResourcesPanel()}></button>}
       <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
         {renderSidePanel()}
       </div>

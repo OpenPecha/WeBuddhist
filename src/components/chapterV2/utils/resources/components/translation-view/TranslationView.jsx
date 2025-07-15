@@ -97,7 +97,7 @@ const TranslationView = ({
 
           <div className="linkselect navbaritems">
             {addChapter && (
-              <div
+              <button
                 className="linkicons"
                 onClick={() => {
                   addChapter({ 
@@ -113,17 +113,17 @@ const TranslationView = ({
               >
                 <GoLinkExternal />
                 {t("text.translation.open_text")}
-              </div>
+              </button>
             )}
             {setVersionId && (
-            <p
+            <button
               onClick={() => setVersionId(translation.text_id)}
               className="selectss navbaritems"
             >
               {translation.text_id === versionId
                 ? t("text.translation.current_selected")
                 : t("common.select")}
-            </p>
+            </button>
             )}
           </div>
         </div>

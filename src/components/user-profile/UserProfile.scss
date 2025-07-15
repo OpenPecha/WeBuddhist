@@ -140,10 +140,14 @@
           }
 
           .logout-text {
+            box-shadow: none;
+            border: none;
+            background: none;
+            padding: 0;
+            margin: 16px 0px;
             font-size: 14px;
             color: #888;
             cursor: pointer;
-            margin-top: 1rem;
             &:hover {
               color: #000;
             }
