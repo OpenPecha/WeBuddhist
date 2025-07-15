@@ -133,6 +133,6 @@ CommentaryView.propTypes = {
   setIsCommentaryView: PropTypes.func.isRequired, 
   expandedCommentaries: PropTypes.object.isRequired, 
   setExpandedCommentaries: PropTypes.func.isRequired, 
-  addChapter: PropTypes.func.isRequired, 
+  addChapter: PropTypes.func, 
   sectionindex: PropTypes.number
 }

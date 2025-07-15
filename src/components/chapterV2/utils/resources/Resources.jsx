@@ -19,7 +19,7 @@ import PropTypes from "prop-types";
 export const fetchSidePanelData = async (segmentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const {data} = await axiosInstance.get(`/api/v1/segments/${segmentId}/infos`, {
+  const {data} = await axiosInstance.get(`/api/v1/segments/${segmentId}/info`, {
     params: {
       language,
       segmentId
@@ -189,9 +189,9 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
 export default Resources;
 Resources.propTypes = {
   segmentId: PropTypes.string.isRequired, 
-  setVersionId: PropTypes.func.isRequired, 
+  setVersionId: PropTypes.func, 
   versionId: PropTypes.string, 
-  addChapter: PropTypes.func.isRequired, 
-  sectionindex: PropTypes.number.isRequired, 
+  addChapter: PropTypes.func, 
+  sectionindex: PropTypes.number, 
   handleClose: PropTypes.func
 }
