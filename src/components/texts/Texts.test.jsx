@@ -1,44 +1,34 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import * as reactQuery from "react-query";
-import "@testing-library/jest-dom";
 import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
-import { vi } from "vitest";
-import { QueryClient, QueryClientProvider } from "react-query";
-import Pages, { fetchVersions } from "./Pages.jsx";
-import { BrowserRouter as Router, useParams } from "react-router-dom";
-import {TolgeeProvider} from "@tolgee/react";
+import {vi} from "vitest";
+import {QueryClient, QueryClientProvider} from "react-query";
+import {BrowserRouter as Router, useParams} from "react-router-dom";
+import * as reactQuery from "react-query";
 import axiosInstance from "../../config/axios-config.js";
+import {render, screen} from "@testing-library/react";
+import {TolgeeProvider} from "@tolgee/react";
+import React from "react";
+import Texts, {fetchTableOfContents} from "./Texts.jsx";
 
 mockAxios();
 mockUseAuth();
 mockReactQuery();
 
-vi.mock("react-bootstrap", () => ({
-  Tabs: ({ children, defaultActiveKey }) => (
-    <div data-testid="tabs" data-default-key={defaultActiveKey}>
-      {children}
-    </div>
-  ),
-  Tab: ({ children, eventKey, title }) => (
-    <div data-testid={`tab-${eventKey}`} data-title={title}>
-      {children}
-    </div>
-  )
-}));
-
 vi.mock("./versions/Versions.jsx", () => ({
   default: () => <div data-testid="versions-component">Versions Component</div>
 }));
 
-vi.mock("./content/Content.jsx", () => ({
-  default: () => <div data-testid="content-component">Content Component</div>
+vi.mock("./table-of-contents/TableOfContents.jsx", () => ({
+  default: ({ error, loading, t, ...rest }) => <div data-testid="table-of-content-component">Table of Contents Component</div>
 }));
 
-vi.mock("../../utils/Constants", () => ({
-  LANGUAGE: "LANGUAGE",
+vi.mock("../../utils/helperFunctions.jsx", () => ({
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
-  getLanguageClass: () => "language-class"
+  getLanguageClass: () => "language-class",
+  getEarlyReturn: () => ""
+}));
+
+vi.mock("../../utils/constants.js", () => ({
+  LANGUAGE: "LANGUAGE",
 }));
 
 vi.mock("react-router-dom", async () => {
@@ -50,13 +40,16 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-describe("Pages Component", () => {
+describe("Texts Component", () => {
   const queryClient = new QueryClient();
   const mockTextDetailData = {
-    text: {
+    text_detail: {
       title: "Test Title",
       type: "Test Type"
-    }
+    },
+    contents:[{
+      id:"sdfasdfasdf"
+    }]
   };
 
   beforeEach(() => {
@@ -79,7 +72,7 @@ describe("Pages Component", () => {
             fallback={"Loading tolgee..."}
             tolgee={mockTolgee}
           >
-          <Pages />
+            <Texts />
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
@@ -89,18 +82,16 @@ describe("Pages Component", () => {
 
   test("renders tabs correctly", () => {
     setup();
-    const tabs = screen.getByTestId("tabs");
-    expect(tabs).toBeInTheDocument();
-    expect(tabs.getAttribute("data-default-key")).toBe("contents");
-    
-    expect(screen.getByTestId("tab-contents")).toBeInTheDocument();
-    expect(screen.getByTestId("tab-versions")).toBeInTheDocument();
+    expect(screen.getByText("Table of Contents Component")).toBeInTheDocument();
+    const buttons = document.querySelectorAll('.tab-button');
+      expect(buttons[0]).toHaveTextContent("Content")
+    expect(buttons[1]).toHaveTextContent("Version")
+
   });
 
   test("renders child components", () => {
     setup();
-    expect(screen.getByTestId("content-component")).toBeInTheDocument();
-    expect(screen.getByTestId("versions-component")).toBeInTheDocument();
+    expect(screen.getByTestId("table-of-content-component")).toBeInTheDocument();
   });
 
   test("displays loading state implicitly", () => {
@@ -108,7 +99,7 @@ describe("Pages Component", () => {
       data: null,
       isLoading: true,
     }));
-    
+
     setup();
     // Title should be empty during loading
     expect(screen.queryByText("Test Title")).not.toBeInTheDocument();
@@ -116,19 +107,19 @@ describe("Pages Component", () => {
 
   test("renders download button", () => {
     setup();
-    expect(screen.getByText("Download")).toBeInTheDocument();
+    expect(screen.getByText("Download Text")).toBeInTheDocument();
   });
 
   test("renders continue reading button", () => {
     setup();
     expect(screen.getByText("Continue Reading")).toBeInTheDocument();
   });
-  
-  test("fetchVersions makes correct API call", async () => {
-    const result = await fetchVersions("123", 10, 0);
+
+  test("fetchTableOfContents makes correct API call", async () => {
+    const result = await fetchTableOfContents("123", 0, 10);
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
-      "/api/v1/texts/123/versions",
+      "/api/v1/texts/123/contents",
       {
         params: {
           language: "bo",

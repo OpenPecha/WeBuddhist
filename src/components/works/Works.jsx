@@ -39,7 +39,7 @@ const Works = () => {
   const {id} = useParams();
   const {t} = useTranslate();
 
-  const {data: worksData, isLoading, error} = useQuery(
+  const {data: worksData, isLoading: worksDataIsLoading, error: worksDataIsError} = useQuery(
     ["works", id],
     () => fetchWorks(id),
     {refetchOnWindowFocus: false}
@@ -50,7 +50,7 @@ const Works = () => {
   const texts = worksData?.texts || [];
   const groupedTexts = useGroupedTexts(texts);
 
-  const earlyReturn = getEarlyReturn({ isLoading, error, t });
+  const earlyReturn = getEarlyReturn({ isLoading: worksDataIsLoading, error: worksDataIsError, t });
   if (earlyReturn) return earlyReturn;
 
 
@@ -72,7 +72,7 @@ const Works = () => {
         ) : (
           <div className="root-text-list">
             {rootTexts.map((text) => (
-              <Link key={text.id} to={`/pages/${text.id}?type=${encodeURIComponent(text.type)}`}
+              <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
                     className={`${getLanguageClass(text.language)} root-text`}>
                 <div className="divider"></div>
                 <p>{text.title}</p>
@@ -94,7 +94,7 @@ const Works = () => {
         ) : (
           <div className="commentary-list">
             {commentaryTexts.map((text) => (
-              <Link key={text.id} to={`/pages/${text.id}?type=${encodeURIComponent(text.type)}`}
+              <Link key={text.id} to={`/texts/${text.id}?type=commentary`}
                     className={`${getLanguageClass(text.language)} commentary-text`}>
                 <div className="divider"></div>
                 <p>{text.title}</p>

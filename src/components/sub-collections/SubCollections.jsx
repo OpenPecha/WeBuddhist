@@ -25,7 +25,7 @@ const SubCollections = () => {
   const {id} = useParams();
   const {t} = useTranslate();
   const {data: subCollectionsData, isLoading: subCollectionsDataIsLoading, error: subCollectionsError} = useQuery(
-    ["texts", id],
+    ["sub-collections", id],
     () => fetchSubCollections(id),
     {refetchOnWindowFocus: false}
   );
@@ -35,7 +35,7 @@ const SubCollections = () => {
   }
   // ----------------------------------- helpers -----------------------------------------
 
-  const earlyReturn = getEarlyReturn({ termsIsLoading: subCollectionsDataIsLoading, subCollectionsError, t });
+  const earlyReturn = getEarlyReturn({ isLoading: subCollectionsDataIsLoading, error: subCollectionsError, t });
   if (earlyReturn) return earlyReturn;
 
   // ----------------------------------- renderers ---------------------------------------
