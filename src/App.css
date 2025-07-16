@@ -29,11 +29,11 @@
   src: url("./assets/fonts/InterRegular.woff") format('woff');
 }
 .bo-text{
-  font-family: 'MonlamUniOuChan2', 'sans-serif';
+  font-family: 'MonlamUniOuChan2', sans-serif;
   font-size: 20px;
 }
 .en-text{
-  font-family: 'Inter', 'sans-serif';
+  font-family: 'Inter', sans-serif;
   font-size: 18px;
 }
 .title {
