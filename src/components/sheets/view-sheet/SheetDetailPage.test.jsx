@@ -40,7 +40,7 @@ vi.mock("../../chapterV2/utils/resources/Resources.jsx", () => ({
   ),
 }));
 
-vi.mock("../local-components/modals/sheet-delete/sheet_delete", () => ({
+vi.mock("../local-components/modals/sheet-delete-modal/SheetDeleteModal", () => ({
   SheetDeleteModal: ({ isOpen, onClose, onDelete }) => 
     isOpen ? (
       <div data-testid="delete-modal">
@@ -961,6 +961,23 @@ describe("SheetDetailPage Component", () => {
     expect(consoleSpy).toHaveBeenCalledWith("Error deleting sheet:", expect.any(Error));
     
     consoleSpy.mockRestore();
+  });
+
+  test("calls window.print when print icon is clicked", () => {
+    const originalPrint = window.print;
+    window.print = vi.fn();
+    
+    setup();
+    
+    const toolbarItems = screen.getByRole("main").querySelectorAll('.view-toolbar-item');
+    const printIconContainer = toolbarItems[1]; 
+    const printIcon = printIconContainer.querySelector('svg:first-child'); 
+    
+    fireEvent.click(printIcon);
+    
+    expect(window.print).toHaveBeenCalledTimes(1);
+    
+    window.print = originalPrint;
   });
 
   test("handles mutation loading state", () => {

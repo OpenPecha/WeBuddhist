@@ -10,7 +10,8 @@ const QuoteElement = (props) => {
     margin: '10px 0',
     fontStyle: 'italic',
     color: '#555',
-    textAlign: element.align || 'left'
+    textAlign: element.align || 'left',
+    whiteSpace: 'pre-wrap',
   };
   return (
     <blockquote style={quoteStyle} {...attributes}>

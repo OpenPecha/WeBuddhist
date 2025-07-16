@@ -23,14 +23,14 @@ export const fetchCollections = async () => {
 const Collections = () => {
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
-    ["texts"],
+    ["collections"],
     () => fetchCollections(),
     {refetchOnWindowFocus: false}
   );
 
   // ----------------------------- helpers ---------------------------------------
 
-  const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, collectionsError, t });
+  const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, error: collectionsError, t });
   if (earlyReturn) return earlyReturn;
 
   // ----------------------------- renderers -------------------------------------

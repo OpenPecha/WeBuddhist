@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import "./CommunityPage.scss";
 import { useTranslate } from '@tolgee/react';
 import { LANGUAGE } from '../../utils/constants.js';
@@ -10,7 +10,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
 
-export const fetchsheet = async (limit, skip) => {
+export const fetchsheet = async (limit, skip, sort_order) => {
     const storedLanguage = localStorage.getItem(LANGUAGE);
     const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
     const { data } = await axiosInstance.get("api/v1/sheets", {
@@ -18,6 +18,8 @@ export const fetchsheet = async (limit, skip) => {
         language,
         limit,
         skip,
+        sort_by:"published_date",
+        sort_order
       },
       headers: {
         Authorization: "Bearer None"
@@ -27,24 +29,35 @@ export const fetchsheet = async (limit, skip) => {
     return data;
   };
 const CommunityPage = () => {
-    const [pagination, setPagination] = useState({ currentPage: 1, limit: 5 });
+    const [sortOrder, setSortOrder] = useState('desc');
+    const [pagination, setPagination] = useState(() => {
+      const stored = localStorage.getItem('community-pagination');
+      return stored ? JSON.parse(stored) : { currentPage: 1, limit: 5 };
+    });
+
+    useEffect(() => {
+      localStorage.setItem('community-pagination', JSON.stringify(pagination));
+    }, [pagination]);
+
     const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
 
     const handlePageChange = (pageNumber) => {
       setPagination(prev => ({ ...prev, currentPage: pageNumber }));
+    };
+    const handleSortChange = (e) => {
+      setSortOrder(e.target.value);
     };
     const navigate = useNavigate();
     const { isLoggedIn } = useAuth();
     const { isAuthenticated } = useAuth0();
     const {t}=useTranslate();
 
-
   const { 
     data: sheetsData, 
     isLoading: sheetsIsLoading 
   } = useQuery(
-    ["sheets", pagination.currentPage, pagination.limit], 
-    () => fetchsheet(pagination.limit, skip), 
+    ["sheets", pagination.currentPage, pagination.limit, sortOrder], 
+    () => fetchsheet(pagination.limit, skip, sortOrder), 
     { refetchOnWindowFocus: false }
   );
   const totalPages = Math.ceil((sheetsData?.total || 0) / pagination.limit);
@@ -52,8 +65,18 @@ const CommunityPage = () => {
   return (
     <div className='container-community'>
       <div className='sheet-community'>
+        <div className='community-header'>
         <h2 className='section-title listtitle'> {t("community.sheets.recently_published")}</h2>
-        
+          <select
+            className="community-dropdown navbaritems"
+            value={sortOrder}
+            onChange={handleSortChange}
+          >
+            <option value="asc">{t("community.sheets.ascending")}</option>
+            <option value="desc">{t("community.sheets.descending")}</option>
+          </select>
+        </div>
+       
         <div className='published-list'>
         <div className="sheets-list">
                     {sheetsIsLoading ? (
@@ -62,7 +85,7 @@ const CommunityPage = () => {
                       sheetsData?.sheets.map((sheet) => (
                         <div key={sheet.id} className="sheet-item">
                           <div className="sheet-content">
-                          <Link to={`/${encodeURIComponent(sheet.publisher.name)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}-${sheet.id}`}>
+                          <Link to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, '-').toLowerCase()}_${sheet.id}`}>
                             <div className='sheet-title-container'>
                             <h4 className={`sheet-title listtitle ${getLanguageClass(sheet.language)}`}>{sheet.title}</h4>
                             <p className=' navbaritems'>{sheet.summary}</p>

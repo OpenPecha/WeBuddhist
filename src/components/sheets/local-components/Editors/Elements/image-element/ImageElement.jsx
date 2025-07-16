@@ -23,6 +23,7 @@ const ImageElement = props => {
                 <img
                     className="sheet-image"
                     src={src}
+                    alt={element.alt || "Sheet image"}
                     onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = noImageUrl;
@@ -41,6 +42,7 @@ ImageElement.propTypes = {
     element: PropTypes.shape({
         src: PropTypes.string, 
         url: PropTypes.string, 
+        alt: PropTypes.string,
         error: PropTypes.string
     }).isRequired
 }

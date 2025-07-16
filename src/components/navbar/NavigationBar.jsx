@@ -11,7 +11,7 @@ import { useQueryClient } from "react-query";
 import { useState } from 'react';
 
 export const invalidateQueries = async (queryClient) => {
-  const queriesToInvalidate = ["texts", "topics","sheets","sidePanel","works","texts-versions","texts-content"];
+  const queriesToInvalidate = ["texts", "topics","sheets","sidePanel","works","texts-versions","texts-content","sheets-user-profile","table-of-contents"];
   await Promise.all(queriesToInvalidate.map(query => queryClient.invalidateQueries(query)));
 };
 const NavigationBar = () => {
@@ -37,11 +37,7 @@ const NavigationBar = () => {
    sessionStorage.removeItem(ACCESS_TOKEN);
    localStorage.removeItem(REFRESH_TOKEN)
    isLoggedIn && pechaLogout()
-   isAuthenticated && logout({
-     logoutParams: {
-       returnTo: window.location.origin + '/login',
-     },
-   });
+   isAuthenticated && logout();
    
    if (isLoggedIn && !isAuthenticated) {
      navigate('/login');

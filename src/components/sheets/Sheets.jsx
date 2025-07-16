@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import './Sheets.scss'
 import Editor from './local-components/Editors/EditorWrapper'
 import ProfileCard from './local-components/UserProfileCard/ProfileCard'
@@ -29,6 +29,11 @@ const Sheets = () => {
 
   const [title,setTitle]=useState("")
   const [debouncedTitle] = useDebounce(title, 1000);
+  useEffect(() => {
+    if (sheetData && !title) {
+      setTitle(sheetData.sheet_title || "");
+    }
+  }, [sheetData]);
   const initialValue = useMemo(
     () =>
      sheetData && convertSegmentsToSlate(sheetData?.content?.segments) || defaultValue,
@@ -38,7 +43,7 @@ const Sheets = () => {
     <div className="sheets-wrapper">
       <input type="text" 
       style={{fontFamily:"serif"}} 
-      value={ sheetData?.sheet_title || title} 
+      value={title} 
       onChange={(e)=>{setTitle(e.target.value); sessionStorage.setItem("sheet-title", e.target.value)}} 
       className=" title-input" placeholder={t("sheet.title.placeholder")}/>
       <ProfileCard />

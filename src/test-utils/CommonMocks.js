@@ -36,32 +36,34 @@ export const mockUseAuth0 = () => {
 export const mockReactQuery = () => {
   vi.mock("react-query", async () => {
     const actual = await vi.importActual("react-query");
+    const defaultUseMutation = (mutationFn, options) => {
+      const mutate = async (args) => {
+        try {
+          const result = await mutationFn(args);
+          if (options?.onSuccess) {
+            options.onSuccess(result);
+          }
+          return result;
+        } catch (error) {
+          if (options?.onError) {
+            options.onError(error);
+          }
+          throw error;
+        }
+      };
+      return {
+        mutate,
+        mutateAsync: mutate,
+      };
+    };
+
     return {
       ...actual,
       useQuery: vi.fn(),
-      useMutation: (mutationFn, options) => {
-        const mutate = async (args) => {
-          try {
-            const result = await mutationFn(args);
-            if (options?.onSuccess) {
-              options.onSuccess(result);
-            }
-            return result;
-          } catch (error) {
-            if (options?.onError) {
-              options.onError(error);
-            }
-            throw error;
-          }
-        };
-        return {
-          mutate,
-          mutateAsync: mutate,
-        };
-      },
+      useMutation: vi.fn(defaultUseMutation),
     };
   });
-}
+};
 
 
 export const mockTolgee = Tolgee()

@@ -145,6 +145,8 @@ $removeicon:#4d5154;
       cursor: pointer;
       color:$removeicon;
       font-weight: bold;
+      background: none;
+      border: none;
       
       &:hover {
         color: $dark;

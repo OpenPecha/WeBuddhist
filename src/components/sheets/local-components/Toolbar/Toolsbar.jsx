@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { FaBold, FaItalic, FaUnderline, FaListOl, FaListUl, FaAlignLeft, FaAlignCenter, FaAlignRight, FaAlignJustify, FaQuoteLeft, FaCode, FaImage } from 'react-icons/fa'
-import { LuHeading1, LuHeading2 } from "react-icons/lu";
 import { useCustomEditor } from '../../sheet-utils/CustomEditor'
 import MarkButton from './MarkButton'
 import BlockButton from './blockButton'
@@ -31,7 +30,7 @@ const Toolsbar = (prop) => {
       await updateSheet(sheetId, payload);
       setAlert({ open: true, type: 'success', message: t('Sheet published successfully!') });
       setTimeout(() => {
-        navigate('/');
+        navigate('/community');
       }, 2000);
     } catch (error) {
       setAlert({ open: true, type: 'error', message: t('Failed to publish sheet.',error)});
@@ -74,15 +73,6 @@ const Toolsbar = (prop) => {
         >
           <img src={pechaIcon} style={{width: "20px", height: "20px" }} alt="source" />
         </button>
-      </div>
-    );
-  };
-
-  const renderHeadingButtons = () => {
-    return (
-      <div className="toolbar-group">
-        <BlockButton format="heading-one" className="toolbar-button"> <LuHeading1 /> </BlockButton>
-        <BlockButton format="heading-two" className="toolbar-button"> <LuHeading2 /> </BlockButton>
       </div>
     );
   };

@@ -25,6 +25,7 @@
   color: #666;
   font-weight: bold;
   font-size: 14px;
+  margin-right: 10px;
 }
 
 .sheet-community {
@@ -37,6 +38,28 @@
     flex: none;
     width: 100%;
     padding: 15px;
+  }
+
+  .community-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    gap: 16px;
+
+    .community-dropdown {
+      background-color: #fff;
+      color: #0b0b0b ;
+      border: 1px solid #C39F48 ;
+      box-shadow: none ;
+      border-radius: 4px ;
+      padding: 8px 16px ;
+      font-size: 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
   }
 }
 
