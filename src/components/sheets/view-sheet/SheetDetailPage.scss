@@ -136,6 +136,15 @@
             .text-content {
               margin: 0;
             }
+            blockquote {
+              background-color: #f5f5f5;
+              border-left: 4px solid #ccc;
+              padding: 10px 15px;
+              margin: 10px 0;
+              font-style: italic;
+              color: #555;
+              text-align: left;
+            }
           }
     
           &.segment-image {
