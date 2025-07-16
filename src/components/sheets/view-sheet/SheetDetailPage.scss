@@ -135,6 +135,10 @@
           &.segment-text {
             .text-content {
               margin: 0;
+              width: 100%;
+            }
+            ol, ul {
+              width: fit-content;
             }
             blockquote {
               background-color: #f5f5f5;
