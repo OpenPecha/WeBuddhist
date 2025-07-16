@@ -153,6 +153,21 @@ export function convertSegmentsToSlate(segments) {
     const { type, content } = segment;
     switch (type) {
       case "content": {
+        if (/<blockquote[\s>]/i.test(content)) {
+          let quoteText = content;
+          const match = content.match(
+            /<blockquote[^>]*>([\s\S]*?)<\/blockquote>/i
+          );
+          if (match) {
+            quoteText = match[1];
+          }
+          quoteText = quoteText.replace(/<br\s*\/?>/gi, "\n");
+          return {
+            type: "block-quote",
+            align: "left",
+            children: [{ text: quoteText }],
+          };
+        }
         if (parser && /<\/?[a-z][\s\S]*>/i.test(content)) {
           const doc = parser.parseFromString(
             `<body>${content}</body>`,
