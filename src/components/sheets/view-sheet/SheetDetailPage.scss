@@ -58,6 +58,20 @@
               opacity: 1;
             }
           }
+          .visibility-button {
+            padding: 6px 10px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            &.public{
+              background-color: #0aa01c;
+            }
+            &.private{
+              background-color: #6c757d;
+            }
+          }
           .view-toolbar-item-like {
             display: flex;
             justify-content: center;

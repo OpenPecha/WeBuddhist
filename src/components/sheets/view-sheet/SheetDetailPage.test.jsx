@@ -698,10 +698,13 @@ describe("SheetDetailPage Component", () => {
   test("handleDeleteSheet error handling", () => {
   const mockMutate = vi.fn();
   const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-  let onErrorCallback;
+  let deleteOnErrorCallback;
   
   vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
-    onErrorCallback = config.onError;
+    // Check if this is the delete mutation by examining the mutationFn
+    if (config.mutationFn && config.mutationFn.toString().includes('deleteSheet')) {
+      deleteOnErrorCallback = config.onError;
+    }
     return {
       mutate: mockMutate,
       isLoading: false,
@@ -716,7 +719,7 @@ describe("SheetDetailPage Component", () => {
   fireEvent.click(screen.getByTestId("confirm-delete"));
 
   const testError = new Error("Delete failed");
-  onErrorCallback(testError);
+  deleteOnErrorCallback(testError);
 
   expect(consoleSpy).toHaveBeenCalledWith("Error deleting sheet:", testError);
   
