@@ -153,7 +153,89 @@ export function convertSegmentsToSlate(segments) {
     const { type, content } = segment;
     switch (type) {
       case "content": {
-        if (parser && /<\/?[a-z][\s\S]*>/i.test(content)) {
+        if (/<blockquote[\s>]/i.test(content)) {
+          let quoteHtml = content;
+          const match = content.match(
+            /<blockquote[^>]*>([\s\S]*?)<\/blockquote>/i
+          );
+          if (match) {
+            quoteHtml = match[1];
+          }
+          quoteHtml = quoteHtml.replace(/<br\s*\/?>/gi, "\n");
+          let children = [{ text: quoteHtml }];
+          if (parser) {
+            const doc = parser.parseFromString(
+              `<body>${quoteHtml}</body>`,
+              "text/html"
+            );
+            const body = doc.body;
+            children = [];
+            body.childNodes.forEach((node) => {
+              const slateNodes = htmlToSlate(node);
+              if (Array.isArray(slateNodes)) {
+                children.push(...slateNodes);
+              } else if (slateNodes) {
+                children.push(slateNodes);
+              }
+            });
+            if (
+              !children.length ||
+              !children.some((n) => n.text !== undefined)
+            ) {
+              children = [{ text: "" }];
+            }
+          }
+          return {
+            type: "block-quote",
+            align: "left",
+            children,
+          };
+        } else if (/<ol[\s>]/i.test(content) || /<ul[\s>]/i.test(content)) {
+          let listHtml = content;
+          if (parser) {
+            const doc = parser.parseFromString(
+              `<body>${listHtml}</body>`,
+              "text/html"
+            );
+            const body = doc.body;
+            const listNode = body.querySelector("ol, ul");
+            if (listNode) {
+              const listType =
+                listNode.nodeName.toLowerCase() === "ol"
+                  ? "ordered-list"
+                  : "unordered-list";
+              const children = [];
+              listNode.childNodes.forEach((li) => {
+                if (li.nodeName === "LI") {
+                  let liHtml = li.innerHTML.replace(/<br\s*\/?>/gi, "\n");
+                  let liChildren = [];
+                  const liDoc = parser.parseFromString(
+                    `<body>${liHtml}</body>`,
+                    "text/html"
+                  );
+                  liDoc.body.childNodes.forEach((node) => {
+                    const slateNodes = htmlToSlate(node);
+                    if (Array.isArray(slateNodes)) {
+                      liChildren.push(...slateNodes);
+                    } else if (slateNodes) {
+                      liChildren.push(slateNodes);
+                    }
+                  });
+                  if (!liChildren.length) liChildren = [{ text: "" }];
+                  children.push({
+                    type: "list-item",
+                    children: liChildren,
+                  });
+                }
+              });
+              return {
+                type: listType,
+                align: "left",
+                children,
+              };
+            }
+          }
+        } else if (parser && /<\/?[a-z][\s\S]*>/i.test(content)) {
           const doc = parser.parseFromString(
             `<body>${content}</body>`,
             "text/html"
