@@ -18,7 +18,7 @@ vi.mock("./versions/Versions.jsx", () => ({
 }));
 
 vi.mock("./table-of-contents/TableOfContents.jsx", () => ({
-  default: () => <div data-testid="table-of-content-component">Table of Contents Component</div>
+  default: ({ error, loading, t, ...rest }) => <div data-testid="table-of-content-component">Table of Contents Component</div>
 }));
 
 vi.mock("../../utils/helperFunctions.jsx", () => ({

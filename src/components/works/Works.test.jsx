@@ -135,9 +135,7 @@ describe("Works Component", () => {
     }));
 
     setup();
-    expect(
-      screen.getByText("Error loading content: Failed to fetch text category")
-    ).toBeInTheDocument();
+    expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
   });
 
   test("displays no content message when data is null", () => {
@@ -258,7 +256,7 @@ describe("Works Component", () => {
 
     setup();
 
-    expect(screen.getByText(`Error loading content: ${errorMessage}`)).toBeInTheDocument();
+    expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
 
     expect(consoleSpy).toHaveBeenCalledWith(
       "API call error:",

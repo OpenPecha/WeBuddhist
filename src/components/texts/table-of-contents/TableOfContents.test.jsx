@@ -26,7 +26,8 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
       default:
         return "en-text";
     }
-  }
+  },
+  getEarlyReturn: () => ""
 }));
 
 vi.mock("../../../utils/constants.js", () => ({
@@ -111,7 +112,10 @@ const setup = ({
                  setPagination = vi.fn(),
                  textId = "123",
                  currentPage = 1,
-                 limit = 10
+                 limit = 10,
+                 error = null,
+                 loading = false,
+                 t = (x) => x
                } = {}) => {
   return render(
     <Router>
@@ -122,6 +126,9 @@ const setup = ({
             pagination={{ currentPage, limit }}
             setPagination={setPagination}
             tableOfContents={tableOfContents}
+            error={error}
+            loading={loading}
+            t={t}
           />
         </TolgeeProvider>
       </QueryClientProvider>
