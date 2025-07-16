@@ -2,20 +2,22 @@
 import React, {useState} from 'react'
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import {FiChevronDown, FiChevronRight} from "react-icons/fi";
-import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
+import {getEarlyReturn, getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link} from "react-router-dom";
 import "./TableOfContents.scss"
 import PropTypes from "prop-types";
 
-const TableOfContents = ({textId, pagination, setPagination, tableOfContents }) => {
+const TableOfContents = ({textId, pagination, setPagination, tableOfContents, error, loading, t }) => {
   const [expandedSections, setExpandedSections] = useState({});
 
   // -------------------------------------------- helpers ----------------------------------------------
+  const earlyReturn = getEarlyReturn({loading: loading,error: error, t});
+  if (earlyReturn) return earlyReturn;
 
   const contents = tableOfContents?.contents;
-  const totalSections = contents.reduce((total, content) => {
-    return total + (content?.sections?.length || 0);
-  }, 0);
+  const totalSections = Array.isArray(contents)
+    ? contents.reduce((total, content) => total + (content?.sections?.length || 0), 0)
+    : 0;
   const totalPages = Math.ceil(totalSections / pagination.limit);
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({

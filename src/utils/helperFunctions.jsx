@@ -6,7 +6,7 @@ export const getEarlyReturn = ({ isLoading, error, t }) => {
   if (error) {
     return (
       <div className="notfound">
-        <div className="no-content">Error loading content: {error.message}</div>
+        <div className="no-content">{t("text_category.message.notfound")}</div>
       </div>
     );
   }

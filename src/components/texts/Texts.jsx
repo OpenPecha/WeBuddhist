@@ -1,7 +1,7 @@
 
 import React, {useMemo, useState} from 'react'
 import {useQuery} from "react-query";
-import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 import "./Texts.scss"
 import {LANGUAGE} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
@@ -36,14 +36,12 @@ const Texts = () => {
   const {data: tableOfContents, isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError} = useQuery(
     ["table-of-contents", skip],
     () => fetchTableOfContents(id, skip, pagination.limit),
-    {refetchOnWindowFocus: false, enabled: !!id}
+    {refetchOnWindowFocus: false, enabled: !!id, retry: false}
   );
 
+
+ 
   // -------------------------------------------- helpers ----------------------------------------------
-
-  const earlyReturn = getEarlyReturn({isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError, t});
-  if (earlyReturn) return earlyReturn;
-
   const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
 
 
@@ -99,7 +97,7 @@ const Texts = () => {
       <div className="tab-content">
         {activeTab === 'contents' && (
           <div className="tab-panel">
-            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={id}/>
+            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t}/>
           </div>
         )}
         {activeTab === 'versions' && (
