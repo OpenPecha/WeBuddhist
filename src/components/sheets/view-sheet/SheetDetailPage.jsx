@@ -168,7 +168,7 @@ const SheetDetailPage = () => {
           </div>
         </div>
         <div className="view-toolbar-item">
-          <FiPrinter/>
+          <FiPrinter onClick={() => window.print()}/>
           <FiShare/>
           {sheetData.publisher.email === userInfo?.email && (
             <>
