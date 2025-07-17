@@ -4,6 +4,7 @@ import UseChapterHook from "./helpers/UseChapterHook";
 import ChapterHeader from "../utils/header/ChapterHeader";
 import { VIEW_MODES } from "../utils/header/view-selector/ViewSelector";
 import { useQuery } from "react-query";
+import { PanelProvider } from '../../../context/PanelContext.jsx';
 
 const fetchVersionsDetails = async (text_id, contentId,direction,size) => {
     const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
@@ -32,7 +33,11 @@ const VersionsChapter = ({textId,contentId}) => {
   }
   const renderChapter = () => {
     const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language}
-    return <UseChapterHook {...propsForUseChapterHookComponent} />
+    return (
+      <PanelProvider>
+        <UseChapterHook {...propsForUseChapterHookComponent} />
+      </PanelProvider>
+    );
   }
     return (
         <div className="versions-chapter-container">

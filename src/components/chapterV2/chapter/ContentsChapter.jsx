@@ -4,6 +4,7 @@ import {VIEW_MODES} from "../utils/header/view-selector/ViewSelector.jsx";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import {useQuery} from "react-query";
+import { PanelProvider } from '../../../context/PanelContext.jsx';
 
 // section id <-> contentId
 const fetchContentDetails = async (text_id, contentId,segmentId,direction,size) => {
@@ -35,7 +36,11 @@ const ContentsChapter = ({textId,contentId,segmentId}) => {
   }
   const renderChapter = () => {
     const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language}
-    return <UseChapterHook {...propsForUseChapterHookComponent} />
+    return (
+      <PanelProvider>
+        <UseChapterHook {...propsForUseChapterHookComponent} />
+      </PanelProvider>
+    );
   }
   return (
     <div className="contents-chapter-container">
