@@ -4,13 +4,12 @@ import {VIEW_MODES} from "../utils/header/view-selector/ViewSelector.jsx";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import {useQuery} from "react-query";
-import {useSearchParams} from "react-router-dom";
 
 // section id <-> contentId
 const fetchContentDetails = async (text_id, contentId,segmentId,direction,size) => {
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
     content_id: contentId,
-    ...(segmentId && {segment_id: segmentId}),
+    segment_id: segmentId,
     direction,
     size,
   });
@@ -19,7 +18,6 @@ const fetchContentDetails = async (text_id, contentId,segmentId,direction,size) 
 const ContentsChapter = ({textId,contentId,segmentId}) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE)
   const [showTableOfContents, setShowTableOfContents] = useState(false)
-  const [searchParams] = useSearchParams();
   const direction="next"
   const size=20
   const {data: contentsData, isLoading: contentsDataLoading} = useQuery(

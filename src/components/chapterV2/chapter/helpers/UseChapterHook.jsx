@@ -23,7 +23,7 @@ const UseChapterHook = (props) => {
           content?.sections[0]?.segments.map((segment)=>(
               <div key={segment.segment_id} className="segment-container">
                 <p>{segment.segment_number}</p>
-                <div className={`segment-content ${getLanguageClass(language)}`} dangerouslySetInnerHTML={{__html: segment.content}} />
+                <p className={`segment-content ${getLanguageClass(language)}`} dangerouslySetInnerHTML={{__html: segment.content}} />
               </div>
           ))
         }

@@ -1,5 +1,6 @@
 import { useSearchParams } from "react-router-dom"
 import ContentsChapter from "./chapter/ContentsChapter"
+import VersionsChapter from "./chapter/VersionsChapter"
 
 const Chapters = () => {
 const [searchParams]=useSearchParams()
@@ -9,6 +10,9 @@ const segmentId=searchParams.get('segment_id')
 
 
 return (
+  segmentId ?
+  <VersionsChapter textId={textId} contentId={contentId} />
+  :
   <ContentsChapter textId={textId} contentId={contentId} segmentId={segmentId} />
 )
 
