@@ -9,7 +9,7 @@ import {getLanguageClass} from "../../../../utils/helperFunctions.jsx";
 
 const ChapterHeader = (props) => {
 
-  const {viewMode, setViewMode, showTableOfContents, setShowTableOfContents} = props
+  const {viewMode, setViewMode, textdetail, showTableOfContents, setShowTableOfContents} = props
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [showViewSelector, setShowViewSelector] = useState(false)
   // ----------------------- renderers --------------------------
@@ -26,9 +26,8 @@ const ChapterHeader = (props) => {
   }
 
   const renderChapterTitle = () => {
-    return <div className={`title-container ${getLanguageClass(props.language)}`}>
-      {/*{props.title}*/}
-      SOME RANDOM TITLE
+    return <div className={`title-container ${getLanguageClass(textdetail.language)}`}>
+      {textdetail.title}
     </div>
   }
 

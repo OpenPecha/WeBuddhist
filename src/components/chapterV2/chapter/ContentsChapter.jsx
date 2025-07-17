@@ -7,32 +7,33 @@ import {useQuery} from "react-query";
 import {useSearchParams} from "react-router-dom";
 
 // section id <-> contentId
-const fetchContentDetails = async (textId, skip, limit, sectionId) => {
-  const {data} = await axiosInstance.post(`/api/v1/texts/${textId}/details`, {
-    content_id: sectionId,
-    limit,
-    skip
+const fetchContentDetails = async (text_id, contentId,segmentId,direction,size) => {
+  const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
+    content_id: contentId,
+    segment_id: segmentId,
+    direction,
+    size,
   });
   return data;
 }
-const ContentsChapter = () => {
+const ContentsChapter = ({textId,contentId,segmentId}) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE)
   const [showTableOfContents, setShowTableOfContents] = useState(false)
   const [searchParams] = useSearchParams();
-  const textId = searchParams.get('text_id');
-  const skip = 0 // NOTE : should be removed
-  const sectionId = "123123123123"  // NOTE : should be removed
+  const direction="next"
+  const size=20
   const {data: contentsData, isLoading: contentsDataLoading} = useQuery(
-    ["content", textId, sectionId, skip],
-    () => fetchContentDetails(textId, skip, 1, sectionId),
+    ["content", textId, contentId, segmentId, direction, size],
+    () => fetchContentDetails(textId, contentId, segmentId, direction, size),
     {
       refetchOnWindowFocus: false,
       enabled: true
     }
   )
+  console.log(contentsData)
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
-    const propsForChapterHeader = {viewMode, setViewMode, showTableOfContents, setShowTableOfContents}
+    const propsForChapterHeader = {viewMode, setViewMode, textdetail:contentsData.text_detail, showTableOfContents, setShowTableOfContents}
     return <ChapterHeader {...propsForChapterHeader}/>
   }
   const renderChapter = () => {

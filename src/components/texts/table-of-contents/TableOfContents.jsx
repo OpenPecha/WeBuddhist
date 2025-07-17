@@ -32,14 +32,13 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
 
   // --------------------------------------------- renderers -------------------------------------------
 
-  const renderContentTree = (section, tocId, parentIndex, level = 0, isTopLevel = false) => {
+  const renderContentTree = (section, tocId, level = 0, isTopLevel = false) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
     const keyPrefix = isTopLevel ? `content-${tocId}-segment` : `section`;
-
     const renderContentTitle = () => {
       return <Link
-        to={`/chapter?text_id=${textId}&contentId=${tocId}&versionId=&contentIndex=${parentIndex}${!isTopLevel ? `&sectionId=${section.id}` : ''}`}
+        to={`/chapter?text_id=${textId}&content_id=${tocId}&segment_id=${section.segments[0].segment_id}`}
         className={`toc-title ${getLanguageClass(tableOfContents.text_detail.language)}`}>
         {section.title}
       </Link>
@@ -56,14 +55,14 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
     const renderRecursiveSubContents = () => {
       return isExpanded && hasChildren && (
         <div className="nested-content">
-          {section.sections.map((childSection, childIndex) =>
-            renderContentTree(childSection, tocId, isTopLevel ? childIndex : parentIndex,level + 1, false)
+          {section.sections.map((childSection) =>
+            renderContentTree(childSection, tocId,level + 1, false)
           )}
         </div>
       )
     }
     return (
-      <div key={`${keyPrefix}-${section.id}-${parentIndex}`} className="toc-list-container">
+      <div key={`${keyPrefix}-${section.id}`} className="toc-list-container">
         <button className="toc-header"
           // Prevent toggling if clicking the link
              onClick={(e) => e.target.tagName !== 'A' && toggleSection(section.id)}>
@@ -80,10 +79,10 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
       return <div className="no-content listtitle">No content found</div>;
     }
 
-    return contents.map((content, contentIndex) =>
+    return contents.map((content) =>
       content.sections &&
-      content.sections.map((segment, index) =>
-        renderContentTree(segment, content.id, index, 0, true)
+      content.sections.map((segment) =>
+        renderContentTree(segment, content.id,0, true)
       )
     );
   };
