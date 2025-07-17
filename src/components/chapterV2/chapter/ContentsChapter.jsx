@@ -36,7 +36,7 @@ const ContentsChapter = ({textId,contentId,segmentId}) => {
     return <ChapterHeader {...propsForChapterHeader}/>
   }
   const renderChapter = () => {
-    const propsForUseChapterHookComponent = {showTableOfContents}
+    const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language}
     return <UseChapterHook {...propsForUseChapterHookComponent} />
   }
   return (
