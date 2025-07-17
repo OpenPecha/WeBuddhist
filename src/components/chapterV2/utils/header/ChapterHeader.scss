@@ -4,10 +4,16 @@
   justify-content: space-between;
   margin: 1rem;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 1rem;
   gap: 2rem;
-
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  .bookmark-icon-container button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
   .title-container {
     margin: 0 auto;
     white-space: nowrap;

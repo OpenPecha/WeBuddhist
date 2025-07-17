@@ -10,7 +10,7 @@ import {useSearchParams} from "react-router-dom";
 const fetchContentDetails = async (text_id, contentId,segmentId,direction,size) => {
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
     content_id: contentId,
-    segment_id: segmentId,
+    ...(segmentId && {segment_id: segmentId}),
     direction,
     size,
   });
@@ -30,10 +30,9 @@ const ContentsChapter = ({textId,contentId,segmentId}) => {
       enabled: true
     }
   )
-  console.log(contentsData)
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
-    const propsForChapterHeader = {viewMode, setViewMode, textdetail:contentsData.text_detail, showTableOfContents, setShowTableOfContents}
+    const propsForChapterHeader = {viewMode, setViewMode, textdetail:contentsData?.text_detail, showTableOfContents, setShowTableOfContents}
     return <ChapterHeader {...propsForChapterHeader}/>
   }
   const renderChapter = () => {

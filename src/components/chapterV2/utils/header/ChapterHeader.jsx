@@ -26,8 +26,8 @@ const ChapterHeader = (props) => {
   }
 
   const renderChapterTitle = () => {
-    return <div className={`title-container ${getLanguageClass(textdetail.language)}`}>
-      {textdetail.title}
+    return <div className={`title-container ${getLanguageClass(textdetail?.language)}`}>
+      {textdetail?.title}
     </div>
   }
 
