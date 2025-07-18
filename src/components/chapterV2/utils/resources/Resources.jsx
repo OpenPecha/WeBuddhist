@@ -16,6 +16,8 @@ import {usePanelContext} from "../../../../context/PanelContext.jsx";
 import {MENU_ITEMS, LANGUAGE} from "../../../../utils/constants.js";
 import {mapLanguageCode} from "../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
+import IndividualTextSearch from "../../../search/individual-text-search/IndividualTextSearch.jsx";
+
 export const fetchSidePanelData = async (segmentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -36,7 +38,6 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
   const [expandedRootTexts, setExpandedRootTexts] = useState({});
   const [activeView, setActiveView] = useState("main");
   const [searchParams, setSearchParams] = useSearchParams();
-
 
   const {t} = useTranslate();
 
@@ -68,7 +69,9 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
       </div>
       <div className="panel-content p-3">
         <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
-        <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
+        <p onClick={() => setActiveView("search")} >
+          <BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}
+        </p>
 
         {sidePanelData?.segment_info?.translations > 0 && (
           <button type="button" onClick={() => setActiveView("translation")}>
@@ -133,6 +136,12 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
         return (
           <ShareView
             setIsShareView={setActiveView}
+          />
+        );
+      case "search":
+        return (
+          <IndividualTextSearch
+            onClose={() => setActiveView("main")}
           />
         );
       case "translation":
