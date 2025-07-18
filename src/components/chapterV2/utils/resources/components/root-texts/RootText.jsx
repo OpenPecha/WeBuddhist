@@ -3,7 +3,7 @@ import { IoAddCircleOutline, IoShareSocialSharp } from "react-icons/io5";
 import { GoLinkExternal } from "react-icons/go";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "./RootText.scss";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
@@ -14,10 +14,9 @@ export const fetchRootTextData = async (segment_id) => {
   return data;
 }
 
-const RootTextView = ({ segmentId, setIsRootTextView, addChapter }) => {
+const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
-  const [isExpanded, setIsExpanded] = useState(false);
   const {data: rootTextData} = useQuery(
     ["rootTexts", segmentId],
     () => fetchRootTextData(segmentId),
@@ -54,6 +53,12 @@ const RootTextView = ({ segmentId, setIsRootTextView, addChapter }) => {
     };
   }, [rootTextData]);
 
+  const toggleRootText = (rootTextId) => {
+    setExpandedRootTexts(prev => ({
+      ...prev,
+      [rootTextId]: !prev[rootTextId]
+    }));
+  };
 
   return (
     <div>
@@ -76,6 +81,7 @@ const RootTextView = ({ segmentId, setIsRootTextView, addChapter }) => {
             <div className="all-root-texts">
               {rootTextData.segment_root_mapping.map((rootText) => {
                 const rootTextId = rootText.text_id;
+                const isExpanded = expandedRootTexts[rootTextId];
                 return (
                   <div key={rootTextId} className="root-text-list-item">
                     <h3 className={`root-text-title ${getLanguageClass(rootText.language)}`}>
@@ -95,7 +101,7 @@ const RootTextView = ({ segmentId, setIsRootTextView, addChapter }) => {
                         <div className="see-more-container">
                           <button 
                             className="see-more-link" 
-                            onClick={() => setIsExpanded(!isExpanded)}
+                            onClick={() => toggleRootText(rootTextId)}
                           >
                             {isExpanded ? t('panel.showless') : t('panel.showmore')} 
                           </button>
@@ -143,6 +149,8 @@ const RootTextView = ({ segmentId, setIsRootTextView, addChapter }) => {
 export default RootTextView;
 RootTextView.propTypes = {
   segmentId: PropTypes.string.isRequired, 
+  expandedRootTexts: PropTypes.object.isRequired, 
+  setExpandedRootTexts: PropTypes.func.isRequired, 
   setIsRootTextView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
 } 

@@ -8,7 +8,7 @@ import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
-import { useState } from "react";
+
 export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/commentaries`, {
     params: {
@@ -18,10 +18,9 @@ export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
   });
   return data;
 }
-const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter }) => {
+const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries, addChapter }) => {
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext();
-  const [isExpanded, setIsExpanded] = useState(false);
   const {data: segmentCommentaries} = useQuery(
     ["relatedTexts", segmentId],
     () => fetchCommentaryData(segmentId),
@@ -29,7 +28,12 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter }) => {
       refetchOnWindowFocus: false,
     }
   );
-
+  const toggleCommentary = (textId) => {
+    setExpandedCommentaries(prev => ({
+      ...prev,
+      [textId]: !prev[textId]
+    }));
+  };
 
   return (
     <div>
@@ -53,6 +57,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter }) => {
               {segmentCommentaries.commentaries.map((commentary) => {
                 const textId = commentary.text_id;
                 const segmentId = commentary.segment_id;
+                const isExpanded = expandedCommentaries[textId];  
                 return (
                   <div key={textId} className="commentary-list-item">
                     <h3 className={`commentary-title ${getLanguageClass(commentary.language)}`}>
@@ -72,7 +77,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter }) => {
                         <div className="see-more-container">
                           <button 
                             className="see-more-link" 
-                            onClick={() => setIsExpanded(!isExpanded)}
+                            onClick={() => toggleCommentary(textId)}
                           >
                             {isExpanded ? t('panel.showless') : t('panel.showmore')} 
                           </button>
@@ -122,5 +127,7 @@ export default CommentaryView;
 CommentaryView.propTypes = {
   segmentId: PropTypes.string.isRequired, 
   setIsCommentaryView: PropTypes.func.isRequired, 
+  expandedCommentaries: PropTypes.object.isRequired, 
+  setExpandedCommentaries: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
 }

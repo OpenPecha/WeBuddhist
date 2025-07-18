@@ -7,7 +7,6 @@ import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
-import { useState } from "react";
 export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {
     params: {
@@ -21,12 +20,13 @@ export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
 
 const TranslationView = ({
   segmentId,
+  expandedTranslations, 
+  setExpandedTranslations, 
   setIsTranslationView, 
   addChapter,
 }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
-  const [isExpanded, setIsExpanded] = useState(false);    
 
   const {data: sidePanelTranslationsData} = useQuery(
     ["sidePanelTranslations",segmentId],
@@ -56,6 +56,8 @@ const TranslationView = ({
   }, {});
 
   const renderTranslationItem = (translation, language, index) => {
+    const translationKey = `${language}-${index}`;
+    const isExpanded = expandedTranslations[translationKey] || false;
     const hasContent = !!translation.content?.length;
     return (
       <div key={index} className="translation-item">
@@ -67,8 +69,10 @@ const TranslationView = ({
         {hasContent && (
           <button
             className="expand-button navbaritems"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
+            onClick={() => setExpandedTranslations(prev => ({
+              ...prev,
+              [translationKey]: !isExpanded,
+            }))}          >
             {isExpanded ? t('panel.showless') : t('panel.showmore')}
           </button>
         )}
@@ -94,10 +98,8 @@ const TranslationView = ({
                 className="linkicons"
                 onClick={() => {
                   addChapter({ 
-                    contentId: "", 
-                    versionId: "", 
                     textId: translation.text_id, 
-                    segmentId: translation.segment_id,
+                    segmentId: translation.segment_id, //fixed
                   });
                   closeResourcesPanel();
                 }}
@@ -109,7 +111,7 @@ const TranslationView = ({
             <button
               className="selectss navbaritems"
             >
-              {translation.text_id === "dummy"
+              {translation.text_id === "dummy" //send textid of translation as version rest, pick from url
                 ? t("text.translation.current_selected")
                 : t("common.select")}
             </button>
@@ -157,6 +159,8 @@ const TranslationView = ({
 export default TranslationView;
 TranslationView.propTypes = {
   segmentId: PropTypes.string.isRequired, 
+  expandedTranslations: PropTypes.object.isRequired, 
+  setExpandedTranslations: PropTypes.func.isRequired, 
   setIsTranslationView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
 }
