@@ -75,7 +75,9 @@ const UseChapterHook = (props) => {
   return (
     <div className="use-chapter-hook-container">
       {renderTableOfContents()}
-      {renderContents()}
+      <div className="main-content">
+        {renderContents()}
+      </div>
       {renderResources()}
     </div>
   )

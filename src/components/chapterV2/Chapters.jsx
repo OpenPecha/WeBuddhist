@@ -11,9 +11,10 @@ const segmentId=searchParams.get('segment_id')
 
 return (
   segmentId ?
-  <VersionsChapter textId={textId} contentId={contentId} />
-  :
   <ContentsChapter textId={textId} contentId={contentId} segmentId={segmentId} />
+  :
+  <VersionsChapter textId={textId} contentId={contentId} />
+
 )
 
 }

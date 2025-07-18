@@ -2,13 +2,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 1rem;
-  position: relative;
+  position: sticky;
+  z-index: 100;
+  top: 56px;
   padding: 1rem;
   gap: 2rem;
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e0e0e0;
+  background: rgba(255, 255, 255);
   .bookmark-icon-container button {
     background: none;
     border: none;
@@ -17,5 +17,11 @@
   .title-container {
     margin: 0 auto;
     white-space: nowrap;
+  }
+}
+
+@media (max-width: 1000px) {
+  .chapter-header-container {
+    top: 110px;
   }
 }

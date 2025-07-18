@@ -1,4 +1,7 @@
 .right-panel {
+  position: fixed;
+  top: 120px;
+  right: 0;
   .headerthing{
     display: flex;
     justify-content: space-between;
@@ -173,7 +176,7 @@
   
   .right-panel {
     position: fixed;
-    top: 100px;
+    top: 160px;
     right: -400px;
     height: calc(100vh - 100px);
     z-index: 10;
