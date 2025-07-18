@@ -1,0 +1,26 @@
+.chapters-container {
+    display: flex;
+    height: calc(100vh - 90px);
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    .chapter-container {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-right: 1px solid #e0e0e0;
+        
+        &:last-child {
+          border-right: none;
+        }
+      }
+      .contents-chapter-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+      }
+  }
+  
+ 
+  

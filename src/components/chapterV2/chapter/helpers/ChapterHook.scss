@@ -1,50 +1,58 @@
 .use-chapter-hook-container {
-  .main-content{
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  width: 90%;
-  margin: 0 auto;
-  min-height: 80vh;
-  .contents-container {
-    flex: 1 1 0;
-    max-width: 100%;
-    h2{
-      margin-bottom: 10px;
-    }
-    button{
-      background-color: transparent;
-      border: none;   
-      text-align: start;
-    }
-    .segment-container{
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  
+  .main-content {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 90%;
+    margin: 0 auto;
+    min-height: 80vh;
+    overflow-y: auto;
+    flex: 1;
+    
+    .contents-container {
+      flex: 1 1 0;
+      max-width: 100%;
+      h2{
+        margin-bottom: 10px;
+      }
+      button{
+        background-color: transparent;
+        border: none;   
         text-align: start;
-        width: 50%;
-        margin: 0 auto;
-        margin-top: 10px;
-        .footnote-marker {
-          cursor: pointer;
-          color: #007bff;
-          font-weight: bold;
-          z-index: 2;
-          padding: 0 2px;
-        }
-        .footnote {
-          display: none;
-          color: #484848;
-          margin: 4px;
-          font-size: 0.9rem;
-          background-color: #f7f7f7;
-          padding: 2px 5px;
-          border-radius: 3px;
-          &.active {
-            display: inline;
+      }
+      .segment-container{
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          text-align: start;
+          width: 50%;
+          margin: 0 auto;
+          margin-top: 10px;
+          .footnote-marker {
+            cursor: pointer;
+            color: #007bff;
+            font-weight: bold;
+            z-index: 2;
+            padding: 0 2px;
+          }
+          .footnote {
+            display: none;
+            color: #484848;
+            margin: 4px;
+            font-size: 0.9rem;
+            background-color: #f7f7f7;
+            padding: 2px 5px;
+            border-radius: 3px;
+            &.active {
+              display: inline;
+            }
           }
         }
       }
     }
-  }
 }

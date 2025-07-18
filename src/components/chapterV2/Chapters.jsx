@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import ContentsChapter from "./chapter/ContentsChapter";
+import "./Chapters.scss";
 
 const Chapters = () => {
   const [searchParams] = useSearchParams();
@@ -10,21 +11,18 @@ const Chapters = () => {
     if (savedChapters) {
       const parsedChapters = JSON.parse(savedChapters);
       return parsedChapters.map(chapter => ({
-        ...chapter,
-        uniqueId: chapter.uniqueId || (chapter.segmentId ? chapter.segmentId : chapter.contentId)
+        ...chapter
       }));
     }
-
     const textId = searchParams.get("text_id");
     const contentId = searchParams.get("content_id");
     const segmentId = searchParams.get("segment_id");
 
-    if (textId || contentId) {
+    if (textId) {
       return [{
-        textId: textId || "",
-        contentId: contentId || "",
-        segmentId: segmentId || "",
-        uniqueId: segmentId || contentId
+        textId: textId,
+        contentId: contentId ,
+        segmentId: segmentId 
       }];
     }
     return [];
@@ -41,11 +39,10 @@ const Chapters = () => {
     setChapters(prev => {
       if (prev.length >= 3) return prev;
       const newChapter = {
-        ...chapterInformation,
-        uniqueId: chapterInformation.segmentId || chapterInformation.contentId
+        ...chapterInformation
       };
 
-      const currentIndex = prev.findIndex(chap => chap.uniqueId === currentChapter.uniqueId);
+      const currentIndex = prev.findIndex(chap => chap.segmentId === currentChapter.segmentId);
       if (currentIndex === -1) {
         return [...prev, newChapter];
       }
@@ -56,14 +53,14 @@ const Chapters = () => {
   };
 
   const removeChapter = (chapterToRemove) => {
-    setChapters(prev => prev.filter(chap => chap.uniqueId !== chapterToRemove.uniqueId));
+    setChapters(prev => prev.filter(chap => chap.segmentId !== chapterToRemove.segmentId));
   };
 
   return (
     <div className="chapters-container">
-      {chapters.map((chapter) => (
+      {chapters.map((chapter, index) => (
         <div
-          key={chapter.uniqueId}
+          key={index}
           className="chapter-container"
           style={{ width: `${100 / chapters.length}%` }}
         >

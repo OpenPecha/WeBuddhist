@@ -4,7 +4,7 @@
   justify-content: space-between;
   position: sticky;
   z-index: 100;
-  top: 56px;
+  top: 0px;
   padding: 1rem;
   gap: 2rem;
   border-bottom: 1px solid #e0e0e0;
@@ -20,8 +20,3 @@
   }
 }
 
-@media (max-width: 1000px) {
-  .chapter-header-container {
-    top: 110px;
-  }
-}

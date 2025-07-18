@@ -5,7 +5,8 @@ import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import {useQuery} from "react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
-
+import { getEarlyReturn } from "../../../utils/helperFunctions.jsx";
+import { useTranslate } from "@tolgee/react";
 // section id <-> contentId
 const fetchContentDetails = async (text_id, contentId,segmentId,direction,size) => {
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
@@ -21,14 +22,20 @@ const ContentsChapter = ({textId,contentId,segmentId, addChapter, removeChapter,
   const [showTableOfContents, setShowTableOfContents] = useState(false)
   const direction="next"
   const size=20
-  const {data: contentsData, isLoading: contentsDataLoading} = useQuery(
+  const {t} = useTranslate();
+  const {data: contentsData, isLoading: contentsDataLoading, error} = useQuery(
     ["content", textId, contentId, segmentId, direction, size],
     () => fetchContentDetails(textId, contentId, segmentId, direction, size),
     {
       refetchOnWindowFocus: false,
-      enabled: true
+      enabled: !!textId
     }
   )
+
+  // ----------------------------------- helpers -----------------------------------------
+  const earlyReturn = getEarlyReturn({ isLoading: contentsDataLoading, error: error, t });
+  if (earlyReturn) return earlyReturn;
+  
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
     const propsForChapterHeader = {viewMode, setViewMode, textdetail:contentsData?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters}
