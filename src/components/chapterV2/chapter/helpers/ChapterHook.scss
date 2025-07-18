@@ -9,6 +9,9 @@
   .contents-container {
     flex: 1 1 0;
     max-width: 100%;
+    h2{
+      margin-bottom: 10px;
+    }
     button{
       background-color: transparent;
       border: none;   
@@ -20,9 +23,7 @@
         text-align: center;
         width: 50%;
         margin: 0 auto;
-        padding: 1rem;
-        margin-bottom: 1rem;
-
+        margin-top: 10px;
         .footnote-marker {
           cursor: pointer;
           color: #007bff;

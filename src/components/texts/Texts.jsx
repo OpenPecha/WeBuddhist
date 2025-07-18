@@ -69,7 +69,7 @@ const Texts = () => {
 
   const renderContinueReadingButton = () => {
     return <Link className="navbaritems continue-reading-button"
-                 to={`/chapter?text_id=${id}&contentId=${tableOfContents?.contents[0]?.id}&versionId=&contentIndex=${0}`}>
+                 to={`/chapter?text_id=${tableOfContents?.text_detail?.id}&contentId=${tableOfContents?.contents[0]?.id}&versionId=&contentIndex=${0}`}>
       {t("text.button.continue_reading")}
     </Link>
 
@@ -97,7 +97,7 @@ const Texts = () => {
       <div className="tab-content">
         {activeTab === 'contents' && (
           <div className="tab-panel">
-            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t}/>
+            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={tableOfContents?.text_detail?.id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t}/>
           </div>
         )}
         {activeTab === 'versions' && (

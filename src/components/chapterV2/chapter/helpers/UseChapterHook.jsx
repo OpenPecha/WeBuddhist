@@ -48,7 +48,9 @@ const UseChapterHook = (props) => {
 
   const renderContents = () => {
     return (
-      <div className="contents-container" ref={contentsContainerRef}>
+      <div className="contents-container">
+     <h2>{content?.sections[0]?.title}</h2>
+      <div  ref={contentsContainerRef}>
         {
           content?.sections[0]?.segments.map((segment) => (
             <button
@@ -61,6 +63,7 @@ const UseChapterHook = (props) => {
             </button>
           ))
         }
+      </div>
       </div>
     )
   }
