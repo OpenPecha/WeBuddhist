@@ -10,7 +10,7 @@ import Resources from "../../utils/resources/Resources.jsx";
 */
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language } = props
+  const { showTableOfContents, content, language, addChapter, currentChapter } = props
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -46,31 +46,48 @@ const UseChapterHook = (props) => {
     };
   }, []);
 
-  const renderContents = () => {
+  const renderSectionRecursive = (section, isTopLevel = false) => {
+    if (!section) return null;
     return (
-      <div className="contents-container">
-     <h2>{content?.sections[0]?.title}</h2>
-      <div  ref={contentsContainerRef}>
-        {
-          content?.sections[0]?.segments.map((segment) => (
+      <div className="contents-container" key={section.title || 'root'}>
+        {section.title && (<h2>{section.title}</h2> )}
+        
+        <div ref={isTopLevel ? contentsContainerRef : null}>
+          {section.segments?.map((segment) => (
             <button
               key={segment.segment_id}
               className="segment-container"
-              onClick={() => handleSegmentClick(segment.segment_id)}>
-              <p>{segment.segment_number}</p>
-              <p className={` ${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
-              <div/>
+              onClick={() => handleSegmentClick(segment.segment_id)}
+            >
+              {isTopLevel && <p>{segment.segment_number}</p>}
+              <p 
+                className={`${getLanguageClass(language)}`} 
+                dangerouslySetInnerHTML={{ __html: segment.content }} 
+              />
+              {isTopLevel && <div/>}
             </button>
-          ))
-        }
+          ))}
+          
+          {section.sections?.map((nestedSection) => 
+            renderSectionRecursive(nestedSection, false)
+          )}
+        </div>
       </div>
-      </div>
-    )
-  }
+    );
+  };
+
+  const renderContents = () => {
+    if (!content?.sections?.[0]) return null;
+    return (
+      <>
+        {renderSectionRecursive(content.sections[0], true)}
+      </>
+    );
+  };
 
   const renderResources = () => {
     if (isResourcesPanelOpen && selectedSegmentId) {
-      return <Resources segmentId={selectedSegmentId} />
+      return <Resources segmentId={selectedSegmentId} addChapter={addChapter} currentChapter={currentChapter} />
     }
     return null;
   }

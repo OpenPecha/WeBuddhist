@@ -15,12 +15,13 @@
     button{
       background-color: transparent;
       border: none;   
+      text-align: start;
     }
     .segment-container{
         display: flex;
         align-items: center;
         justify-content: space-between;
-        text-align: center;
+        text-align: start;
         width: 50%;
         margin: 0 auto;
         margin-top: 10px;

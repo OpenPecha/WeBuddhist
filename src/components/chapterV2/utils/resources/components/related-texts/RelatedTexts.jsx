@@ -18,7 +18,7 @@ export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
   });
   return data;
 }
-const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries, addChapter }) => {
+const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries, addChapter, currentChapter }) => {
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext();
   const {data: segmentCommentaries} = useQuery(
@@ -88,13 +88,11 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
                             <button className="commentary-button"
                                  onClick={() => {
                                    addChapter({
-                                     contentId: "", 
                                      textId: textId, 
                                      segmentId: segmentId,
-                                   });
+                                   }, currentChapter);
                                    closeResourcesPanel();
                                  }}>
-
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
                             </button>
@@ -130,4 +128,5 @@ CommentaryView.propTypes = {
   expandedCommentaries: PropTypes.object.isRequired, 
   setExpandedCommentaries: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
+  currentChapter: PropTypes.object
 }

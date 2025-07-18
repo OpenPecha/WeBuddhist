@@ -20,7 +20,7 @@ export const fetchSidePanelData = async (segmentId) => {
   return data;
 };
 
-const Resources = ({segmentId, addChapter, handleClose}) => {
+const Resources = ({segmentId, addChapter, handleClose, currentChapter}) => {
   const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
   const showPanel = isResourcesPanelOpen;
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
@@ -131,6 +131,7 @@ const Resources = ({segmentId, addChapter, handleClose}) => {
             expandedTranslations={expandedTranslations}
             setExpandedTranslations={setExpandedTranslations}
             addChapter={addChapter}
+            currentChapter={currentChapter}
           />
         );
       case "commentary":
@@ -141,6 +142,7 @@ const Resources = ({segmentId, addChapter, handleClose}) => {
             expandedCommentaries={expandedCommentaries}
             setExpandedCommentaries={setExpandedCommentaries}
             addChapter={addChapter}
+            currentChapter={currentChapter}
           />
         );
       case "root_text":
@@ -151,6 +153,7 @@ const Resources = ({segmentId, addChapter, handleClose}) => {
             expandedRootTexts={expandedRootTexts}
             setExpandedRootTexts={setExpandedRootTexts}
             addChapter={addChapter}
+            currentChapter={currentChapter}
           />
         );
       default:
@@ -172,5 +175,6 @@ export default Resources;
 Resources.propTypes = {
   segmentId: PropTypes.string.isRequired, 
   addChapter: PropTypes.func, 
-  handleClose: PropTypes.func
+  handleClose: PropTypes.func,
+  currentChapter: PropTypes.object
 }

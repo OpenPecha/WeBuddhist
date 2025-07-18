@@ -7,14 +7,14 @@ import { useQuery } from "react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
 
 const fetchVersionsDetails = async (text_id, contentId,direction,size) => {
-    const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
-      content_id: contentId,
-      direction,
-      size,
-    });
-    return data;
-  }
-const VersionsChapter = ({textId,contentId}) => {
+  const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
+    content_id: contentId,
+    direction,
+    size,
+  });
+  return data;
+}
+const VersionsChapter = ({textId,contentId, addChapter, removeChapter, currentChapter, totalChapters}) => {
     const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE)
     const [showTableOfContents, setShowTableOfContents] = useState(false)
     const direction="next"
@@ -28,11 +28,11 @@ const VersionsChapter = ({textId,contentId}) => {
       }
     )
      const renderChapterHeader = () => {
-    const propsForChapterHeader = {viewMode, setViewMode, textdetail:contentsData?.text_detail, showTableOfContents, setShowTableOfContents}
+    const propsForChapterHeader = {viewMode, setViewMode, textdetail:contentsData?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters}
     return <ChapterHeader {...propsForChapterHeader}/>
   }
   const renderChapter = () => {
-    const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language}
+    const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language, addChapter, currentChapter}
     return (
       <PanelProvider>
         <UseChapterHook {...propsForUseChapterHookComponent} />

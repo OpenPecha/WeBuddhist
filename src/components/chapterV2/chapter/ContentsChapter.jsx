@@ -9,14 +9,14 @@ import { PanelProvider } from '../../../context/PanelContext.jsx';
 // section id <-> contentId
 const fetchContentDetails = async (text_id, contentId,segmentId,direction,size) => {
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
-    content_id: contentId,
-    segment_id: segmentId,
+    ...(contentId && {content_id: contentId}),
+    ...(segmentId && {segment_id: segmentId}),
     direction,
     size,
   });
   return data;
 }
-const ContentsChapter = ({textId,contentId,segmentId}) => {
+const ContentsChapter = ({textId,contentId,segmentId, addChapter, removeChapter, currentChapter, totalChapters}) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE)
   const [showTableOfContents, setShowTableOfContents] = useState(false)
   const direction="next"
@@ -31,11 +31,11 @@ const ContentsChapter = ({textId,contentId,segmentId}) => {
   )
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
-    const propsForChapterHeader = {viewMode, setViewMode, textdetail:contentsData?.text_detail, showTableOfContents, setShowTableOfContents}
+    const propsForChapterHeader = {viewMode, setViewMode, textdetail:contentsData?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters}
     return <ChapterHeader {...propsForChapterHeader}/>
   }
   const renderChapter = () => {
-    const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language}
+    const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language, addChapter, currentChapter}
     return (
       <PanelProvider>
         <UseChapterHook {...propsForUseChapterHookComponent} />
