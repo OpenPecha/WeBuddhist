@@ -26,6 +26,8 @@ const TranslationView = ({
 }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
+  const [isExpanded, setIsExpanded] = useState(false);    
+
   const {data: sidePanelTranslationsData} = useQuery(
     ["sidePanelTranslations",segmentId],
     () => fetchTranslationsData(segmentId),
@@ -54,7 +56,6 @@ const TranslationView = ({
   }, {});
 
   const renderTranslationItem = (translation, language, index) => {
-    const [isExpanded, setIsExpanded] = useState(false);    
     const hasContent = !!translation.content?.length;
     return (
       <div key={index} className="translation-item">
