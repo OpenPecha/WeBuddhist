@@ -3,7 +3,7 @@ import { IoAddCircleOutline, IoShareSocialSharp } from "react-icons/io5";
 import { GoLinkExternal } from "react-icons/go";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./RootText.scss";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
@@ -14,9 +14,10 @@ export const fetchRootTextData = async (segment_id) => {
   return data;
 }
 
-const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter, sectionindex }) => {
+const RootTextView = ({ segmentId, setIsRootTextView, addChapter }) => {
   const { t } = useTranslate();
-const {closeResourcesPanel} = usePanelContext();
+  const {closeResourcesPanel} = usePanelContext();
+  const [isExpanded, setIsExpanded] = useState(false);
   const {data: rootTextData} = useQuery(
     ["rootTexts", segmentId],
     () => fetchRootTextData(segmentId),
@@ -53,12 +54,7 @@ const {closeResourcesPanel} = usePanelContext();
     };
   }, [rootTextData]);
 
-  const toggleRootText = (rootTextId) => {
-    setExpandedRootTexts(prev => ({
-      ...prev,
-      [rootTextId]: !prev[rootTextId]
-    }));
-  };
+
   return (
     <div>
       <div className="headerthing">
@@ -80,7 +76,6 @@ const {closeResourcesPanel} = usePanelContext();
             <div className="all-root-texts">
               {rootTextData.segment_root_mapping.map((rootText) => {
                 const rootTextId = rootText.text_id;
-                const isExpanded = expandedRootTexts[rootTextId];
                 return (
                   <div key={rootTextId} className="root-text-list-item">
                     <h3 className={`root-text-title ${getLanguageClass(rootText.language)}`}>
@@ -100,7 +95,7 @@ const {closeResourcesPanel} = usePanelContext();
                         <div className="see-more-container">
                           <button 
                             className="see-more-link" 
-                            onClick={() => toggleRootText(rootTextId)}
+                            onClick={() => setIsExpanded(!isExpanded)}
                           >
                             {isExpanded ? t('panel.showless') : t('panel.showmore')} 
                           </button>
@@ -112,10 +107,8 @@ const {closeResourcesPanel} = usePanelContext();
                                  onClick={() => {
                                   addChapter({
                                    contentId: "", 
-                                   versionId: "", 
                                    textId: rootText.text_id, 
                                    segmentId: rootText.segment_id,
-                                   contentIndex: sectionindex !== null ? sectionindex : 0
                                  })
                                  closeResourcesPanel();
                                  }}>
@@ -151,8 +144,5 @@ export default RootTextView;
 RootTextView.propTypes = {
   segmentId: PropTypes.string.isRequired, 
   setIsRootTextView: PropTypes.func.isRequired, 
-  expandedRootTexts: PropTypes.object.isRequired, 
-  setExpandedRootTexts: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
-  sectionindex: PropTypes.number
 } 

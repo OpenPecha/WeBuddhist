@@ -66,12 +66,14 @@ const Resources = ({segmentId, addChapter, handleClose}) => {
           <>
             <p className='textgreat'>{t("text.related_texts")}</p>
             <div className='related-texts-container'>
+              
               {sidePanelData?.segment_info?.related_text?.commentaries > 0 && (
                 <button className='related-text-item' onClick={() => setActiveView("commentary")}>
                   <BiBookOpen className="m-2"/>
                   {`${t("text.commentary")} (${sidePanelData?.segment_info?.related_text?.commentaries})`}
                 </button>
               )}
+              
               {sidePanelData?.segment_info?.related_text?.root_text > 0 && (
                 <button className='related-text-item' onClick={() => setActiveView("root_text")}>
                   <BiBookOpen className="m-2"/>
