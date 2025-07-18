@@ -1,4 +1,4 @@
-import React, {useState } from "react"
+import React, {useState, useEffect, useRef} from "react"
 import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.jsx";
 import "./ChapterHook.scss"
 import { getLanguageClass } from "../../../../utils/helperFunctions.jsx";
@@ -13,6 +13,7 @@ const UseChapterHook = (props) => {
   const { showTableOfContents, content, language } = props
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
+  const contentsContainerRef = useRef(null);
   // -------------------------- renderers --------------------------
   const renderTableOfContents = () => {
     return showTableOfContents && <TableOfContents />
@@ -23,20 +24,41 @@ const UseChapterHook = (props) => {
     openResourcesPanel();
   };
 
+  useEffect(() => {
+    const container = contentsContainerRef.current;
+    if (!container) return;
+    const handleDocumentClick = (event) => {
+      if (event.target.classList.contains('footnote-marker')) 
+        {
+        event.stopPropagation();
+        event.preventDefault();
+        const footnoteMarker = event.target;
+        const footnote = footnoteMarker.nextElementSibling;
+        if (footnote && footnote.classList.contains('footnote')) {
+          footnote.classList.toggle('active');
+        }
+        return false;
+      }
+    };
+    container.addEventListener('click', handleDocumentClick);
+    return () => {
+      container.removeEventListener('click', handleDocumentClick);
+    };
+  }, []);
+
   const renderContents = () => {
     return (
-      <div className="contents-container">
+      <div className="contents-container" ref={contentsContainerRef}>
         {
           content?.sections[0]?.segments.map((segment) => (
-            <div
+            <button
               key={segment.segment_id}
-              className="segment-containerf"
-              onClick={() => handleSegmentClick(segment.segment_id)}
-            >
+              className="segment-container"
+              onClick={() => handleSegmentClick(segment.segment_id)}>
               <p>{segment.segment_number}</p>
-              <p>{segment.segment_id}</p>
-              <p className={`segment-content ${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
-            </div>
+              <p className={` ${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
+              <div/>
+            </button>
           ))
         }
       </div>

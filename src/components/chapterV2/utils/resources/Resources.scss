@@ -1,4 +1,19 @@
 .right-panel {
+  .headerthing{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    .close-icon{
+      cursor: pointer;
+      color: #7d7d7d;
+      font-size: 1.5rem;
+      margin-right: 1rem;
+      &:hover{
+        color: #000;
+      }
+    }
+  }
   width: 0;
   background-color: #fff;
   border-left: 1px solid #e0e0e0;
