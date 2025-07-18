@@ -106,6 +106,19 @@ describe("SheetDetailPage Component", () => {
     },
   };
 
+  const mockSheetDataWithUserInfo = {
+    ...mockSheetData,
+    publisher: {
+      ...mockSheetData.publisher,
+      email: "testuser@example.com"
+    },
+    is_published: false
+  };
+  
+  const mockUserInfoData = {
+    email: "testuser@example.com"
+  }
+
   let extractSpotifyInfoSpy;
   let mockSetSearchParams;
 
@@ -352,7 +365,7 @@ describe("SheetDetailPage Component", () => {
   
   const toolbarItems = screen.getByRole("main").querySelectorAll('.view-toolbar-item');
   const trashButton = toolbarItems[1]; 
-  const trashIconElement = trashButton.querySelector('svg:last-child'); 
+  const trashIconElement = trashButton.querySelector('svg:nth-last-child(2)'); 
   
   fireEvent.click(trashIconElement);
   
@@ -376,7 +389,7 @@ describe("SheetDetailPage Component", () => {
   });
 
   const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const trashElement = toolbarContainer.querySelector('svg:last-child');
+  const trashElement = toolbarContainer.querySelector('svg:nth-last-child(2)');
   
   fireEvent.click(trashElement);
 
@@ -389,7 +402,7 @@ describe("SheetDetailPage Component", () => {
   expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
 
   const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const trashIcon = toolbarContainer.querySelector('svg:last-child');
+  const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
   fireEvent.click(trashIcon);
 
   expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
@@ -406,7 +419,7 @@ describe("SheetDetailPage Component", () => {
   expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
   
   const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const trashIcon = toolbarContainer.querySelector('svg:last-child');
+  const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
   expect(trashIcon).toBeInTheDocument();
   
   expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
@@ -416,7 +429,7 @@ describe("SheetDetailPage Component", () => {
   setup();
   
   const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const trashIcon = toolbarContainer.querySelector('svg:last-child');
+  const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
 
   fireEvent.click(trashIcon);
   expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
@@ -435,7 +448,7 @@ describe("SheetDetailPage Component", () => {
   setup();
   
   const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const allIcons = toolbarContainer.querySelectorAll('svg');
+  const allIcons = toolbarContainer.querySelectorAll('svg:nth-last-child(2)');
 
   for (let i = 0; i < allIcons.length - 1; i++) {
     fireEvent.click(allIcons[i]);
@@ -579,7 +592,7 @@ describe("SheetDetailPage Component", () => {
     setup();
 
     const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
 
     fireEvent.click(trashIcon);
     fireEvent.click(screen.getByTestId("confirm-delete"));
@@ -596,7 +609,7 @@ describe("SheetDetailPage Component", () => {
     setup();
 
     const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
     fireEvent.click(trashIcon);
 
     const confirmButton = screen.getByTestId("confirm-delete");
@@ -615,7 +628,7 @@ describe("SheetDetailPage Component", () => {
     setup();
 
     const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
     fireEvent.click(trashIcon);
 
     const confirmButton = screen.getByTestId("confirm-delete");
@@ -640,7 +653,7 @@ describe("SheetDetailPage Component", () => {
     setup();
 
     const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
     fireEvent.click(trashIcon);
 
     const cancelButton = screen.getByTestId("cancel-delete");
@@ -672,7 +685,7 @@ describe("SheetDetailPage Component", () => {
     );
 
     const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:last-child');
+    const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
     fireEvent.click(trashIcon);
     fireEvent.click(screen.getByTestId("confirm-delete"));
     
@@ -714,7 +727,7 @@ describe("SheetDetailPage Component", () => {
   setup();
 
   const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const trashIcon = toolbarContainer.querySelector('svg:last-child');
+  const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
   fireEvent.click(trashIcon);
   fireEvent.click(screen.getByTestId("confirm-delete"));
 
@@ -1037,5 +1050,94 @@ describe("SheetDetailPage Component", () => {
     expect(screen.getByText("Text content")).toBeInTheDocument();
     expect(screen.getByAltText("Sheet content")).toBeInTheDocument();
     expect(screen.getByTestId("youtube-player")).toBeInTheDocument();
+  });
+
+  test("renders visibility button for sheet owner and handles click", () => {
+    const mockUpdateMutation = vi.fn();
+    
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((config) => {
+      if (config.queryKey[0] === 'userInfo') {
+        return { data: mockUserInfoData, isLoading: false, error: null };
+      }
+      return { data: mockSheetDataWithUserInfo, isLoading: false, error: null };
+    });
+  
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockUpdateMutation,
+      isLoading: false,
+    }));
+  
+    setup();
+  
+    const visibilityButton = screen.getByText("Private");
+    expect(visibilityButton).toBeInTheDocument();
+    
+    fireEvent.click(visibilityButton);
+    expect(mockUpdateMutation).toHaveBeenCalledWith(true);
+  });
+
+  test("handles updateSheetVisibility error", () => {
+    const mockMutate = vi.fn();
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    let visibilityOnErrorCallback;
+    
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((config) => {
+      if (config.queryKey[0] === 'userInfo') {
+        return { data: mockUserInfoData, isLoading: false, error: null };
+      }
+      return { data: mockSheetDataWithUserInfo, isLoading: false, error: null };
+    });
+  
+    vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
+      if (config.mutationFn && config.mutationFn.toString().includes('updateSheetVisibility')) {
+        visibilityOnErrorCallback = config.onError;
+      }
+      return {
+        mutate: mockMutate,
+        isLoading: false,
+      };
+    });
+  
+    setup();
+  
+    const testError = new Error("Visibility update failed");
+    visibilityOnErrorCallback(testError);
+  
+    expect(consoleSpy).toHaveBeenCalledWith("Error updating visibility:", testError);
+    
+    consoleSpy.mockRestore();
+  });
+
+  test("invalidates queries on successful visibility update", () => {
+    const mockMutate = vi.fn();
+    const mockQueryClient = { invalidateQueries: vi.fn() };
+    let visibilityOnSuccessCallback;
+    
+    vi.spyOn(reactQuery, "useQueryClient").mockReturnValue(mockQueryClient);
+    
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((config) => {
+      if (config.queryKey[0] === 'userInfo') {
+        return { data: mockUserInfoData, isLoading: false, error: null };
+      }
+      return { data: mockSheetDataWithUserInfo, isLoading: false, error: null };
+    });
+  
+    vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
+      if (config.mutationFn && config.mutationFn.toString().includes('updateSheetVisibility')) {
+        visibilityOnSuccessCallback = config.onSuccess;
+      }
+      return {
+        mutate: mockMutate,
+        isLoading: false,
+      };
+    });
+  
+    setup();
+  
+    visibilityOnSuccessCallback();
+  
+    expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({ 
+      queryKey: ['sheetData', expect.any(String)] 
+    });
   });
 });
