@@ -207,8 +207,6 @@ const SheetDetailPage = () => {
   };
 
   const renderViewToolbar=()=>{
-    console.log('sheetData:',sheetData);
-    console.log('is_published value:',sheetData.is_published);
     return(
       <div className="view-toolbar">
         <div className="view-toolbar-item">
@@ -218,9 +216,6 @@ const SheetDetailPage = () => {
           </div>
         </div>
         <div className="view-toolbar-item">
-          <button className={`visibility-button ${sheetData.is_published ? 'public' : 'private'}`} onClick={handleVisibilityToggle}>
-            {sheetData.is_published ? 'Public' : 'Private'}
-          </button>
           <FiPrinter/>
           <FiShare/>
           {sheetData.publisher.email === userInfo?.email && (
@@ -230,6 +225,9 @@ const SheetDetailPage = () => {
           }}/>
          
           <FiTrash onClick={() => setIsModalOpen(true)} />
+          <button className={`visibility-button ${sheetData.is_published ? 'public' : 'private'}`} onClick={handleVisibilityToggle}>
+          {sheetData.is_published ? 'Public' : 'Private'}
+        </button>
           </>
         )}
         </div>
