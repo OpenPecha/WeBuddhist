@@ -52,7 +52,7 @@ const UseChapterHook = (props) => {
       <div className="contents-container" key={section.title || 'root'}>
         {section.title && (<h2>{section.title}</h2> )}
         
-        <div ref={isTopLevel ? contentsContainerRef : null}>
+        <div className="outer-container" ref={isTopLevel ? contentsContainerRef : null}>
           {section.segments?.map((segment) => (
             <button
               key={segment.segment_id}

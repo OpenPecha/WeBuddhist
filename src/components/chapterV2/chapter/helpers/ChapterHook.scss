@@ -6,7 +6,7 @@
   .main-content {
     display: flex;
     flex-direction: row;
-    width: 90%;
+    width: 50%;
     margin: 0 auto;
     overflow-y: auto;
   
@@ -16,6 +16,9 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
+      .outer-container{
+        width: 100%;
+      }
       h2{
         margin-bottom: 10px;
       }
@@ -26,6 +29,7 @@
       }
       .segment-container{
           display: flex;
+          width: 100%;
           align-items: flex-start;
           margin-top: 10px;
           .segment-number{

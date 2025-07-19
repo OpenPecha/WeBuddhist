@@ -14,10 +14,25 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
   const earlyReturn = getEarlyReturn({loading: loading,error: error, t});
   if (earlyReturn) return earlyReturn;
 
-  const contents = tableOfContents?.contents;
-  const totalSections = Array.isArray(contents)
-    ? contents.reduce((total, content) => total + (content?.sections?.length || 0), 0)
-    : 0;
+  const getSectionsData = () => {
+    if (tableOfContents?.contents) {
+      return {
+        sections: tableOfContents.contents.flatMap(content => content.sections || []),
+        contentData: tableOfContents.contents,
+        isNestedStructure: true
+      };
+    }
+   else if (tableOfContents?.sections) {
+      return {
+        sections: tableOfContents.sections,
+        contentData: [{ id: tableOfContents.id, sections: tableOfContents.sections }],
+        isNestedStructure: false
+      };
+    }
+  };
+
+  const { sections = [], contentData = [], isNestedStructure = false } = getSectionsData() || {};
+  const totalSections = sections.length;
   const totalPages = Math.ceil(totalSections / pagination.limit);
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
@@ -37,9 +52,10 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
     const hasChildren = section.sections && section.sections.length > 0;
     const keyPrefix = isTopLevel ? `content-${tocId}-segment` : `section`;
     const renderContentTitle = () => {
+      const segmentId=hasChildren?section.sections[0].segments[0].segment_id:section.segments[0].segment_id
       return <Link
-        to={`/chapter?text_id=${textId}&content_id=${tocId}&segment_id=${section.segments[0].segment_id}`}
-        className={`toc-title ${getLanguageClass(tableOfContents.text_detail.language)}`}>
+        to={`/chapter?text_id=${textId}&content_id=${tocId}&segment_id=${segmentId}`}
+        className={`toc-title ${getLanguageClass(tableOfContents.text_detail?.language)}`}>
         {section.title}
       </Link>
     }
@@ -64,7 +80,6 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
     return (
       <div key={`${keyPrefix}-${section.id}`} className="toc-list-container">
         <button className="toc-header"
-          // Prevent toggling if clicking the link
              onClick={(e) => e.target.tagName !== 'A' && toggleSection(section.id)}>
           {renderDropIcons()}
           {renderContentTitle()}
@@ -75,16 +90,22 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
   };
 
   const renderContents = () => {
-    if (!contents || contents.length === 0) {
+    if (!contentData || contentData.length === 0) {
       return <div className="no-content listtitle">No content found</div>;
     }
 
-    return contents.map((content) =>
-      content.sections &&
-      content.sections.map((segment) =>
-        renderContentTree(segment, content.id,0, true)
-      )
-    );
+    if (isNestedStructure) {
+      return contentData.map((content) =>
+        content.sections &&
+        content.sections.map((segment) =>
+          renderContentTree(segment, content.id, 0, true) //for commentary text
+        )
+      );
+    } else {
+      return contentData[0]?.sections?.map((section) =>
+        renderContentTree(section, contentData[0].id, 0, true) //for root text
+      );
+    }
   };
 
   const renderPagination = () => {
