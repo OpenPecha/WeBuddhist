@@ -48,16 +48,14 @@ const UseChapterHook = (props) => {
 
   const renderSectionRecursive = (section, isTopLevel = false) => {
     if (!section) return null;
-    console.log(section)
     return (
       <div className="contents-container" key={section.title || 'root'}>
         {section.title && (<h2>{section.title}</h2> )}
         
         <div className="outer-container" ref={isTopLevel ? contentsContainerRef : null}>
-          {section.segments?.map((segment,index) => (
-            <div key={index}>
+          {section.segments?.map((segment) => (
+            <div key={segment.segment_id}>
             <button
-              key={segment.segment_id}
               className="segment-container"
               onClick={() => handleSegmentClick(segment.segment_id)}
             >
@@ -88,9 +86,7 @@ const UseChapterHook = (props) => {
   const renderContents = () => {
     if (!content?.sections?.[0]) return null;
     return (
-      <>
-        {renderSectionRecursive(content.sections[0], true)}
-      </>
+      renderSectionRecursive(content.sections[0], true)
     );
   };
 

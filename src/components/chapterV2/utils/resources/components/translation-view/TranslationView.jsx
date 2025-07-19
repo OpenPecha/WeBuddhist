@@ -94,7 +94,7 @@ const TranslationView = ({
             {t("text.versions.information.review_history")}
           </p>
 
-          <div className="linkselect navbaritems">
+          <div className="link-select navbaritems">
             {addChapter && (
               <button
                 className="linkicons"
@@ -111,7 +111,7 @@ const TranslationView = ({
               </button>
             )}
             <button
-              className="selectss navbaritems"
+              className="select-items navbaritems"
               onClick={() => setVersionId(translation.text_id)}
             >
               {translation.text_id === sessionStorage.getItem('versionId')

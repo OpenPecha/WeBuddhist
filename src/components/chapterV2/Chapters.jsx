@@ -44,16 +44,12 @@ const Chapters = () => {
   const addChapter = (chapterInformation, currentChapter) => {
     setChapters(prev => {
       if (prev.length >= 3) return prev;
-      const newChapter = {
-        ...chapterInformation
-      };
-
       const currentIndex = prev.findIndex(chap => chap.segmentId === currentChapter.segmentId);
       if (currentIndex === -1) {
-        return [...prev, newChapter];
+        return [...prev, chapterInformation];
       }
       const updatedChapters = [...prev];
-      updatedChapters.splice(currentIndex + 1, 0, newChapter);
+      updatedChapters.splice(currentIndex + 1, 0, chapterInformation);
       return updatedChapters;
     });
   };
