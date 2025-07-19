@@ -7,7 +7,7 @@ import {useQuery} from "react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
 import { getEarlyReturn } from "../../../utils/helperFunctions.jsx";
 import { useTranslate } from "@tolgee/react";
-// section id <-> contentId
+
 const fetchContentDetails = async (text_id, contentId,segmentId,direction,size) => {
   const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
     ...(contentId && {content_id: contentId}),
