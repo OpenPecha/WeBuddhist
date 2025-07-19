@@ -9,7 +9,7 @@ $shadow-color: rgba(0, 0, 0, 0.1);
 $font-family: Arial, sans-serif;
 
 .custom-navbar {
-  box-shadow: 0 2px 5px $shadow-color;
+  border-bottom: 1px solid #e0e0e0;
   @media(min-width: 400px){
     .container{
       max-width:100%

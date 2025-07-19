@@ -9,7 +9,7 @@ import {getLanguageClass} from "../../../../utils/helperFunctions.jsx";
 
 const ChapterHeader = (props) => {
 
-  const {viewMode, setViewMode, showTableOfContents, setShowTableOfContents} = props
+  const {viewMode, setViewMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters} = props
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [showViewSelector, setShowViewSelector] = useState(false)
   // ----------------------- renderers --------------------------
@@ -26,9 +26,8 @@ const ChapterHeader = (props) => {
   }
 
   const renderChapterTitle = () => {
-    return <div className={`title-container ${getLanguageClass(props.language)}`}>
-      {/*{props.title}*/}
-      SOME RANDOM TITLE
+    return <div className={`title-container ${getLanguageClass(textdetail?.language)}`}>
+      {textdetail?.title}
     </div>
   }
 
@@ -51,10 +50,9 @@ const ChapterHeader = (props) => {
   }
 
   const renderCloseChapterIcon = () => {
-    // render only if we have at least one chapter open
-    // so render it conditionally, update the code for that
+    if (totalChapters <= 1) return null;
     return  <div className="close-icon-container">
-      <MdClose size={20} />
+      <MdClose size={20} onClick={() => removeChapter(currentChapter)} />
     </div>
   }
 

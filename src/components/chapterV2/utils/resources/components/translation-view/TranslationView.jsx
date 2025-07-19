@@ -20,16 +20,16 @@ export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
 
 const TranslationView = ({
   segmentId,
-  setIsTranslationView, 
   expandedTranslations, 
   setExpandedTranslations, 
-  setVersionId, 
-  versionId,
+  setIsTranslationView, 
   addChapter,
-  sectionindex
+  currentChapter,
+  setVersionId,
 }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
+
   const {data: sidePanelTranslationsData} = useQuery(
     ["sidePanelTranslations",segmentId],
     () => fetchTranslationsData(segmentId),
@@ -63,7 +63,7 @@ const TranslationView = ({
     const hasContent = !!translation.content?.length;
     return (
       <div key={index} className="translation-item">
-      <span className={`translation-content  ${getLanguageClass(translation.language)}`}>
+      <span className={`translation-content  ${getLanguageClass(language)}`}>
         <div
           className={`translation-text ${isExpanded ? 'expanded' : 'collapsed'}`}
           dangerouslySetInnerHTML={{ __html: translation.content }}
@@ -74,8 +74,7 @@ const TranslationView = ({
             onClick={() => setExpandedTranslations(prev => ({
               ...prev,
               [translationKey]: !isExpanded,
-            }))}
-          >
+            }))}          >
             {isExpanded ? t('panel.showless') : t('panel.showmore')}
           </button>
         )}
@@ -95,19 +94,15 @@ const TranslationView = ({
             {t("text.versions.information.review_history")}
           </p>
 
-          <div className="linkselect navbaritems">
+          <div className="link-select navbaritems">
             {addChapter && (
               <button
                 className="linkicons"
                 onClick={() => {
                   addChapter({ 
-                    contentId: "", 
-                    versionId: "", 
                     textId: translation.text_id, 
                     segmentId: translation.segment_id,
-                    // contentIndex: sectionindex !== null ? sectionindex : 0
-                    contentIndex: 0
-                  });
+                  },currentChapter);
                   closeResourcesPanel();
                 }}
               >
@@ -115,16 +110,14 @@ const TranslationView = ({
                 {t("text.translation.open_text")}
               </button>
             )}
-            {setVersionId && (
             <button
+              className="select-items navbaritems"
               onClick={() => setVersionId(translation.text_id)}
-              className="selectss navbaritems"
             >
-              {translation.text_id === versionId
+              {translation.text_id === sessionStorage.getItem('versionId')
                 ? t("text.translation.current_selected")
                 : t("common.select")}
             </button>
-            )}
           </div>
         </div>
       </div>
@@ -132,7 +125,7 @@ const TranslationView = ({
   };
 
   return (
-    <div>
+    <div className="translation-view">
       <div className="headerthing">
         <p className="mt-4 px-4 listtitle">
           {t('connection_pannel.translations')}
@@ -169,11 +162,10 @@ const TranslationView = ({
 export default TranslationView;
 TranslationView.propTypes = {
   segmentId: PropTypes.string.isRequired, 
-  setIsTranslationView: PropTypes.func.isRequired, 
   expandedTranslations: PropTypes.object.isRequired, 
   setExpandedTranslations: PropTypes.func.isRequired, 
-  setVersionId: PropTypes.func, 
-  versionId: PropTypes.string, 
+  setIsTranslationView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
-  sectionindex: PropTypes.number
+  currentChapter: PropTypes.object, 
+  setVersionId: PropTypes.func.isRequired,
 }
