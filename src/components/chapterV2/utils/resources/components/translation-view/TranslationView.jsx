@@ -24,6 +24,7 @@ const TranslationView = ({
   setExpandedTranslations, 
   setIsTranslationView, 
   addChapter,
+  currentChapter,
 }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
@@ -99,8 +100,8 @@ const TranslationView = ({
                 onClick={() => {
                   addChapter({ 
                     textId: translation.text_id, 
-                    segmentId: translation.segment_id, //fixed
-                  });
+                    segmentId: translation.segment_id,
+                  },currentChapter);
                   closeResourcesPanel();
                 }}
               >
@@ -163,4 +164,5 @@ TranslationView.propTypes = {
   setExpandedTranslations: PropTypes.func.isRequired, 
   setIsTranslationView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
+  currentChapter: PropTypes.object, 
 }
