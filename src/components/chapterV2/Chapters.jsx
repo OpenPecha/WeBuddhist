@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import ContentsChapter from "./chapter/ContentsChapter";
 import "./Chapters.scss";
@@ -40,7 +40,7 @@ const Chapters = () => {
     };
   }, [chapters, versionId]);
 
-  const addChapter = (chapterInformation, currentChapter) => {
+  const addChapter = useCallback((chapterInformation, currentChapter) => {
     setChapters(prev => {
       if (prev.length >= 3) return prev;
       const currentIndex = prev.findIndex(chap => chap.segmentId === currentChapter.segmentId);
@@ -51,11 +51,11 @@ const Chapters = () => {
       updatedChapters.splice(currentIndex + 1, 0, chapterInformation);
       return updatedChapters;
     });
-  };
+  }, []);
 
-  const removeChapter = (chapterToRemove) => {
+  const removeChapter = useCallback((chapterToRemove) => {
     setChapters(prev => prev.filter(chap => chap.segmentId !== chapterToRemove.segmentId));
-  };
+  }, []);
 
   return (
     <div className="chapters-container">
