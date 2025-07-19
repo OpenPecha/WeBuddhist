@@ -25,11 +25,10 @@ const Chapters = () => {
     if (textId) {
       return [{
         textId: textId,
-        contentId: contentId ,
+        contentId: contentId,
         segmentId: segmentId 
       }];
     }
-    return [];
   });
 
   useEffect(() => {
