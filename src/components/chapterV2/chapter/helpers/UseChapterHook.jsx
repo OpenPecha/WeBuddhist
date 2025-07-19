@@ -10,7 +10,7 @@ import Resources from "../../utils/resources/Resources.jsx";
 */
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, addChapter, currentChapter } = props
+  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId} = props
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -48,23 +48,33 @@ const UseChapterHook = (props) => {
 
   const renderSectionRecursive = (section, isTopLevel = false) => {
     if (!section) return null;
+    console.log(section)
     return (
       <div className="contents-container" key={section.title || 'root'}>
         {section.title && (<h2>{section.title}</h2> )}
         
         <div className="outer-container" ref={isTopLevel ? contentsContainerRef : null}>
-          {section.segments?.map((segment) => (
+          {section.segments?.map((segment,index) => (
+            <div key={index}>
             <button
               key={segment.segment_id}
               className="segment-container"
               onClick={() => handleSegmentClick(segment.segment_id)}
             >
               <p className="segment-number">{segment.segment_number}</p>
+              <div className="segment-content">
               <p 
                 className={`${getLanguageClass(language)}`} 
                 dangerouslySetInnerHTML={{ __html: segment.content }} 
               />
+              {segment.translation && (
+              <p className={`${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{ __html: segment.translation.content }} />
+            )}
+              </div>
+            
             </button>
+         
+            </div>
           ))}
           
           {section.sections?.map((nestedSection) => 
@@ -86,7 +96,7 @@ const UseChapterHook = (props) => {
 
   const renderResources = () => {
     if (isResourcesPanelOpen && selectedSegmentId) {
-      return <Resources segmentId={selectedSegmentId} addChapter={addChapter} currentChapter={currentChapter} />
+      return <Resources segmentId={selectedSegmentId} addChapter={addChapter} currentChapter={currentChapter} setVersionId={setVersionId} />
     }
     return null;
   }

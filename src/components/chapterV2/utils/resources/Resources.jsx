@@ -20,7 +20,7 @@ export const fetchSidePanelData = async (segmentId) => {
   return data;
 };
 
-const Resources = ({segmentId, addChapter, handleClose, currentChapter}) => {
+const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersionId}) => {
   const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
   const showPanel = isResourcesPanelOpen;
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
@@ -132,6 +132,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter}) => {
             setExpandedTranslations={setExpandedTranslations}
             addChapter={addChapter}
             currentChapter={currentChapter}
+            setVersionId={setVersionId}
           />
         );
       case "commentary":

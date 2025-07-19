@@ -25,6 +25,7 @@ const TranslationView = ({
   setIsTranslationView, 
   addChapter,
   currentChapter,
+  setVersionId,
 }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
@@ -111,8 +112,9 @@ const TranslationView = ({
             )}
             <button
               className="selectss navbaritems"
+              onClick={() => setVersionId(translation.text_id)}
             >
-              {translation.text_id === "dummy" //send textid of translation as version rest, pick from url
+              {translation.text_id === sessionStorage.getItem('versionId')
                 ? t("text.translation.current_selected")
                 : t("common.select")}
             </button>
@@ -165,4 +167,5 @@ TranslationView.propTypes = {
   setIsTranslationView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
   currentChapter: PropTypes.object, 
+  setVersionId: PropTypes.func.isRequired,
 }

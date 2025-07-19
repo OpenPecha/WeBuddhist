@@ -5,6 +5,10 @@ import "./Chapters.scss";
 
 const Chapters = () => {
   const [searchParams] = useSearchParams();
+  const [versionId, setVersionId] = useState(() => {
+    const savedVersionId = sessionStorage.getItem('versionId');
+    return savedVersionId || '';
+  });
   const [chapters, setChapters] = useState(() => 
     {
     const savedChapters = sessionStorage.getItem('chapters');
@@ -30,10 +34,12 @@ const Chapters = () => {
 
   useEffect(() => {
     sessionStorage.setItem('chapters', JSON.stringify(chapters));
+    sessionStorage.setItem('versionId', versionId || '');
     return () => {
       sessionStorage.removeItem('chapters');
+      sessionStorage.removeItem('versionId');
     };
-  }, [chapters]);
+  }, [chapters, versionId]);
 
   const addChapter = (chapterInformation, currentChapter) => {
     setChapters(prev => {
@@ -68,10 +74,12 @@ const Chapters = () => {
               textId={chapter.textId}
               contentId={chapter.contentId}
               segmentId={chapter.segmentId}
+              versionId={versionId}
               addChapter={addChapter}
               removeChapter={removeChapter}
               currentChapter={chapter}
               totalChapters={chapters.length}
+              setVersionId={setVersionId}
             />
         </div>
       ))}
