@@ -1077,23 +1077,15 @@ describe("SheetDetailPage Component", () => {
   });
 
   test("handles updateSheetVisibility error", () => {
-    const mockMutate = vi.fn();
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     let visibilityOnErrorCallback;
     
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((config) => {
-      if (config.queryKey[0] === 'userInfo') {
-        return { data: mockUserInfoData, isLoading: false, error: null };
-      }
-      return { data: mockSheetDataWithUserInfo, isLoading: false, error: null };
-    });
-  
     vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
       if (config.mutationFn && config.mutationFn.toString().includes('updateSheetVisibility')) {
         visibilityOnErrorCallback = config.onError;
       }
       return {
-        mutate: mockMutate,
+        mutate: vi.fn(),
         isLoading: false,
       };
     });
@@ -1104,12 +1096,10 @@ describe("SheetDetailPage Component", () => {
     visibilityOnErrorCallback(testError);
   
     expect(consoleSpy).toHaveBeenCalledWith("Error updating visibility:", testError);
-    
     consoleSpy.mockRestore();
   });
 
   test("invalidates queries on successful visibility update", () => {
-    const mockMutate = vi.fn();
     const mockQueryClient = { invalidateQueries: vi.fn() };
     let visibilityOnSuccessCallback;
     
@@ -1127,7 +1117,7 @@ describe("SheetDetailPage Component", () => {
         visibilityOnSuccessCallback = config.onSuccess;
       }
       return {
-        mutate: mockMutate,
+        mutate: vi.fn(),
         isLoading: false,
       };
     });
