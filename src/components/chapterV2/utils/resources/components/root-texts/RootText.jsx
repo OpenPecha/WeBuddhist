@@ -14,7 +14,7 @@ export const fetchRootTextData = async (segment_id) => {
   return data;
 }
 
-const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter }) => {
+const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter, currentChapter }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
   const {data: rootTextData} = useQuery(
@@ -112,10 +112,9 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
                             <button className="root-text-button"
                                  onClick={() => {
                                   addChapter({
-                                   contentId: "", 
                                    textId: rootText.text_id, 
                                    segmentId: rootText.segment_id,
-                                 })
+                                 },currentChapter)
                                  closeResourcesPanel();
                                  }}>
                               <GoLinkExternal size={14} className="mr-1"/>
@@ -153,4 +152,5 @@ RootTextView.propTypes = {
   setExpandedRootTexts: PropTypes.func.isRequired, 
   setIsRootTextView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
+  currentChapter: PropTypes.object, 
 } 
