@@ -2,20 +2,20 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  position: relative;
   
   .main-content {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
     width: 90%;
     margin: 0 auto;
     overflow-y: auto;
-    flex: 1;
+  
     
     .contents-container {
-      flex: 1 1 0;
-      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
       h2{
         margin-bottom: 10px;
       }
@@ -26,12 +26,11 @@
       }
       .segment-container{
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          text-align: center;
-          width: 50%;
-          margin: 0 auto;
+          align-items: flex-start;
           margin-top: 10px;
+          .segment-number{
+            margin-right: 2rem;
+          }
           .footnote-marker {
             cursor: pointer;
             color: #007bff;

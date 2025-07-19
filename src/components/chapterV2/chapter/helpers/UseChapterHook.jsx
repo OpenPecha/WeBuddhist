@@ -59,12 +59,11 @@ const UseChapterHook = (props) => {
               className="segment-container"
               onClick={() => handleSegmentClick(segment.segment_id)}
             >
-              {isTopLevel && <p>{segment.segment_number}</p>}
+              <p className="segment-number">{segment.segment_number}</p>
               <p 
                 className={`${getLanguageClass(language)}`} 
                 dangerouslySetInnerHTML={{ __html: segment.content }} 
               />
-              {isTopLevel && <div/>}
             </button>
           ))}
           
