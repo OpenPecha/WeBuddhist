@@ -142,6 +142,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
         return (
           <IndividualTextSearch
             onClose={() => setActiveView("main")}
+            textId={sidePanelData?.segment_info?.text_id}
           />
         );
       case "translation":
