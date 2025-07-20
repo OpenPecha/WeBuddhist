@@ -27,7 +27,7 @@ const ViewSelector = (props) => {
 
   const renderViewModeOptions = () => {
     return options.map((option) => (
-      <label key={option.id} className="radio-option">
+      <label key={option.id} className="radio-option subcontent">
         <input type="radio" name="view-mode" value={option.value} checked={viewMode === option.value}
           onChange={(e) => setViewMode(e.target.value)}/>
         <span>{t(option.label)}</span>
