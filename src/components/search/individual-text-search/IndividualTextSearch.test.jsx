@@ -1,6 +1,25 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { fetchTextSearchResults } from './IndividualTextSearch';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery } from 'react-query';
+import IndividualTextSearch, { fetchTextSearchResults } from './IndividualTextSearch';
 import axiosInstance from '../../../config/axios-config';
+
+vi.mock('react-router-dom', () => ({
+  useNavigate: vi.fn(),
+  useSearchParams: vi.fn(),
+}));
+
+vi.mock('@tolgee/react', () => ({
+  useTranslate: vi.fn(() => ({
+    t: vi.fn((key, fallback) => fallback || key)
+  })),
+}));
+
+vi.mock('react-query', () => ({
+  useQuery: vi.fn(),
+}));
 
 vi.mock('../../../config/axios-config', () => ({
   __esModule: true,
@@ -154,5 +173,95 @@ describe('fetchTextSearchResults', () => {
     const totalSegments = result.sources[0].segment_match.length;
     const totalPages = Math.ceil(totalSegments / pagination.limit);
     expect(totalPages).toBe(2);
+  });
+
+  it('should handle case when no textId is provided in either props or URL search params', async () => {
+    const mockQuery = 'test query';
+    const mockSkip = 10;
+    const mockPagination = { limit: 10 };
+    const mockResponse = { data: { search: { text: mockQuery }, sources: [] } };
+    
+    axiosInstance.get.mockResolvedValueOnce(mockResponse);
+
+    const result = await fetchTextSearchResults(mockQuery, undefined, mockSkip, mockPagination);
+
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      `api/v1/search?query=${mockQuery}&search_type=SOURCE&text_id=undefined`,
+      {
+        params: {
+          limit: mockPagination.limit,
+          skip: mockSkip
+        }
+      }
+    );
+    expect(result).toEqual(mockResponse.data);
+  });
+});
+
+describe('IndividualTextSearch Component', () => {
+  const mockNavigate = vi.fn();
+  
+  beforeEach(() => {
+    vi.clearAllMocks();
+    
+    // useTranslate is already mocked at the top level
+    useNavigate.mockReturnValue(mockNavigate);
+    
+    useQuery.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null
+    });
+  });
+
+  it('should use textId from URL search params when not provided as prop', () => {
+
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set('text_id', 'text123FromURL');
+    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    
+    render(<IndividualTextSearch onClose={vi.fn()} />);
+    
+    expect(useSearchParams).toHaveBeenCalled();
+    
+    expect(useQuery).toHaveBeenCalledWith(
+      expect.arrayContaining(['textSearch', expect.anything(), 'text123FromURL']),
+      expect.any(Function),
+      expect.any(Object)
+    );
+  });
+
+  it('should prioritize textId prop over URL search params', () => {
+    
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set('text_id', 'text123FromURL');
+    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    
+    const propTextId = 'text123FromProp';
+    
+    render(<IndividualTextSearch onClose={vi.fn()} textId={propTextId} />);
+    
+    expect(useSearchParams).toHaveBeenCalled();
+    
+    expect(useQuery).toHaveBeenCalledWith(
+      expect.arrayContaining(['textSearch', expect.anything(), propTextId]),
+      expect.any(Function),
+      expect.any(Object)
+    );
+  });
+
+  it('should handle case when no textId is provided in props or URL', () => {
+    const mockSearchParams = new URLSearchParams();
+    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    
+    render(<IndividualTextSearch onClose={vi.fn()} />);
+    
+    expect(useSearchParams).toHaveBeenCalled();
+    
+    expect(useQuery).toHaveBeenCalledWith(
+      expect.arrayContaining(['textSearch', expect.anything(), null]),
+      expect.any(Function),
+      expect.any(Object)
+    );
   });
 });
