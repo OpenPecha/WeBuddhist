@@ -63,6 +63,7 @@
   .search-results {
     flex: 1;
     padding: 16px;
+    padding-bottom: 80px;
     overflow-y: auto;
     
     .search-message {
@@ -153,7 +154,6 @@
       }
     }
     
-    // Keep the old segments-list styles for backward compatibility
     .segments-list {
       display: flex;
       flex-direction: column;
