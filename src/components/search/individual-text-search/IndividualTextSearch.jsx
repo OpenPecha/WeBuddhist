@@ -10,12 +10,11 @@ import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
 import { getLanguageClass } from '../../../utils/helperFunctions.jsx';
 import './IndividualTextSearch.scss';
 
-export const fetchTextSearchResults = async(query, textId, skip, pagination) => {
+export const fetchTextSearchResults = async(query, skip, pagination) => {
   const { data } = await axiosInstance.get(`api/v1/search`, {
     params: {
       query: query,
-      search_type: 'TEXT',
-      text_id: textId,
+      search_type: 'SOURCE',
       limit: pagination.limit,
       skip: skip
     }
@@ -23,7 +22,7 @@ export const fetchTextSearchResults = async(query, textId, skip, pagination) => 
   return data;
 };
 
-const IndividualTextSearch = ({ onClose, textId }) => {
+const IndividualTextSearch = ({ onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
   const { t } = useTranslate();
@@ -33,8 +32,8 @@ const IndividualTextSearch = ({ onClose, textId }) => {
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
   
   const { data: searchResults, isLoading, error } = useQuery(
-    ["textSearch", searchQuery, textId, skip, pagination],
-    () => fetchTextSearchResults(searchQuery, textId, skip, pagination),
+    ["globalTextSearch", searchQuery, skip, pagination],
+    () => fetchTextSearchResults(searchQuery, skip, pagination),
     {
       refetchOnWindowFocus: false,
       retry: 1,
@@ -48,6 +47,7 @@ const IndividualTextSearch = ({ onClose, textId }) => {
     e.preventDefault();
     if (searchQuery.trim() !== '') {
       setIsSearchSubmitted(true);
+      setPagination(prev => ({ ...prev, currentPage: 1 })); // Reset to first page on new search
     }
   };
 
@@ -71,33 +71,41 @@ const IndividualTextSearch = ({ onClose, textId }) => {
       return <div className="search-message">Error loading content: {error.message}</div>;
     }
 
-    if (!searchResults || !searchResults.segments || searchResults.segments.length === 0) {
+    if (!searchResults || !searchResults.sources || searchResults.sources.length === 0) {
       return <div className="search-message">{t('search.zero_result', 'No results to display.')}</div>;
     }
 
-    const totalSegments = searchResults.total || 0;
-    const totalPages = Math.ceil(totalSegments / pagination.limit);
+    const totalSources = searchResults.total || 0;
+    const totalPages = Math.ceil(totalSources / pagination.limit);
 
     return (
       <>
         <div className="results-count">
-          <p>{t("sheet.search.total")}: {totalSegments}</p>
+          <p>{t("sheet.search.total")}: {totalSources}</p>
         </div>
-        <div className="segments-list">
-          {searchResults.segments.map((segment) => (
-            <button 
-              type="button" 
-              key={segment.segment_id} 
-              className={`segment-item ${getLanguageClass(segment.language)}`}
-              onClick={() => {
-                if (segment.segment_id && textId) {
-                  navigate(`/texts/text-details?textId=${textId}&segmentId=${segment.segment_id}`);
-                  onClose();
-                }
-              }}
-            >
-              <p dangerouslySetInnerHTML={{__html: highlightSearchMatch(segment.content, searchText, 'highlighted-text')}} />
-            </button>
+        <div className="sources-list">
+          {searchResults.sources.map((source) => (
+            <div key={source.text.text_id} className={`source-item ${getLanguageClass(source.text.language)}`}>
+              <h4>{source.text.title}</h4>
+              {source.text.published_date && <span className='en-text'>{source.text.published_date}</span>}
+              <div className="segments">
+                {source.segment_match.map((segment) => (
+                  <button 
+                    type="button" 
+                    key={segment.segment_id} 
+                    className="segment"
+                    onClick={() => {
+                      if (segment.segment_id && source.text?.text_id) {
+                        navigate(`/texts/text-details?textId=${source.text.text_id}&segmentId=${segment.segment_id}`);
+                        onClose();
+                      }
+                    }}
+                  >
+                    <p dangerouslySetInnerHTML={{__html: highlightSearchMatch(segment.content, searchText, 'highlighted-text')}} />
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
         {totalPages > 1 && (
@@ -115,7 +123,7 @@ const IndividualTextSearch = ({ onClose, textId }) => {
   return (
     <div className="individual-text-search">
       <div className="search-header">
-        <h2>{t('connection_panel.search_in_this_text')}</h2>
+        <h2>{t('connection_panel.search_texts')}</h2>
         <IoMdClose
           size={24}
           onClick={onClose}
@@ -131,7 +139,7 @@ const IndividualTextSearch = ({ onClose, textId }) => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('connection_panel.search_in_this_text')}
+              placeholder={t('connection_panel.search_texts')}
               className="search-input"
               autoFocus
             />
