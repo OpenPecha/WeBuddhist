@@ -142,16 +142,13 @@
       }
       
       .bo {
-        font-family: 'Noto Sans Tibetan', sans-serif;
+        @extend .bo-text;
       }
       
       .en {
-        font-family: 'Noto Sans', sans-serif;
+        @extend .en-text;
       }
       
-      .sa {
-        font-family: 'Noto Sans Devanagari', sans-serif;
-      }
     }
     
     .segments-list {
