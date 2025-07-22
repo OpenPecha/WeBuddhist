@@ -22,12 +22,13 @@ const fetchContentDetails = async (text_id, contentId, segmentId, versionId, dir
 const ContentsChapter = ({textId, contentId, segmentId, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId}) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE)
   const [showTableOfContents, setShowTableOfContents] = useState(false)
+  const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
   const direction="next"
   const size=20
   const {t} = useTranslate();
   const {data: contentsData, isLoading: contentsDataLoading, error} = useQuery(
-    ["content", textId, contentId, segmentId, versionId, direction, size],
-    () => fetchContentDetails(textId, contentId, segmentId, versionId, direction, size),
+    ["content", textId, contentId, currentSegmentId, versionId, direction, size],
+    () => fetchContentDetails(textId, contentId, currentSegmentId, versionId, direction, size),
     {
       refetchOnWindowFocus: false,
       enabled: !!textId
@@ -37,6 +38,10 @@ const ContentsChapter = ({textId, contentId, segmentId, versionId, addChapter, r
   // ----------------------------------- helpers -----------------------------------------
   const earlyReturn = getEarlyReturn({ isLoading: contentsDataLoading, error: error, t });
   if (earlyReturn) return earlyReturn;
+
+  const handleSegmentNavigate = (newSegmentId) => {
+    setCurrentSegmentId(newSegmentId);
+  };
   
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
@@ -44,7 +49,7 @@ const ContentsChapter = ({textId, contentId, segmentId, versionId, addChapter, r
     return <ChapterHeader {...propsForChapterHeader}/>
   }
   const renderChapter = () => {
-    const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language, addChapter, currentChapter, setVersionId}
+    const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language, addChapter, currentChapter, setVersionId, handleSegmentNavigate}
     return (
       <PanelProvider>
         <UseChapterHook {...propsForUseChapterHookComponent} />

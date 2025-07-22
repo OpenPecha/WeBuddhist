@@ -10,7 +10,7 @@ import Resources from "../../utils/resources/Resources.jsx";
 */
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId} = props
+  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId, handleSegmentNavigate} = props
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -92,7 +92,7 @@ const UseChapterHook = (props) => {
 
   const renderResources = () => {
     if (isResourcesPanelOpen && selectedSegmentId) {
-      return <Resources segmentId={selectedSegmentId} addChapter={addChapter} currentChapter={currentChapter} setVersionId={setVersionId} />
+      return <Resources segmentId={selectedSegmentId} addChapter={addChapter} currentChapter={currentChapter} setVersionId={setVersionId} handleSegmentNavigate={handleSegmentNavigate} />
     }
     return null;
   }

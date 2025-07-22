@@ -21,15 +21,13 @@ export const fetchSidePanelData = async (segmentId) => {
   return data;
 };
 
-const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersionId}) => {
+const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersionId, handleSegmentNavigate}) => {
   const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
   const showPanel = isResourcesPanelOpen;
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
   const [expandedTranslations, setExpandedTranslations] = useState({});
   const [expandedRootTexts, setExpandedRootTexts] = useState({});
   const [activeView, setActiveView] = useState("main");
-  const [searchParams, setSearchParams] = useSearchParams();
-
   const {t} = useTranslate();
 
   const {data: sidePanelData} = useQuery(
@@ -132,6 +130,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <IndividualTextSearch
             onClose={() => setActiveView("main")}
             textId={sidePanelData?.segment_info?.text_id}
+            handleSegmentNavigate={handleSegmentNavigate}
           />
         );
       case "translation":
@@ -185,8 +184,10 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
 
 export default Resources;
 Resources.propTypes = {
-  segmentId: PropTypes.string.isRequired, 
-  addChapter: PropTypes.func, 
+  segmentId: PropTypes.string.isRequired,
+  addChapter: PropTypes.func,
   handleClose: PropTypes.func,
-  currentChapter: PropTypes.object
+  currentChapter: PropTypes.object,
+  setVersionId: PropTypes.func,
+  handleSegmentNavigate: PropTypes.func,
 }
