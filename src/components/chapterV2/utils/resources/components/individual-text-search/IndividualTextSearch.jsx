@@ -4,10 +4,10 @@ import { BiSearch } from 'react-icons/bi';
 import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axiosInstance from '../../../config/axios-config';
-import PaginationComponent from '../../commons/pagination/PaginationComponent';
-import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
-import { getLanguageClass } from '../../../utils/helperFunctions.jsx';
+import axiosInstance from '../../../../../../config/axios-config.js';
+import PaginationComponent from '../../../../../commons/pagination/PaginationComponent.jsx';
+import { highlightSearchMatch } from '../../../../../../utils/highlightUtils.jsx';
+import { getLanguageClass } from '../../../../../../utils/helperFunctions.jsx';
 import './IndividualTextSearch.scss';
 
 export const fetchTextSearchResults = async(query, textId, skip, pagination) => {

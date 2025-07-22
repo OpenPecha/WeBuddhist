@@ -16,7 +16,7 @@ import {usePanelContext} from "../../../../context/PanelContext.jsx";
 import {MENU_ITEMS, LANGUAGE} from "../../../../utils/constants.js";
 import {mapLanguageCode} from "../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
-import IndividualTextSearch from "../../../search/individual-text-search/IndividualTextSearch.jsx";
+import IndividualTextSearch from "./components/individual-text-search/IndividualTextSearch.jsx";
 
 export const fetchSidePanelData = async (segmentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);

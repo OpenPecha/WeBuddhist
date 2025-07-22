@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import IndividualTextSearch, { fetchTextSearchResults } from './IndividualTextSearch';
-import axiosInstance from '../../../config/axios-config';
+import axiosInstance from '../../../../../../config/axios-config';
 
 vi.mock('react-router-dom', () => ({
   useNavigate: vi.fn(),
