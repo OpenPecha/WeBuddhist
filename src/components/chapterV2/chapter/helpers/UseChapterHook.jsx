@@ -34,7 +34,7 @@ const UseChapterHook = (props) => {
         event.preventDefault();
         const footnoteMarker = event.target;
         const footnote = footnoteMarker.nextElementSibling;
-        if (footnote && footnote.classList.contains('footnote')) {
+        if (footnote?.classList?.contains('footnote')) {
           footnote.classList.toggle('active');
         }
         return false;
