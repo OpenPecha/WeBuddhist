@@ -62,24 +62,3 @@
   }
 }
 
-.headerthing {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #f0f0f0;
-}
-
-.close-icon {
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  color: #333;
-  margin-right: 10px;
-  transition: all 0.2s ease-in-out;
-
-  &:hover {
-    background-color: #e0e0e0;
-    transform: scale(1.1);
-  }
-}

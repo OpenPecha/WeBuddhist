@@ -1,34 +1,7 @@
-.headerthing {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-right: 1rem;
-  border-bottom: 1px solid #e0e0e0;
-
-  .listtitle {
-    font-weight: 600;
-    color: #333;
-  }
-
-  .close-icon {
-    cursor: pointer;
-    color: #666;
-    &:hover {
-      color: #333;
-    }
-  }
-}
-
 .translation-content {
   text-align: start;
   color: black;
   
-  .textgreat {
-    color: #828282;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 12px;
-  }
-
   .commentaries-list {
     .commentary-list-item {
       margin-bottom: 1.25rem;

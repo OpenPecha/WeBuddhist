@@ -1,0 +1,81 @@
+.use-chapter-hook-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
+  .chapter-flex-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+  }
+
+  .main-content {
+    flex: 1 1 0%;
+    min-width: 0;
+    overflow-y: auto;
+    
+    .contents-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      .outer-container{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100vw;
+      }
+      h2{
+        margin-bottom: 10px;
+      }
+      button{
+        background-color: transparent;
+        border: none;   
+        text-align: start;
+      }
+      .segment-container{
+          display: flex;
+          width: calc(100vw - 800px);
+          align-items: flex-start;
+          margin-top: 10px;
+          @media (max-width: 1400px) {
+            width: calc(100vw - 400px);
+            margin: 0 auto;
+          }
+          @media (max-width: 768px) {
+            margin-left: 2rem;
+            width: 100vw;
+          }
+          .segment-number{
+            margin-right: 2rem;
+          }
+          .segment-content{
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+          }
+          .footnote-marker {
+            cursor: pointer;
+            color: #007bff;
+            font-weight: bold;
+            z-index: 2;
+            padding: 0 2px;
+          }
+          .footnote {
+            display: none;
+            color: #484848;
+            margin: 4px;
+            font-size: 0.9rem;
+            background-color: #f7f7f7;
+            padding: 2px 5px;
+            border-radius: 3px;
+            &.active {
+              display: inline;
+            }
+          }
+        }
+      }
+    }
+}

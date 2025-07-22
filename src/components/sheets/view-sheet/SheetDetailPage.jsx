@@ -7,7 +7,7 @@ import { FiEdit, FiTrash, FiEye, FiShare, FiPrinter } from "react-icons/fi";
 import { usePanelContext, PanelProvider } from '../../../context/PanelContext';
 import { extractSpotifyInfo } from '../sheet-utils/Constant';
 import axiosInstance from '../../../config/axios-config';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useTranslate } from '@tolgee/react';
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import Resources from "../../chapterV2/utils/resources/Resources.jsx";
@@ -36,6 +36,37 @@ export const deleteSheet = async (id) => {
   return true;
 }
 
+export const updateSheetVisibility = async (sheetId, isPublished, sheetData) => {
+  const source = sheetData.content.segments.map((segment, index) => {
+    if (["image", "audio", "video"].includes(segment.type)) {
+      return {
+        position: index,
+        type: segment.type,
+        content: segment.content,
+      };
+    }
+    if (segment.type === "source") {
+      return {
+        position: index,
+        type: "source",
+        content: segment.segment_id,
+      };
+    }
+    return {
+      position: index,
+      type: "content", 
+      content: segment.content,
+    };
+  });
+  
+  await axiosInstance.put(`/api/v1/sheets/${sheetId}`, {
+    title: sheetData.sheet_title,
+    source: source,
+    is_published: isPublished
+  });
+  return true;
+};
+
 const getAudioSrc = (url) => {
   const spotify = extractSpotifyInfo(url);
   if (spotify) {
@@ -54,6 +85,7 @@ const SheetDetailPage = () => {
   const sheetId = sheetSlugAndId.split('_').pop();
   const {t}=useTranslate();
   const navigate=useNavigate();
+  const queryClient=useQueryClient();
   const {data:userInfo}=useQuery({
     queryKey:['userInfo'],
     queryFn:getUserInfo,
@@ -79,6 +111,16 @@ const SheetDetailPage = () => {
     }
   });
 
+  const { mutate: updateVisibilityMutation } = useMutation({
+    mutationFn: (isPublished) => updateSheetVisibility(sheetId, isPublished, sheetData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sheetData', sheetId] });
+    },
+    onError: (error) => {
+      console.error("Error updating visibility:", error);
+    }
+  });
+
   const handleSidePanelToggle = (segmentId) => {
     setSegmentId(segmentId);
     const newParams = new URLSearchParams(searchParams);
@@ -86,6 +128,12 @@ const SheetDetailPage = () => {
     setSearchParams(newParams);
     openResourcesPanel();
   };
+
+  const handleVisibilityToggle = () => {
+    const newVisibility = !sheetData.is_published;
+    updateVisibilityMutation(newVisibility);
+  };
+
   const renderSegment = (segment) => {
     switch (segment.type) {
       case 'source':
@@ -177,6 +225,9 @@ const SheetDetailPage = () => {
           }}/>
          
           <FiTrash onClick={() => setIsModalOpen(true)} />
+          <button className={`visibility-button ${sheetData.is_published ? 'public' : 'private'}`} onClick={handleVisibilityToggle}>
+          {sheetData.is_published ? 'Public' : 'Private'}
+        </button>
           </>
         )}
         </div>

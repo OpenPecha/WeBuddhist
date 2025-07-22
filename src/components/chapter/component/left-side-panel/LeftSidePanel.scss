@@ -95,20 +95,7 @@
 
   &.show .panel-content {
     opacity: 1;
-  }
-
-  .headerthing {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #eee;
-    
-    .listtitle {
-      font-weight: bold;
-      font-size: 18px;
-    }
-    
-  }
+  } 
 }
 
 .panel-backdrop {

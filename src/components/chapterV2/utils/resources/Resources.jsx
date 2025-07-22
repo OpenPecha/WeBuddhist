@@ -9,28 +9,19 @@ import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import RootTextView from "./components/root-texts/RootText.jsx";
-import { useSearchParams } from "react-router-dom";
-import "./Resources.scss"
 import axiosInstance from "../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../context/PanelContext.jsx";
-import {MENU_ITEMS, LANGUAGE} from "../../../../utils/constants.js";
-import {mapLanguageCode} from "../../../../utils/helperFunctions.jsx";
+import {MENU_ITEMS} from "../../../../utils/constants.js";
 import PropTypes from "prop-types";
 import IndividualTextSearch from "./components/individual-text-search/IndividualTextSearch.jsx";
+import "./Resources.scss"
 
 export const fetchSidePanelData = async (segmentId) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const {data} = await axiosInstance.get(`/api/v1/segments/${segmentId}/info`, {
-    params: {
-      language,
-      segmentId
-    }
-  });
+  const {data} = await axiosInstance.get(`/api/v1/segments/${segmentId}/info`);
   return data;
 };
 
-const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex, handleClose}) => {
+const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersionId}) => {
   const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
   const showPanel = isResourcesPanelOpen;
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
@@ -58,11 +49,6 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
           onClick={() => {
             handleClose ? handleClose() : closeResourcesPanel();
             setActiveView("main");
-            if (searchParams.has('segment_id')) {
-              const newParams = new URLSearchParams(searchParams);
-              newParams.delete('segment_id');
-              setSearchParams(newParams);
-            }
           }}
           className="close-icon"
         />
@@ -84,12 +70,14 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
           <>
             <p className='textgreat'>{t("text.related_texts")}</p>
             <div className='related-texts-container'>
+              
               {sidePanelData?.segment_info?.related_text?.commentaries > 0 && (
                 <button className='related-text-item' onClick={() => setActiveView("commentary")}>
                   <BiBookOpen className="m-2"/>
                   {`${t("text.commentary")} (${sidePanelData?.segment_info?.related_text?.commentaries})`}
                 </button>
               )}
+              
               {sidePanelData?.segment_info?.related_text?.root_text > 0 && (
                 <button className='related-text-item' onClick={() => setActiveView("root_text")}>
                   <BiBookOpen className="m-2"/>
@@ -135,6 +123,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
       case "share":
         return (
           <ShareView
+            segmentId={segmentId}
             setIsShareView={setActiveView}
           />
         );
@@ -152,10 +141,9 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
             setIsTranslationView={setActiveView}
             expandedTranslations={expandedTranslations}
             setExpandedTranslations={setExpandedTranslations}
-            setVersionId={setVersionId}
-            versionId={versionId}
             addChapter={addChapter}
-            sectionindex={sectionindex}
+            currentChapter={currentChapter}
+            setVersionId={setVersionId}
           />
         );
       case "commentary":
@@ -166,7 +154,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
             expandedCommentaries={expandedCommentaries}
             setExpandedCommentaries={setExpandedCommentaries}
             addChapter={addChapter}
-            sectionindex={sectionindex}
+            currentChapter={currentChapter}
           />
         );
       case "root_text":
@@ -177,7 +165,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
             expandedRootTexts={expandedRootTexts}
             setExpandedRootTexts={setExpandedRootTexts}
             addChapter={addChapter}
-            sectionindex={sectionindex}
+            currentChapter={currentChapter}
           />
         );
       default:
@@ -198,9 +186,7 @@ const Resources = ({segmentId, setVersionId, versionId, addChapter, sectionindex
 export default Resources;
 Resources.propTypes = {
   segmentId: PropTypes.string.isRequired, 
-  setVersionId: PropTypes.func, 
-  versionId: PropTypes.string, 
   addChapter: PropTypes.func, 
-  sectionindex: PropTypes.number, 
-  handleClose: PropTypes.func
+  handleClose: PropTypes.func,
+  currentChapter: PropTypes.object
 }
