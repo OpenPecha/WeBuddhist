@@ -96,8 +96,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
 
     if (isNestedStructure) {
       return contentData.map((content) =>
-        content.sections &&
-        content.sections.map((segment) =>
+        content?.sections?.map((segment) =>
           renderContentTree(segment, content.id, 0, true) //for commentary text
         )
       );

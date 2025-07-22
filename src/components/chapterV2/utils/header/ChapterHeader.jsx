@@ -60,7 +60,7 @@ const ChapterHeader = (props) => {
     <div className="chapter-header-container">
       {renderTableOfContentsIcon()}
       {renderChapterTitle()}
-      {renderBookmarkIcon()}
+      {/* {renderBookmarkIcon()} */}
       {renderViewSelector()}
       {renderCloseChapterIcon()}
     </div>

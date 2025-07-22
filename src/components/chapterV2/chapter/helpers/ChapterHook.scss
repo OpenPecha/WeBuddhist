@@ -6,10 +6,9 @@
   .main-content {
     display: flex;
     flex-direction: row;
-    width: 50%;
+    width: 100%;
     margin: 0 auto;
     overflow-y: auto;
-  
     
     .contents-container {
       display: flex;
@@ -17,7 +16,10 @@
       align-items: center;
       width: 100%;
       .outer-container{
-        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100vw;
       }
       h2{
         margin-bottom: 10px;
@@ -29,9 +31,17 @@
       }
       .segment-container{
           display: flex;
-          width: 100%;
+          width: calc(100vw - 800px);
           align-items: flex-start;
           margin-top: 10px;
+          @media (max-width: 1400px) {
+            width: calc(100vw - 400px);
+            margin: 0 auto;
+          }
+          @media (max-width: 768px) {
+            padding: 2rem;
+            width: 100vw;
+          }
           .segment-number{
             margin-right: 2rem;
           }
