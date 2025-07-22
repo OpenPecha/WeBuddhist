@@ -7,7 +7,7 @@ import { useSearchParams } from 'react-router-dom';
 import axiosInstance from '../../../../../../config/axios-config.js';
 import PaginationComponent from '../../../../../commons/pagination/PaginationComponent.jsx';
 import { highlightSearchMatch } from '../../../../../../utils/highlightUtils.jsx';
-import { getLanguageClass } from '../../../../../../utils/helperFunctions.jsx';
+import { getLanguageClass, getEarlyReturn } from '../../../../../../utils/helperFunctions.jsx';
 import { usePanelContext } from '../../../../../../context/PanelContext.jsx';
 import './IndividualTextSearch.scss';
 import PropTypes from "prop-types";
@@ -63,16 +63,8 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
       return null;
     }
 
-    if (isLoading) {
-      return <div className="search-message">{t("common.loading")}</div>;
-    }
-
-    if (error) {
-      if (error.response?.status === 404) {
-        return <div className="search-message">{t('search.zero_result', 'No results to display.')}</div>;
-      }
-      return <div className="search-message">Error loading content: {error.message}</div>;
-    }
+    const earlyReturn = getEarlyReturn({ isLoading, error, t });
+    if (earlyReturn) return earlyReturn;
 
     if (!searchResults?.sources || searchResults.sources.length === 0) {
       return <div className="search-message">{t('search.zero_result', 'No results to display.')}</div>;

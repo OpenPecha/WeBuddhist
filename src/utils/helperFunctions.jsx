@@ -1,6 +1,6 @@
 export const getEarlyReturn = ({ isLoading, error, t }) => {
   if (isLoading) {
-    return <div className="notfound listtitle">{t("common.loading")}</div>;
+    return <div className="search-message">{t("common.loading")}</div>;
   }
 
   if (error) {
