@@ -3,7 +3,7 @@ import { IoMdClose } from 'react-icons/io';
 import { BiSearch } from 'react-icons/bi';
 import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import axiosInstance from '../../../../../../config/axios-config.js';
 import PaginationComponent from '../../../../../commons/pagination/PaginationComponent.jsx';
 import { highlightSearchMatch } from '../../../../../../utils/highlightUtils.jsx';
@@ -27,7 +27,6 @@ const IndividualTextSearch = ({ onClose, textId: propTextId }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
   const { t } = useTranslate();
-  const navigate = useNavigate();
   
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
@@ -72,7 +71,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId }) => {
       return <div className="search-message">Error loading content: {error.message}</div>;
     }
 
-    if (!searchResults || !searchResults.sources || searchResults.sources.length === 0) {
+    if (!searchResults?.sources || searchResults.sources.length === 0) {
       return <div className="search-message">{t('search.zero_result', 'No results to display.')}</div>;
     }
 
@@ -84,33 +83,23 @@ const IndividualTextSearch = ({ onClose, textId: propTextId }) => {
     return (
       <>
         <div className="results-count">
-          <p>{t("sheet.search.total")}: {totalSegments}</p>
         </div>
         <div className="segments-list">
           {segments.map((segment) => (
             <button 
               type="button" 
               key={segment.segment_id} 
-              className={`segment-item ${getLanguageClass(source.text.language)}`}
-              onClick={() => {
-                if (segment.segment_id && textId) {
-                  navigate(`/texts/text-details?textId=${textId}&segmentId=${segment.segment_id}`);
-                  onClose();
-                }
-              }}
-            >
+              className={`segment-item ${getLanguageClass(source.text.language)}`}>
               <p dangerouslySetInnerHTML={{__html: highlightSearchMatch(segment.content, searchText, 'highlighted-text')}} />
             </button>
           ))}
         </div>
-        {totalPages > 1 && (
           <PaginationComponent
             pagination={pagination}
             totalPages={totalPages}
             handlePageChange={handlePageChange}
             setPagination={setPagination}
           />
-        )}
       </>
     );
   };
