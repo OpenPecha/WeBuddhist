@@ -69,3 +69,25 @@
       }
     }
 }
+
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  margin: 20px 0;
+  
+  p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+    font-style: italic;
+  }
+}
+
+.scroll-sentinel {
+  height: 20px;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+}

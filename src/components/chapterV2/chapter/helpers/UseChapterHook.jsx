@@ -6,10 +6,36 @@ import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId} = props
+  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId, loadMoreContent, isLoadingMore, hasMoreContent } = props
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
+  const sentinelRef = useRef(null);
+  
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !loadMoreContent) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && hasMoreContent && !isLoadingMore) {
+          loadMoreContent();
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '50px'
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      if (sentinel) {
+        observer.unobserve(sentinel);
+      }
+    };
+  }, [loadMoreContent, hasMoreContent, isLoadingMore]);
 
   // -------------------------- renderers --------------------------
   const renderTableOfContents = () => {
@@ -73,9 +99,22 @@ const UseChapterHook = (props) => {
   };
 
   const renderContents = () => {
-    if (!content?.sections?.[0]) return null;
+    if (!content?.sections || content.sections.length === 0) return null;
+    
     return (
-      renderSectionRecursive(content.sections[0], true)
+      <div>
+        {content.sections.map((section, index) => 
+          renderSectionRecursive(section, index === 0)
+        )}
+        {isLoadingMore && (
+          <div className="loading-indicator">
+            <p>Loading more content...</p>
+          </div>
+        )}
+        {hasMoreContent && !isLoadingMore && (
+          <div ref={sentinelRef} className="scroll-sentinel" />
+        )}
+      </div>
     );
   };
 

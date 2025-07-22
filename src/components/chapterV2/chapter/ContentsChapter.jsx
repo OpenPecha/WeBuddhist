@@ -1,11 +1,11 @@
 import ChapterHeader from "../utils/header/ChapterHeader.jsx";
-import React, {useState} from "react";
+import React, {useState, useCallback} from "react";
 import {VIEW_MODES} from "../utils/header/view-selector/ViewSelector.jsx";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import {useQuery} from "react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
-import { getEarlyReturn } from "../../../utils/helperFunctions.jsx";
+import { getEarlyReturn, getLastSegmentId, mergeSections } from "../../../utils/helperFunctions.jsx";
 import { useTranslate } from "@tolgee/react";
 import PropTypes from "prop-types";
 
@@ -22,6 +22,11 @@ const fetchContentDetails = async (text_id, contentId, segmentId, versionId, dir
 const ContentsChapter = ({textId, contentId, segmentId, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId}) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE)
   const [showTableOfContents, setShowTableOfContents] = useState(false)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [allContent, setAllContent] = useState(null)
+  const [lastSegmentId, setLastSegmentId] = useState(segmentId)
+  const [hasMoreContent, setHasMoreContent] = useState(true)
+  
   const direction="next"
   const size=20
   const {t} = useTranslate();
@@ -30,9 +35,54 @@ const ContentsChapter = ({textId, contentId, segmentId, versionId, addChapter, r
     () => fetchContentDetails(textId, contentId, segmentId, versionId, direction, size),
     {
       refetchOnWindowFocus: false,
-      enabled: !!textId
+      enabled: !!textId,
+      onSuccess: (data) => {
+        setAllContent(data);
+        if (data?.content?.sections) {
+          const lastId = getLastSegmentId(data.content.sections);
+          lastId && setLastSegmentId(lastId);
+        }
+      }
     }
   )
+
+  const loadMoreContent = useCallback(async () => {
+    if (isLoadingMore || !hasMoreContent || !lastSegmentId) return;
+    setIsLoadingMore(true);
+    try {
+      const newData = await fetchContentDetails(textId, contentId, lastSegmentId, versionId, direction, size);
+        if (newData?.current_segment_position == newData?.total_segments) {
+          setHasMoreContent(false);
+          setIsLoadingMore(false);
+          return;
+        }
+        if (newData?.content?.sections) {
+        const newSections = newData.content.sections;
+          setAllContent(prevContent => {
+            const mergedSections = mergeSections(prevContent.content.sections, newSections);
+            const updatedContent = {
+              content: {
+                ...prevContent.content,
+                sections: mergedSections
+              },
+              current_segment_position: newData.current_segment_position,
+              total_segments: newData.total_segments
+            };
+            return updatedContent;
+          });
+          
+          const newLastId = getLastSegmentId(newSections);
+          newLastId && setLastSegmentId(newLastId);
+        
+      } else {
+        setHasMoreContent(false);
+      }
+    } catch (error) {
+      console.error('Error loading more content:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [textId, contentId, lastSegmentId, versionId, direction, size, isLoadingMore, hasMoreContent]);
 
   // ----------------------------------- helpers -----------------------------------------
   const earlyReturn = getEarlyReturn({ isLoading: contentsDataLoading, error: error, t });
@@ -44,7 +94,17 @@ const ContentsChapter = ({textId, contentId, segmentId, versionId, addChapter, r
     return <ChapterHeader {...propsForChapterHeader}/>
   }
   const renderChapter = () => {
-    const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language, addChapter, currentChapter, setVersionId}
+    const propsForUseChapterHookComponent = {
+      showTableOfContents,
+      content: allContent?.content, 
+      language: allContent?.text_detail?.language, 
+      addChapter, 
+      currentChapter, 
+      setVersionId,
+      loadMoreContent,
+      isLoadingMore,
+      hasMoreContent
+    }
     return (
       <PanelProvider>
         <UseChapterHook {...propsForUseChapterHookComponent} />

@@ -159,3 +159,37 @@ export const findAndScrollToSection = (sectionId, currentChapter) => {
     }
   }, 300);
 };
+
+export const getLastSegmentId = (sections) => {
+  if (!sections || sections.length === 0) return null;
+  const lastSection = sections[sections.length - 1];
+  if (lastSection?.segments && lastSection.segments.length > 0) {
+    const lastSegment = lastSection.segments[lastSection.segments.length - 1];
+    return lastSegment.segment_id;
+  }
+  return null;
+};
+
+export const mergeSections = (existingSections, newSections) => {
+  if (!existingSections || existingSections.length === 0) return newSections;
+  if (!newSections || newSections.length === 0) return existingSections;
+
+  const mergedSections = [...existingSections];
+    newSections.forEach(newSection => {
+    const existingIndex = mergedSections.findIndex(section => section.id === newSection.id);
+      if (existingIndex !== -1) {
+      const existingSection = mergedSections[existingIndex];
+      const mergedSegments = [...(existingSection.segments)];
+      newSection.segments?.forEach(newSegment => {
+        const segmentExists = mergedSegments.some(segment => segment.segment_id === newSegment.segment_id);
+        if (!segmentExists) {
+          mergedSegments.push(newSegment);
+        }
+      });
+      mergedSections[existingIndex] = {...existingSection,segments: mergedSegments};
+    } else {
+      mergedSections.push(newSection);
+    }
+  });
+  return mergedSections;
+};
