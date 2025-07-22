@@ -6,6 +6,14 @@ import { useQuery } from 'react-query';
 import IndividualTextSearch, { fetchTextSearchResults } from './IndividualTextSearch';
 import axiosInstance from '../../../../../../config/axios-config';
 
+vi.mock('../../../../../../context/PanelContext', () => ({
+  usePanelContext: vi.fn(() => ({
+    closeResourcesPanel: vi.fn(),
+    openResourcesPanel: vi.fn(),
+    isResourcesPanelOpen: true,
+  })),
+}));
+
 vi.mock('react-router-dom', () => ({
   useNavigate: vi.fn(),
   useSearchParams: vi.fn(),
@@ -204,7 +212,6 @@ describe('IndividualTextSearch Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    // useTranslate is already mocked at the top level
     useNavigate.mockReturnValue(mockNavigate);
     
     useQuery.mockReturnValue({
@@ -266,28 +273,23 @@ describe('IndividualTextSearch Component', () => {
   });
 
   it('should trigger search when form is submitted with valid query', () => {
-    // Setup
+    
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set('text_id', 'text123');
     useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
     
     const mockOnClose = vi.fn();
     
-    // Render component
     const { getByPlaceholderText } = render(
       <IndividualTextSearch onClose={mockOnClose} />
     );
     
-    // Find the search input by its placeholder
     const searchInput = getByPlaceholderText('connection_panel.search_in_this_text');
     
-    // Type a search query
     fireEvent.change(searchInput, { target: { value: 'buddha' } });
     
-    // Submit the form
     fireEvent.submit(searchInput.closest('form'));
     
-    // Assert that useQuery was called with the right parameters
     expect(useQuery).toHaveBeenCalledWith(
       expect.arrayContaining(['textSearch', 'buddha', 'text123']),
       expect.any(Function),
@@ -300,25 +302,20 @@ describe('IndividualTextSearch Component', () => {
   });
 
   it('should not trigger search when form is submitted with empty query', () => {
-    // Setup
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set('text_id', 'text123');
     useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
     
     const mockOnClose = vi.fn();
     
-    // Render component
     const { getByPlaceholderText } = render(
       <IndividualTextSearch onClose={mockOnClose} />
     );
     
-    // Find the search input and form
     const searchInput = getByPlaceholderText('connection_panel.search_in_this_text');
     
-    // Submit the form with empty input
     fireEvent.submit(searchInput.closest('form'));
     
-    // Assert that useQuery was called with enabled: false
     expect(useQuery).toHaveBeenCalledWith(
       expect.anything(),
       expect.any(Function),
@@ -329,20 +326,15 @@ describe('IndividualTextSearch Component', () => {
   });
 
   it('should reset pagination to page 1 when submitting a new search', () => {
-    // Setup
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set('text_id', 'text123');
     useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
     
-    // Mock state for pagination testing - need at least 11 segments to trigger pagination
-    // as mentioned in the memory about IndividualTextSearch component tests
     let capturedQueryKeys = [];
     
-    // Mock useQuery to track the query parameters and return proper mock data
     useQuery.mockImplementation((queryKey, queryFn, options) => {
       capturedQueryKeys.push(queryKey);
       
-      // Return mock data with exactly 11 segments to trigger pagination (per memory)
       return {
         data: {
           search: { text: queryKey[1] || '' },
@@ -359,32 +351,68 @@ describe('IndividualTextSearch Component', () => {
       };
     });
     
-    // Render component
     const { getByPlaceholderText } = render(
       <IndividualTextSearch onClose={vi.fn()} />
     );
     
-    // Find the search input
     const searchInput = getByPlaceholderText('connection_panel.search_in_this_text');
     
-    // Type and submit first search
     fireEvent.change(searchInput, { target: { value: 'buddha' } });
     fireEvent.submit(searchInput.closest('form'));
     
-    // Get the pagination from the first search
     const firstSearchPagination = capturedQueryKeys[capturedQueryKeys.length - 1][4];
     expect(firstSearchPagination).toEqual(expect.objectContaining({ currentPage: 1 }));
     
-    // Simulate pagination to page 2 by manually updating the component's state
-    // We'll do this by making a new search with the same query
-    // and checking that the pagination resets
-    
-    // Clear the input and submit a new search
     fireEvent.change(searchInput, { target: { value: 'dharma' } });
     fireEvent.submit(searchInput.closest('form'));
     
-    // Check that pagination was reset to page 1 in the new search
     const secondSearchPagination = capturedQueryKeys[capturedQueryKeys.length - 1][4];
     expect(secondSearchPagination).toEqual(expect.objectContaining({ currentPage: 1 }));
+  });
+
+  it('should update search input field correctly when typing', () => {
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set('text_id', 'text123');
+    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    
+    const { getByPlaceholderText } = render(
+      <IndividualTextSearch onClose={vi.fn()} />
+    );
+    
+    const searchInput = getByPlaceholderText('connection_panel.search_in_this_text');
+    
+    expect(searchInput.value).toBe('');
+    
+    fireEvent.change(searchInput, { target: { value: 'b' } });
+    expect(searchInput.value).toBe('b');
+    
+    fireEvent.change(searchInput, { target: { value: 'bu' } });
+    expect(searchInput.value).toBe('bu');
+    
+    fireEvent.change(searchInput, { target: { value: 'buddha' } });
+    expect(searchInput.value).toBe('buddha');
+    
+    fireEvent.change(searchInput, { target: { value: '' } });
+    expect(searchInput.value).toBe('');
+  });
+
+  it('should autofocus the search input field on component mount', () => {
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set('text_id', 'text123');
+    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    
+    const { getByPlaceholderText } = render(
+      <IndividualTextSearch onClose={vi.fn()} />
+    );
+    
+    const searchInput = getByPlaceholderText('connection_panel.search_in_this_text');
+    
+    expect(searchInput).toBeInTheDocument();
+    expect(searchInput.tagName.toLowerCase()).toBe('input');
+    expect(searchInput.type).toBe('text');
+    
+    expect(searchInput).toHaveAttribute('placeholder', 'connection_panel.search_in_this_text');
+    
+    expect(searchInput).toHaveClass('search-input');
   });
 });
