@@ -100,10 +100,12 @@ const UseChapterHook = (props) => {
   return (
     <div className="use-chapter-hook-container">
       {renderTableOfContents()}
+      <div className="chapter-flex-row">
       <div className="main-content">
         {renderContents()}
       </div>
       {renderResources()}
+      </div>
     </div>
   )
 }

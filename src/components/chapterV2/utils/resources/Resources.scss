@@ -1,7 +1,4 @@
 .right-panel {
-  position: fixed;
-  top: 120px;
-  right: 0;
   .headerthing{
     position: sticky;
     top: 0;
@@ -24,19 +21,20 @@
         transform: scale(1.1);
       }
     }
-    
   }
-  width: 0;
+  width: 350px;
+  min-width: 320px;
+  max-width: 100vw;
+  height: 100%;
   background-color: #fff;
   border-left: 1px solid #e0e0e0;
-  transition: width 0.3s ease-in-out, right 0.3s ease-in-out;
+  transition: width 0.3s ease-in-out;
+  overflow: auto;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+  z-index: 1;
   &:not(.show) {
     transition:none;
   }
-  overflow: auto;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
-  height: calc(100vh - 64px);
-  z-index: 10;
 
   &.show {
     width: 350px;

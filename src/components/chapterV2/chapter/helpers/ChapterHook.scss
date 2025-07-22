@@ -3,11 +3,16 @@
   flex-direction: column;
   height: 100%;
   
-  .main-content {
+  .chapter-flex-row {
     display: flex;
     flex-direction: row;
     width: 100%;
-    margin: 0 auto;
+    height: 100%;
+  }
+
+  .main-content {
+    flex: 1 1 0%;
+    min-width: 0;
     overflow-y: auto;
     
     .contents-container {
@@ -39,7 +44,7 @@
             margin: 0 auto;
           }
           @media (max-width: 768px) {
-            padding: 2rem;
+            margin-left: 2rem;
             width: 100vw;
           }
           .segment-number{
