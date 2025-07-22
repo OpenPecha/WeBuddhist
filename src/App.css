@@ -17,6 +17,8 @@
   --navbaritems-font-family: 'navbar-items-font',"Inter";
   --overalltext-font-size: 22px;
   --overalltext-font-family: 'overall-text-font',"Inter";
+  --bo-font-family: 'MonlamUniOuChan2', sans-serif;
+  --en-font-family: 'Inter', sans-serif;
 }
 
 @font-face {
