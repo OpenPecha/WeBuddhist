@@ -4,16 +4,13 @@ import "./ChapterHook.scss"
 import { getLanguageClass } from "../../../../utils/helperFunctions.jsx";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
-/*
-  * handles infinite scroll
-  * figure out how to update table of contents based on the scroll
-*/
 
 const UseChapterHook = (props) => {
   const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId} = props
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
+
   // -------------------------- renderers --------------------------
   const renderTableOfContents = () => {
     return showTableOfContents && <TableOfContents />
@@ -52,26 +49,18 @@ const UseChapterHook = (props) => {
       <div className="contents-container" key={section.title || 'root'}>
         {section.title && (<h2>{section.title}</h2> )}
         
-        <div className="outer-container" ref={isTopLevel ? contentsContainerRef : null}>
+        <div className="outer-container border" ref={isTopLevel ? contentsContainerRef : null}>
           {section.segments?.map((segment) => (
             <div key={segment.segment_id}>
-            <button
-              className="segment-container"
-              onClick={() => handleSegmentClick(segment.segment_id)}
-            >
+            <button className="segment-container border" onClick={() => handleSegmentClick(segment.segment_id)}>
               <p className="segment-number">{segment.segment_number}</p>
-              <div className="segment-content">
-              <p 
-                className={`${getLanguageClass(language)}`} 
-                dangerouslySetInnerHTML={{ __html: segment.content }} 
-              />
+              <div className="segment-content border">
+              <p className={`${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
               {segment.translation && (
               <p className={`${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{ __html: segment.translation.content }} />
             )}
-              </div>
-            
+              </div> 
             </button>
-         
             </div>
           ))}
           
