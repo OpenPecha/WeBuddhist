@@ -1,3 +1,23 @@
+export const getFirstSegmentId = (sections) => {
+  if (!sections?.length) {
+    return null;
+  }
+  const [firstSection] = sections;
+  return (
+    getFirstSegmentId(firstSection.sections) ?? firstSection.segments?.[0]?.segment_id ?? null
+  );
+};
+
+export const getLastSegmentId = (sections) => {
+  if (!sections?.length) {
+    return null;
+  }
+  const lastSection = sections.at(-1);
+  return (
+    getLastSegmentId(lastSection.sections) ?? lastSection.segments?.at(-1)?.segment_id ?? null
+  );
+};
+
 export const getEarlyReturn = ({ isLoading, error, t }) => {
   if (isLoading) {
     return <div className="notfound listtitle">{t("common.loading")}</div>;
@@ -159,25 +179,7 @@ export const findAndScrollToSection = (sectionId, currentChapter) => {
     }
   }, 300);
 };
-export const getFirstSegmentId = (sections) => {
-  if (!sections?.length) {
-    return null;
-  }
-  const [firstSection] = sections;
-  return (
-    getFirstSegmentId(firstSection.sections) ?? firstSection.segments?.[0]?.segment_id ?? null
-  );
-};
 
-export const getLastSegmentId = (sections) => {
-  if (!sections?.length) {
-    return null;
-  }
-  const lastSection = sections.at(-1);
-  return (
-    getLastSegmentId(lastSection.sections) ?? lastSection.segments?.at(-1)?.segment_id ?? null
-  );
-};
 
 export const mergeSections = (existingSections, newSections) => {
   if (!existingSections || existingSections.length === 0) return newSections;
