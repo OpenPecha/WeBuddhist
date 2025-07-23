@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useInView } from "react-intersection-observer";
 import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.jsx";
 import "./ChapterHook.scss"
 import { getLanguageClass } from "../../../../utils/helperFunctions.jsx";
@@ -10,57 +11,26 @@ const UseChapterHook = (props) => {
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
-  const sentinelRef = useRef(null);
-  const topSentinelRef = useRef(null);
   const scrollRef = useRef({ isRestoring: false, previousScrollHeight: 0 });
+  const { ref: topSentinelRef, inView: isTopSentinelVisible } = useInView({threshold: 0.1, rootMargin: '50px',});
+  const { ref: sentinelRef, inView: isBottomSentinelVisible } = useInView({threshold: 0.1, rootMargin: '50px'});
 
   useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel || !loadMoreContent) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting && hasMoreContent && !isLoadingMore) {
-          loadMoreContent();
-        }
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '50px'
-      }
-    );
-    observer.observe(sentinel);
-    return () => {
-      if (sentinel) {
-        observer.unobserve(sentinel);
-      }
-    };
-  }, [loadMoreContent, hasMoreContent, isLoadingMore]);
+    if (isBottomSentinelVisible && hasMoreContent && !isLoadingMore) {
+      loadMoreContent();
+    }
+  }, [isBottomSentinelVisible, hasMoreContent, isLoadingMore, loadMoreContent]);
 
   useEffect(() => {
-    const topSentinel = topSentinelRef.current;
-    if (!topSentinel || !loadPreviousContent) return;
-    const observer = new IntersectionObserver(
-        (entries) => {
-          const [entry] = entries;
-          if (entry.isIntersecting && hasPreviousContent && !isLoadingPrevious) {
-            const scrollContainer = contentsContainerRef.current;
-            if (scrollContainer) {
-              scrollRef.current.isRestoring = true;
-              scrollRef.current.previousScrollHeight = scrollContainer.scrollHeight;
-            }
-            loadPreviousContent();
-          }
-        },
-        { threshold: 0.1, rootMargin: '50px' }
-    );
-    observer.observe(topSentinel);
-    return () => {
-      if (topSentinel) {
-        observer.unobserve(topSentinel);
+    if (isTopSentinelVisible && hasPreviousContent && !isLoadingPrevious) {
+      const scrollContainer = contentsContainerRef.current;
+      if (scrollContainer) {
+        scrollRef.current.isRestoring = true;
+        scrollRef.current.previousScrollHeight = scrollContainer.scrollHeight;
       }
-    };
-  }, [loadPreviousContent, hasPreviousContent, isLoadingPrevious]);
+      loadPreviousContent();
+    }
+  }, [isTopSentinelVisible, hasPreviousContent, isLoadingPrevious, loadPreviousContent]);
 
   useLayoutEffect(() => {
     const scrollContainer = contentsContainerRef.current;
