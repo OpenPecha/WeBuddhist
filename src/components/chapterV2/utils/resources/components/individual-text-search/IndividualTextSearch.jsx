@@ -11,6 +11,7 @@ import { getLanguageClass, getEarlyReturn } from '../../../../../../utils/helper
 import { usePanelContext } from '../../../../../../context/PanelContext.jsx';
 import './IndividualTextSearch.scss';
 import PropTypes from "prop-types";
+import { useDebounce } from 'use-debounce';
 
 export const fetchTextSearchResults = async(query, textId, skip, pagination) => {
   const { data } = await axiosInstance.get(`api/v1/search?query=${query}&search_type=SOURCE&text_id=${textId}`, {
@@ -27,7 +28,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
   const textId = propTextId || searchParams.get("text_id");
   
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext();
   
@@ -40,7 +41,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
     {
       refetchOnWindowFocus: false,
       retry: 1,
-      enabled: !!(isSearchSubmitted && searchQuery.trim() !== '' && textId)
+      enabled: !!(debouncedSearchQuery.trim() !== '' && textId)
     }
   );
   
@@ -49,7 +50,6 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim() !== '') {
-      setIsSearchSubmitted(true);
       setPagination(prev => ({ ...prev, currentPage: 1 }));
     }
   };
@@ -131,7 +131,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
   };
 
   const renderSearchResults = () => {
-    if (!isSearchSubmitted) {
+    if (!debouncedSearchQuery || debouncedSearchQuery.trim() === '') {
       return null;
     }
 
