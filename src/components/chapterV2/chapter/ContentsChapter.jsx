@@ -5,13 +5,14 @@ import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
-import { getEarlyReturn, getLastSegmentId, mergeSections } from "../../../utils/helperFunctions.jsx";
+import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } from "../../../utils/helperFunctions.jsx";
 import { useTranslate } from "@tolgee/react";
 import PropTypes from "prop-types";
 
 const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
-  const [_key, textId, contentId, versionId, direction, size, initialSegmentId] = queryKey;
-  const segmentId = pageParam ?? initialSegmentId;
+  const [_key, textId, contentId, versionId, size, initialSegmentId] = queryKey;
+  const segmentId = pageParam?.segmentId ?? initialSegmentId;
+  const direction = pageParam?.direction ?? "next";
   const { data } = await axiosInstance.post(`/api/v1/texts/${textId}/details`, {
     ...(contentId && { content_id: contentId }),
     ...(segmentId && { segment_id: segmentId }),
@@ -25,16 +26,22 @@ const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
 const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
-  const direction = "next";
   const size = 20;
   const { t } = useTranslate();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading:isLoadingContent, error:isErrorContent } = useInfiniteQuery(
-    ["content", textId, contentId, versionId, direction, size, segmentId],
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, fetchPreviousPage, hasPreviousPage, isFetchingPreviousPage, isLoading:isLoadingContent, error:isErrorContent } = useInfiniteQuery(
+    ["content", textId, contentId, versionId, size, segmentId],
     fetchContentDetails,
     {
       getNextPageParam: (lastPage) => {
-        return lastPage?.current_segment_position === lastPage?.total_segments ? null : getLastSegmentId(lastPage.content.sections);
+        if (lastPage?.current_segment_position === lastPage?.total_segments) return null;
+        const lastSegmentId = getLastSegmentId(lastPage.content.sections);
+        return { segmentId: lastSegmentId, direction: "next" };
+      },
+      getPreviousPageParam: (firstPage) => {
+        if (firstPage?.current_segment_position === 1) return null;
+        const firstSegmentId = getFirstSegmentId(firstPage.content.sections);
+        return { segmentId: firstSegmentId, direction: "previous" };
       },
       enabled: !!textId,
       refetchOnWindowFocus: false,
@@ -76,6 +83,9 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
       loadMoreContent: fetchNextPage,
       isLoadingMore: isFetchingNextPage,
       hasMoreContent: hasNextPage,
+      loadPreviousContent: fetchPreviousPage,
+      isLoadingPrevious: isFetchingPreviousPage,
+      hasPreviousContent: hasPreviousPage,
     };
     return (
       <PanelProvider>

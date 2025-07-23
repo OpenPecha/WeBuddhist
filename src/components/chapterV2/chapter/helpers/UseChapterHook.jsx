@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react"
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.jsx";
 import "./ChapterHook.scss"
 import { getLanguageClass } from "../../../../utils/helperFunctions.jsx";
@@ -6,12 +6,14 @@ import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId, loadMoreContent, isLoadingMore, hasMoreContent } = props
+  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId, loadMoreContent, isLoadingMore, hasMoreContent, loadPreviousContent, isLoadingPrevious, hasPreviousContent } = props
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
   const sentinelRef = useRef(null);
-  
+  const topSentinelRef = useRef(null);
+  const scrollRef = useRef({ isRestoring: false, previousScrollHeight: 0 });
+
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !loadMoreContent) return;
@@ -34,6 +36,41 @@ const UseChapterHook = (props) => {
       }
     };
   }, [loadMoreContent, hasMoreContent, isLoadingMore]);
+
+  useEffect(() => {
+    const topSentinel = topSentinelRef.current;
+    if (!topSentinel || !loadPreviousContent) return;
+    const observer = new IntersectionObserver(
+        (entries) => {
+          const [entry] = entries;
+          if (entry.isIntersecting && hasPreviousContent && !isLoadingPrevious) {
+            const scrollContainer = contentsContainerRef.current;
+            if (scrollContainer) {
+              scrollRef.current.isRestoring = true;
+              scrollRef.current.previousScrollHeight = scrollContainer.scrollHeight;
+            }
+            loadPreviousContent();
+          }
+        },
+        { threshold: 0.1, rootMargin: '50px' }
+    );
+    observer.observe(topSentinel);
+    return () => {
+      if (topSentinel) {
+        observer.unobserve(topSentinel);
+      }
+    };
+  }, [loadPreviousContent, hasPreviousContent, isLoadingPrevious]);
+
+  useLayoutEffect(() => {
+    const scrollContainer = contentsContainerRef.current;
+    if (scrollContainer && scrollRef.current.isRestoring) {
+      const newScrollHeight = scrollContainer.scrollHeight;
+      const heightDifference = newScrollHeight - scrollRef.current.previousScrollHeight;
+      scrollContainer.scrollTop += heightDifference;
+      scrollRef.current.isRestoring = false;
+    }
+  }, [content]);
 
   // -------------------------- renderers --------------------------
   const renderTableOfContents = () => {
@@ -73,12 +110,12 @@ const UseChapterHook = (props) => {
       <div className="contents-container" key={section.title || 'root'}>
         {section.title && (<h2>{section.title}</h2> )}
         
-        <div className="outer-container border" ref={isTopLevel ? contentsContainerRef : null}>
+        <div className="outer-container">
           {section.segments?.map((segment) => (
             <div key={segment.segment_id}>
-            <button className="segment-container border" onClick={() => handleSegmentClick(segment.segment_id)}>
+            <button className="segment-container" onClick={() => handleSegmentClick(segment.segment_id)}>
               <p className="segment-number">{segment.segment_number}</p>
-              <div className="segment-content border">
+              <div className="segment-content">
               <p className={`${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
               {segment.translation && (
               <p className={`${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{ __html: segment.translation.content }} />
@@ -101,6 +138,14 @@ const UseChapterHook = (props) => {
     
     return (
       <div>
+        {hasPreviousContent && !isLoadingPrevious && (
+            <div ref={topSentinelRef} className="scroll-sentinel-top" />
+        )}
+        {isLoadingPrevious && (
+            <div className="loading-indicator">
+              <p>Loading previous content...</p>
+            </div>
+        )}
         {content.sections.map((section, index) => 
           renderSectionRecursive(section, index === 0)
         )}
@@ -127,10 +172,10 @@ const UseChapterHook = (props) => {
     <div className="use-chapter-hook-container">
       {renderTableOfContents()}
       <div className="chapter-flex-row">
-      <div className="main-content">
-        {renderContents()}
-      </div>
-      {renderResources()}
+        <div className="main-content" ref={contentsContainerRef}>
+          {renderContents()}
+        </div>
+        {renderResources()}
       </div>
     </div>
   )

@@ -159,10 +159,25 @@ export const findAndScrollToSection = (sectionId, currentChapter) => {
     }
   }, 300);
 };
-
+export const getFirstSegmentId = (sections) => {
+  if (!sections || sections.length === 0) return null;
+  const firstSection = sections[0];
+  if (!firstSection) return null;
+  // Check nested sections first (recursive)
+  if (firstSection.sections && firstSection.sections.length > 0) {
+    const nestedFirst = getFirstSegmentId(firstSection.sections);
+    if (nestedFirst) return nestedFirst;
+  }
+  // Then check segments
+  if (firstSection.segments && firstSection.segments.length > 0) {
+    return firstSection.segments[0].segment_id;
+  }
+  return null;
+};
 export const getLastSegmentId = (sections) => {
   if (!sections || sections.length === 0) return null;
   const lastSection = sections[sections.length - 1];
+  if (!lastSection) return null;
   // Check nested sections first (recursive)
   if (lastSection.sections && lastSection.sections.length > 0) {
     const nestedLast = getLastSegmentId(lastSection.sections);
