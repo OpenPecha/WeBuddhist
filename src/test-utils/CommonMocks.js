@@ -20,7 +20,7 @@ export const mockUseAuth = () => {
       logout: vi.fn(),
     }),
   }));
-}
+};
 
 export const mockUseAuth0 = () => {
   vi.mock("@auth0/auth0-react", () => ({
@@ -31,11 +31,11 @@ export const mockUseAuth0 = () => {
       user: null,
     }),
   }));
-}
+};
 
 export const mockReactQuery = () => {
-  vi.mock("react-query", async () => {
-    const actual = await vi.importActual("react-query");
+  vi.mock("@tanstack/react-query", async () => {
+    const actual = await vi.importActual("@tanstack/react-query");
     const defaultUseMutation = (mutationFn, options) => {
       const mutate = async (args) => {
         try {
@@ -65,12 +65,10 @@ export const mockReactQuery = () => {
   });
 };
 
-
-export const mockTolgee = Tolgee()
-  .init({
-    language: 'en',
-    fallbackLanguage: 'en',
-    staticData: {
-      en: localeEn
-    }
-  });
+export const mockTolgee = Tolgee().init({
+  language: "en",
+  fallbackLanguage: "en",
+  staticData: {
+    en: localeEn,
+  },
+});

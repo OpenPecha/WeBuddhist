@@ -3,7 +3,7 @@ import { useTranslate } from '@tolgee/react';
 import './Sheets.scss';
 import { CiBookmark } from 'react-icons/ci';
 import axiosInstance from '../../../config/axios-config';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
 

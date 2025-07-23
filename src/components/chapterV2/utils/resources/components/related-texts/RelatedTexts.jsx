@@ -2,7 +2,7 @@ import { IoMdClose } from "react-icons/io";
 import { IoAddCircleOutline, IoShareSocialSharp } from "react-icons/io5";
 import { GoLinkExternal } from "react-icons/go";
 import { useTranslate } from "@tolgee/react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import "./RelatedTexts.scss";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";

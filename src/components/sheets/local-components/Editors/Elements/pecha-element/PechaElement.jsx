@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../../../../../../config/axios-config';
 import './PechaElement.scss';
 import pechaIcon from '../../../../../../assets/icons/pecha_icon.png';

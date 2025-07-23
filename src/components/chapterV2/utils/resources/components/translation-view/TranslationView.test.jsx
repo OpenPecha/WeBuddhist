@@ -1,6 +1,6 @@
 import React from "react";
-import {QueryClient, QueryClientProvider} from "react-query";
-import * as reactQuery from "react-query";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import * as reactQuery from "@tanstack/react-query";
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render} from "@testing-library/react";
 import TranslationView, {fetchTranslationsData} from "./TranslationView.jsx";

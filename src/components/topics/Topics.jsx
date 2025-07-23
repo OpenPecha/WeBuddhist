@@ -1,6 +1,6 @@
 import {LANGUAGE} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
-import {useQuery} from "react-query";
+import {useQuery} from "@tanstack/react-query";
 import {useMemo, useState} from "react";
 import {useSearchParams} from "react-router-dom";
 import {Button, Card, Col, Container, Form, Pagination, Row} from "react-bootstrap";

@@ -4,7 +4,7 @@ import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import SearchResultsPage from "./SearchResultsPage";
 import { mockTolgee } from "../../test-utils/CommonMocks";
-import { QueryClientProvider, QueryClient } from "react-query";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { BrowserRouter } from "react-router-dom";
 

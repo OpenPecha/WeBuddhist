@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../../../config/AuthContext.jsx';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../../../../config/axios-config.js';
 import './ProfileCard.scss';
 import { useAuth0 } from '@auth0/auth0-react';

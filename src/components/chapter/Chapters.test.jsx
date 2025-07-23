@@ -2,7 +2,7 @@ import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import { BrowserRouter as Router, useLocation, useSearchParams } from "react-router-dom";
 import Chapters from "./Chapters.jsx";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";

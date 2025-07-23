@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState, useCallback} from "react";
 import {SOURCE_TRANSLATION_OPTIONS_MAPPER} from "../../../../utils/constants.js";
 import {useSearchParams} from "react-router-dom";
-import {useQuery} from "react-query";
+import {useQuery} from "@tanstack/react-query";
 import {Container, Spinner} from "react-bootstrap";
 import LeftSidePanel from "../left-side-panel/LeftSidePanel.jsx";
 import axiosInstance from "../../../../config/axios-config.js";

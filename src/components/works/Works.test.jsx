@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import * as reactQuery from "react-query";
+import * as reactQuery from "@tanstack/react-query";
 import "@testing-library/jest-dom";
 import {
   mockAxios,
@@ -8,7 +8,7 @@ import {
   mockUseAuth,
 } from "../../test-utils/CommonMocks.js";
 import { vi } from "vitest";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import axiosInstance from "../../config/axios-config.js";
 import Works from "./Works.jsx";
 import { BrowserRouter as Router, useParams } from "react-router-dom";

@@ -4,9 +4,9 @@ import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import Sources from "./Sources";
 import { mockTolgee } from "../../../test-utils/CommonMocks";
-import { QueryClientProvider, QueryClient } from "react-query";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { TolgeeProvider } from "@tolgee/react";
-import * as reactQuery from "react-query";
+import * as reactQuery from "@tanstack/react-query";
 import { MemoryRouter } from "react-router-dom";
 
 const mockNavigate = vi.fn();

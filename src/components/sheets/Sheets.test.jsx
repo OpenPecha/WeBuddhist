@@ -1,6 +1,6 @@
 import React from "react";
 import { mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
@@ -80,8 +80,8 @@ const mockUseQuery = vi.fn((opts) => {
   };
 });
 
-vi.mock('react-query', async () => {
-  const actual = await vi.importActual('react-query');
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual('@tanstack/react-query');
   return {
     ...actual,
     useQuery: (...args) => mockUseQuery(...args),

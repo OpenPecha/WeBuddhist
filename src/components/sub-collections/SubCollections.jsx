@@ -1,7 +1,7 @@
 import React from 'react';
 import { LANGUAGE } from '../../utils/constants.js';
 import { Link, useParams } from 'react-router-dom';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../../config/axios-config';
 import './SubCollections.scss';
 import { useTranslate } from '@tolgee/react';

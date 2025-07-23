@@ -4,7 +4,7 @@ import { IoCopy } from "react-icons/io5";
 import { BsFacebook, BsTwitter } from "react-icons/bs";
 import { useTranslate } from "@tolgee/react";
 import "./ShareView.scss";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import PropTypes from "prop-types";
 

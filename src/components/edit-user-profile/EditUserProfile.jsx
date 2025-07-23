@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button, Col, Form, Row, Tab, Tabs } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./EditUserProfile.scss";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useTranslate } from "@tolgee/react";
 

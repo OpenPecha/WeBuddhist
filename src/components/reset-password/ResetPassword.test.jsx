@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { expect } from "vitest";
 import "@testing-library/jest-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ResetPassword from "./ResetPassword.jsx";
 import { BrowserRouter as Router } from "react-router-dom";
 import { mockAxios, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";

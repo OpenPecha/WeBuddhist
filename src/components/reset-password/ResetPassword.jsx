@@ -3,7 +3,7 @@ import { Button, Form } from "react-bootstrap";
 import "./ResetPassword.scss";
 import eyeOpen from "../../assets/icons/eye-open.svg";
 import eyeClose from "../../assets/icons/eye-closed.svg";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useLocation } from "react-router-dom";
 import { RESET_PASSWORD_TOKEN } from "../../utils/constants.js";

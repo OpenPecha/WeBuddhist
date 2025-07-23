@@ -1,11 +1,11 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import PechaElement, { fetchSegmentDetails } from "./PechaElement";
 import { vi } from "vitest";
 import { mockAxios, mockReactQuery } from "../../../../../../test-utils/CommonMocks.js";
-import * as reactQuery from "react-query";
+import * as reactQuery from "@tanstack/react-query";
 import { removeFootnotes } from '../../../../sheet-utils/Constant';
 import axiosInstance from '../../../../../../config/axios-config';
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";

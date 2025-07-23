@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import "./CommunityPage.scss";
 import { useTranslate } from '@tolgee/react';
 import { LANGUAGE } from '../../utils/constants.js';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '../../config/axios-config.js';
 import { useNavigate,Link } from 'react-router-dom';
 import { useAuth } from '../../config/AuthContext.jsx';

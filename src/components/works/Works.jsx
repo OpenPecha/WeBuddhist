@@ -3,7 +3,7 @@ import axiosInstance from '../../config/axios-config';
 import { LANGUAGE } from "../../utils/constants.js";
 import './Works.scss';
 import { useTranslate } from '@tolgee/react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useParams,Link } from 'react-router-dom';
 import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 

@@ -3,7 +3,7 @@ import { IoClose } from "react-icons/io5";
 import {useDebounce} from "use-debounce";
 import "./SheetSegmentModal.scss";
 import { Form } from 'react-bootstrap';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import axiosInstance from "../../../../../config/axios-config";
 import PaginationComponent from '../../../../../components/commons/pagination/PaginationComponent';
 import SourceItem from './SourceItem';

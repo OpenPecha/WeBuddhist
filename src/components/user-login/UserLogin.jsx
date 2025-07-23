@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Button, Col, Container, Form, Row, Toast, ToastContainer } from "react-bootstrap";
 import "./UserLogin.scss";
 import axiosInstance from "../../config/axios-config";
