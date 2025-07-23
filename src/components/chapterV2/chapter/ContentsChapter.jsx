@@ -3,7 +3,7 @@ import React, { useState, useMemo } from "react";
 import { VIEW_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
 import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } from "../../../utils/helperFunctions.jsx";
 import { useTranslate } from "@tolgee/react";

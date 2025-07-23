@@ -1,7 +1,7 @@
 import React from "react";
 import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import * as reactQuery from "@tanstack/react-query";
+import {QueryClient, QueryClientProvider} from "react-query";
+import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router, useParams} from "react-router-dom";

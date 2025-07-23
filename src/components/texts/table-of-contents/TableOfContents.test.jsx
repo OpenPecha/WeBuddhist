@@ -1,6 +1,6 @@
 import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../../test-utils/CommonMocks.js";
 import {vi} from "vitest";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {QueryClient, QueryClientProvider} from "react-query";
 import {BrowserRouter as Router, useParams} from "react-router-dom";
 import {fireEvent, render, screen} from "@testing-library/react";
 import {TolgeeProvider} from "@tolgee/react";

@@ -11,7 +11,7 @@ import {
 } from "./Constant";
 import ImageUploadModal from "../local-components/modals/image-upload-modal/ImageUploadModal";
 import SheetSegmentModal from "../local-components/modals/sheet-segment-modal/SheetSegmentModal";
-import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
+import { QueryClientProvider, useQueryClient } from "react-query";
 import axios from "axios";
 
 const fetchShortUrlContent = async (shortId) => {

@@ -6,7 +6,7 @@ import { useTranslate } from '@tolgee/react';
 import { useDebounce } from 'use-debounce';
 import { useParams } from 'react-router-dom';
 import { fetchSheetData } from './view-sheet/SheetDetailPage';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from 'react-query';
 import { convertSegmentsToSlate } from './sheet-utils/Constant';
 
 const defaultValue = [

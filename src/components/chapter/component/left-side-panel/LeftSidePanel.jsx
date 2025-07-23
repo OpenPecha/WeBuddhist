@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "react-query";
 import axiosInstance from "../../../../config/axios-config.js";
 import { LANGUAGE } from "../../../../utils/constants.js";
 import "./LeftSidePanel.scss";

@@ -3,7 +3,7 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import "./UserRegistration.scss";
 import axiosInstance from "../../config/axios-config.js";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "react-query";
 import eyeOpen from "../../assets/icons/eye-open.svg";
 import eyeClose from "../../assets/icons/eye-closed.svg";
 import { useAuth } from "../../config/AuthContext.jsx";

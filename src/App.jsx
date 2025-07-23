@@ -1,7 +1,7 @@
 import "./App.css";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import NavigationBar from "./components/navbar/NavigationBar.jsx";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.jsx";
 import { useEffect, useState , Suspense, lazy} from "react";
 import axiosInstance from "./config/axios-config.js";

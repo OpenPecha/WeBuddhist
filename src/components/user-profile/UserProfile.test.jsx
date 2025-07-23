@@ -2,7 +2,7 @@ import { fireEvent, render, screen, act, waitFor } from "@testing-library/react"
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
 import UserProfile, { fetchUserInfo } from "./UserProfile.jsx";
-import { QueryClient, QueryClientProvider, useQuery, useMutation } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery, useMutation } from "react-query";
 import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
 import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import "./ForgotPassword.scss";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useNavigate } from "react-router-dom";
 import { useTranslate } from "@tolgee/react";

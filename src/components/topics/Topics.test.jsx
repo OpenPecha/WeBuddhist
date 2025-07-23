@@ -1,5 +1,5 @@
 import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
-import * as reactQuery from "@tanstack/react-query";
+import * as reactQuery from "react-query";
 
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render, screen, waitFor} from "@testing-library/react";
@@ -8,7 +8,7 @@ import {BrowserRouter as Router} from "react-router-dom";
 import "@testing-library/jest-dom";
 import Topics, {fetchTopics} from "./Topics.jsx";
 import { vi } from "vitest";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {QueryClient, QueryClientProvider} from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 
 mockAxios();

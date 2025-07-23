@@ -4,7 +4,7 @@ import App from './App.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router } from "react-router-dom";
 import { Auth0ProviderWithNavigate } from "./config/Auth0ProviderWithNavigate.jsx";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { PechaAuthProvider } from "./config/AuthContext.jsx";
 import { BackendFetch, DevTools, FormatSimple, Tolgee, TolgeeProvider } from "@tolgee/react";
 import localeEn from "./i18n/en.json";

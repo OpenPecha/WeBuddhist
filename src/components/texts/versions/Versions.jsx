@@ -3,7 +3,7 @@ import {LANGUAGE} from "../../../utils/constants.js";
 import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../../utils/helperFunctions.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import {Link, useParams} from "react-router-dom";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery} from "react-query";
 import {useTranslate} from "@tolgee/react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import "./Versions.scss"

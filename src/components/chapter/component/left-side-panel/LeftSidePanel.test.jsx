@@ -2,8 +2,8 @@ import React from "react";
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import LeftSidePanel from "./LeftSidePanel.jsx";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import * as reactQuery from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
+import * as reactQuery from "react-query";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 vi.mock("@tolgee/react", () => ({

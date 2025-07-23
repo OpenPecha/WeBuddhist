@@ -4,7 +4,7 @@ import "./Collections.scss";
 import {useTranslate} from "@tolgee/react";
 import axiosInstance from "../../config/axios-config.js";
 import {LANGUAGE} from "../../utils/constants.js";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery} from "react-query";
 import {Link} from "react-router-dom";
 import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 

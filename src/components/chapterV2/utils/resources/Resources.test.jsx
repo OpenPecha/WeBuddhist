@@ -1,6 +1,6 @@
 import {vi} from "vitest";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import * as reactQuery from "@tanstack/react-query";
+import {QueryClient, QueryClientProvider} from "react-query";
+import * as reactQuery from "react-query";
 import {fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router} from "react-router-dom";
 import {TolgeeProvider} from "@tolgee/react";

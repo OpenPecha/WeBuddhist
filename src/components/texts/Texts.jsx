@@ -1,6 +1,6 @@
 
 import React, {useMemo, useState} from 'react'
-import {useQuery} from "@tanstack/react-query";
+import {useQuery} from "react-query";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 import "./Texts.scss"
 import {LANGUAGE} from "../../utils/constants.js";

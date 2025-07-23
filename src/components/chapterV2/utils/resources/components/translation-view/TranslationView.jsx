@@ -2,7 +2,7 @@ import { IoMdClose } from "react-icons/io";
 import { useTranslate } from "@tolgee/react";
 import { GoLinkExternal } from "react-icons/go";
 import "./TranslationView.scss";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "react-query";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";

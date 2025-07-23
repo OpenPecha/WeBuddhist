@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import ProfileCard from './ProfileCard';
 import { vi } from 'vitest';
 import { mockUseAuth, mockReactQuery } from '../../../../test-utils/CommonMocks.js';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from 'react-query';
 import axiosInstance from '../../../../config/axios-config.js';
 import { fetchUserInfo } from './ProfileCard.jsx';
 

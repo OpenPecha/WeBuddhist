@@ -8,8 +8,8 @@ import {
 } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import Chapter from "./Chapter.jsx";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import * as reactQuery from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
+import * as reactQuery from "react-query";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import { fetchTextDetails } from "./Chapter.jsx";

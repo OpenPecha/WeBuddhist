@@ -7,7 +7,7 @@ import { FiEdit, FiTrash, FiEye, FiShare, FiPrinter } from "react-icons/fi";
 import { usePanelContext, PanelProvider } from '../../../context/PanelContext';
 import { extractSpotifyInfo } from '../sheet-utils/Constant';
 import axiosInstance from '../../../config/axios-config';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useTranslate } from '@tolgee/react';
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import Resources from "../../chapterV2/utils/resources/Resources.jsx";

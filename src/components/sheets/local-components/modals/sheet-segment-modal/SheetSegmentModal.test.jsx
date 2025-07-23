@@ -27,7 +27,7 @@ const mockSegmentData = {
   total: 1,
 };
 
-vi.mock("@tanstack/react-query", () => ({
+vi.mock("react-query", () => ({
   useQuery: vi.fn(() => ({
     data: null,
     isLoading: false,
@@ -80,7 +80,7 @@ vi.mock("react-icons/io5", () => ({
 }));
 
 vi.mock("./SheetSegmentModal.scss", () => ({}));
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "react-query";
 
 describe("SheetSegmentModal", () => {
   const defaultProps = {

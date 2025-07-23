@@ -2,7 +2,7 @@ import "./UserProfile.scss";
 import { Tab, Tabs } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useTranslate } from "@tolgee/react";
 import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
