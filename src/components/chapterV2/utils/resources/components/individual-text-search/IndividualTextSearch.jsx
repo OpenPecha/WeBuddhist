@@ -58,53 +58,11 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
 
-  const renderSearchResults = () => {
-    if (!isSearchSubmitted) {
-      return null;
-    }
-
-    const earlyReturn = getEarlyReturn({ isLoading, error, t });
-    if (earlyReturn) return earlyReturn;
-
-    if (!searchResults?.sources || searchResults.sources.length === 0) {
-      return <div className="search-message">{t('search.zero_result', 'No results to display.')}</div>;
-    }
-
-    const source = searchResults.sources[0];
-    const segments = source?.segment_match || [];
-    const totalSegments = segments.length;
-    const totalPages = Math.ceil(totalSegments / pagination.limit);
-
+  
+  const earlyReturn = getEarlyReturn({ isLoading, error, t });
+  
+  const renderHeader = () => {
     return (
-      <>
-        <div className="results-count">
-        </div>
-        <div className="segments-list">
-          {segments.map((segment) => (
-            <button 
-              type="button" 
-              key={segment.segment_id} 
-              onClick={() => {
-                handleSegmentNavigate(segment.segment_id);
-                closeResourcesPanel();
-              }}
-              className={`segment-item ${getLanguageClass(source.text.language)}`}>
-              <p dangerouslySetInnerHTML={{__html: highlightSearchMatch(segment.content, searchText, 'highlighted-text')}} />
-            </button>
-          ))}
-        </div>
-          <PaginationComponent
-            pagination={pagination}
-            totalPages={totalPages}
-            handlePageChange={handlePageChange}
-            setPagination={setPagination}
-          />
-      </>
-    );
-  };
-
-  return (
-    <div className="individual-text-search">
       <div className="search-header">
         <h2>{t('connection_panel.search_in_this_text')}</h2>
         <IoMdClose
@@ -113,7 +71,11 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
           className="close-icon"
         />
       </div>
-      
+    );
+  };
+
+  const renderSearchForm = () => {
+    return (
       <div className="search-container">
         <form onSubmit={handleSearch}>
           <div className="search-input-wrapper">
@@ -129,7 +91,75 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
           </div>
         </form>
       </div>
-      
+    );
+  };
+
+  const renderSegmentsList = (segments, source) => {
+    return (
+      <div className="segments-list">
+        {segments.map((segment) => (
+          <button 
+            type="button" 
+            key={segment.segment_id} 
+            onClick={() => {
+              handleSegmentNavigate(segment.segment_id);
+              closeResourcesPanel();
+            }}
+            className={`segment-item ${getLanguageClass(source.text.language)}`}>
+            <p dangerouslySetInnerHTML={{__html: highlightSearchMatch(segment.content, searchText, 'highlighted-text')}} />
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  const renderPagination = (totalSegments) => {
+    const totalPages = Math.ceil(totalSegments / pagination.limit);
+    
+    if (totalPages <= 1) {
+      return null;
+    }
+    
+    return (
+      <PaginationComponent
+        pagination={pagination}
+        totalPages={totalPages}
+        handlePageChange={handlePageChange}
+        setPagination={setPagination}
+      />
+    );
+  };
+
+  const renderSearchResults = () => {
+    if (!isSearchSubmitted) {
+      return null;
+    }
+
+    if (earlyReturn) return earlyReturn;
+
+    if (!searchResults?.sources || searchResults.sources.length === 0) {
+      return <div className="search-message">{t('search.zero_result', 'No results to display.')}</div>;
+    }
+
+    const source = searchResults.sources[0];
+    const segments = source?.segment_match || [];
+    const totalSegments = segments.length;
+
+    return (
+      <>
+        <div className="results-count">
+          <p></p>
+        </div>
+        {renderSegmentsList(segments, source)}
+        {renderPagination(totalSegments)}
+      </>
+    );
+  };
+
+  return (
+    <div className="individual-text-search ">
+      {renderHeader()}
+      {renderSearchForm()}
       <div className="search-results">
         {renderSearchResults()}
       </div>
