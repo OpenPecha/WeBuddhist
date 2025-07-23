@@ -58,9 +58,11 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
 
-  
+  // ----------------------------- helpers ---------------------------------------
+
   const earlyReturn = getEarlyReturn({ isLoading, error, t });
   
+  // ----------------------------- renderers -------------------------------------
   const renderHeader = () => {
     return (
       <div className="search-header">
