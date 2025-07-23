@@ -128,7 +128,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
 export default React.memo(TableOfContents);
 
 TableOfContents.propTypes = {
-  textId: PropTypes.string.isRequired,
+  textId: PropTypes.string,
   pagination: PropTypes.shape({
     currentPage: PropTypes.number.isRequired,
     limit: PropTypes.number.isRequired

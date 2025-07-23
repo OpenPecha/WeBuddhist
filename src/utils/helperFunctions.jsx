@@ -163,9 +163,14 @@ export const findAndScrollToSection = (sectionId, currentChapter) => {
 export const getLastSegmentId = (sections) => {
   if (!sections || sections.length === 0) return null;
   const lastSection = sections[sections.length - 1];
-  if (lastSection?.segments && lastSection.segments.length > 0) {
-    const lastSegment = lastSection.segments[lastSection.segments.length - 1];
-    return lastSegment.segment_id;
+  // Check nested sections first (recursive)
+  if (lastSection.sections && lastSection.sections.length > 0) {
+    const nestedLast = getLastSegmentId(lastSection.sections);
+    if (nestedLast) return nestedLast;
+  }
+  // Then check segments
+  if (lastSection.segments && lastSection.segments.length > 0) {
+    return lastSection.segments[lastSection.segments.length - 1].segment_id;
   }
   return null;
 };
@@ -175,18 +180,24 @@ export const mergeSections = (existingSections, newSections) => {
   if (!newSections || newSections.length === 0) return existingSections;
 
   const mergedSections = [...existingSections];
-    newSections.forEach(newSection => {
+  newSections.forEach(newSection => {
     const existingIndex = mergedSections.findIndex(section => section.id === newSection.id);
-      if (existingIndex !== -1) {
+    if (existingIndex !== -1) {
       const existingSection = mergedSections[existingIndex];
-      const mergedSegments = [...(existingSection.segments)];
-      newSection.segments?.forEach(newSegment => {
-        const segmentExists = mergedSegments.some(segment => segment.segment_id === newSegment.segment_id);
-        if (!segmentExists) {
+      // Merge segments
+      const mergedSegments = [...(existingSection.segments || [])];
+      (newSection.segments || []).forEach(newSegment => {
+        if (!mergedSegments.some(segment => segment.segment_id === newSegment.segment_id)) {
           mergedSegments.push(newSegment);
         }
       });
-      mergedSections[existingIndex] = {...existingSection,segments: mergedSegments};
+      // Merge nested sections recursively
+      const mergedNestedSections = mergeSections(existingSection.sections || [], newSection.sections || []);
+      mergedSections[existingIndex] = {
+        ...existingSection,
+        segments: mergedSegments,
+        sections: mergedNestedSections
+      };
     } else {
       mergedSections.push(newSection);
     }

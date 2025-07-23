@@ -27,9 +27,7 @@ const UseChapterHook = (props) => {
         rootMargin: '50px'
       }
     );
-
     observer.observe(sentinel);
-
     return () => {
       if (sentinel) {
         observer.unobserve(sentinel);
