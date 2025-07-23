@@ -160,34 +160,23 @@ export const findAndScrollToSection = (sectionId, currentChapter) => {
   }, 300);
 };
 export const getFirstSegmentId = (sections) => {
-  if (!sections || sections.length === 0) return null;
-  const firstSection = sections[0];
-  if (!firstSection) return null;
-  // Check nested sections first (recursive)
-  if (firstSection.sections && firstSection.sections.length > 0) {
-    const nestedFirst = getFirstSegmentId(firstSection.sections);
-    if (nestedFirst) return nestedFirst;
+  if (!sections?.length) {
+    return null;
   }
-  // Then check segments
-  if (firstSection.segments && firstSection.segments.length > 0) {
-    return firstSection.segments[0].segment_id;
-  }
-  return null;
+  const [firstSection] = sections;
+  return (
+    getFirstSegmentId(firstSection.sections) ?? firstSection.segments?.[0]?.segment_id ?? null
+  );
 };
+
 export const getLastSegmentId = (sections) => {
-  if (!sections || sections.length === 0) return null;
-  const lastSection = sections[sections.length - 1];
-  if (!lastSection) return null;
-  // Check nested sections first (recursive)
-  if (lastSection.sections && lastSection.sections.length > 0) {
-    const nestedLast = getLastSegmentId(lastSection.sections);
-    if (nestedLast) return nestedLast;
+  if (!sections?.length) {
+    return null;
   }
-  // Then check segments
-  if (lastSection.segments && lastSection.segments.length > 0) {
-    return lastSection.segments[lastSection.segments.length - 1].segment_id;
-  }
-  return null;
+  const lastSection = sections.at(-1);
+  return (
+    getLastSegmentId(lastSection.sections) ?? lastSection.segments?.at(-1)?.segment_id ?? null
+  );
 };
 
 export const mergeSections = (existingSections, newSections) => {
