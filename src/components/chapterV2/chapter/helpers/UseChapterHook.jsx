@@ -74,7 +74,7 @@ const UseChapterHook = (props) => {
     };
   }, []);
 
-  const renderSectionRecursive = (section, isTopLevel = false) => {
+  const renderSectionRecursive = (section) => {
     if (!section) return null;
     return (
       <div className="contents-container" key={section.title || 'root'}>
@@ -96,7 +96,7 @@ const UseChapterHook = (props) => {
           ))}
           
           {section.sections?.map((nestedSection) => 
-            renderSectionRecursive(nestedSection, false)
+            renderSectionRecursive(nestedSection)
           )}
         </div>
       </div>
@@ -107,7 +107,7 @@ const UseChapterHook = (props) => {
     if (!content?.sections || content.sections.length === 0) return null;
     
     return (
-      <div>
+      <div className="outmost-container">
         {hasPreviousContent && !isLoadingPrevious && (
             <div ref={topSentinelRef} className="scroll-sentinel-top" />
         )}
@@ -116,8 +116,8 @@ const UseChapterHook = (props) => {
               <p>Loading previous content...</p>
             </div>
         )}
-        {content.sections.map((section, index) => 
-          renderSectionRecursive(section, index === 0)
+        {content.sections.map((section) => 
+          renderSectionRecursive(section)
         )}
         {isLoadingMore && (
           <div className="loading-indicator">
