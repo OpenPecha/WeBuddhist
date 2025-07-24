@@ -47,7 +47,7 @@ const Collections = () => {
 
   const renderCollections = () => {
     const renderCollectionNames = (collection) => {
-      return collection.hasChild ?
+      return collection.has_child ?
         <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
           {collection.title}
         </Link> :
