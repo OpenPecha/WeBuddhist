@@ -92,15 +92,15 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
         <UseChapterHook {...propsForUseChapterHookComponent} />
       </PanelProvider>
     );
-  };
+  }
 
   return (
     <div className="contents-chapter-container">
       {renderChapterHeader()}
       {renderChapter()}
     </div>
-  );
-};
+  )
+}
 
 export default React.memo(ContentsChapter);
 ContentsChapter.propTypes = {
@@ -113,4 +113,4 @@ ContentsChapter.propTypes = {
   currentChapter: PropTypes.object,
   totalChapters: PropTypes.number,
   setVersionId: PropTypes.func,
-};
+}
