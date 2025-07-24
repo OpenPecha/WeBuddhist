@@ -150,7 +150,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
     return (
       <>
         <div className="results-count">
-          <p></p>
+          <p>{t("sheet.search.total")} : {searchResults.total}</p>
         </div>
         {renderSegmentsList(segments, source)}
         {renderPagination(totalSegments)}
