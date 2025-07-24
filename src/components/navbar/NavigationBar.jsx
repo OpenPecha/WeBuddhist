@@ -11,7 +11,7 @@ import { useQueryClient } from "react-query";
 import { useState } from 'react';
 
 export const invalidateQueries = async (queryClient) => {
-  const queriesToInvalidate = ["texts", "topics","sheets","sidePanel","works","texts-versions","texts-content","sheets-user-profile","table-of-contents","collections","sub-collections"];
+  const queriesToInvalidate = ["texts", "topics","sheets","sidePanel","works","texts-versions","texts-content","sheets-user-profile","table-of-contents","collections","sub-collections","versions"];
   await Promise.all(queriesToInvalidate.map(query => queryClient.invalidateQueries(query)));
 };
 const NavigationBar = () => {
