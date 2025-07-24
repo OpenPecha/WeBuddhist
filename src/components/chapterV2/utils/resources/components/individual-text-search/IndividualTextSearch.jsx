@@ -148,13 +148,13 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
     const totalSegments = segments.length;
 
     return (
-      <>
+      <div className="search-results">
         <div className="results-count">
           <p>{t("sheet.search.total")} : {searchResults.total}</p>
         </div>
         {renderSegmentsList(segments, source)}
         {renderPagination(totalSegments)}
-      </>
+      </div>
     );
   };
 
@@ -162,9 +162,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
     <div className="individual-text-search ">
       {renderHeader()}
       {renderSearchForm()}
-      <div className="search-results">
-        {renderSearchResults()}
-      </div>
+      {renderSearchResults()}
     </div>
   );
 };
