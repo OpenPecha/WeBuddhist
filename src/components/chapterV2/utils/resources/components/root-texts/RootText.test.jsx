@@ -71,14 +71,17 @@ describe("RootTextView", () => {
   let mockSetExpandedRootTexts;
   let mockAddChapter;
   let mockCloseResourcesPanel;
-
+  let currentChapter;
   beforeEach(() => {
     vi.resetAllMocks();
     mockSetIsRootTextView = vi.fn();
     mockSetExpandedRootTexts = vi.fn();
     mockAddChapter = vi.fn();
     mockCloseResourcesPanel = vi.fn();
-
+    currentChapter = {
+      textId: "mock-root-text-1",
+      segmentId: "mock-segment-id",
+    };
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
       if (queryKey[0] === "rootTexts") {
         return { data: mockRootTextData, isLoading: false };
@@ -106,6 +109,7 @@ describe("RootTextView", () => {
       setExpandedRootTexts: mockSetExpandedRootTexts,
       addChapter: mockAddChapter,
       sectionindex: 0,
+      currentChapter: currentChapter,
     };
 
     return render(
@@ -170,12 +174,9 @@ describe("RootTextView", () => {
     fireEvent.click(openTextButtons[0]);
 
     expect(mockAddChapter).toHaveBeenCalledWith({
-      contentId: "",
-      versionId: "",
       textId: "mock-root-text-1",
       segmentId: "mock-segment-id",
-      contentIndex: 0
-    });
+    },currentChapter);
   });
 
   test("renders correctly with empty root texts", () => {
