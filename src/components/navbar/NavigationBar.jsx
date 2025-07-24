@@ -213,6 +213,12 @@ const NavigationBar = () => {
            }}>
              བོད་ཡིག
            </Dropdown.Item>
+           <Dropdown.Item onClick={() => {
+             changeLanguage("zh");
+             handleNavClick();
+           }}>
+             中文
+           </Dropdown.Item>
          </Dropdown.Menu>
        </Dropdown>
      </div>
