@@ -7,7 +7,7 @@ import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId, loadMoreContent, isLoadingMore, hasMoreContent, loadPreviousContent, isLoadingPrevious, hasPreviousContent } = props
+  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId, infiniteQuery } = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -16,21 +16,21 @@ const UseChapterHook = (props) => {
   const { ref: sentinelRef, inView: isBottomSentinelVisible } = useInView({threshold: 0.1, rootMargin: '50px'});
 
   useEffect(() => {
-    if (isBottomSentinelVisible && hasMoreContent && !isLoadingMore) {
-      loadMoreContent();
+    if (isBottomSentinelVisible && infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage) {
+      infiniteQuery.fetchNextPage();
     }
-  }, [isBottomSentinelVisible, hasMoreContent, isLoadingMore, loadMoreContent]);
+  }, [isBottomSentinelVisible, infiniteQuery.hasNextPage, infiniteQuery.isFetchingNextPage, infiniteQuery.fetchNextPage]);
 
   useEffect(() => {
-    if (isTopSentinelVisible && hasPreviousContent && !isLoadingPrevious) {
+    if (isTopSentinelVisible && infiniteQuery.hasPreviousPage && !infiniteQuery.isFetchingPreviousPage) {
       const scrollContainer = contentsContainerRef.current;
       if (scrollContainer) {
         scrollRef.current.isRestoring = true;
         scrollRef.current.previousScrollHeight = scrollContainer.scrollHeight;
       }
-      loadPreviousContent();
+      infiniteQuery.fetchPreviousPage();
     }
-  }, [isTopSentinelVisible, hasPreviousContent, isLoadingPrevious, loadPreviousContent]);
+  }, [isTopSentinelVisible, infiniteQuery.hasPreviousPage, infiniteQuery.isFetchingPreviousPage, infiniteQuery.fetchPreviousPage]);
 
   useLayoutEffect(() => {
     const scrollContainer = contentsContainerRef.current;
@@ -108,10 +108,10 @@ const UseChapterHook = (props) => {
     
     return (
       <div className="outmost-container">
-        {hasPreviousContent && !isLoadingPrevious && (
+        {infiniteQuery.hasPreviousPage && !infiniteQuery.isFetchingPreviousPage && (
             <div ref={topSentinelRef} className="scroll-sentinel-top" />
         )}
-        {isLoadingPrevious && (
+        {infiniteQuery.isFetchingPreviousPage && (
             <div className="loading-indicator">
               <p>Loading previous content...</p>
             </div>
@@ -119,12 +119,12 @@ const UseChapterHook = (props) => {
         {content.sections.map((section) => 
           renderSectionRecursive(section)
         )}
-        {isLoadingMore && (
+        {infiniteQuery.isFetchingNextPage && (
           <div className="loading-indicator">
             <p>Loading more content...</p>
           </div>
         )}
-        {hasMoreContent && !isLoadingMore && (
+        {infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage && (
           <div ref={sentinelRef} className="scroll-sentinel" />
         )}
       </div>
