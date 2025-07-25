@@ -9,6 +9,7 @@ import ShareView from "./components/share-view/ShareView.jsx";
 import TranslationView from "./components/translation-view/TranslationView.jsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.jsx";
 import RootTextView from "./components/root-texts/RootText.jsx";
+import CompareTextView from "./components/compare-text/CompareTextView.jsx";
 import axiosInstance from "../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../context/PanelContext.jsx";
 import {MENU_ITEMS} from "../../../../utils/constants.js";
@@ -102,6 +103,8 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
             onClick={() => {
               if (item.label === 'common.share') {
                 setActiveView("share");
+              } else if (item.label === 'connection_panel.compare_text') {
+                setActiveView("compare_text");
               }
             }}
           >
@@ -155,6 +158,12 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
             setExpandedRootTexts={setExpandedRootTexts}
             addChapter={addChapter}
             currentChapter={currentChapter}
+          />
+        );
+      case "compare_text":
+        return (
+          <CompareTextView
+            setIsCompareTextView={setActiveView}
           />
         );
       default:
