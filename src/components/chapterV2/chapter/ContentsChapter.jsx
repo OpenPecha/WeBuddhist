@@ -1,42 +1,70 @@
 import ChapterHeader from "../utils/header/ChapterHeader.jsx";
-import React, {useState} from "react";
-import {VIEW_MODES} from "../utils/header/view-selector/ViewSelector.jsx";
+import React, { useState, useMemo } from "react";
+import { VIEW_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
-import {useQuery} from "react-query";
+import { useInfiniteQuery } from "react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
-import { getEarlyReturn } from "../../../utils/helperFunctions.jsx";
+import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } from "../../../utils/helperFunctions.jsx";
 import { useTranslate } from "@tolgee/react";
 import PropTypes from "prop-types";
 
-const fetchContentDetails = async (text_id, contentId, segmentId, versionId, direction, size) => {
-  const {data} = await axiosInstance.post(`/api/v1/texts/${text_id}/details`, {
-    ...(contentId && {content_id: contentId}),
-    ...(segmentId && {segment_id: segmentId}),
-    ...(versionId && {version_id: versionId}),
+const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
+  const [_key, textId, contentId, versionId, size, initialSegmentId] = queryKey;
+  const segmentId = pageParam?.segmentId ?? initialSegmentId;
+  const direction = pageParam?.direction ?? "next";
+  const { data } = await axiosInstance.post(`/api/v1/texts/${textId}/details`, {
+    ...(contentId && { content_id: contentId }),
+    ...(segmentId && { segment_id: segmentId }),
+    ...(versionId && { version_id: versionId }),
     direction,
     size,
   });
   return data;
-}
-const ContentsChapter = ({textId, contentId, segmentId, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId}) => {
-  const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE)
-  const [showTableOfContents, setShowTableOfContents] = useState(false)
-  const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
-  const direction="next"
-  const size=20
-  const {t} = useTranslate();
-  const {data: contentsData, isLoading: contentsDataLoading, error} = useQuery(
-    ["content", textId, contentId, currentSegmentId, versionId, direction, size],
-    () => fetchContentDetails(textId, contentId, currentSegmentId, versionId, direction, size),
-    {
-      refetchOnWindowFocus: false,
-      enabled: !!textId
-    }
-  )
+};
 
-  // ----------------------------------- helpers -----------------------------------------
-  const earlyReturn = getEarlyReturn({ isLoading: contentsDataLoading, error: error, t });
+const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => {
+  const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE);
+  const [showTableOfContents, setShowTableOfContents] = useState(false);
+  const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
+  const size = 20;
+  const { t } = useTranslate();
+
+  const infiniteQuery = useInfiniteQuery(
+    ["content", textId, contentId, versionId, size, currentSegmentId],
+    fetchContentDetails,
+    {
+      getNextPageParam: (lastPage) => {
+        if (lastPage?.current_segment_position === lastPage?.total_segments) return null;
+        const lastSegmentId = getLastSegmentId(lastPage.content.sections);
+        return { segmentId: lastSegmentId, direction: "next" };
+      },
+      getPreviousPageParam: (firstPage) => {
+        if (firstPage?.current_segment_position === 1) return null;
+        const firstSegmentId = getFirstSegmentId(firstPage.content.sections);
+        return { segmentId: firstSegmentId, direction: "previous" };
+      },
+      enabled: !!textId,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // Merge all loaded sections for rendering
+  const allContent = useMemo(() => {
+    if (!infiniteQuery?.data?.pages || infiniteQuery.data.pages.length === 0) return null;
+    let mergedSections = [];
+    let text_detail = infiniteQuery.data.pages[0]?.text_detail;
+
+    infiniteQuery.data.pages.forEach((page, index) => {
+      mergedSections = index === 0 ? page.content.sections : mergeSections(mergedSections, page.content.sections);
+    });
+    return {
+      content: { ...infiniteQuery.data.pages[0].content, sections: mergedSections },text_detail};
+  }, [infiniteQuery.data?.pages]);
+
+  // ----------------------------- helpers ---------------------------------------
+
+  const earlyReturn = getEarlyReturn({ isLoading: infiniteQuery.isLoading, error: infiniteQuery.error, t });
   if (earlyReturn) return earlyReturn;
 
   const handleSegmentNavigate = (newSegmentId) => {
@@ -45,27 +73,37 @@ const ContentsChapter = ({textId, contentId, segmentId, versionId, addChapter, r
   
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
-    const propsForChapterHeader = {viewMode, setViewMode, textdetail:contentsData?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters}
-    return <ChapterHeader {...propsForChapterHeader}/>
-  }
+    const propsForChapterHeader = { viewMode, setViewMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters };
+    return <ChapterHeader {...propsForChapterHeader} />;
+  };
+
   const renderChapter = () => {
-    const propsForUseChapterHookComponent = {showTableOfContents,content:contentsData?.content, language:contentsData?.text_detail?.language, addChapter, currentChapter, setVersionId, handleSegmentNavigate}
+    const propsForUseChapterHookComponent = {
+      showTableOfContents,
+      content: allContent?.content,
+      language: allContent?.text_detail?.language,
+      addChapter,
+      currentChapter,
+      setVersionId,
+      handleSegmentNavigate,
+      infiniteQuery
+    };
     return (
       <PanelProvider>
         <UseChapterHook {...propsForUseChapterHookComponent} />
       </PanelProvider>
     );
   }
+
   return (
     <div className="contents-chapter-container">
       {renderChapterHeader()}
       {renderChapter()}
-
     </div>
   )
 }
 
-export  default React.memo(ContentsChapter)
+export default React.memo(ContentsChapter);
 ContentsChapter.propTypes = {
   textId: PropTypes.string.isRequired,
   contentId: PropTypes.string,

@@ -40,7 +40,8 @@ const Versions = () => {
   const languageMap = {
     "sa":"language.sanskrit",
     "bo":"language.tibetan",
-    "en":"language.english"
+    "en":"language.english",
+    "zh":"language.chinese"
   }
 
   const totalVersions = versions?.versions.length || 0;

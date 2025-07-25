@@ -1,3 +1,23 @@
+export const getFirstSegmentId = (sections) => {
+  if (!sections?.length) {
+    return null;
+  }
+  const [firstSection] = sections;
+  return (
+    getFirstSegmentId(firstSection.sections) ?? firstSection.segments?.[0]?.segment_id ?? null
+  );
+};
+
+export const getLastSegmentId = (sections) => {
+  if (!sections?.length) {
+    return null;
+  }
+  const lastSection = sections.at(-1);
+  return (
+    getLastSegmentId(lastSection.sections) ?? lastSection.segments?.at(-1)?.segment_id ?? null
+  );
+};
+
 export const getEarlyReturn = ({ isLoading, error, t }) => {
   if (isLoading) {
     return <div className="search-message">{t("common.loading")}</div>;
@@ -158,4 +178,35 @@ export const findAndScrollToSection = (sectionId, currentChapter) => {
       });
     }
   }, 300);
+};
+
+
+export const mergeSections = (existingSections, newSections) => {
+  if (!existingSections || existingSections.length === 0) return newSections;
+  if (!newSections || newSections.length === 0) return existingSections;
+
+  const mergedSections = [...existingSections];
+  newSections.forEach(newSection => {
+    const existingIndex = mergedSections.findIndex(section => section.id === newSection.id);
+    if (existingIndex !== -1) {
+      const existingSection = mergedSections[existingIndex];
+      // Merge segments
+      const mergedSegments = [...(existingSection.segments || [])];
+      (newSection.segments || []).forEach(newSegment => {
+        if (!mergedSegments.some(segment => segment.segment_id === newSegment.segment_id)) {
+          mergedSegments.push(newSegment);
+        }
+      });
+      // Merge nested sections recursively
+      const mergedNestedSections = mergeSections(existingSection.sections || [], newSection.sections || []);
+      mergedSections[existingIndex] = {
+        ...existingSection,
+        segments: mergedSegments,
+        sections: mergedNestedSections
+      };
+    } else {
+      mergedSections.push(newSection);
+    }
+  });
+  return mergedSections;
 };
