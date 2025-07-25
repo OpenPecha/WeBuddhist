@@ -20,9 +20,9 @@ const ViewSelector = (props) => {
 
   // ----------------------------- renderers ----------------------------
   const renderCloseIcon = () => {
-    return <div className="view-selector-close-icon" onClick={() => setShowViewSelector(false)}>
+    return <button className="view-selector-close-icon" onClick={() => setShowViewSelector(false)}>
       <MdClose size={18} style={{cursor: 'pointer'}}/>
-    </div>
+    </button>
   }
 
   const renderViewModeOptions = () => {
