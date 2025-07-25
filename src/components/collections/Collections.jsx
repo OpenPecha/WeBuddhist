@@ -21,7 +21,7 @@ export const fetchCollections = async () => {
   return data;
 }
 
-export const renderCollections = (collectionsData, t) => {
+export const renderCollections = (collectionsData, t, showDescriptions = true) => {
   const renderCollectionNames = (term) => {
     return term.has_child ?
       <Link to={`/collections/${term.id}`} className="listtitle collection-link">
@@ -35,7 +35,7 @@ export const renderCollections = (collectionsData, t) => {
         <div className="collections" key={term.id}>
           <div className={"red-line"}></div>
             {renderCollectionNames(term)}
-            <p className="content collections-description">{term.description}</p>
+            {showDescriptions && <p className="content collections-description">{term.description}</p>}
         </div>
       ))}
     </div>

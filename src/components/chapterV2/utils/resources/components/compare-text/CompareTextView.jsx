@@ -2,8 +2,8 @@ import { IoMdClose } from "react-icons/io";
 import PropTypes from "prop-types";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
-import { getEarlyReturn } from "../../../../../../utils/helperFunctions.jsx";
 import { fetchCollections, renderCollections } from "../../../../../../components/collections/Collections.jsx";
+import { getEarlyReturn } from "../../../../../../utils/helperFunctions.jsx";
 import "../../../../../../components/collections/Collections.scss";
 
 const CompareTextView = ({ setIsCompareTextView }) => {
@@ -28,7 +28,7 @@ const CompareTextView = ({ setIsCompareTextView }) => {
         />
       </div>
       <div className="panel-content p-3">
-        {earlyReturn || renderCollections(collectionsData, t)}
+        {earlyReturn || renderCollections(collectionsData, t, false)}
       </div>
     </>
   );
