@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import IndividualTextSearch, { fetchTextSearchResults } from './IndividualTextSearch';
 import axiosInstance from '../../../../../../config/axios-config';
+import { usePanelContext } from '../../../../../../context/PanelContext';
 
 vi.mock('use-debounce', () => ({
   useDebounce: vi.fn((value) => [value, vi.fn()])
@@ -421,5 +422,62 @@ describe('IndividualTextSearch Component', () => {
     expect(searchInput).toHaveAttribute('placeholder', 'connection_panel.search_in_this_text');
     
     expect(searchInput).toHaveClass('search-input');
+  });
+
+  it('should call handleSegmentNavigate and closeResourcesPanel when a segment is clicked', () => {
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set('text_id', 'text123');
+    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    
+    const mockCloseResourcesPanel = vi.fn();
+    vi.mocked(usePanelContext).mockReturnValue({
+      closeResourcesPanel: mockCloseResourcesPanel,
+      openResourcesPanel: vi.fn(),
+      isResourcesPanelOpen: true,
+    });
+    
+    const mockHandleSegmentNavigate = vi.fn();
+    
+    useQuery.mockReturnValue({
+      data: {
+        search: { text: 'buddha' },
+        sources: [
+          {
+            text: {
+              id: 'text123',
+              title: 'Buddhist Text',
+              language: 'en'
+            },
+            segment_match: [
+              { 
+                segment_id: 'seg1', 
+                content: 'This is about the <em>buddha</em> dharma.'
+              }
+            ]
+          }
+        ],
+        total: 1
+      },
+      isLoading: false,
+      error: null
+    });
+    
+    const { container } = render(
+      <IndividualTextSearch 
+        onClose={vi.fn()} 
+        handleSegmentNavigate={mockHandleSegmentNavigate} 
+      />
+    );
+    
+    const searchInput = container.querySelector('.search-input');
+    fireEvent.change(searchInput, { target: { value: 'buddha' } });
+    fireEvent.submit(searchInput.closest('form'));
+    
+    const segmentButton = container.querySelector('.segment-item');
+    expect(segmentButton).toBeInTheDocument();
+    fireEvent.click(segmentButton);
+    
+    expect(mockHandleSegmentNavigate).toHaveBeenCalledWith('seg1');
+    expect(mockCloseResourcesPanel).toHaveBeenCalled();
   });
 });
