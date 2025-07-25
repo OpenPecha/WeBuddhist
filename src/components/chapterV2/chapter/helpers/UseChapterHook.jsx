@@ -47,6 +47,20 @@ const UseChapterHook = (props) => {
     return showTableOfContents && <TableOfContents />
   }
 
+  const renderLoadingIndicator = (message) => (
+    <div className="loading-indicator">
+      <p>{message}</p>
+    </div>
+  );
+
+  const renderScrollSentinelTop = () => (
+    <div ref={topSentinelRef} className="scroll-sentinel-top" />
+  );
+
+  const renderScrollSentinelBottom = () => (
+    <div ref={sentinelRef} className="scroll-sentinel" />
+  );
+
   const handleSegmentClick = (segmentId) => {
     setSelectedSegmentId(segmentId);
     openResourcesPanel();
@@ -108,25 +122,13 @@ const UseChapterHook = (props) => {
     
     return (
       <div className="outmost-container">
-        {infiniteQuery.hasPreviousPage && !infiniteQuery.isFetchingPreviousPage && (
-            <div ref={topSentinelRef} className="scroll-sentinel-top" />
-        )}
-        {infiniteQuery.isFetchingPreviousPage && (
-            <div className="loading-indicator">
-              <p>Loading previous content...</p>
-            </div>
-        )}
+        {infiniteQuery.hasPreviousPage && !infiniteQuery.isFetchingPreviousPage && renderScrollSentinelTop()}
+        {infiniteQuery.isFetchingPreviousPage && renderLoadingIndicator("Loading previous content...")}
         {content.sections.map((section) => 
           renderSectionRecursive(section)
         )}
-        {infiniteQuery.isFetchingNextPage && (
-          <div className="loading-indicator">
-            <p>Loading more content...</p>
-          </div>
-        )}
-        {infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage && (
-          <div ref={sentinelRef} className="scroll-sentinel" />
-        )}
+        {infiniteQuery.isFetchingNextPage && renderLoadingIndicator("Loading more content...")}
+        {infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage && renderScrollSentinelBottom()}
       </div>
     );
   };
