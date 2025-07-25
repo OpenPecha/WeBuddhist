@@ -4,15 +4,29 @@ import { vi } from "vitest";
 import UseChapterHook from "./UseChapterHook.jsx";
 import "@testing-library/jest-dom";
 
-vi.mock("../../../../context/PanelContext.jsx", () => ({
-  usePanelContext: () => ({
+const mockState = {
+  panelContext: {
     isResourcesPanelOpen: false,
     openResourcesPanel: vi.fn(),
-  }),
+  },
+  intersectionObserver: {
+    topSentinelInView: false,
+    bottomSentinelInView: false,
+  },
+};
+
+vi.mock("../../../../context/PanelContext.jsx", () => ({
+  usePanelContext: () => mockState.panelContext,
 }));
 
 vi.mock("react-intersection-observer", () => ({
-  useInView: () => ({ ref: vi.fn(), inView: false }),
+  useInView: vi.fn().mockImplementation(() => {
+    const callCount = vi.fn().mock.calls.length;
+    if (callCount === 0) {
+      return { ref: vi.fn(), inView: mockState.intersectionObserver.topSentinelInView };
+    }
+    return { ref: vi.fn(), inView: mockState.intersectionObserver.bottomSentinelInView };
+  }),
 }));
 
 vi.mock("../../utils/header/table-of-contents/TableOfContents.jsx", () => ({
@@ -71,6 +85,10 @@ const setup = (props = {}) => {
 describe("UseChapterHook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockState.panelContext.isResourcesPanelOpen = false;
+    mockState.panelContext.openResourcesPanel = vi.fn();
+    mockState.intersectionObserver.topSentinelInView = false;
+    mockState.intersectionObserver.bottomSentinelInView = false;
   });
 
   test("renders main containers", () => {
@@ -105,7 +123,9 @@ describe("UseChapterHook", () => {
       },
     });
     expect(screen.getByText("Loading more content...")).toBeInTheDocument();
+  });
 
+  test("renders loading indicators when fetching previous", () => {
     setup({
       infiniteQuery: {
         ...defaultProps.infiniteQuery,
@@ -115,24 +135,25 @@ describe("UseChapterHook", () => {
     expect(screen.getByText("Loading previous content...")).toBeInTheDocument();
   });
 
-  test("renders scroll sentinels when hasNextPage/hasPreviousPage", () => {
-    const { container: nextPageContainer } = setup({
+  test("renders scroll sentinels when hasNextPage", () => {
+    const { container } = setup({
       infiniteQuery: {
         ...defaultProps.infiniteQuery,
         hasNextPage: true,
       },
     });
-    expect(nextPageContainer.querySelector(".scroll-sentinel")).toBeInTheDocument();
+    expect(container.querySelector(".scroll-sentinel")).toBeInTheDocument();
+  });
 
-    const { container: prevPageContainer } = setup({
+  test("renders scroll sentinels when hasPreviousPage", () => {
+    const { container } = setup({
       infiniteQuery: {
         ...defaultProps.infiniteQuery,
         hasPreviousPage: true,
       },
     });
-    expect(prevPageContainer.querySelector(".scroll-sentinel-top")).toBeInTheDocument();
+    expect(container.querySelector(".scroll-sentinel-top")).toBeInTheDocument();
   });
-
 
   test("handles empty content gracefully", () => {
     setup({ content: { sections: [] } });
@@ -158,12 +179,41 @@ describe("UseChapterHook", () => {
         ],
       },
     });
+    
     const marker = document.querySelector(".footnote-marker");
     const footnote = document.querySelector(".footnote");
+    
     expect(marker).toBeInTheDocument();
     expect(footnote).toBeInTheDocument();
     expect(footnote.classList.contains("active")).toBe(false);
+    
     fireEvent.click(marker);
     expect(footnote.classList.contains("active")).toBe(true);
+  });
+
+  test("does not render Resources when panel is closed", () => {
+    mockState.panelContext.isResourcesPanelOpen = false;
+    setup();
+    expect(screen.queryByTestId("resources")).not.toBeInTheDocument();
+  });
+
+  test("renders Resources when panel is open and segment is selected", () => {
+    mockState.panelContext.isResourcesPanelOpen = true;
+    setup();
+    
+    const segmentButton = screen.getByRole("button", { name: /1/i });
+    fireEvent.click(segmentButton);
+    
+    expect(screen.getByTestId("resources")).toBeInTheDocument();
+    expect(screen.getByText("Resources seg1")).toBeInTheDocument();
+  });
+
+  test("handleSegmentClick opens resources panel", () => {
+    setup();
+    
+    const segmentButton = screen.getByRole("button", { name: /1/i });
+    fireEvent.click(segmentButton);
+    
+    expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
   });
 });
