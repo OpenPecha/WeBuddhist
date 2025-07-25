@@ -1,4 +1,3 @@
-
 import React, {useState} from 'react'
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import {FiChevronDown, FiChevronRight} from "react-icons/fi";
@@ -18,20 +17,12 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
     if (tableOfContents?.contents) {
       return {
         sections: tableOfContents.contents.flatMap(content => content.sections || []),
-        contentData: tableOfContents.contents,
-        isNestedStructure: true
-      };
-    }
-   else if (tableOfContents?.sections) {
-      return {
-        sections: tableOfContents.sections,
-        contentData: [{ id: tableOfContents.id, sections: tableOfContents.sections }],
-        isNestedStructure: false
+        contentData: tableOfContents.contents
       };
     }
   };
 
-  const { sections = [], contentData = [], isNestedStructure = false } = getSectionsData() || {};
+  const { sections = [], contentData = [] } = getSectionsData() || {};
   const totalSections = sections.length;
   const totalPages = Math.ceil(totalSections / pagination.limit);
   const toggleSection = (sectionId) => {
@@ -47,10 +38,9 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
 
   // --------------------------------------------- renderers -------------------------------------------
 
-  const renderContentTree = (section, tocId, level = 0, isTopLevel = false) => {
+  const renderContentTree = (section, tocId) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
-    const keyPrefix = isTopLevel ? `content-${tocId}-segment` : `section`;
     const renderContentTitle = () => {
       const segmentId=hasChildren?section.sections[0].segments[0].segment_id:section.segments[0].segment_id
       return <Link
@@ -72,13 +62,13 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
       return isExpanded && hasChildren && (
         <div className="nested-content">
           {section.sections.map((childSection) =>
-            renderContentTree(childSection, tocId,level + 1, false)
+            renderContentTree(childSection, tocId)
           )}
         </div>
       )
     }
     return (
-      <div key={`${keyPrefix}-${section.id}`} className="toc-list-container">
+      <div key={`${section.id}`} className="toc-list-container">
         <button className="toc-header"
              onClick={(e) => e.target.tagName !== 'A' && toggleSection(section.id)}>
           {renderDropIcons()}
@@ -93,18 +83,12 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
     if (!contentData || contentData.length === 0) {
       return <div className="no-content listtitle">No content found</div>;
     }
-
-    if (isNestedStructure) {
       return contentData.map((content) =>
         content?.sections?.map((segment) =>
-          renderContentTree(segment, content.id, 0, true) //for commentary text
+          renderContentTree(segment, content.id)
         )
       );
-    } else {
-      return contentData[0]?.sections?.map((section) =>
-        renderContentTree(section, contentData[0].id, 0, true) //for root text
-      );
-    }
+    
   };
 
   const renderPagination = () => {
@@ -128,7 +112,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
 export default React.memo(TableOfContents);
 
 TableOfContents.propTypes = {
-  textId: PropTypes.string.isRequired,
+  textId: PropTypes.string,
   pagination: PropTypes.shape({
     currentPage: PropTypes.number.isRequired,
     limit: PropTypes.number.isRequired
