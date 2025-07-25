@@ -53,9 +53,9 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
       </div>
       <div className="panel-content p-3">
         <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
-        <p onClick={() => setActiveView("search")} >
+        <button onClick={() => setActiveView("search")} >
           <BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}
-        </p>
+        </button>
 
         {sidePanelData?.segment_info?.translations > 0 && (
           <button type="button" onClick={() => setActiveView("translation")}>
