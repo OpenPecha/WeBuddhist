@@ -48,7 +48,6 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
     }
   );
 
-  // Merge all loaded sections for rendering
   const allContent = useMemo(() => {
     if (!data?.pages || data.pages.length === 0) return null;
     let mergedSections = [];
@@ -60,7 +59,6 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
     return {
       content: { ...data.pages[0].content, sections: mergedSections },text_detail};
   }, [data]);
-
   // ----------------------------- helpers ---------------------------------------
 
   const earlyReturn = getEarlyReturn({ isLoading:isLoadingContent, error:isErrorContent, t });
@@ -102,7 +100,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
   )
 }
 
-export default React.memo(ContentsChapter);
+export  default React.memo(ContentsChapter)
 ContentsChapter.propTypes = {
   textId: PropTypes.string.isRequired,
   contentId: PropTypes.string,

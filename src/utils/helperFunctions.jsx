@@ -191,14 +191,14 @@ export const mergeSections = (existingSections, newSections) => {
     if (existingIndex !== -1) {
       const existingSection = mergedSections[existingIndex];
       // Merge segments
-      const mergedSegments = [...(existingSection.segments || [])];
-      (newSection.segments || []).forEach(newSegment => {
+      const mergedSegments = [...(existingSection.segments)];
+      (newSection.segments).forEach(newSegment => {
         if (!mergedSegments.some(segment => segment.segment_id === newSegment.segment_id)) {
           mergedSegments.push(newSegment);
         }
       });
       // Merge nested sections recursively
-      const mergedNestedSections = mergeSections(existingSection.sections || [], newSection.sections || []);
+      const mergedNestedSections = mergeSections(existingSection.sections, newSection.sections);
       mergedSections[existingIndex] = {
         ...existingSection,
         segments: mergedSegments,
