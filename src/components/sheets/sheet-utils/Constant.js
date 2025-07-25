@@ -82,7 +82,14 @@ export {
 
 export const createPayload = (value, title, is_published = false) => {
   const source = value.map((node, i) => {
-    if (["image", "audio", "video", "youtube"].includes(node.type)) {
+    if (node.type === "image") {
+      return {
+        position: i,
+        type: "image",
+        content: node.alt,
+      };
+    }
+    if (["audio", "video", "youtube"].includes(node.type)) {
       return {
         position: i,
         type: node.type == "youtube" ? "video" : node.type,
@@ -283,6 +290,7 @@ export function convertSegmentsToSlate(segments) {
         return {
           type: "image",
           src: content,
+          // here the backend have to send me a id for alt
           children: [{ text: "" }],
         };
       case "audio":

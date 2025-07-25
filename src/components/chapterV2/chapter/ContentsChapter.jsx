@@ -29,7 +29,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
   const size = 20;
   const { t } = useTranslate();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, fetchPreviousPage, hasPreviousPage, isFetchingPreviousPage, isLoading:isLoadingContent, error:isErrorContent } = useInfiniteQuery(
+  const infiniteQuery = useInfiniteQuery(
     ["content", textId, contentId, versionId, size, segmentId],
     fetchContentDetails,
     {
@@ -50,20 +50,20 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
 
   // Merge all loaded sections for rendering
   const allContent = useMemo(() => {
-    if (!data?.pages || data.pages.length === 0) return null;
+    if (!infiniteQuery?.data?.pages || infiniteQuery.data.pages.length === 0) return null;
     let mergedSections = [];
-    let text_detail = data.pages[0]?.text_detail;
+    let text_detail = infiniteQuery.data.pages[0]?.text_detail;
 
-    data.pages.forEach((page, index) => {
+    infiniteQuery.data.pages.forEach((page, index) => {
       mergedSections = index === 0 ? page.content.sections : mergeSections(mergedSections, page.content.sections);
     });
     return {
-      content: { ...data.pages[0].content, sections: mergedSections },text_detail};
-  }, [data]);
+      content: { ...infiniteQuery.data.pages[0].content, sections: mergedSections },text_detail};
+  }, [infiniteQuery.data?.pages]);
 
   // ----------------------------- helpers ---------------------------------------
 
-  const earlyReturn = getEarlyReturn({ isLoading:isLoadingContent, error:isErrorContent, t });
+  const earlyReturn = getEarlyReturn({ isLoading: infiniteQuery.isLoading, error: infiniteQuery.error, t });
   if (earlyReturn) return earlyReturn;
 
   // ------------------------ renderers ----------------------
@@ -80,12 +80,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
       addChapter,
       currentChapter,
       setVersionId,
-      loadMoreContent: fetchNextPage,
-      isLoadingMore: isFetchingNextPage,
-      hasMoreContent: hasNextPage,
-      loadPreviousContent: fetchPreviousPage,
-      isLoadingPrevious: isFetchingPreviousPage,
-      hasPreviousContent: hasPreviousPage,
+      infiniteQuery
     };
     return (
       <PanelProvider>
