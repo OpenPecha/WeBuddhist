@@ -31,15 +31,15 @@ const ChapterHeader = (props) => {
     </div>
   }
 
-  const renderBookmarkIcon = () => {
-    return (
-      <div className="bookmark-icon-container">
-        <button onClick={() => setIsBookmarked(!isBookmarked)}>
-          {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
-        </button>
-      </div>
-    )
-  }
+  // const renderBookmarkIcon = () => {
+  //   return (
+  //     <div className="bookmark-icon-container">
+  //       <button onClick={() => setIsBookmarked(!isBookmarked)}>
+  //         {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
+  //       </button>
+  //     </div>
+  //   )
+  // }
 
   const renderViewSelector = () => {
     const propsForViewSelectorComponent = { setShowViewSelector, viewMode, setViewMode }

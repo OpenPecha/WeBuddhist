@@ -202,13 +202,13 @@ describe("Versions Component", () => {
       expect(links).toHaveLength(3);
 
       expect(links[0].getAttribute("href")).toBe(
-        "/chapter?text_id=version1&contentId=content1&versionId=version1&contentIndex=0"
+        "/chapter?text_id=version1&content_id=content1"
       );
       expect(links[1].getAttribute("href")).toBe(
-        "/chapter?text_id=version2&contentId=content2&versionId=version2&contentIndex=0"
+        "/chapter?text_id=version2&content_id=content2"
       );
       expect(links[2].getAttribute("href")).toBe(
-        "/chapter?text_id=version3&contentId=content3&versionId=version3&contentIndex=0"
+        "/chapter?text_id=version3&content_id=content3"
       );
     });
 
