@@ -6,6 +6,10 @@ import { useQuery } from 'react-query';
 import IndividualTextSearch, { fetchTextSearchResults } from './IndividualTextSearch';
 import axiosInstance from '../../../../../../config/axios-config';
 
+vi.mock('use-debounce', () => ({
+  useDebounce: vi.fn((value) => [value, vi.fn()])
+}));
+
 vi.mock('../../../../../../context/PanelContext', () => ({
   usePanelContext: vi.fn(() => ({
     closeResourcesPanel: vi.fn(),
@@ -279,9 +283,13 @@ describe('IndividualTextSearch Component', () => {
     useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
     
     const mockOnClose = vi.fn();
+    const mockHandleSegmentNavigate = vi.fn();
     
     const { getByPlaceholderText } = render(
-      <IndividualTextSearch onClose={mockOnClose} />
+      <IndividualTextSearch 
+        onClose={mockOnClose} 
+        handleSegmentNavigate={mockHandleSegmentNavigate} 
+      />
     );
     
     const searchInput = getByPlaceholderText('connection_panel.search_in_this_text');
@@ -294,7 +302,6 @@ describe('IndividualTextSearch Component', () => {
       expect.arrayContaining(['textSearch', 'buddha', 'text123']),
       expect.any(Function),
       expect.objectContaining({
-        enabled: true,
         refetchOnWindowFocus: false,
         retry: 1
       })
