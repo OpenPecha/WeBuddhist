@@ -3,7 +3,7 @@ import { FiShare2, FiCopy } from 'react-icons/fi';
 import { FaFacebook, FaTwitter } from 'react-icons/fa';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../../../config/axios-config.js';
-import './SheetShare.css';
+import './SheetShare.scss';
 
 // ----------------------------- helpers ---------------------------------------
 
