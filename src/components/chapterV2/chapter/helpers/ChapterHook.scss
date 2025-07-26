@@ -1,6 +1,6 @@
 .use-chapter-hook-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
   .chapter-flex-row {
     display: flex;
@@ -11,7 +11,7 @@
 
   .main-content {
     overflow-y: auto;
-    width: 100%;
+    flex: 1;
     .outmost-container{
       width: 70%;
       margin: 0 auto;

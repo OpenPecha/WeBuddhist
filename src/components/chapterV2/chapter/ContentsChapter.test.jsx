@@ -11,7 +11,35 @@ import axiosInstance from "../../../config/axios-config.js";
 
 mockAxios();
 mockUseAuth();
-mockReactQuery();
+
+vi.mock("react-query", async () => {
+  const actual = await vi.importActual("react-query");
+  return {
+    ...actual,
+    useQuery: vi.fn(() => ({
+      data: {
+        contents: [
+          { id: "content-1", sections: [{ id: "section-1", title: "Test Section" }] }
+        ]
+      },
+      isLoading: false,
+      error: null,
+    })),
+    useInfiniteQuery: vi.fn(() => ({
+      data: null,
+      fetchNextPage: vi.fn(),
+      hasNextPage: false,
+      isFetchingNextPage: false,
+      fetchPreviousPage: vi.fn(),
+      hasPreviousPage: false,
+      isFetchingPreviousPage: false,
+      isLoading: false,
+      error: null,
+    })),
+    QueryClient: actual.QueryClient,
+    QueryClientProvider: actual.QueryClientProvider,
+  };
+});
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -26,6 +54,11 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
   getFirstSegmentId: vi.fn(() => "first-segment-id"),
   getLastSegmentId: vi.fn(() => "last-segment-id"),
   mergeSections: vi.fn((a, b) => [...(a || []), ...(b || [])]),
+  mapLanguageCode: vi.fn(() => "bo"),
+}));
+
+vi.mock("../../../utils/constants.js", () => ({
+  LANGUAGE: "language",
 }));
 
 vi.mock("../utils/header/ChapterHeader.jsx", () => ({
@@ -42,9 +75,16 @@ vi.mock("../../../context/PanelContext.jsx", () => ({
   PanelProvider: ({ children }) => <div data-testid="panel-provider-mock">{children}</div>,
 }));
 
+vi.mock("./helpers/useTOCHelpers.jsx", () => ({
+  useTOCNavigation: vi.fn(() => ({
+    fetchContentBySectionId: vi.fn(),
+  })),
+}));
+
 vi.mock("../../../config/axios-config.js", () => ({
   default: {
     post: vi.fn(),
+    get: vi.fn(),
   },
 }));
 
@@ -75,6 +115,14 @@ const setup = (props = {}) => {
 describe("ContentsChapter", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+      },
+      writable: true,
+    });
   });
 
   test("renders main container and child components", () => {
@@ -352,6 +400,37 @@ describe("ContentsChapter", () => {
       setup();
 
       expect(capturedOptions.refetchOnWindowFocus).toBe(false);
+    });
+  });
+
+  describe("fetchTableOfContents function", () => {
+    test("calls axios with correct parameters for table of contents", async () => {
+      const mockTocData = { contents: [{ id: "content-1" }] };
+      axiosInstance.get.mockResolvedValue({ data: mockTocData });
+
+      let capturedFetchFunction;
+      vi.spyOn(reactQuery, "useQuery").mockImplementation((key, fetchFn, options) => {
+        capturedFetchFunction = fetchFn;
+        return {
+          data: mockTocData,
+          isLoading: false,
+          error: null,
+        };
+      });
+
+      setup();
+
+      if (capturedFetchFunction) {
+        await capturedFetchFunction("text-1");
+      }
+
+      expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/texts/text-1/contents", {
+        params: {
+          language: "bo",
+          limit: 1000,
+          skip: 0
+        }
+      });
     });
   });
 });
