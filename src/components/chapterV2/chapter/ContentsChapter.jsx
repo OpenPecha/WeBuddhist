@@ -3,14 +3,12 @@ import React, { useState, useMemo } from "react";
 import { VIEW_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useInfiniteQuery } from "react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
 import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } from "../../../utils/helperFunctions.jsx";
 import { useTranslate } from "@tolgee/react";
 import PropTypes from "prop-types";
-import { LANGUAGE } from "../../../utils/constants.js";
-import { mapLanguageCode } from "../../../utils/helperFunctions.jsx";
-import { useTOCNavigation } from "./helpers/useTOCHelpers.jsx";
+import { useTOCNavigation } from "./helpers/useTOCHooks.jsx";
 
 const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
   const [_key, textId, contentId, versionId, size, initialSegmentId] = queryKey;
@@ -26,35 +24,12 @@ const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
   return data;
 };
 
-const fetchTableOfContents = async (textId) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const { data } = await axiosInstance.get(`/api/v1/texts/${textId}/contents`, {
-    params: {
-      language,
-      limit: 1000,
-      skip: 0
-    }
-  });
-  return data;
-};
-
 const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
   const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
   const size = 20;
   const { t } = useTranslate();
-
-  const { data: tocData } = useQuery(
-    ["toc", textId],
-    () => fetchTableOfContents(textId),
-    {
-      enabled: !!textId,
-      refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 20, 
-    }
-  );
 
   const infiniteQuery = useInfiniteQuery(
     ["content", textId, contentId, versionId, size, currentSegmentId],
@@ -75,8 +50,8 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
     }
   );
 
-  const { fetchContentBySectionId } = useTOCNavigation(
-    textId, contentId, versionId, size, segmentId, infiniteQuery, tocData
+  const { fetchContentBySegmentId } = useTOCNavigation(
+    textId, contentId, versionId, size, segmentId, infiniteQuery
   );
   // Merge all loaded sections for rendering
   const allContent = useMemo(() => {
@@ -110,19 +85,13 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
     const propsForUseChapterHookComponent = {
       showTableOfContents,
       content: allContent?.content,
-      tocData: tocData,
+      textId: textId,
       language: allContent?.text_detail?.language,
       addChapter,
       currentChapter,
       setVersionId,
       infiniteQuery,
-      fetchContentBySectionId: fetchContentBySectionId,
-      contentsData: {
-        loadMoreContent: infiniteQuery.fetchNextPage,
-        hasMoreContent: infiniteQuery.hasNextPage,
-        isFetchingNextPage: infiniteQuery.isFetchingNextPage,
-        fetchContentBySectionId: fetchContentBySectionId,
-      },
+      fetchContentBySegmentId: fetchContentBySegmentId,
       handleSegmentNavigate,
     };
     return (

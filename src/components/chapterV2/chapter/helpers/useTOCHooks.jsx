@@ -142,7 +142,7 @@ export const usePanelNavigation = () => {
       loadMoreContent, 
       hasMoreContent, 
       isFetchingNextPage,
-      fetchContentBySectionId 
+      fetchContentBySegmentId 
     } = options;
     
     const mainContent = document.querySelector('.main-content');
@@ -176,8 +176,8 @@ export const usePanelNavigation = () => {
       window.history.replaceState({}, '', `?${newParams.toString()}`);
     }
     
-    if (fetchContentBySectionId) {
-      directNavigateToSection(sectionId, fetchContentBySectionId, scrollBehavior);
+    if (fetchContentBySegmentId) {
+      directNavigateToSection(sectionId, fetchContentBySegmentId, scrollBehavior);
     } else if (loadMoreContent && hasMoreContent && !isFetchingNextPage) {
       autoLoadToSection(sectionId, loadMoreContent, scrollBehavior);
     }
@@ -185,9 +185,9 @@ export const usePanelNavigation = () => {
     return false;
   };
 
-  const directNavigateToSection = async (targetSectionId, fetchContentBySectionId, scrollBehavior) => {
+  const directNavigateToSection = async (targetSectionId, fetchContentBySegmentId, scrollBehavior) => {
     try {
-      await fetchContentBySectionId(targetSectionId);
+      await fetchContentBySegmentId(targetSectionId);
       
       setTimeout(() => {
         const mainContent = document.querySelector('.main-content');
@@ -244,35 +244,11 @@ export const usePanelNavigation = () => {
   return { navigateToSection };
 };
 
-export const useTOCNavigation = (textId, contentId, versionId, size, segmentId, infiniteQuery, tocData) => {
+export const useTOCNavigation = (textId, contentId, versionId, size, segmentId, infiniteQuery) => {
   const queryClient = useQueryClient();
-  const fetchContentBySectionId = async (sectionId) => {
+  const fetchContentBySegmentId = async (segmentId) => {
     try {
-      let targetSegmentId = sectionId;
-      
-      if (tocData?.contents) {
-        const findFirstSegment = (sections) => {
-          for (const section of sections) {
-            if (section.id === sectionId && section.segments?.length > 0) {
-              return section.segments[0].segment_id;
-            }
-            if (section.sections) {
-              const found = findFirstSegment(section.sections);
-              if (found) return found;
-            }
-          }
-          return null;
-        };
-        
-        for (const content of tocData.contents) {
-          const firstSegment = findFirstSegment(content.sections || []);
-          if (firstSegment) {
-            targetSegmentId = firstSegment;
-            break;
-          }
-        }
-      }
-      
+      let targetSegmentId = segmentId;
       const { data: newData } = await axiosInstance.post(`/api/v1/texts/${textId}/details`, {
         ...(contentId && { content_id: contentId }),
         segment_id: targetSegmentId,
@@ -288,7 +264,7 @@ export const useTOCNavigation = (textId, contentId, versionId, size, segmentId, 
       });
       
       const newParams = new URLSearchParams(window.location.search);
-      newParams.set('sectionId', sectionId);
+      newParams.set('sectionId', segmentId);
       window.history.replaceState({}, '', `?${newParams.toString()}`);
       return newData;
     } catch (error) {
@@ -296,5 +272,5 @@ export const useTOCNavigation = (textId, contentId, versionId, size, segmentId, 
     }
   };
 
-  return { fetchContentBySectionId };
+  return { fetchContentBySegmentId };
 };

@@ -6,11 +6,13 @@ import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import TableOfContents from "./TableOfContents.jsx";
 import { mockTolgee } from "../../../../../test-utils/CommonMocks.js";
+import axiosInstance from "../../../../../config/axios-config.js";
+import * as reactQuery from "react-query";
 
 const mockNavigateToSection = vi.fn();
 const mockToggleSection = vi.fn();
 
-vi.mock("../../../chapter/helpers/useTOCHelpers.jsx", () => ({
+vi.mock("../../../chapter/helpers/useTOCHooks.jsx", () => ({
   useSectionHierarchy: () => ({
     sectionHierarchyState: { "section-1": true },
     setSectionHierarchyState: vi.fn(),
@@ -39,6 +41,20 @@ vi.mock("@tolgee/react", async () => {
     }),
   };
 });
+
+vi.mock("../../../../../config/axios-config.js", () => ({
+  default: {
+    get: vi.fn(),
+  },
+}));
+
+vi.mock("../../../../../utils/constants.js", () => ({
+  LANGUAGE: "language",
+}));
+
+vi.mock("../../../../../utils/helperFunctions.jsx", () => ({
+  mapLanguageCode: vi.fn(() => "bo"),
+}));
 
 const mockTocData = {
   contents: [
@@ -111,12 +127,12 @@ const mockContentsData = {
   loadMoreContent: vi.fn(),
   hasMoreContent: true,
   isFetchingNextPage: false,
-  fetchContentBySectionId: vi.fn(),
+  fetchContentBySegmentId: vi.fn(),
 };
 
 const defaultProps = {
+  textId: "text-1",
   activeSectionId: "section-1",
-  tocData: mockTocData,
   contentsData: mockContentsData,
   show: true,
 };
@@ -143,9 +159,29 @@ const setup = (props = {}) => {
 describe("TableOfContents Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+      },
+      writable: true,
+    });
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+    data: null,
+    isLoading: false,
+    error: null,
+  }));
   });
 
   test("renders TableOfContents component with sections from tocData", () => {
+    vi.spyOn(reactQuery, "useQuery").mockReturnValue({
+      data: mockTocData,
+      isLoading: false,
+      error: null,
+    });
+
     setup();
 
     expect(screen.getByText("text.table_of_contents")).toBeInTheDocument();
@@ -157,6 +193,12 @@ describe("TableOfContents Component", () => {
   });
 
   test("handles section click navigation correctly", () => {
+    vi.spyOn(reactQuery, "useQuery").mockReturnValue({
+      data: mockTocData,
+      isLoading: false,
+      error: null,
+    });
+
     setup();
 
     const section2 = screen.getByText("Section 2");
@@ -168,11 +210,17 @@ describe("TableOfContents Component", () => {
       loadMoreContent: mockContentsData.loadMoreContent,
       hasMoreContent: mockContentsData.hasMoreContent,
       isFetchingNextPage: mockContentsData.isFetchingNextPage,
-      fetchContentBySectionId: mockContentsData.fetchContentBySectionId,
+      fetchContentBySegmentId: mockContentsData.fetchContentBySegmentId,
     });
   });
 
   test("handles expandable section toggle correctly", () => {
+    vi.spyOn(reactQuery, "useQuery").mockReturnValue({
+      data: mockTocData,
+      isLoading: false,
+      error: null,
+    });
+
     setup();
 
     const section1 = screen.getByText("Section 1");
@@ -183,22 +231,75 @@ describe("TableOfContents Component", () => {
   });
 
   test("prioritizes tocData over contentsData and falls back correctly", () => {
+    vi.spyOn(reactQuery, "useQuery").mockReturnValue({
+      data: mockTocData,
+      isLoading: false,
+      error: null,
+    });
+
     setup();
 
     expect(screen.getByText("Section 1")).toBeInTheDocument();
     expect(screen.getByText("Section 2")).toBeInTheDocument();
     expect(screen.getByText("Subsection 1.1")).toBeInTheDocument();
 
-    setup({ tocData: null });
+    vi.spyOn(reactQuery, "useQuery").mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+    });
+
+    setup();
     expect(screen.getByText("Section 3")).toBeInTheDocument();
 
-    setup({ tocData: null, contentsData: null });
+    vi.spyOn(reactQuery, "useQuery").mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+    });
+
+    setup({ contentsData: null });
     expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
   });
 
   test("renders segments when section is expanded", () => {
+    vi.spyOn(reactQuery, "useQuery").mockReturnValue({
+      data: mockTocData,
+      isLoading: false,
+      error: null,
+    });
+
     setup();
 
     expect(screen.getByText("1. Sample content for segment 1...")).toBeInTheDocument();
+  });
+
+  test("fetches TOC data with correct parameters", () => {
+    const mockAxios = vi.mocked(axiosInstance);
+    mockAxios.get.mockResolvedValue({ data: mockTocData });
+
+    let capturedFetchFunction;
+      vi.spyOn(reactQuery, "useQuery").mockImplementation((key, fetchFn, options) => {
+      capturedFetchFunction = fetchFn;
+      return {
+        data: mockTocData,
+        isLoading: false,
+        error: null,
+      };
+    });
+
+    setup();
+
+    if (capturedFetchFunction) {
+      capturedFetchFunction("text-1");
+    }
+
+    expect(mockAxios.get).toHaveBeenCalledWith("/api/v1/texts/text-1/contents", {
+      params: {
+        language: "bo",
+        limit: 1000,
+        skip: 0
+      }
+    });
   });
 });

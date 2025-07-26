@@ -8,7 +8,7 @@ import {
   useTOCScrollSync,
   usePanelNavigation,
   useTOCNavigation,
-} from "./useTOCHelpers.jsx";
+} from "./useTOCHooks.jsx";
 import "@testing-library/jest-dom";
 
 vi.mock("../../../../config/axios-config.js", () => ({
@@ -68,7 +68,7 @@ const setup = (hook, props = []) => {
   return render(<TestComponent hook={hook} props={props} />);
 };
 
-describe("useTOCHelpers", () => {
+describe("useTOCHooks", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockQuerySelector.mockReturnValue({
@@ -283,23 +283,23 @@ describe("useTOCHelpers", () => {
       expect(mockReplaceState).toHaveBeenCalled();
     });
 
-    test("calls fetchContentBySectionId when provided", () => {
+    test("calls fetchContentBySegmentId when provided", () => {
       const mockContainer = {
         querySelector: vi.fn().mockReturnValue(null),
       };
 
       mockQuerySelector.mockReturnValue(mockContainer);
-      const fetchContentBySectionId = vi.fn();
+      const fetchContentBySegmentId = vi.fn();
 
       const { result } = renderHook(() => usePanelNavigation());
 
       act(() => {
         result.current.navigateToSection("section1", {
-          fetchContentBySectionId,
+          fetchContentBySegmentId,
         });
       });
 
-      expect(fetchContentBySectionId).toHaveBeenCalledWith("section1");
+      expect(fetchContentBySegmentId).toHaveBeenCalledWith("section1");
     });
 
     test("calls autoLoadToSection when loadMoreContent is provided", () => {
@@ -325,59 +325,46 @@ describe("useTOCHelpers", () => {
   });
 
   describe("useTOCNavigation", () => {
-    test("returns fetchContentBySectionId function", () => {
+    test("returns fetchContentBySegmentId function", () => {
       const { result } = renderHook(() =>
-        useTOCNavigation("text1", "content1", "version1", 20, "segment1", {}, {})
+        useTOCNavigation("text1", "content1", "version1", 20, "segment1",  {})
       );
 
-      expect(result.current.fetchContentBySectionId).toBeDefined();
-      expect(typeof result.current.fetchContentBySectionId).toBe("function");
+      expect(result.current.fetchContentBySegmentId).toBeDefined();
+      expect(typeof result.current.fetchContentBySegmentId).toBe("function");
     });
 
-    test("makes API call to fetch content by section ID", async () => {
+    test("makes API call to fetch content by segment ID", async () => {
       const mockAxios = vi.mocked(await import("../../../../config/axios-config.js")).default;
       mockAxios.post.mockResolvedValue({ data: { sections: [] } });
 
-      const tocData = {
-        contents: [
-          {
-            sections: [
-              {
-                id: "section1",
-                segments: [{ segment_id: "segment1" }],
-              },
-            ],
-          },
-        ],
-      };
-
       const { result } = renderHook(() =>
-        useTOCNavigation("text1", "content1", "version1", 20, "segment1", {}, tocData)
+        useTOCNavigation("text1", "content1", "version1", 20, "segment1",  {})
       );
 
       await act(async () => {
-        await result.current.fetchContentBySectionId("section1");
+        await result.current.fetchContentBySegmentId("section1");
       });
 
       expect(mockAxios.post).toHaveBeenCalledWith(
         "/api/v1/texts/text1/details",
         expect.objectContaining({
-          segment_id: "segment1",
+          segment_id: "section1"
         })
       );
     });
 
-    test("handles API errors when fetchContentBySectionId fails", async () => {
+    test("handles API errors when fetchContentBySegmentId fails", async () => {
       const mockAxios = vi.mocked(await import("../../../../config/axios-config.js")).default;
       mockAxios.post.mockRejectedValue(new Error("API Error"));
 
       const { result } = renderHook(() =>
-        useTOCNavigation("text1", "content1", "version1", 20, "segment1", {}, {})
+        useTOCNavigation("text1", "content1", "version1", 20, "segment1",  {})
       );
 
       await expect(
         act(async () => {
-          await result.current.fetchContentBySectionId("section1");
+          await result.current.fetchContentBySegmentId("section1");
         })
       ).rejects.toThrow("API Error");
     });

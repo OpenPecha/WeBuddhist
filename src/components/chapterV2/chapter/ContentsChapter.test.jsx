@@ -75,9 +75,9 @@ vi.mock("../../../context/PanelContext.jsx", () => ({
   PanelProvider: ({ children }) => <div data-testid="panel-provider-mock">{children}</div>,
 }));
 
-vi.mock("./helpers/useTOCHelpers.jsx", () => ({
+vi.mock("./helpers/useTOCHooks.jsx", () => ({
   useTOCNavigation: vi.fn(() => ({
-    fetchContentBySectionId: vi.fn(),
+    fetchContentBySegmentId: vi.fn(),
   })),
 }));
 
@@ -403,34 +403,5 @@ describe("ContentsChapter", () => {
     });
   });
 
-  describe("fetchTableOfContents function", () => {
-    test("calls axios with correct parameters for table of contents", async () => {
-      const mockTocData = { contents: [{ id: "content-1" }] };
-      axiosInstance.get.mockResolvedValue({ data: mockTocData });
 
-      let capturedFetchFunction;
-      vi.spyOn(reactQuery, "useQuery").mockImplementation((key, fetchFn, options) => {
-        capturedFetchFunction = fetchFn;
-        return {
-          data: mockTocData,
-          isLoading: false,
-          error: null,
-        };
-      });
-
-      setup();
-
-      if (capturedFetchFunction) {
-        await capturedFetchFunction("text-1");
-      }
-
-      expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/texts/text-1/contents", {
-        params: {
-          language: "bo",
-          limit: 1000,
-          skip: 0
-        }
-      });
-    });
-  });
 });

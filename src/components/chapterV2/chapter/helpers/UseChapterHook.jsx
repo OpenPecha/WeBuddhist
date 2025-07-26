@@ -4,11 +4,11 @@ import TableOfContents from "../../utils/header/table-of-contents/TableOfContent
 import "./ChapterHook.scss"
 import { getLanguageClass } from "../../../../utils/helperFunctions.jsx";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
-import { useActiveSectionDetection, usePanelNavigation } from "./useTOCHelpers.jsx";
+import { useActiveSectionDetection, usePanelNavigation } from "./useTOCHooks.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, tocData, language, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery } = props;
+  const { showTableOfContents, content, textId, language, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery } = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const [activeSectionId, setActiveSectionId] = useState(null); 
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
@@ -77,22 +77,22 @@ const UseChapterHook = (props) => {
       loadMoreContent: infiniteQuery.fetchNextPage,
       hasMoreContent: infiniteQuery.hasNextPage,
       isFetchingNextPage: infiniteQuery.isFetchingNextPage,
-      fetchContentBySectionId: props.fetchContentBySectionId,
+      fetchContentBySegmentId: props.fetchContentBySegmentId,
     });
   };
   // -------------------------- renderers --------------------------
   const renderTableOfContents = () => {
     return showTableOfContents && (
       <TableOfContents
+        textId={textId}
         activeSectionId={activeSectionId}
         onNavigate={handleTOCNavigation}
-        tocData={tocData}
         contentsData={{
-          ...props.contentsData,
           loadMoreContent: infiniteQuery.fetchNextPage,
           hasMoreContent: infiniteQuery.hasNextPage,
           isFetchingNextPage: infiniteQuery.isFetchingNextPage,
-        }}
+          fetchContentBySegmentId: props.fetchContentBySegmentId,
+        }} 
         show={showTableOfContents}
       />
     );
@@ -122,12 +122,12 @@ const UseChapterHook = (props) => {
     if (!section) return null;
     return (
       <div className="contents-container" key={section.title || 'root'} data-section-id={section.id}>
-        {section.title && (<h2 data-section-id={section.id}>{section.title}</h2> )}
+        {section.title && (<h2>{section.title}</h2> )}
         
         <div className="outer-container">
           {section.segments?.map((segment) => (
             <div key={segment.segment_id} data-segment-id={segment.segment_id}>
-            <button className="segment-container" data-segment-id={segment.segment_id} onClick={() => handleSegmentClick(segment.segment_id)}>
+            <button className="segment-container" onClick={() => handleSegmentClick(segment.segment_id)}>
               <p className="segment-number">{segment.segment_number}</p>
               <div className="segment-content">
               <p className={`${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
