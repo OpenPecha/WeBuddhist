@@ -90,14 +90,14 @@ const TranslationView = ({
             </p>
           )}
 
-          <p className="textgreat review navbaritems">
+          <p className="text-great review navbaritems">
             {t("text.versions.information.review_history")}
           </p>
 
           <div className="link-select navbaritems">
             {addChapter && (
               <button
-                className="linkicons"
+                className="link-icons"
                 onClick={() => {
                   addChapter({ 
                     textId: translation.text_id, 

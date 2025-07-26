@@ -231,7 +231,7 @@ describe("Resources Side Panel", () => {
     setup();
 
     const headerItem = screen.getByText("menu.item2");
-    expect(headerItem.closest("button")).toHaveClass("textgreat");
+    expect(headerItem.closest("button")).toHaveClass("text-great");
   });
 
   test("renders the panel backdrop that closes the panel when clicked", () => {

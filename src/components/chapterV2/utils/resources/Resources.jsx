@@ -13,6 +13,7 @@ import axiosInstance from "../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../context/PanelContext.jsx";
 import {MENU_ITEMS} from "../../../../utils/constants.js";
 import PropTypes from "prop-types";
+import IndividualTextSearch from "./components/individual-text-search/IndividualTextSearch.jsx";
 import "./Resources.scss"
 
 export const fetchSidePanelData = async (segmentId) => {
@@ -20,14 +21,13 @@ export const fetchSidePanelData = async (segmentId) => {
   return data;
 };
 
-const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersionId}) => {
+const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersionId, handleSegmentNavigate}) => {
   const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
   const showPanel = isResourcesPanelOpen;
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
   const [expandedTranslations, setExpandedTranslations] = useState({});
   const [expandedRootTexts, setExpandedRootTexts] = useState({});
   const [activeView, setActiveView] = useState("main");
-
   const {t} = useTranslate();
 
   const {data: sidePanelData} = useQuery(
@@ -53,7 +53,9 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
       </div>
       <div className="panel-content p-3">
         <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
-        <p><BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}</p>
+        <button onClick={() => setActiveView("search")} >
+          <BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}
+        </button>
 
         {sidePanelData?.segment_info?.translations > 0 && (
           <button type="button" onClick={() => setActiveView("translation")}>
@@ -64,7 +66,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
 
         {sidePanelData?.segment_info?.related_text && (sidePanelData?.segment_info?.related_text?.commentaries > 0 || sidePanelData?.segment_info?.related_text?.root_text > 0) && (
           <>
-            <p className='textgreat'>{t("text.related_texts")}</p>
+            <p className='text-great'>{t("text.related_texts")}</p>
             <div className='related-texts-container'>
               
               {sidePanelData?.segment_info?.related_text?.commentaries > 0 && (
@@ -86,7 +88,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
 
         {sidePanelData?.segment_info?.resources?.sheets > 0 && (
           <>
-            <p className='textgreat'>{t("panel.resources")}</p>
+            <p className='text-great'>{t("panel.resources")}</p>
             <p>
               <IoNewspaperOutline className="m-2"/>
               {` ${t("common.sheets")} (${sidePanelData?.segment_info?.resources?.sheets})`}
@@ -98,7 +100,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <button
             type="button"
             key={item.label}
-            className={item.isHeader ? 'textgreat' : ''}
+            className={item.isHeader ? 'text-great' : ''}
             onClick={() => {
               if (item.label === 'common.share') {
                 setActiveView("share");
@@ -121,6 +123,14 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <ShareView
             segmentId={segmentId}
             setIsShareView={setActiveView}
+          />
+        );
+      case "search":
+        return (
+          <IndividualTextSearch
+            onClose={() => setActiveView("main")}
+            textId={sidePanelData?.segment_info?.text_id}
+            handleSegmentNavigate={handleSegmentNavigate}
           />
         );
       case "translation":
@@ -174,8 +184,10 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
 
 export default Resources;
 Resources.propTypes = {
-  segmentId: PropTypes.string.isRequired, 
-  addChapter: PropTypes.func, 
+  segmentId: PropTypes.string.isRequired,
+  addChapter: PropTypes.func,
   handleClose: PropTypes.func,
-  currentChapter: PropTypes.object
+  currentChapter: PropTypes.object,
+  setVersionId: PropTypes.func,
+  handleSegmentNavigate: PropTypes.func,
 }

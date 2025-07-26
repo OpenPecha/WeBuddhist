@@ -8,7 +8,7 @@ import { useActiveSectionDetection, usePanelNavigation } from "./useTOCHelpers.j
 import Resources from "../../utils/resources/Resources.jsx";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, tocData, language, addChapter, currentChapter, setVersionId, infiniteQuery } = props;
+  const { showTableOfContents, content, tocData, language, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery } = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const [activeSectionId, setActiveSectionId] = useState(null); 
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
@@ -37,6 +37,28 @@ const UseChapterHook = (props) => {
     }
   }, [isTopSentinelVisible, infiniteQuery.hasPreviousPage, infiniteQuery.isFetchingPreviousPage, infiniteQuery.fetchPreviousPage]);
 
+  useEffect(() => {
+    const container = contentsContainerRef.current;
+    if (!container) return;
+    const handleDocumentClick = (event) => {
+      if (event.target.classList.contains('footnote-marker')) 
+        {
+        event.stopPropagation();
+        event.preventDefault();
+        const footnoteMarker = event.target;
+        const footnote = footnoteMarker.nextElementSibling;
+        if (footnote?.classList?.contains('footnote')) {
+          footnote.classList.toggle('active');
+        }
+        return false;
+      }
+    };
+    container.addEventListener('click', handleDocumentClick);
+    return () => {
+      container.removeEventListener('click', handleDocumentClick);
+    };
+  }, []);
+  
   useLayoutEffect(() => {
     const scrollContainer = contentsContainerRef.current;
     if (scrollContainer && scrollRef.current.isRestoring) {
@@ -95,27 +117,6 @@ const UseChapterHook = (props) => {
     openResourcesPanel();
   };
 
-  useEffect(() => {
-    const container = contentsContainerRef.current;
-    if (!container) return;
-    const handleDocumentClick = (event) => {
-      if (event.target.classList.contains('footnote-marker')) 
-        {
-        event.stopPropagation();
-        event.preventDefault();
-        const footnoteMarker = event.target;
-        const footnote = footnoteMarker.nextElementSibling;
-        if (footnote?.classList?.contains('footnote')) {
-          footnote.classList.toggle('active');
-        }
-        return false;
-      }
-    };
-    container.addEventListener('click', handleDocumentClick);
-    return () => {
-      container.removeEventListener('click', handleDocumentClick);
-    };
-  }, []);
 
   const renderSectionRecursive = (section) => {
     if (!section) return null;
@@ -164,7 +165,7 @@ const UseChapterHook = (props) => {
 
   const renderResources = () => {
     if (isResourcesPanelOpen && selectedSegmentId) {
-      return <Resources segmentId={selectedSegmentId} addChapter={addChapter} currentChapter={currentChapter} setVersionId={setVersionId} />
+      return <Resources segmentId={selectedSegmentId} addChapter={addChapter} currentChapter={currentChapter} setVersionId={setVersionId} handleSegmentNavigate={handleSegmentNavigate} />
     }
     return null;
   }
