@@ -122,7 +122,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
         hasMoreContent: infiniteQuery.hasNextPage,
         isFetchingNextPage: infiniteQuery.isFetchingNextPage,
         fetchContentBySectionId: fetchContentBySectionId,
-      }
+      },
       handleSegmentNavigate,
     };
     return (
