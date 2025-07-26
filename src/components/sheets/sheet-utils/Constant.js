@@ -290,7 +290,7 @@ export function convertSegmentsToSlate(segments) {
         return {
           type: "image",
           src: content,
-          // here the backend have to send me a id for alt
+          alt: s3_key,
           children: [{ text: "" }],
         };
       case "audio":
