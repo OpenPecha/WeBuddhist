@@ -66,7 +66,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
 
         {sidePanelData?.segment_info?.related_text && (sidePanelData?.segment_info?.related_text?.commentaries > 0 || sidePanelData?.segment_info?.related_text?.root_text > 0) && (
           <>
-            <p className='textgreat'>{t("text.related_texts")}</p>
+            <p className='text-great'>{t("text.related_texts")}</p>
             <div className='related-texts-container'>
               
               {sidePanelData?.segment_info?.related_text?.commentaries > 0 && (
@@ -88,7 +88,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
 
         {sidePanelData?.segment_info?.resources?.sheets > 0 && (
           <>
-            <p className='textgreat'>{t("panel.resources")}</p>
+            <p className='text-great'>{t("panel.resources")}</p>
             <p>
               <IoNewspaperOutline className="m-2"/>
               {` ${t("common.sheets")} (${sidePanelData?.segment_info?.resources?.sheets})`}
@@ -100,7 +100,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <button
             type="button"
             key={item.label}
-            className={item.isHeader ? 'textgreat' : ''}
+            className={item.isHeader ? 'text-great' : ''}
             onClick={() => {
               if (item.label === 'common.share') {
                 setActiveView("share");
