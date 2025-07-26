@@ -157,7 +157,7 @@ export function convertSegmentsToSlate(segments) {
   }
   const parser = typeof window !== "undefined" ? new window.DOMParser() : null;
   return segments.map((segment) => {
-    const { type, content } = segment;
+    const { type, content, key } = segment;
     switch (type) {
       case "content": {
         if (/<blockquote[\s>]/i.test(content)) {
@@ -290,7 +290,7 @@ export function convertSegmentsToSlate(segments) {
         return {
           type: "image",
           src: content,
-          alt: s3_key,
+          alt: key,
           children: [{ text: "" }],
         };
       case "audio":
