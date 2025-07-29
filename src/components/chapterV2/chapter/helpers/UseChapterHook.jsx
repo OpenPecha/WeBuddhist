@@ -66,7 +66,7 @@ const UseChapterHook = (props) => {
 
   // -------------------------- renderers --------------------------
   const renderTableOfContents = () => {
-    return showTableOfContents && <TableOfContents />
+    return <TableOfContents textId={props.textId} showTableOfContents={showTableOfContents} />
   }
 
   const renderLoadingIndicator = (message) => (
@@ -143,8 +143,8 @@ const UseChapterHook = (props) => {
 
   return (
     <div className="use-chapter-hook-container">
-      {renderTableOfContents()}
       <div className="chapter-flex-row">
+        {renderTableOfContents()}
         <div className="main-content" ref={contentsContainerRef}>
           {renderContents()}
         </div>

@@ -79,6 +79,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
 
   const renderChapter = () => {
     const propsForUseChapterHookComponent = {
+      textId,
       showTableOfContents,
       content: allContent?.content,
       language: allContent?.text_detail?.language,
