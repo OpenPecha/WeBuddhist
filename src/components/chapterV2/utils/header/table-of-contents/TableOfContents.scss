@@ -2,12 +2,6 @@
   width: 0;
   background-color: #fff;
   border-right: 1px solid #e0e0e0;
-  transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
-
-  &:not(.show) {
-    transition: none;
-  }
-
   overflow: auto;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
   height: 100%;
@@ -41,9 +35,6 @@
     height: calc(100% - 50px);
     overflow-y: auto;
     text-align: start;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-
     .toc-container {
       .section-container {
         .section-header {
@@ -55,7 +46,9 @@
           width: 100%;
 
           &.current-section {
-            background-color: #fff3cd;
+            padding-left: 8px;
+            border-left: 6px solid #AE1C21;
+            background-color: #f8f9fa;
           }
 
           .section-title {
@@ -76,10 +69,6 @@
               text-align: left;
               box-shadow: none;
             }
-          }
-
-          &:hover {
-            background-color: transparent;
           }
 
           .toggle-icon {
@@ -106,9 +95,7 @@
     }
   }
 
-  &.show .toc-content {
-    opacity: 1;
-  }
+
 }
 
 @media (max-width: 992px) {
