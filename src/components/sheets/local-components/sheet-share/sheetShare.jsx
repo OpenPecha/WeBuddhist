@@ -5,6 +5,18 @@ import { useQuery } from 'react-query';
 import axiosInstance from '../../../../config/axios-config.js';
 import './SheetShare.scss';
 
+
+// ----------------------------- api calls ------------------------------------
+
+export const fetchShortUrl = async (url, textId, language = 'bo') => {
+  const { data } = await axiosInstance.post('/api/v1/share', { 
+    text_id: textId,
+    language: language,
+    url,
+  });
+  return data;
+};
+
 // ----------------------------- helpers ---------------------------------------
 
 const extractTextIdFromUrl = (url) => {
@@ -17,17 +29,6 @@ const extractTextIdFromUrl = (url) => {
     console.error('Error extracting text_id from URL:', error);
     return null;
   }
-};
-
-// ----------------------------- api calls ------------------------------------
-
-export const fetchShortUrl = async (url, textId, language = 'bo') => {
-  const { data } = await axiosInstance.post('/api/v1/share', { 
-    text_id: textId,
-    language: language,
-    url,
-  });
-  return data;
 };
 
 const SheetShare = ({ url = window.location.href, language = 'bo' }) => {
@@ -102,8 +103,12 @@ const SheetShare = ({ url = window.location.href, language = 'bo' }) => {
       default:
         return;
     }
-    
-    window.open(shareUrl, '_blank', 'width=600,height=400');
+
+    const shareAnchor = document.createElement('a');
+    shareAnchor.href = shareUrl;
+    shareAnchor.target = '_blank';
+    shareAnchor.rel = 'noopener noreferrer';
+    shareAnchor.click();
     setIsOpen(false);
   };
 
