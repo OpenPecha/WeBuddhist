@@ -54,6 +54,10 @@
           border: none;
           width: 100%;
 
+          &.current-section {
+            background-color: #fff3cd;
+          }
+
           .section-title {
             padding: 0.5rem 0.75rem;
             width: 100%;
@@ -65,19 +69,6 @@
             text-align: left;
             text-decoration: none;
 
-            &.selected {
-              color: #4a90e2;
-              font-weight: 500;
-              padding-left: 8px;
-              border-left: 3px solid #4a90e2;
-            }
-
-            &.active {
-              background-color: #f0f7ff;
-              color: #2c6bbd;
-              font-weight: 600;
-              border-left: 3px solid #2c6bbd;
-            }
 
             &:is(button) {
               background: none;

@@ -2,18 +2,38 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.jsx";
 import "./ChapterHook.scss"
-import { getLanguageClass } from "../../../../utils/helperFunctions.jsx";
+import { getLanguageClass, getCurrentSectionFromScroll } from "../../../../utils/helperFunctions.jsx";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery } = props;
+  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId } = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
   const scrollRef = useRef({ isRestoring: false, previousScrollHeight: 0 });
+  const sectionRefs = useRef(new Map());
   const { ref: topSentinelRef, inView: isTopSentinelVisible } = useInView({threshold: 0.1, rootMargin: '50px',});
   const { ref: sentinelRef, inView: isBottomSentinelVisible } = useInView({threshold: 0.1, rootMargin: '50px'});
+
+  useEffect(() => {
+    const container = contentsContainerRef.current;
+    const handleScroll = () => {
+      if (!container) return;
+      const containerRect = container.getBoundingClientRect();
+      const currentSection = getCurrentSectionFromScroll(content.sections, containerRect, sectionRefs);
+      currentSection && onCurrentSectionChange(currentSection);
+    };
+    if (container) {
+      container.addEventListener('scroll', handleScroll, { passive: true });
+      handleScroll();
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [content?.sections, onCurrentSectionChange]);
 
   useEffect(() => {
     if (isBottomSentinelVisible && infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage) {
@@ -66,7 +86,7 @@ const UseChapterHook = (props) => {
 
   // -------------------------- renderers --------------------------
   const renderTableOfContents = () => {
-    return <TableOfContents textId={props.textId} showTableOfContents={showTableOfContents} />
+    return <TableOfContents textId={props.textId} showTableOfContents={showTableOfContents} currentSectionId={currentSectionId} />
   }
 
   const renderLoadingIndicator = (message) => (
@@ -92,7 +112,8 @@ const UseChapterHook = (props) => {
   const renderSectionRecursive = (section) => {
     if (!section) return null;
     return (
-      <div className="contents-container" key={section.title || 'root'}>
+      <div className="contents-container" key={section.title || 'root'}
+        ref={(sectionRef) => {sectionRef && section.id && sectionRefs.current.set(section.id, sectionRef)}}>
         {section.title && (<h2>{section.title}</h2> )}
         
         <div className="outer-container">

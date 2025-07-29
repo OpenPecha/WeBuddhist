@@ -22,7 +22,7 @@ const fetchTableOfContents = async (textId) => {
   return data;
 };
 
-const TableOfContents = ({ textId, showTableOfContents }) => {
+const TableOfContents = ({ textId, showTableOfContents, currentSectionId }) => {
   const { t } = useTranslate();
   const [expandedSections, setExpandedSections] = useState({});
 
@@ -56,11 +56,12 @@ const TableOfContents = ({ textId, showTableOfContents }) => {
     const segmentId = hasChildren 
       ? section.sections[0]?.segments?.[0]?.segment_id 
       : section.segments?.[0]?.segment_id;
+    const isCurrentSection = currentSectionId === section.id;
 
     return (
       <div key={section.id} className="section-container">
         <button 
-          className="section-header"
+          className={`section-header ${isCurrentSection ? 'current-section' : ''}`}
           onClick={(e) => e.target.tagName !== 'A' && toggleSection(section.id)}
         >
           {hasChildren ? (
@@ -120,5 +121,6 @@ export default React.memo(TableOfContents);
 
 TableOfContents.propTypes = {
   textId: PropTypes.string.isRequired,
-  showTableOfContents: PropTypes.bool
+  showTableOfContents: PropTypes.bool,
+  currentSectionId: PropTypes.string
 };

@@ -210,3 +210,27 @@ export const mergeSections = (existingSections, newSections) => {
   });
   return mergedSections;
 };
+
+export const getCurrentSectionFromScroll = (sections, containerRect, sectionRefs) => {
+  if (!sections || sections.length === 0) return null;
+
+  let currentSection = null;
+  let maxVisibleHeight = 0;
+
+  sections.forEach((section) => {
+    const element = sectionRefs.current?.get(section.id);
+    if (element) {
+      const elementRect = element.getBoundingClientRect();
+      const visibleTop = Math.max(elementRect.top, containerRect.top);
+      const visibleBottom = Math.min(elementRect.bottom, containerRect.bottom);
+      const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+
+      if (visibleHeight > 0 && visibleHeight > maxVisibleHeight) {
+        maxVisibleHeight = visibleHeight;
+        currentSection = section.id;
+      }
+    }
+  });
+
+  return currentSection;
+};
