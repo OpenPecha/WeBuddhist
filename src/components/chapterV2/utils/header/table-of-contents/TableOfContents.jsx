@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslate } from "@tolgee/react";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import PropTypes from "prop-types";
@@ -25,6 +25,7 @@ const fetchTableOfContents = async (textId) => {
 const TableOfContents = ({ textId, showTableOfContents, currentSectionId }) => {
   const { t } = useTranslate();
   const [expandedSections, setExpandedSections] = useState({});
+  const tocContainerRef = useRef(null);
 
   const { data: tableOfContents, error, isLoading } = useQuery(
     ["toc", textId],
@@ -35,7 +36,14 @@ const TableOfContents = ({ textId, showTableOfContents, currentSectionId }) => {
       staleTime: 1000 * 60 * 20,
     }
   );
-
+  useEffect(() => {
+    const container = tocContainerRef.current;
+    if (!container) return;
+    const activeElement = container.querySelector('.section-header.current-section');
+    if (activeElement) {
+      activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [currentSectionId, expandedSections]);
   // -------------------------------------------- helpers ----------------------------------------------
   const earlyReturn = getEarlyReturn({loading: isLoading, error: error, t});
   if (earlyReturn) return earlyReturn;
@@ -108,7 +116,7 @@ const TableOfContents = ({ textId, showTableOfContents, currentSectionId }) => {
       <div className="headerthing">
         <p className="listtitle">{t("text.table_of_contents")}</p>
       </div>
-      <div className="toc-content">
+      <div className="toc-content" ref={tocContainerRef}>
         <div className="toc-container">
           {renderTocContent()}
         </div>
