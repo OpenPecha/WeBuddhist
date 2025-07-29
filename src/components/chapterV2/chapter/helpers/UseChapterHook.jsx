@@ -7,7 +7,7 @@ import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId } = props;
+  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId } = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -86,7 +86,7 @@ const UseChapterHook = (props) => {
 
   // -------------------------- renderers --------------------------
   const renderTableOfContents = () => {
-    return <TableOfContents textId={props.textId} showTableOfContents={showTableOfContents} currentSectionId={currentSectionId} />
+    return <TableOfContents textId={textId} showTableOfContents={showTableOfContents} currentSectionId={currentSectionId} onSegmentSelect={handleSegmentNavigate} />
   }
 
   const renderLoadingIndicator = (message) => (

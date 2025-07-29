@@ -22,7 +22,7 @@ const fetchTableOfContents = async (textId) => {
   return data;
 };
 
-const TableOfContents = ({ textId, showTableOfContents, currentSectionId }) => {
+const TableOfContents = ({ textId, showTableOfContents, currentSectionId, onSegmentSelect }) => {
   const { t } = useTranslate();
   const [expandedSections, setExpandedSections] = useState({});
   const tocContainerRef = useRef(null);
@@ -81,12 +81,12 @@ const TableOfContents = ({ textId, showTableOfContents, currentSectionId }) => {
           ) : (
             <span className="empty-icon"></span>
           )}
-          <Link
-            to={`/chapter?text_id=${textId}&content_id=${contentId}&segment_id=${segmentId}`}
+          <div 
+            onClick={() => onSegmentSelect && onSegmentSelect(segmentId)}
             className={`section-title ${getLanguageClass(tableOfContents?.text_detail?.language)}`}
           >
             {section.title}
-          </Link>
+          </div>
         </button>
         {isExpanded && hasChildren && (
           <div className="nested-content">
@@ -130,5 +130,6 @@ export default React.memo(TableOfContents);
 TableOfContents.propTypes = {
   textId: PropTypes.string.isRequired,
   showTableOfContents: PropTypes.bool,
-  currentSectionId: PropTypes.string
+  currentSectionId: PropTypes.string,
+  onSegmentSelect: PropTypes.func,
 };
