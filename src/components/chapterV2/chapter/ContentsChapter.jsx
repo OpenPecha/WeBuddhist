@@ -81,7 +81,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
     const propsForChapterHeader = { viewMode, setViewMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId };
     return <ChapterHeader {...propsForChapterHeader} />;
   };
-  
+
   const renderChapter = () => {
     const propsForUseChapterHookComponent = {
       textId,

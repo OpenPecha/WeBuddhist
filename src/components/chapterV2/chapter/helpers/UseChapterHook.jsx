@@ -86,7 +86,8 @@ const UseChapterHook = (props) => {
 
   // -------------------------- renderers --------------------------
   const renderTableOfContents = () => {
-    return <TableOfContents textId={textId} showTableOfContents={showTableOfContents} currentSectionId={currentSectionId} onSegmentSelect={handleSegmentNavigate} />
+    const propsForTableOfContents={textId, showTableOfContents, currentSectionId, onSegmentSelect: handleSegmentNavigate}
+    return <TableOfContents {...propsForTableOfContents} />
   }
 
   const renderLoadingIndicator = (message) => (

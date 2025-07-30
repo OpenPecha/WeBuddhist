@@ -3,11 +3,12 @@ import { useTranslate } from "@tolgee/react";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import PropTypes from "prop-types";
 import { getLanguageClass, getEarlyReturn } from "../../../../../utils/helperFunctions.jsx";
-import "./TableOfContents.scss";
 import { useQuery } from "react-query";
 import { fetchTableOfContents } from "../../../../texts/Texts.jsx";
+import "./TableOfContents.scss";
 
-const TableOfContents = ({ textId, showTableOfContents, currentSectionId, onSegmentSelect }) => {
+const TableOfContents = (props) => {
+  const { textId, showTableOfContents, currentSectionId, onSegmentSelect } = props;
   const { t } = useTranslate();
   const [expandedSections, setExpandedSections] = useState({});
   const tocContainerRef = useRef(null);
@@ -29,7 +30,7 @@ const TableOfContents = ({ textId, showTableOfContents, currentSectionId, onSegm
       activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [currentSectionId, expandedSections]);
-  
+
   // -------------------------------------------- helpers ----------------------------------------------
   const earlyReturn = getEarlyReturn({loading: isLoading, error: error, t});
   if (earlyReturn) return earlyReturn;
@@ -99,7 +100,7 @@ const TableOfContents = ({ textId, showTableOfContents, currentSectionId, onSegm
 
   return (
     <div className={`table-of-contents ${showTableOfContents ? 'show' : ''}`}>
-      <div className="headerthing">
+      <div className="header-thing">
         <p className="listtitle">{t("text.table_of_contents")}</p>
       </div>
       <div className="toc-content" ref={tocContainerRef}>
