@@ -343,7 +343,6 @@ describe('SheetShare Loading State', () => {
   });
 
   it('should enable buttons after loading completes', () => {
-    // First render with loading state
     vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
       data: null,
       isLoading: true,
@@ -381,5 +380,175 @@ describe('SheetShare Loading State', () => {
     expect(copyButton).not.toBeDisabled();
     expect(twitterButton).not.toBeDisabled();
     expect(facebookButton).not.toBeDisabled();
+  });
+});
+
+describe('SheetShare Component State', () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+  const originalLocation = window.location;
+
+  beforeEach(() => {
+    delete window.location;
+    window.location = {
+      href: 'https://default-domain.com/sheets/text_default',
+    };
+
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
+        writeText: vi.fn().mockImplementation(() => Promise.resolve())
+      },
+      configurable: true
+    });
+
+    vi.useFakeTimers();
+    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
+      data: { shortUrl: 'https://short.url/mocked' },
+      isLoading: false,
+    }));
+
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    window.location = originalLocation;
+    vi.useRealTimers();
+  });
+
+  it('should toggle isOpen state when share button is clicked', () => {
+    const { container } = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+
+    expect(container.querySelector('.share-dropdown')).toBeNull();
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+    expect(container.querySelector('.share-dropdown')).not.toBeNull();
+
+    fireEvent.click(shareButton);
+    expect(container.querySelector('.share-dropdown')).toBeNull();
+  });
+
+  it('should close dropdown when clicking outside', () => {
+    const { container } = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+    expect(container.querySelector('.share-dropdown')).not.toBeNull();
+
+    fireEvent.mouseDown(document);
+    expect(container.querySelector('.share-dropdown')).toBeNull();
+  });
+
+  it('should show copy success tooltip when copy is successful', async () => {
+    let clipboardPromiseResolve;
+    const clipboardPromise = new Promise(resolve => {
+      clipboardPromiseResolve = resolve;
+    });
+    
+    navigator.clipboard.writeText.mockImplementation(() => clipboardPromise);
+    
+    const { container } = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+    
+    const copyButton = container.querySelector('.share-option');
+    fireEvent.click(copyButton);
+    
+    clipboardPromiseResolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('https://short.url/mocked');
+    expect(container.querySelector('.copy-success-tooltip')).not.toBeNull();
+  });
+
+  it('should hide copy success tooltip after timeout', async () => {
+    let clipboardPromiseResolve;
+    const clipboardPromise = new Promise(resolve => {
+      clipboardPromiseResolve = resolve;
+    });
+    
+    navigator.clipboard.writeText.mockImplementation(() => clipboardPromise);
+    
+    const { container } = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+    
+    const copyButton = container.querySelector('.share-option');
+    fireEvent.click(copyButton);
+    
+    clipboardPromiseResolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    
+    expect(container.querySelector('.copy-success-tooltip')).not.toBeNull();
+
+    vi.advanceTimersByTime(2000); 
+  });
+
+  it('should close dropdown after successful copy with delay', async () => {
+    let clipboardPromiseResolve;
+    const clipboardPromise = new Promise(resolve => {
+      clipboardPromiseResolve = resolve;
+    });
+    
+    navigator.clipboard.writeText.mockImplementation(() => clipboardPromise);
+    
+    const { container, rerender } = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+
+    expect(container.querySelector('.share-dropdown')).not.toBeNull();
+
+    const copyButton = container.querySelector('.share-option');
+    fireEvent.click(copyButton);
+    
+    clipboardPromiseResolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    
+    expect(container.querySelector('.share-dropdown')).not.toBeNull();
+    vi.advanceTimersByTime(1000);
+    
+    rerender(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+    
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(container.querySelector('.share-dropdown')).toBeNull();
+    expect(container.querySelector('.copy-success-tooltip')).not.toBeNull();
   });
 });
