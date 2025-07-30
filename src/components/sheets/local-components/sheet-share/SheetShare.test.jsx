@@ -552,3 +552,145 @@ describe('SheetShare Component State', () => {
     expect(container.querySelector('.copy-success-tooltip')).not.toBeNull();
   });
 });
+
+describe('SheetShare Social Media Sharing', () => {
+  let queryClient;
+  let mockAnchor;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+      },
+    });
+
+    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
+      data: { shortUrl: 'https://short.url/mocked' },
+      isLoading: false,
+    }));
+
+    Object.defineProperty(window, 'location', {
+      value: {
+        href: 'https://app.openpecha.org/sheets/view/text_123',
+        pathname: '/sheets/view/text_123',
+        search: '',
+        hash: '',
+        host: 'app.openpecha.org',
+      },
+      writable: true,
+    });
+
+    mockAnchor = {
+      href: '',
+      target: '',
+      rel: '',
+      click: vi.fn(),
+    };
+    
+    const originalCreateElement = document.createElement;
+    vi.spyOn(document, 'createElement').mockImplementation((tag) => {
+      if (tag === 'a') {
+        return mockAnchor;
+      }
+      return originalCreateElement.call(document, tag);
+    });
+
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.useRealTimers();
+  });
+
+  it('should share on Twitter with correct URL', () => {
+    const { container } = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+
+    const twitterButton = Array.from(container.querySelectorAll('.share-option'))
+      .find(button => button.textContent.includes('Share on X'));
+    
+    fireEvent.click(twitterButton);
+
+    expect(document.createElement).toHaveBeenCalledWith('a');
+    expect(mockAnchor.href).toBe('https://twitter.com/intent/tweet?url=https%3A%2F%2Fshort.url%2Fmocked');
+    expect(mockAnchor.target).toBe('_blank');
+    expect(mockAnchor.rel).toBe('noopener noreferrer');
+    expect(mockAnchor.click).toHaveBeenCalled();
+
+    expect(container.querySelector('.share-dropdown')).toBeNull();
+  });
+
+  it('should share on Facebook with correct URL', () => {
+    const { container } = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+
+    const facebookButton = Array.from(container.querySelectorAll('.share-option'))
+      .find(button => button.textContent.includes('Share on Facebook'));
+    
+    fireEvent.click(facebookButton);
+
+    expect(document.createElement).toHaveBeenCalledWith('a');
+    expect(mockAnchor.href).toBe('https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fshort.url%2Fmocked');
+    expect(mockAnchor.target).toBe('_blank');
+    expect(mockAnchor.rel).toBe('noopener noreferrer');
+    expect(mockAnchor.click).toHaveBeenCalled();
+
+    expect(container.querySelector('.share-dropdown')).toBeNull();
+  });
+
+  it('should use short URL for sharing when available', () => {
+    const { container } = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+
+    const twitterButton = Array.from(container.querySelectorAll('.share-option'))
+      .find(button => button.textContent.includes('Share on X'));
+    
+    fireEvent.click(twitterButton);
+
+    expect(mockAnchor.href).toContain('https%3A%2F%2Fshort.url%2Fmocked');
+  });
+
+  it('should use original URL for sharing when short URL is not available', () => {
+    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
+      data: null,
+      isLoading: false,
+    }));
+
+    const { container } = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+
+    const twitterButton = Array.from(container.querySelectorAll('.share-option'))
+      .find(button => button.textContent.includes('Share on X'));
+    
+    fireEvent.click(twitterButton);
+
+    expect(mockAnchor.href).toContain('https%3A%2F%2Fapp.openpecha.org%2Fsheets%2Fview%2Ftext_123');
+  });
+});
