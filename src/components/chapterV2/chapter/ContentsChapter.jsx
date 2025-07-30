@@ -26,11 +26,13 @@ const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
 const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
+  const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
+  const [currentSectionId, setCurrentSectionId] = useState(null);
   const size = 20;
   const { t } = useTranslate();
 
   const infiniteQuery = useInfiniteQuery(
-    ["content", textId, contentId, versionId, size, segmentId],
+    ["content", textId, contentId, versionId, size, currentSegmentId],
     fetchContentDetails,
     {
       getNextPageParam: (lastPage) => {
@@ -66,21 +68,33 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
   const earlyReturn = getEarlyReturn({ isLoading: infiniteQuery.isLoading, error: infiniteQuery.error, t });
   if (earlyReturn) return earlyReturn;
 
+  const handleSegmentNavigate = (newSegmentId) => {
+    setCurrentSegmentId(newSegmentId);
+  };
+
+  const handleCurrentSectionChange = (sectionId) => {
+    setCurrentSectionId(sectionId);
+  };
+  
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
-    const propsForChapterHeader = { viewMode, setViewMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters };
+    const propsForChapterHeader = { viewMode, setViewMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId };
     return <ChapterHeader {...propsForChapterHeader} />;
   };
 
   const renderChapter = () => {
     const propsForUseChapterHookComponent = {
+      textId,
       showTableOfContents,
       content: allContent?.content,
       language: allContent?.text_detail?.language,
       addChapter,
       currentChapter,
       setVersionId,
-      infiniteQuery
+      handleSegmentNavigate,
+      infiniteQuery,
+      onCurrentSectionChange: handleCurrentSectionChange,
+      currentSectionId
     };
     return (
       <PanelProvider>

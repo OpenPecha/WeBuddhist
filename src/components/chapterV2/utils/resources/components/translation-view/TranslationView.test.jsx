@@ -235,7 +235,7 @@ describe("TranslationView Component", () => {
   test("clicking on 'open text' button calls addChapter with correct parameters", () => {
     setup();
     
-    const openTextButtons = document.querySelectorAll(".linkicons");
+    const openTextButtons = document.querySelectorAll(".link-icons");
     expect(openTextButtons.length).toBe(3);
     
     fireEvent.click(openTextButtons[0]);
@@ -297,7 +297,7 @@ describe("TranslationView Component", () => {
   test("handles addChapter prop being undefined", () => {
     setup({ addChapter: undefined });
     
-    const openTextButtons = document.querySelectorAll(".linkicons");
+    const openTextButtons = document.querySelectorAll(".link-icons");
     expect(openTextButtons.length).toBe(0); 
   });
 });

@@ -45,7 +45,7 @@ const ShareView = ({ setIsShareView, segmentId }) => {
         />
       </div>
       <div className="share-content p-3">
-        <p className="mb-3 textgreat ">{t('text.share_link')}</p>
+        <p className="mb-3 text-great ">{t('text.share_link')}</p>
         <div className="share-url-container p-3 mb-3">
           <p className="share-url text-truncate en-text">{isLoading ? t("common.loading") : shorturldata?.shortUrl}</p>
           <button
@@ -61,7 +61,7 @@ const ShareView = ({ setIsShareView, segmentId }) => {
             {copied ? <IoMdCheckmark size={16}/> : <IoCopy size={16}/>}
           </button>
         </div>
-        <p className="textgreat">{t('text.more_options')}</p>
+        <p className="text-great">{t('text.more_options')}</p>
         <div className="social-share-buttons">
           <a 
             href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shorturldata?.shortUrl ||  url)}`}
