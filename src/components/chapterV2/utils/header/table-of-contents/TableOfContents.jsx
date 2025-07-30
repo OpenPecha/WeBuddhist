@@ -45,6 +45,32 @@ const TableOfContents = (props) => {
   };
 
   // --------------------------------------------- renderers -------------------------------------------
+  const renderToggleIcon = (isExpanded, hasChildren) => {
+    if (!hasChildren) return <span className="empty-icon"></span>;
+    return isExpanded ? (
+      <FiChevronDown size={16} className="toggle-icon" />
+    ) : (
+      <FiChevronRight size={16} className="toggle-icon" />
+    );
+  };
+
+  const renderSectionTitle = (section, segmentId) => (
+    <div
+      onClick={() => onSegmentSelect(segmentId)}
+      className={`section-title ${getLanguageClass(tableOfContents?.text_detail?.language)}`}
+    >
+      {section.title}
+    </div>
+  );
+
+  const renderNestedSections = (section, contentId) => (
+    <div className="nested-content">
+      {section.sections.map((childSection) =>
+        renderSectionTree(childSection, contentId)
+      )}
+    </div>
+  );
+
   const renderSectionTree = (section, contentId) => {
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
@@ -59,29 +85,10 @@ const TableOfContents = (props) => {
           className={`section-header ${isCurrentSection ? 'current-section' : ''}`}
           onClick={(e) => e.target.tagName !== 'A' && toggleSection(section.id)}
         >
-          {hasChildren ? (
-            isExpanded ? (
-              <FiChevronDown size={16} className="toggle-icon" />
-            ) : (
-              <FiChevronRight size={16} className="toggle-icon" />
-            )
-          ) : (
-            <span className="empty-icon"></span>
-          )}
-          <button 
-            onClick={() => onSegmentSelect(segmentId)}
-            className={`section-title ${getLanguageClass(tableOfContents?.text_detail?.language)}`}
-          >
-            {section.title}
-          </button>
+          {renderToggleIcon(isExpanded, hasChildren)}
+          {renderSectionTitle(section, segmentId)}
         </button>
-        {isExpanded && hasChildren && (
-          <div className="nested-content">
-            {section.sections.map((childSection) =>
-              renderSectionTree(childSection, contentId)
-            )}
-          </div>
-        )}
+        {isExpanded && hasChildren && renderNestedSections(section, contentId)}
       </div>
     );
   };
