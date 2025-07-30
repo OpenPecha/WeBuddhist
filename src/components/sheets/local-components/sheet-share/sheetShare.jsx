@@ -1,55 +1,40 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiShare2, FiCopy } from 'react-icons/fi';
+import { FiShare2 } from 'react-icons/fi';
 import { FaFacebook, FaTwitter } from 'react-icons/fa';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../../../config/axios-config.js';
 import './SheetShare.scss';
+import { useParams } from 'react-router-dom';
+import { IoCopy } from 'react-icons/io5';
+import { IoMdCheckmark } from 'react-icons/io';
 
-
-// ----------------------------- api calls ------------------------------------
-
-export const fetchShortUrl = async (url, textId, language = 'bo') => {
+export const fetchShortUrl = async (url, textId) => {
   const { data } = await axiosInstance.post('/api/v1/share', { 
     text_id: textId,
-    language: language,
+    language: "bo",
     url,
   });
   return data;
 };
 
-// ----------------------------- helpers ---------------------------------------
 
-const extractTextIdFromUrl = (url) => {
-  try {
-    const urlPath = new URL(url).pathname;
-    const lastPathPart = urlPath.split('/').pop();
-    const textId = lastPathPart.split('_').pop();
-    return textId;
-  } catch (error) {
-    console.error('Error extracting text_id from URL:', error);
-    return null;
-  }
-};
-
-const SheetShare = ({ url = window.location.href, language = 'bo' }) => {
+const SheetShare = () => {
+  const url = window.location.href
   const [isOpen, setIsOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const dropdownRef = useRef(null);
-  const [copySuccess, setCopySuccess] = useState(false);
-  
-  const textId = extractTextIdFromUrl(url);
+  const { sheetSlugAndId } = useParams();
+  const textId = sheetSlugAndId.split('_').pop();
 
   const { data: shorturlData, isLoading } = useQuery(
     ["shortUrl", url, textId, isOpen],
-    () => fetchShortUrl(url, textId, language),
+    () => fetchShortUrl(url, textId),
     {
       refetchOnWindowFocus: false,
-      enabled: isOpen && Boolean(textId),
+      enabled: isOpen,
+      retry: false,
     }
   );
-
-  const getShareableUrl = () => {
-    return shorturlData?.shortUrl || url;
-  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -64,101 +49,54 @@ const SheetShare = ({ url = window.location.href, language = 'bo' }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (copySuccess) {
-      const timer = setTimeout(() => {
-        setCopySuccess(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [copySuccess]);
-
-  // ----------------------------- event handlers -------------------------------
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(getShareableUrl())
-      .then(() => {
-        setCopySuccess(true);
-        setTimeout(() => setIsOpen(false), 1000);
-      })
-      .catch((err) => {
-        console.error('Failed to copy: ', err);
-      });
-  };
-
-  const shareOnPlatform = (platform) => {
-    let shareUrl;
-    
-    switch (platform) {
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(getShareableUrl())}`;
-        break;
-      case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareableUrl())}`;
-        break;
-      default:
-        return;
-    }
-
-    const shareAnchor = document.createElement('a');
-    shareAnchor.href = shareUrl;
-    shareAnchor.target = '_blank';
-    shareAnchor.rel = 'noopener noreferrer';
-    shareAnchor.click();
-    setIsOpen(false);
-  };
-
   // ----------------------------- renderers -------------------------------------
 
   return (
     <div className="sheet-share-container" ref={dropdownRef}>
       <button 
         className="share-button" 
-        onClick={toggleDropdown}
-        aria-label="Share"
+        onClick={()=>setIsOpen(!isOpen)}
       >
         <FiShare2 />
       </button>
-      
+
       {isOpen && (
         <div className="share-dropdown">
           <button 
             className="share-option" 
-            onClick={handleCopyLink}
-            disabled={isLoading && !textId}
+            onClick={()=>{
+              navigator.clipboard.writeText(shorturlData?.shortUrl || url);
+              setCopied(true);
+              setTimeout(() => {
+                setCopied(false);
+              }, 3000);
+            }}
+            disabled={isLoading}
           >
-            <FiCopy className="share-icon" />
-            <span>{isLoading ? "Loading..." : textId ? "Copy link" : "Invalid URL"}</span>
+            {copied ? <IoMdCheckmark className='share-icon' size={16}/> : <IoCopy className='share-icon' size={16}/>}
+            <span>{isLoading ? "Loading..." : "Copy link"}</span>
           </button>
           
-          <button 
+          <a 
             className="share-option" 
-            onClick={() => shareOnPlatform('twitter')}
-            disabled={isLoading || !textId}
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shorturlData?.shortUrl ||  url)}`}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <FaTwitter className="share-icon" />
             <span>Share on X</span>
-          </button>
+          </a>
           
-          <button 
+          <a 
             className="share-option" 
-            onClick={() => shareOnPlatform('facebook')}
-            disabled={isLoading || !textId}
+            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shorturlData?.shortUrl || url)}`}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <FaFacebook className="share-icon" />
             <span>Share on Facebook</span>
-          </button>
+          </a>
           
-        </div>
-      )}
-      
-      {copySuccess && (
-        <div className="copy-success-tooltip">
-          Link copied!
         </div>
       )}
     </div>
