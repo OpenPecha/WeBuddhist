@@ -210,3 +210,44 @@ export const mergeSections = (existingSections, newSections) => {
   });
   return mergedSections;
 };
+
+export const getCurrentSectionFromScroll = (sections, containerRect, sectionRefs) => {
+  if (!sections || sections.length === 0) return null;
+
+  const flatSections = [];
+  const walk = (secs, depth = 0) => {
+    secs.forEach((sec) => {
+      flatSections.push({ sec, depth });
+      if (sec.sections && sec.sections.length > 0) {
+        walk(sec.sections, depth + 1);
+      }
+    });
+  };
+  walk(sections);
+
+  let candidateBelow = { id: null, dist: Infinity, depth: -1 };
+  let candidateAbove = { id: null, dist: Infinity, depth: -1 };
+
+  flatSections.forEach(({ sec, depth }) => {
+    const element = sectionRefs.current?.get(sec.id);
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    if (rect.bottom <= containerRect.top || rect.top >= containerRect.bottom) return;
+    const offsetFromTop = rect.top - containerRect.top; 
+    if (offsetFromTop >= 0) {
+      const isCloser = offsetFromTop < candidateBelow.dist;
+      const isSameDistButDeeper = offsetFromTop === candidateBelow.dist && depth > candidateBelow.depth;
+      if (isCloser || isSameDistButDeeper) {
+        candidateBelow = { id: sec.id, dist: offsetFromTop, depth };
+      }
+    } else {
+      const distance = Math.abs(offsetFromTop);
+      const isCloser = distance < candidateAbove.dist;
+      const isSameDistButDeeper = distance === candidateAbove.dist && depth > candidateAbove.depth;
+      if (isCloser || isSameDistButDeeper) {
+        candidateAbove = { id: sec.id, dist: distance, depth };
+      }
+    }
+  });
+  return candidateBelow.id ?? candidateAbove.id;
+};
