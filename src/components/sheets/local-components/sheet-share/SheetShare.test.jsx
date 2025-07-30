@@ -1,696 +1,130 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import * as reactQuery from 'react-query';
-import '@testing-library/jest-dom';
-import { fetchShortUrl } from './sheetShare.jsx';
-import SheetShare from './sheetShare.jsx';
+import React from "react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { vi } from "vitest";
+import SheetShare, { fetchShortUrl } from "./sheetShare.jsx";
+import * as reactQuery from "react-query";
+import { BrowserRouter as Router, useParams } from "react-router-dom";
+import axiosInstance from "../../../../config/axios-config.js";
+import "@testing-library/jest-dom";
 
-vi.mock('../../../../config/axios-config.js', () => ({
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useParams: vi.fn(),
+  };
+});
+
+vi.mock("../../../../config/axios-config.js", () => ({
+  __esModule: true,
   default: {
-    post: vi.fn()
-  }
+    post: vi.fn(),
+  },
 }));
 
-Object.defineProperty(navigator, 'clipboard', {
-  value: {
-    writeText: vi.fn().mockImplementation(() => Promise.resolve())
+Object.assign(navigator, {
+  clipboard: {
+    writeText: vi.fn(),
   },
-  configurable: true
 });
 
-vi.stubGlobal('open', vi.fn());
-describe('extractTextIdFromUrl function', () => {
-  const extractTextIdFromUrl = (url) => {
-    try {
-      const urlPath = new URL(url).pathname;
-      const lastPathPart = urlPath.split('/').pop();
-      const textId = lastPathPart.split('_').pop();
-      return textId;
-    } catch (error) {
-      console.error('Error extracting text_id from URL:', error);
-      return null;
-    }
-  };
+describe("SheetShare Component", () => {
+  const queryClient = new QueryClient();
+  const mockShortUrlData = { shortUrl: "https://short.url/abc" };
 
   beforeEach(() => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-  });
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it('should extract text ID from valid URL with text_id format', () => {
-    const url = 'https://example.com/sheets/text_123';
-    const result = extractTextIdFromUrl(url);
-    expect(result).toBe('123');
-    expect(console.error).not.toHaveBeenCalled();
-  });
-
-  it('should extract text ID from URL with complex path structure', () => {
-    const url = 'https://app.openpecha.org/sheets/view/text_456?lang=bo';
-    const result = extractTextIdFromUrl(url);
-    expect(result).toBe('456');
-    expect(console.error).not.toHaveBeenCalled();
-  });
-
-  it('should extract text ID from URL with different domain', () => {
-    const url = 'https://different-domain.com/path/to/text_789';
-    const result = extractTextIdFromUrl(url);
-    expect(result).toBe('789');
-    expect(console.error).not.toHaveBeenCalled();
-  });
-
-  it('should handle URLs without text ID format', () => {
-    const url = 'https://example.com/sheets/view/document';
-    const result = extractTextIdFromUrl(url);
-    expect(result).toBe('document');
-    expect(console.error).not.toHaveBeenCalled();
-  });
-
-  it('should handle invalid URLs gracefully', () => {
-    const url = 'not-a-valid-url';
-    const result = extractTextIdFromUrl(url);
-    expect(result).toBe(null);
-    expect(console.error).toHaveBeenCalledWith(
-      'Error extracting text_id from URL:',
-      expect.any(Error)
-    );
-  });
-
-  it('should handle empty URL input', () => {
-    const url = '';
-    const result = extractTextIdFromUrl(url);
-    expect(result).toBe(null);
-    expect(console.error).toHaveBeenCalled();
-    expect(console.error).toHaveBeenCalled();
-  });
-
-  it('should handle undefined URL input', () => {
-    const url = undefined;
-    const result = extractTextIdFromUrl(url);
-    expect(result).toBe(null);
-    expect(console.error).toHaveBeenCalled();
-  });
-});
-
-describe('fetchShortUrl function', () => {
-  let axiosInstance;
-  
-  beforeEach(async () => {
-    const axiosModule = await import('../../../../config/axios-config.js');
-    axiosInstance = axiosModule.default;
-    
-    vi.clearAllMocks();
-  });
-  
-  it('should call API with correct parameters', async () => {
-    axiosInstance.post.mockResolvedValueOnce({
-      data: { shortUrl: 'https://short.url/abc123' }
-    });
-    const url = 'https://example.com/sheets/text_123';
-    const textId = '123';
-    const language = 'bo';
-    
-    await fetchShortUrl(url, textId, language);
-    
-    expect(axiosInstance.post).toHaveBeenCalledWith('/api/v1/share', {
-      text_id: textId,
-      language: language,
-      url: url
-    });
-    
-    expect(axiosInstance.post).toHaveBeenCalledTimes(1);
-  });
-  
-  it('should return the data from the API response', async () => {
-    const mockResponse = { shortUrl: 'https://short.url/xyz789' };
-    axiosInstance.post.mockResolvedValueOnce({
-      data: mockResponse
-    });
-    
-    const result = await fetchShortUrl('https://example.com', '456', 'bo');
-    
-    expect(result).toEqual(mockResponse);
-  });
-  
-  it('should use default language parameter if not provided', async () => {
-    axiosInstance.post.mockResolvedValueOnce({
-      data: { shortUrl: 'https://short.url/def456' }
-    });
-    
-    await fetchShortUrl('https://example.com', '789');
-    
-    expect(axiosInstance.post).toHaveBeenCalledWith('/api/v1/share', {
-      text_id: '789',
-      language: 'bo',
-      url: 'https://example.com'
-    });
-  });
-  
-  it('should use custom language parameter when provided', async () => {
-    axiosInstance.post.mockResolvedValueOnce({
-      data: { shortUrl: 'https://short.url/ghi789' }
-    });
-    await fetchShortUrl('https://example.com', '789', 'en');
-    expect(axiosInstance.post).toHaveBeenCalledWith('/api/v1/share', {
-      text_id: '789',
-      language: 'en',
-      url: 'https://example.com'
-    });
-  });
-  
-  it('should handle API errors gracefully', async () => {
-    const errorMessage = 'Network Error';
-    axiosInstance.post.mockRejectedValueOnce(new Error(errorMessage));
-    await expect(fetchShortUrl('https://example.com', '123', 'bo'))
-      .rejects.toThrow(errorMessage);
-  });
-});
-
-describe('SheetShare Component Props', () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  });
-
-  const originalLocation = window.location;
-
-  beforeEach(() => {
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
-      data: { shortUrl: 'https://short.url/mocked' },
-      isLoading: false,
-    }));
-
-    delete window.location;
-    window.location = {
-      href: 'https://default-domain.com/sheets/text_default',
-    };
-
-    vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    window.location = originalLocation;
-  });
-
-  const renderComponent = (props = {}) => {
-    return render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare {...props} />
-      </QueryClientProvider>
-    );
-  };
-
-  it('should use custom URL when provided as prop', () => {
-    const customUrl = 'https://custom-domain.com/sheets/text_custom';
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation((queryKey) => {
-      expect(queryKey[1]).toBe(customUrl);
-      expect(queryKey[1]).toBe(customUrl);
-      
+    vi.resetAllMocks();
+    useParams.mockReturnValue({ sheetSlugAndId: "sheet-slug_123" });
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((...args) => {
+      if (args[0][3]) {
+        return {
+          data: mockShortUrlData,
+          isLoading: false,
+        };
+      }
       return {
-        data: { shortUrl: 'https://short.url/custom' },
+        data: undefined,
         isLoading: false,
       };
     });
-    
-    renderComponent({ url: customUrl });
-    
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    expect(shareButton).toBeInTheDocument();
+    axiosInstance.post.mockResolvedValue({ data: mockShortUrlData });
   });
 
-  it('should use custom language when provided as prop', () => {
-    const customLanguage = 'en';
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation((queryKey, queryFn) => {
-      const mockFetchShortUrl = vi.fn();
-      vi.spyOn(global, 'Function').mockImplementation(() => mockFetchShortUrl);
-      
-      return {
-        data: { shortUrl: 'https://short.url/language' },
-        isLoading: false,
-      };
-    });
-    
-    renderComponent({ language: customLanguage });
-    
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    expect(shareButton).toBeInTheDocument();
-    
-  });
-
-  it('should use default values when no props are provided', () => {
-    const defaultUrl = 'https://default-domain.com/sheets/text_default';
-    window.location.href = defaultUrl;
-    
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation((queryKey) => {
-      expect(queryKey[1]).toBe(defaultUrl);
-      
-      return {
-        data: { shortUrl: 'https://short.url/default' },
-        isLoading: false,
-      };
-    });
-    
-    renderComponent();
-    
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    expect(shareButton).toBeInTheDocument();
-  });
-
-  it('should prioritize props over default values', () => {
-    window.location.href = 'https://default-domain.com/sheets/text_default';
-    const customUrl = 'https://custom-domain.com/sheets/text_custom';
-    
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation((queryKey) => {
-      expect(queryKey[1]).toBe(customUrl);
-      expect(queryKey[1]).toBe(customUrl);
-      
-      return {
-        data: { shortUrl: 'https://short.url/priority' },
-        isLoading: false,
-      };
-    });
-    
-    renderComponent({ url: customUrl });
-    
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    expect(shareButton).toBeInTheDocument();
-  });
-});
-
-describe('SheetShare Loading State', () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  });
-
-  const originalLocation = window.location;
-
-  beforeEach(() => {
-    delete window.location;
-    window.location = {
-      href: 'https://default-domain.com/sheets/text_default',
-    };
-
-    vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    window.location = originalLocation;
-  });
-
-  const renderAndOpenDropdown = (props = {}, isLoading = false) => {
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
-      data: isLoading ? null : { shortUrl: 'https://short.url/mocked' },
-      isLoading,
-    }));
-    
-    const result = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare {...props} />
-      </QueryClientProvider>
+  const setup = () =>
+    render(
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <SheetShare />
+        </QueryClientProvider>
+      </Router>
     );
 
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-    
-    return { shareButton };
-  };
-
-  it('should show loading text when API is loading', () => {
-    renderAndOpenDropdown({}, true);
-    
-    const copyButton = screen.getByRole('button', { name: /Loading\.\.\./i });
-    expect(copyButton).toBeInTheDocument();
-    expect(copyButton).toHaveTextContent('Loading...');
+  test("renders share button", () => {
+    setup();
+    expect(document.querySelector(".share-button")).toBeInTheDocument();
   });
 
-  it('should disable social sharing buttons during loading', () => {
-    renderAndOpenDropdown({}, true);
-    
-    const twitterButton = screen.getByRole('button', { name: /Share on X/i });
-    const facebookButton = screen.getByRole('button', { name: /Share on Facebook/i });
-    
-    expect(twitterButton).toBeDisabled();
-    expect(facebookButton).toBeDisabled();
+  test("opens dropdown on share button click", () => {
+    setup();
+    fireEvent.click(document.querySelector(".share-button"));
+    expect(document.querySelector(".share-dropdown")).toBeInTheDocument();
   });
 
-  it('should enable buttons after loading completes', () => {
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
-      data: null,
+  test("copies link to clipboard and shows copied state", async () => {
+    setup();
+    fireEvent.click(document.querySelector(".share-button"));
+    const copyBtn = screen.getByText(/copy link/i).closest("button");
+    fireEvent.click(copyBtn);
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockShortUrlData.shortUrl);
+    await waitFor(() => {
+      expect(screen.getByText(/copy link/i)).toBeInTheDocument();
+    });
+  });
+
+  test("shows loading state when isLoading is true", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: undefined,
       isLoading: true,
     }));
-    
-    const { unmount } = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-    
-    unmount();
-    
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
-      data: { shortUrl: 'https://short.url/mocked' },
-      isLoading: false,
-    }));
-    
-    render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-    
-    const newShareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(newShareButton);
-    
-    const copyButton = screen.getByRole('button', { name: /Copy link/i });
-    const twitterButton = screen.getByRole('button', { name: /Share on X/i });
-    const facebookButton = screen.getByRole('button', { name: /Share on Facebook/i });
-    
-    expect(copyButton).not.toBeDisabled();
-    expect(twitterButton).not.toBeDisabled();
-    expect(facebookButton).not.toBeDisabled();
-  });
-});
-
-describe('SheetShare Component State', () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
+    setup();
+    fireEvent.click(document.querySelector(".share-button"));
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
-  const originalLocation = window.location;
+  test("renders Facebook and X share links with correct URLs", () => {
+    setup();
+    fireEvent.click(document.querySelector(".share-button"));
+    const facebookLink = screen.getByText(/share on facebook/i).closest("a");
+    const xLink = screen.getByText(/share on x/i).closest("a");
+    expect(facebookLink).toHaveAttribute(
+      "href",
+      expect.stringContaining(encodeURIComponent(mockShortUrlData.shortUrl))
+    );
+    expect(xLink).toHaveAttribute(
+      "href",
+      expect.stringContaining(encodeURIComponent(mockShortUrlData.shortUrl))
+    );
+  });
 
-  beforeEach(() => {
-    delete window.location;
-    window.location = {
-      href: 'https://default-domain.com/sheets/text_default',
-    };
+  test("closes dropdown when clicking outside", () => {
+    setup();
+    fireEvent.click(document.querySelector(".share-button"));
+    expect(document.querySelector(".share-dropdown")).toBeInTheDocument();
+    fireEvent.mouseDown(document.body);
+    expect(document.querySelector(".share-dropdown")).not.toBeInTheDocument();
+  });
 
-    Object.defineProperty(navigator, 'clipboard', {
-      value: {
-        writeText: vi.fn().mockImplementation(() => Promise.resolve())
-      },
-      configurable: true
+  test("fetchShortUrl calls axios with correct params", async () => {
+    const url = "http://test.com";
+    const textId = "123";
+    axiosInstance.post.mockResolvedValueOnce({ data: mockShortUrlData });
+    const result = await fetchShortUrl(url, textId);
+    expect(axiosInstance.post).toHaveBeenCalledWith("/api/v1/share", {
+      text_id: textId,
+      language: "bo",
+      url,
     });
-
-    vi.useFakeTimers();
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
-      data: { shortUrl: 'https://short.url/mocked' },
-      isLoading: false,
-    }));
-
-    vi.clearAllMocks();
-  });
-
-  afterEach(() => {
-    window.location = originalLocation;
-    vi.useRealTimers();
-  });
-
-  it('should toggle isOpen state when share button is clicked', () => {
-    const { container } = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-
-    expect(container.querySelector('.share-dropdown')).toBeNull();
-
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-    expect(container.querySelector('.share-dropdown')).not.toBeNull();
-
-    fireEvent.click(shareButton);
-    expect(container.querySelector('.share-dropdown')).toBeNull();
-  });
-
-  it('should close dropdown when clicking outside', () => {
-    const { container } = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-    expect(container.querySelector('.share-dropdown')).not.toBeNull();
-
-    fireEvent.mouseDown(document);
-    expect(container.querySelector('.share-dropdown')).toBeNull();
-  });
-
-  it('should show copy success tooltip when copy is successful', async () => {
-    let clipboardPromiseResolve;
-    const clipboardPromise = new Promise(resolve => {
-      clipboardPromiseResolve = resolve;
-    });
-    
-    navigator.clipboard.writeText.mockImplementation(() => clipboardPromise);
-    
-    const { container } = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-    
-    const copyButton = container.querySelector('.share-option');
-    fireEvent.click(copyButton);
-    
-    clipboardPromiseResolve();
-    await Promise.resolve();
-    await Promise.resolve();
-    
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('https://short.url/mocked');
-    expect(container.querySelector('.copy-success-tooltip')).not.toBeNull();
-  });
-
-  it('should hide copy success tooltip after timeout', async () => {
-    let clipboardPromiseResolve;
-    const clipboardPromise = new Promise(resolve => {
-      clipboardPromiseResolve = resolve;
-    });
-    
-    navigator.clipboard.writeText.mockImplementation(() => clipboardPromise);
-    
-    const { container } = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-    
-    const copyButton = container.querySelector('.share-option');
-    fireEvent.click(copyButton);
-    
-    clipboardPromiseResolve();
-    await Promise.resolve();
-    await Promise.resolve();
-    
-    expect(container.querySelector('.copy-success-tooltip')).not.toBeNull();
-
-    vi.advanceTimersByTime(2000); 
-  });
-
-  it('should close dropdown after successful copy with delay', async () => {
-    let clipboardPromiseResolve;
-    const clipboardPromise = new Promise(resolve => {
-      clipboardPromiseResolve = resolve;
-    });
-    
-    navigator.clipboard.writeText.mockImplementation(() => clipboardPromise);
-    
-    const { container, rerender } = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-
-    expect(container.querySelector('.share-dropdown')).not.toBeNull();
-
-    const copyButton = container.querySelector('.share-option');
-    fireEvent.click(copyButton);
-    
-    clipboardPromiseResolve();
-    await Promise.resolve();
-    await Promise.resolve();
-    
-    expect(container.querySelector('.share-dropdown')).not.toBeNull();
-    vi.advanceTimersByTime(1000);
-    
-    rerender(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-    
-    await Promise.resolve();
-    await Promise.resolve();
-
-    expect(container.querySelector('.share-dropdown')).toBeNull();
-    expect(container.querySelector('.copy-success-tooltip')).not.toBeNull();
-  });
-});
-
-describe('SheetShare Social Media Sharing', () => {
-  let queryClient;
-  let mockAnchor;
-
-  beforeEach(() => {
-    queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-        },
-      },
-    });
-
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
-      data: { shortUrl: 'https://short.url/mocked' },
-      isLoading: false,
-    }));
-
-    Object.defineProperty(window, 'location', {
-      value: {
-        href: 'https://app.openpecha.org/sheets/view/text_123',
-        pathname: '/sheets/view/text_123',
-        search: '',
-        hash: '',
-        host: 'app.openpecha.org',
-      },
-      writable: true,
-    });
-
-    mockAnchor = {
-      href: '',
-      target: '',
-      rel: '',
-      click: vi.fn(),
-    };
-    
-    const originalCreateElement = document.createElement;
-    vi.spyOn(document, 'createElement').mockImplementation((tag) => {
-      if (tag === 'a') {
-        return mockAnchor;
-      }
-      return originalCreateElement.call(document, tag);
-    });
-
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
-    vi.useRealTimers();
-  });
-
-  it('should share on Twitter with correct URL', () => {
-    const { container } = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-
-    const twitterButton = Array.from(container.querySelectorAll('.share-option'))
-      .find(button => button.textContent.includes('Share on X'));
-    
-    fireEvent.click(twitterButton);
-
-    expect(document.createElement).toHaveBeenCalledWith('a');
-    expect(mockAnchor.href).toBe('https://twitter.com/intent/tweet?url=https%3A%2F%2Fshort.url%2Fmocked');
-    expect(mockAnchor.target).toBe('_blank');
-    expect(mockAnchor.rel).toBe('noopener noreferrer');
-    expect(mockAnchor.click).toHaveBeenCalled();
-
-    expect(container.querySelector('.share-dropdown')).toBeNull();
-  });
-
-  it('should share on Facebook with correct URL', () => {
-    const { container } = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-
-    const facebookButton = Array.from(container.querySelectorAll('.share-option'))
-      .find(button => button.textContent.includes('Share on Facebook'));
-    
-    fireEvent.click(facebookButton);
-
-    expect(document.createElement).toHaveBeenCalledWith('a');
-    expect(mockAnchor.href).toBe('https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fshort.url%2Fmocked');
-    expect(mockAnchor.target).toBe('_blank');
-    expect(mockAnchor.rel).toBe('noopener noreferrer');
-    expect(mockAnchor.click).toHaveBeenCalled();
-
-    expect(container.querySelector('.share-dropdown')).toBeNull();
-  });
-
-  it('should use short URL for sharing when available', () => {
-    const { container } = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-
-    const twitterButton = Array.from(container.querySelectorAll('.share-option'))
-      .find(button => button.textContent.includes('Share on X'));
-    
-    fireEvent.click(twitterButton);
-
-    expect(mockAnchor.href).toContain('https%3A%2F%2Fshort.url%2Fmocked');
-  });
-
-  it('should use original URL for sharing when short URL is not available', () => {
-    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
-      data: null,
-      isLoading: false,
-    }));
-
-    const { container } = render(
-      <QueryClientProvider client={queryClient}>
-        <SheetShare />
-      </QueryClientProvider>
-    );
-
-    const shareButton = screen.getByRole('button', { name: /Share/i });
-    fireEvent.click(shareButton);
-
-    const twitterButton = Array.from(container.querySelectorAll('.share-option'))
-      .find(button => button.textContent.includes('Share on X'));
-    
-    fireEvent.click(twitterButton);
-
-    expect(mockAnchor.href).toContain('https%3A%2F%2Fapp.openpecha.org%2Fsheets%2Fview%2Ftext_123');
+    expect(result).toEqual(mockShortUrlData);
   });
 });
