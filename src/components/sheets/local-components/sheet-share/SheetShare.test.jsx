@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import * as reactQuery from 'react-query';
 import '@testing-library/jest-dom';
@@ -279,5 +279,107 @@ describe('SheetShare Component Props', () => {
     
     const shareButton = screen.getByRole('button', { name: /Share/i });
     expect(shareButton).toBeInTheDocument();
+  });
+});
+
+describe('SheetShare Loading State', () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+  const originalLocation = window.location;
+
+  beforeEach(() => {
+    delete window.location;
+    window.location = {
+      href: 'https://default-domain.com/sheets/text_default',
+    };
+
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    window.location = originalLocation;
+  });
+
+  const renderAndOpenDropdown = (props = {}, isLoading = false) => {
+    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
+      data: isLoading ? null : { shortUrl: 'https://short.url/mocked' },
+      isLoading,
+    }));
+    
+    const result = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare {...props} />
+      </QueryClientProvider>
+    );
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+    
+    return { shareButton };
+  };
+
+  it('should show loading text when API is loading', () => {
+    renderAndOpenDropdown({}, true);
+    
+    const copyButton = screen.getByRole('button', { name: /Loading\.\.\./i });
+    expect(copyButton).toBeInTheDocument();
+    expect(copyButton).toHaveTextContent('Loading...');
+  });
+
+  it('should disable social sharing buttons during loading', () => {
+    renderAndOpenDropdown({}, true);
+    
+    const twitterButton = screen.getByRole('button', { name: /Share on X/i });
+    const facebookButton = screen.getByRole('button', { name: /Share on Facebook/i });
+    
+    expect(twitterButton).toBeDisabled();
+    expect(facebookButton).toBeDisabled();
+  });
+
+  it('should enable buttons after loading completes', () => {
+    // First render with loading state
+    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
+      data: null,
+      isLoading: true,
+    }));
+    
+    const { unmount } = render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+
+    const shareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(shareButton);
+    
+    unmount();
+    
+    vi.spyOn(reactQuery, 'useQuery').mockImplementation(() => ({
+      data: { shortUrl: 'https://short.url/mocked' },
+      isLoading: false,
+    }));
+    
+    render(
+      <QueryClientProvider client={queryClient}>
+        <SheetShare />
+      </QueryClientProvider>
+    );
+    
+    const newShareButton = screen.getByRole('button', { name: /Share/i });
+    fireEvent.click(newShareButton);
+    
+    const copyButton = screen.getByRole('button', { name: /Copy link/i });
+    const twitterButton = screen.getByRole('button', { name: /Share on X/i });
+    const facebookButton = screen.getByRole('button', { name: /Share on Facebook/i });
+    
+    expect(copyButton).not.toBeDisabled();
+    expect(twitterButton).not.toBeDisabled();
+    expect(facebookButton).not.toBeDisabled();
   });
 });
