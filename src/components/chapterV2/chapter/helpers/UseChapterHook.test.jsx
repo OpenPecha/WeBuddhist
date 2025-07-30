@@ -31,7 +31,7 @@ vi.mock("react-intersection-observer", () => ({
 
 vi.mock("../../utils/header/table-of-contents/TableOfContents.jsx", () => ({
   __esModule: true,
-  default: () => <div data-testid="table-of-contents">TableOfContents</div>,
+  default: ({showTableOfContents}) => showTableOfContents ? <div data-testid="table-of-contents">TableOfContents</div> : null,
 }));
 
 vi.mock("../../utils/resources/Resources.jsx", () => ({
@@ -41,6 +41,7 @@ vi.mock("../../utils/resources/Resources.jsx", () => ({
 
 vi.mock("../../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: (lang) => `lang-${lang}`,
+  getCurrentSectionFromScroll: vi.fn(),
 }));
 
 const defaultProps = {
