@@ -56,6 +56,7 @@ const TableOfContents = (props) => {
 
   const renderSectionTitle = (section, segmentId) => (
     <div
+      onKeyDown={(e) => e.key === 'Enter' && onSegmentSelect(segmentId)}
       onClick={() => onSegmentSelect(segmentId)}
       className={`section-title ${getLanguageClass(tableOfContents?.text_detail?.language)}`}
     >
