@@ -2,25 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { useTranslate } from "@tolgee/react";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import PropTypes from "prop-types";
-import axiosInstance from "../../../../../config/axios-config.js";
-import { LANGUAGE } from "../../../../../utils/constants.js";
-import { mapLanguageCode, getLanguageClass, getEarlyReturn } from "../../../../../utils/helperFunctions.jsx";
-import { Link } from "react-router-dom";
+import { getLanguageClass, getEarlyReturn } from "../../../../../utils/helperFunctions.jsx";
 import "./TableOfContents.scss";
 import { useQuery } from "react-query";
-
-const fetchTableOfContents = async (textId) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const { data } = await axiosInstance.get(`/api/v1/texts/${textId}/contents`, {
-    params: {
-      language,
-      limit: 1000,
-      skip: 0
-    }
-  });
-  return data;
-};
+import { fetchTableOfContents } from "../../../../texts/Texts.jsx";
 
 const TableOfContents = ({ textId, showTableOfContents, currentSectionId, onSegmentSelect }) => {
   const { t } = useTranslate();
@@ -29,7 +14,7 @@ const TableOfContents = ({ textId, showTableOfContents, currentSectionId, onSegm
 
   const { data: tableOfContents, error, isLoading } = useQuery(
     ["toc", textId],
-    () => fetchTableOfContents(textId),
+    () => fetchTableOfContents(textId,0,1000),
     {
       enabled: !!textId,
       refetchOnWindowFocus: false,
@@ -44,6 +29,7 @@ const TableOfContents = ({ textId, showTableOfContents, currentSectionId, onSegm
       activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [currentSectionId, expandedSections]);
+  
   // -------------------------------------------- helpers ----------------------------------------------
   const earlyReturn = getEarlyReturn({loading: isLoading, error: error, t});
   if (earlyReturn) return earlyReturn;
@@ -81,12 +67,12 @@ const TableOfContents = ({ textId, showTableOfContents, currentSectionId, onSegm
           ) : (
             <span className="empty-icon"></span>
           )}
-          <div 
-            onClick={() => onSegmentSelect && onSegmentSelect(segmentId)}
+          <button 
+            onClick={() => onSegmentSelect(segmentId)}
             className={`section-title ${getLanguageClass(tableOfContents?.text_detail?.language)}`}
           >
             {section.title}
-          </div>
+          </button>
         </button>
         {isExpanded && hasChildren && (
           <div className="nested-content">
