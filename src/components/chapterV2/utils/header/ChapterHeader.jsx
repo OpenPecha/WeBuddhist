@@ -31,16 +31,6 @@ const ChapterHeader = (props) => {
     </div>
   }
 
-  // const renderBookmarkIcon = () => {
-  //   return (
-  //     <div className="bookmark-icon-container">
-  //       <button onClick={() => setIsBookmarked(!isBookmarked)}>
-  //         {isBookmarked ? <BsBookmarkFill size={20}/> : <BsBookmark size={20}/>}
-  //       </button>
-  //     </div>
-  //   )
-  // }
-
   const renderViewSelector = () => {
     const propsForViewSelectorComponent = { setShowViewSelector, viewMode, setViewMode }
     return <div className="view-selector-icon-container">
@@ -60,7 +50,6 @@ const ChapterHeader = (props) => {
     <div className="chapter-header-container">
       {renderTableOfContentsIcon()}
       {renderChapterTitle()}
-      {/* {renderBookmarkIcon()} */}
       {renderViewSelector()}
       {renderCloseChapterIcon()}
     </div>

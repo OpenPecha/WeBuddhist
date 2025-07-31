@@ -97,13 +97,19 @@ const UseChapterHook = (props) => {
     </div>
   );
 
-  const renderScrollSentinelTop = () => (
-    <div ref={topSentinelRef} className="scroll-sentinel-top" />
-  );
+  const renderScrollSentinelTop = () => {
+    if (!infiniteQuery.hasPreviousPage || infiniteQuery.isFetchingPreviousPage) {
+      return null;
+    }
+    return <div ref={topSentinelRef} className="scroll-sentinel-top" />;
+  };
 
-  const renderScrollSentinelBottom = () => (
-    <div ref={sentinelRef} className="scroll-sentinel" />
-  );
+  const renderScrollSentinelBottom = () => {
+    if (!infiniteQuery.hasNextPage || infiniteQuery.isFetchingNextPage) {
+      return null;
+    }
+    return <div ref={sentinelRef} className="scroll-sentinel" />;
+  };
 
   const handleSegmentClick = (segmentId) => {
     setSelectedSegmentId(segmentId);
@@ -148,13 +154,13 @@ const UseChapterHook = (props) => {
     
     return (
       <div className="outmost-container">
-        {infiniteQuery.hasPreviousPage && !infiniteQuery.isFetchingPreviousPage && renderScrollSentinelTop()}
+        {renderScrollSentinelTop()}
         {infiniteQuery.isFetchingPreviousPage && renderLoadingIndicator("Loading previous content...")}
         {content.sections.map((section) => 
           renderSectionRecursive(section)
         )}
         {infiniteQuery.isFetchingNextPage && renderLoadingIndicator("Loading more content...")}
-        {infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage && renderScrollSentinelBottom()}
+        {renderScrollSentinelBottom()}
       </div>
     );
   };
