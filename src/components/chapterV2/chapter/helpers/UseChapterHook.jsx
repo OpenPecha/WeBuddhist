@@ -53,10 +53,10 @@ const UseChapterHook = (props) => {
   }, [isTopSentinelVisible, infiniteQuery.hasPreviousPage, infiniteQuery.isFetchingPreviousPage, infiniteQuery.fetchPreviousPage]);
   
   useEffect(() => {
-    if (currentChapter.segmentId && currentChapter.segmentId !== selectedSegmentId) {
+    if (currentChapter.segmentId) {
       setSelectedSegmentId(currentChapter.segmentId);
     }
-  }, [currentChapter.segmentId, selectedSegmentId, setSelectedSegmentId]);
+  }, [currentChapter.segmentId]);
 
   useEffect(() => {
     const container = contentsContainerRef.current;
