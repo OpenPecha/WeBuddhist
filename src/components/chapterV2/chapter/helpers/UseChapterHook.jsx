@@ -132,7 +132,6 @@ const UseChapterHook = (props) => {
                 ? "highlighted-segment" 
                 : ""
             }`}
-            data-segment-id={segment.segment_id}
             onClick={() => handleSegmentClick(segment.segment_id)}>
               <p className="segment-number">{segment.segment_number}</p>
               <div className="segment-content">
