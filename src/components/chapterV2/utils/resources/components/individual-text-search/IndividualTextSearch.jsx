@@ -47,18 +47,17 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
   
   const searchText = searchResults?.search?.text || searchQuery;
 
+  // ----------------------------- helpers ---------------------------------------
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim() !== '') {
       setPagination(prev => ({ ...prev, currentPage: 1 }));
     }
   };
-
   const handlePageChange = (pageNumber) => {
     setPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
-
-  // ----------------------------- helpers ---------------------------------------
 
   const earlyReturn = getEarlyReturn({ isLoading, error, t });
   
