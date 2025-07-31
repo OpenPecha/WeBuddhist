@@ -2,12 +2,13 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.jsx";
 import "./ChapterHook.scss"
+import { VIEW_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
 import { getLanguageClass, getCurrentSectionFromScroll } from "../../../../utils/helperFunctions.jsx";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId } = props;
+  const { showTableOfContents, content, language, viewMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId } = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -123,10 +124,12 @@ const UseChapterHook = (props) => {
             <button className="segment-container" onClick={() => handleSegmentClick(segment.segment_id)}>
               <p className="segment-number">{segment.segment_number}</p>
               <div className="segment-content">
-              <p className={`${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
-              {segment.translation && (
-              <p className={`${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{ __html: segment.translation.content }} />
-            )}
+              {(viewMode === VIEW_MODES.SOURCE || viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                <p className={`${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
+              )}
+              {segment.translation && (viewMode === VIEW_MODES.TRANSLATIONS || viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                <p className={`${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{ __html: segment.translation.content }} />
+              )}
               </div> 
             </button>
             </div>
