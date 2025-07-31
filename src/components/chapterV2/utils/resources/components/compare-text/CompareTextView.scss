@@ -1,0 +1,18 @@
+
+.compact-view {
+  display: flex;
+  flex-direction: column !important;
+  gap: 1rem;
+  margin: 1rem;
+
+  .left-section {
+    width: 100%;
+  }
+
+  .left-section {
+    .collections-list-container {
+      grid-template-columns: 1fr ;
+    }
+  }
+}
+

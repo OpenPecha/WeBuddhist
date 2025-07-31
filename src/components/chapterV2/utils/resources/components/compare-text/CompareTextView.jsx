@@ -4,7 +4,7 @@ import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
 import { fetchCollections, renderCollections } from "../../../../../../components/collections/Collections.jsx";
 import { getEarlyReturn } from "../../../../../../utils/helperFunctions.jsx";
-import "../../../../../../components/collections/Collections.scss";
+import "./CompareTextView.scss";
 
 const CompareTextView = ({ setIsCompareTextView }) => {
   const { t } = useTranslate();
@@ -28,7 +28,13 @@ const CompareTextView = ({ setIsCompareTextView }) => {
         />
       </div>
       <div className="panel-content p-3">
-        {earlyReturn || renderCollections(collectionsData, t, false)}
+        {earlyReturn || (
+          <div className="collections-container compact-view">
+            <div className="left-section">
+              {renderCollections(collectionsData, t, false)}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
