@@ -21,6 +21,18 @@ export const fetchSubCollections = async (parentId) => {
   return data;
 };
 
+// Export renderSubCollections to be used in other components
+export const renderSubCollections = (subCollectionsData) => {
+  return <div className="sub-collections-list-container">
+    {subCollectionsData?.terms?.map((term) =>
+      <Link key={term.id} to={`/works/${term.id}`} className="text-item overalltext sub-collection">
+        <div className="divider"></div>
+        <p>{term.title}</p>
+      </Link>
+    )}
+  </div>
+}
+
 const SubCollections = () => {
   const {id} = useParams();
   const {t} = useTranslate();
@@ -41,18 +53,6 @@ const SubCollections = () => {
   // ----------------------------------- renderers ---------------------------------------
   const renderTitle = () =>  <h1 className="listtitle">{subCollectionsData?.parent?.title?.toUpperCase()}</h1>
 
-  const renderSubCollections = () => {
-
-    return <div className="sub-collections-list-container">
-      {subCollectionsData?.terms?.map((term) =>
-        <Link key={term.id} to={`/works/${term.id}`} className="text-item overalltext sub-collection">
-          <div className="divider"></div>
-          <p>{term.title}</p>
-        </Link>
-      )}
-    </div>
-  }
-
   const renderAboutSection = () => {
     const subCollectionTitle = subCollectionsData?.parent?.title
 
@@ -66,7 +66,7 @@ const SubCollections = () => {
     <div className="sub-collections-container">
       <div className="sub-collection-details">
         {renderTitle()}
-        {renderSubCollections()}
+        {renderSubCollections(subCollectionsData)}
       </div>
       <div className="about-section">
         {renderAboutSection()}
