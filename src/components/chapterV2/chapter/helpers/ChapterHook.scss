@@ -54,6 +54,9 @@
           align-items: flex-start;
           margin-top: 10px;
           width: 100%;
+          &.highlighted-segment {
+            background-color: #f0f7ff;
+          }
           .segment-number{
             margin-right: 2rem;
           }

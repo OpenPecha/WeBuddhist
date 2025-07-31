@@ -51,6 +51,12 @@ const UseChapterHook = (props) => {
       infiniteQuery.fetchPreviousPage();
     }
   }, [isTopSentinelVisible, infiniteQuery.hasPreviousPage, infiniteQuery.isFetchingPreviousPage, infiniteQuery.fetchPreviousPage]);
+  
+  useEffect(() => {
+    if (currentChapter.segmentId && currentChapter.segmentId !== selectedSegmentId) {
+      setSelectedSegmentId(currentChapter.segmentId);
+    }
+  }, [currentChapter.segmentId, selectedSegmentId, setSelectedSegmentId]);
 
   useEffect(() => {
     const container = contentsContainerRef.current;
@@ -120,7 +126,14 @@ const UseChapterHook = (props) => {
         <div className="outer-container">
           {section.segments?.map((segment) => (
             <div key={segment.segment_id}>
-            <button className="segment-container" onClick={() => handleSegmentClick(segment.segment_id)}>
+            <button
+            className={`segment-container ${
+              selectedSegmentId === segment.segment_id 
+                ? "highlighted-segment" 
+                : ""
+            }`}
+            data-segment-id={segment.segment_id}
+            onClick={() => handleSegmentClick(segment.segment_id)}>
               <p className="segment-number">{segment.segment_number}</p>
               <div className="segment-content">
               <p className={`${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
