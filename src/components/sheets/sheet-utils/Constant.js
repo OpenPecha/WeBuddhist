@@ -82,7 +82,14 @@ export {
 
 export const createPayload = (value, title, is_published = false) => {
   const source = value.map((node, i) => {
-    if (["image", "audio", "video", "youtube"].includes(node.type)) {
+    if (node.type === "image") {
+      return {
+        position: i,
+        type: "image",
+        content: node.alt,
+      };
+    }
+    if (["audio", "video", "youtube"].includes(node.type)) {
       return {
         position: i,
         type: node.type == "youtube" ? "video" : node.type,
@@ -150,7 +157,7 @@ export function convertSegmentsToSlate(segments) {
   }
   const parser = typeof window !== "undefined" ? new window.DOMParser() : null;
   return segments.map((segment) => {
-    const { type, content } = segment;
+    const { type, content, key } = segment;
     switch (type) {
       case "content": {
         if (/<blockquote[\s>]/i.test(content)) {
@@ -283,6 +290,7 @@ export function convertSegmentsToSlate(segments) {
         return {
           type: "image",
           src: content,
+          alt: key,
           children: [{ text: "" }],
         };
       case "audio":

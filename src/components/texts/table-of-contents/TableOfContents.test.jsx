@@ -27,7 +27,7 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
         return "en-text";
     }
   },
-  getEarlyReturn: () => ""
+  getEarlyReturn: () => null
 }));
 
 vi.mock("../../../utils/constants.js", () => ({
@@ -75,14 +75,17 @@ const mockContentData = {
         {
           id: "segment1",
           title: "Section 1",
+          segments: [{ segment_id: "seg1" }],
           sections: [
             {
               id: "section1-1",
               title: "Subsection 1.1",
+              segments: [{ segment_id: "seg1-1" }],
               sections: [
                 {
                   id: "section1-1-1",
                   title: "Subsection 1.1.1",
+                  segments: [{ segment_id: "seg1-1-1" }],
                   sections: []
                 }
               ]
@@ -90,6 +93,7 @@ const mockContentData = {
             {
               id: "section1-2",
               title: "Subsection 1.2",
+              segments: [{ segment_id: "seg1-2" }],
               sections: []
             }
           ]
@@ -97,6 +101,7 @@ const mockContentData = {
         {
           id: "segment2",
           title: "Section 2",
+          segments: [{ segment_id: "seg2" }],
           sections: []
         }
       ]
@@ -157,14 +162,16 @@ describe("TableOfContents Component", () => {
             {
               id: "segment1",
               title: "Section 1",
+              segments: [{ segment_id: "seg1" }],
               sections: [
-                { id: "section1-1", title: "Subsection 1.1", sections: [] },
-                { id: "section1-2", title: "Subsection 1.2", sections: [] },
+                { id: "section1-1", title: "Subsection 1.1", segments: [{ segment_id: "seg1-1" }], sections: [] },
+                { id: "section1-2", title: "Subsection 1.2", segments: [{ segment_id: "seg1-2" }], sections: [] },
               ]
             },
             {
               id: "segment2",
               title: "Section 2",
+              segments: [{ segment_id: "seg2" }],
               sections: []
             }
           ]
@@ -202,6 +209,7 @@ describe("TableOfContents Component", () => {
           sections: Array.from({ length: 15 }, (_, i) => ({
             id: `section-${i}`,
             title: `Section ${i + 1}`,
+            segments: [{ segment_id: `seg-${i}` }],
             sections: []
           }))
         }
@@ -252,8 +260,9 @@ describe("TableOfContents Component", () => {
             {
               id: "parent-section",
               title: "Parent Section",
+              segments: [{ segment_id: "parent-seg" }],
               sections: [
-                { id: "child-section", title: "Child Section", sections: [] },
+                { id: "child-section", title: "Child Section", segments: [{ segment_id: "child-seg" }], sections: [] },
               ]
             }
           ]
@@ -299,10 +308,6 @@ describe("TableOfContents Component", () => {
   test("displays empty icon for sections without children", () => {
     setup();
 
-    // Expand Section 1 to see its children
-    const sectionHeader = screen.getByText("Section 1").closest(".toc-header");
-    fireEvent.click(sectionHeader);
-
     // Section 2 has no children, so should have empty icon
     const section2Header = screen.getByText("Section 2").closest(".toc-header");
     expect(section2Header.querySelector(".empty-icon")).toBeInTheDocument();
@@ -312,10 +317,10 @@ describe("TableOfContents Component", () => {
     setup();
 
     const section1Link = screen.getByText("Section 1");
-    expect(section1Link.getAttribute("href")).toBe("/chapter?text_id=123&contentId=abh7u8e4-da52-4ea2-800e-3414emk8uy67&versionId=&contentIndex=0");
+    expect(section1Link.getAttribute("href")).toBe("/chapter?text_id=123&content_id=abh7u8e4-da52-4ea2-800e-3414emk8uy67&segment_id=seg1-1");
 
     const section2Link = screen.getByText("Section 2");
-    expect(section2Link.getAttribute("href")).toBe("/chapter?text_id=123&contentId=abh7u8e4-da52-4ea2-800e-3414emk8uy67&versionId=&contentIndex=1");
+    expect(section2Link.getAttribute("href")).toBe("/chapter?text_id=123&content_id=abh7u8e4-da52-4ea2-800e-3414emk8uy67&segment_id=seg2");
   });
 
   test("generates correct links for nested sections", () => {
@@ -326,7 +331,9 @@ describe("TableOfContents Component", () => {
     fireEvent.click(sectionHeader);
 
     const subsection1Link = screen.getByText("Subsection 1.1");
-    expect(subsection1Link.getAttribute("href")).toBe("/chapter?text_id=123&contentId=abh7u8e4-da52-4ea2-800e-3414emk8uy67&versionId=&contentIndex=0&sectionId=section1-1");
+    expect(subsection1Link.getAttribute("href")).toBe("/chapter?text_id=123&content_id=abh7u8e4-da52-4ea2-800e-3414emk8uy67&segment_id=seg1-1-1");
+    const subsection2Link = screen.getByText("Subsection 1.2");
+    expect(subsection2Link.getAttribute("href")).toBe("/chapter?text_id=123&content_id=abh7u8e4-da52-4ea2-800e-3414emk8uy67&segment_id=seg1-2");
   });
 
   test("applies correct language class to titles", () => {
@@ -359,18 +366,22 @@ describe("TableOfContents Component", () => {
             {
               id: "level1",
               title: "Level 1",
+              segments: [{ segment_id: "level1-seg" }],
               sections: [
                 {
                   id: "level2",
                   title: "Level 2",
+                  segments: [{ segment_id: "level2-seg" }],
                   sections: [
                     {
                       id: "level3",
                       title: "Level 3",
+                      segments: [{ segment_id: "level3-seg" }],
                       sections: [
                         {
                           id: "level4",
                           title: "Level 4",
+                          segments: [{ segment_id: "level4-seg" }],
                           sections: []
                         }
                       ]
@@ -404,13 +415,13 @@ describe("TableOfContents Component", () => {
         {
           id: "content1",
           sections: [
-            { id: "c1-s1", title: "Content 1 Section 1", sections: [] }
+            { id: "c1-s1", title: "Content 1 Section 1", segments: [{ segment_id: "c1-seg1" }], sections: [] }
           ]
         },
         {
           id: "content2",
           sections: [
-            { id: "c2-s1", title: "Content 2 Section 1", sections: [] }
+            { id: "c2-s1", title: "Content 2 Section 1", segments: [{ segment_id: "c2-seg1" }], sections: [] }
           ]
         }
       ],
@@ -458,6 +469,9 @@ describe("TableOfContents Component", () => {
               pagination={{ currentPage: 1, limit: 10 }}
               setPagination={vi.fn()}
               tableOfContents={mockContentData}
+              error={null}
+              loading={false}
+              t={(x) => x}
             />
           </TolgeeProvider>
         </QueryClientProvider>

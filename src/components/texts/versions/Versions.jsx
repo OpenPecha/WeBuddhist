@@ -40,7 +40,8 @@ const Versions = () => {
   const languageMap = {
     "sa":"language.sanskrit",
     "bo":"language.tibetan",
-    "en":"language.english"
+    "en":"language.english",
+    "zh":"language.chinese"
   }
 
   const totalVersions = versions?.versions.length || 0;
@@ -55,10 +56,9 @@ const Versions = () => {
 
 
   const renderVersions = () => {
-
     const renderTitle = (version) => {
       return <Link
-        to={`/chapter?text_id=${version.id}&contentId=${version.table_of_contents[0]}&versionId=${version.id}&contentIndex=0`} /* NOTE : should be updated */
+        to={`/chapter?text_id=${version.id}&content_id=${version.table_of_contents[0]}`}
         className="version-title"
       >
         <div className={`${getLanguageClass(version.language)}`}>

@@ -14,9 +14,9 @@ export const fetchRootTextData = async (segment_id) => {
   return data;
 }
 
-const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter, sectionindex }) => {
+const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter, currentChapter }) => {
   const { t } = useTranslate();
-const {closeResourcesPanel} = usePanelContext();
+  const {closeResourcesPanel} = usePanelContext();
   const {data: rootTextData} = useQuery(
     ["rootTexts", segmentId],
     () => fetchRootTextData(segmentId),
@@ -59,6 +59,7 @@ const {closeResourcesPanel} = usePanelContext();
       [rootTextId]: !prev[rootTextId]
     }));
   };
+
   return (
     <div>
       <div className="headerthing">
@@ -111,12 +112,9 @@ const {closeResourcesPanel} = usePanelContext();
                             <button className="root-text-button"
                                  onClick={() => {
                                   addChapter({
-                                   contentId: "", 
-                                   versionId: "", 
                                    textId: rootText.text_id, 
                                    segmentId: rootText.segment_id,
-                                   contentIndex: sectionindex !== null ? sectionindex : 0
-                                 })
+                                 },currentChapter)
                                  closeResourcesPanel();
                                  }}>
                               <GoLinkExternal size={14} className="mr-1"/>
@@ -150,9 +148,9 @@ const {closeResourcesPanel} = usePanelContext();
 export default RootTextView;
 RootTextView.propTypes = {
   segmentId: PropTypes.string.isRequired, 
-  setIsRootTextView: PropTypes.func.isRequired, 
   expandedRootTexts: PropTypes.object.isRequired, 
   setExpandedRootTexts: PropTypes.func.isRequired, 
+  setIsRootTextView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
-  sectionindex: PropTypes.number
+  currentChapter: PropTypes.object, 
 } 

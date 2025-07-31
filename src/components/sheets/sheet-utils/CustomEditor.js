@@ -244,8 +244,8 @@ export const useCustomEditor = () => {
         document.body.removeChild(modalRoot);
       };
 
-      const handleUpload = (url, alt) => {
-        if (!url) return;
+      const handleUpload = (data, alt) => {
+        if (!data) return;
         const { selection } = editor;
         let replaced = false;
         if (selection) {
@@ -260,8 +260,8 @@ export const useCustomEditor = () => {
               editor,
               {
                 type: "image",
-                src: url,
-                alt: alt,
+                src: data.url,
+                alt: data.key,
                 children: [{ text: "" }],
               },
               { at: currentPath }
@@ -281,8 +281,8 @@ export const useCustomEditor = () => {
         if (!replaced) {
           Transforms.insertNodes(editor, {
             type: "image",
-            src: url,
-            alt: alt,
+            src: data.url,
+            alt: data.key,
             children: [{ text: "" }],
           });
           Transforms.insertNodes(editor, {

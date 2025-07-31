@@ -14,7 +14,7 @@ const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const {data} = await axiosInstance.get("/api/v1/texts", {
     params: {
       language,
-      term_id: bookId,
+      collection_id: bookId,
       limit,
       skip
     }

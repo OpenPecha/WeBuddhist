@@ -8,6 +8,7 @@ import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
+
 export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/commentaries`, {
     params: {
@@ -17,10 +18,9 @@ export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
   });
   return data;
 }
-const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries, addChapter, sectionindex }) => {
+const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, setExpandedCommentaries, addChapter, currentChapter }) => {
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext();
-
   const {data: segmentCommentaries} = useQuery(
     ["relatedTexts", segmentId],
     () => fetchCommentaryData(segmentId),
@@ -28,10 +28,10 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
       refetchOnWindowFocus: false,
     }
   );
-  const toggleCommentary = (commentaryId) => {
+  const toggleCommentary = (textId) => {
     setExpandedCommentaries(prev => ({
       ...prev,
-      [commentaryId]: !prev[commentaryId]
+      [textId]: !prev[textId]
     }));
   };
 
@@ -55,12 +55,11 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
            segmentCommentaries.commentaries.length > 0 && (
             <div>
               {segmentCommentaries.commentaries.map((commentary) => {
-                const commentaryId = commentary.text_id;
+                const textId = commentary.text_id;
                 const segmentId = commentary.segment_id;
-                const isExpanded = expandedCommentaries[commentaryId];
-                
+                const isExpanded = expandedCommentaries[textId];  
                 return (
-                  <div key={commentaryId} className="commentary-list-item">
+                  <div key={textId} className="commentary-list-item">
                     <h3 className={`commentary-title ${getLanguageClass(commentary.language)}`}>
                       {commentary.title} {commentary.count && `(${commentary.count})`}
                     </h3>
@@ -78,7 +77,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
                         <div className="see-more-container">
                           <button 
                             className="see-more-link" 
-                            onClick={() => toggleCommentary(commentaryId)}
+                            onClick={() => toggleCommentary(textId)}
                           >
                             {isExpanded ? t('panel.showless') : t('panel.showmore')} 
                           </button>
@@ -86,19 +85,14 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
 
                         <div className="commentary-actions">
                           <div className="commentary-buttons">
-                            {/*<div className="commentary-button" onClick={() => addChapter({contentId: "", versionId: commentary.text_id, uniqueId: Date.now()})}>*/}
                             <button className="commentary-button"
                                  onClick={() => {
                                    addChapter({
-                                     contentId: "", 
-                                     versionId: "", 
-                                     textId: commentaryId, 
+                                     textId: textId, 
                                      segmentId: segmentId,
-                                     contentIndex: sectionindex !== null ? sectionindex : 0
-                                   });
+                                   }, currentChapter);
                                    closeResourcesPanel();
                                  }}>
-
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
                             </button>
@@ -134,5 +128,5 @@ CommentaryView.propTypes = {
   expandedCommentaries: PropTypes.object.isRequired, 
   setExpandedCommentaries: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
-  sectionindex: PropTypes.number
+  currentChapter: PropTypes.object
 }

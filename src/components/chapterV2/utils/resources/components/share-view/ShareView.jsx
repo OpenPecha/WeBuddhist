@@ -5,9 +5,9 @@ import { BsFacebook, BsTwitter } from "react-icons/bs";
 import { useTranslate } from "@tolgee/react";
 import "./ShareView.scss";
 import { useQuery } from "react-query";
-import { useSearchParams } from "react-router-dom";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import PropTypes from "prop-types";
+
 export const fetchShortUrl = async (url,segmentId) => {
   const { data } = await axiosInstance.post('/api/v1/share', 
     { 
@@ -17,16 +17,19 @@ export const fetchShortUrl = async (url,segmentId) => {
     });
   return data;
 }
-
-const ShareView = ({ setIsShareView }) => {
+const getURLwithUpdatedSegmentId = (segmentId) => {
+  const urlObj = new URL(window.location.href);
+  urlObj.searchParams.set("segment_id", segmentId);
+  return urlObj.toString();
+}
+const ShareView = ({ setIsShareView, segmentId }) => {
   const [copied, setCopied] = useState(false);
   const { t } = useTranslate();
-  const pageUrl = window.location.href;
-  const [searchParams] = useSearchParams();
-  const segmentId = searchParams.get('segment_id') || "";
+  const url= getURLwithUpdatedSegmentId(segmentId)
+
   const { data: shorturldata, isLoading} = useQuery(
-    ["toc", pageUrl, segmentId],
-    () => fetchShortUrl(pageUrl, segmentId),
+    ["toc", url, segmentId],
+    () => fetchShortUrl(url, segmentId),
     { 
       refetchOnWindowFocus: false,
     }
@@ -42,7 +45,7 @@ const ShareView = ({ setIsShareView }) => {
         />
       </div>
       <div className="share-content p-3">
-        <p className="mb-3 textgreat ">{t('text.share_link')}</p>
+        <p className="mb-3 text-great ">{t('text.share_link')}</p>
         <div className="share-url-container p-3 mb-3">
           <p className="share-url text-truncate en-text">{isLoading ? t("common.loading") : shorturldata?.shortUrl}</p>
           <button
@@ -58,10 +61,10 @@ const ShareView = ({ setIsShareView }) => {
             {copied ? <IoMdCheckmark size={16}/> : <IoCopy size={16}/>}
           </button>
         </div>
-        <p className="textgreat">{t('text.more_options')}</p>
+        <p className="text-great">{t('text.more_options')}</p>
         <div className="social-share-buttons">
           <a 
-            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shorturldata?.shortUrl || window.location.href)}`}
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shorturldata?.shortUrl ||  url)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="social-button"
@@ -69,7 +72,7 @@ const ShareView = ({ setIsShareView }) => {
             <BsFacebook className="social-icon"/>{t('common.share_on_fb')}
           </a>
           <a 
-            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shorturldata?.shortUrl || window.location.href)}`}
+            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shorturldata?.shortUrl || url)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="social-button"
@@ -84,5 +87,6 @@ const ShareView = ({ setIsShareView }) => {
 
 export default ShareView;
 ShareView.propTypes = {
-  setIsShareView: PropTypes.func.isRequired
+  setIsShareView: PropTypes.func.isRequired,
+  segmentId: PropTypes.string.isRequired
 }

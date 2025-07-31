@@ -1,0 +1,32 @@
+
+.view-selector-options-container {
+  position: absolute;
+  top: 130%;
+  right: 0;
+  background: white;
+  border-radius: 6px;
+  padding: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 18rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .view-selector-close-icon {
+    background: none;
+    border: none;
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    z-index: 10;
+  }
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+  }
+}
