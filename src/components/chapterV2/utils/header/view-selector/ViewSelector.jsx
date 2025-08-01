@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React from "react"
 import "./ViewSelector.scss"
 import {useTranslate} from "@tolgee/react";
 import {MdClose} from "react-icons/md";
@@ -15,7 +15,7 @@ const options = [
   {id: "3", label: "text.reader_option_menu.source_with_translation", value: VIEW_MODES.SOURCE_AND_TRANSLATIONS}
 ]
 const ViewSelector = (props) => {
-  const {setShowViewSelector, viewMode, setViewMode} = props;
+  const {setShowViewSelector, viewMode, setViewMode, versionSelected} = props;
   const {t} = useTranslate();
 
   // ----------------------------- renderers ----------------------------
@@ -28,7 +28,7 @@ const ViewSelector = (props) => {
   const renderViewModeOptions = () => {
     return options.map((option) => (
       <label key={option.id} className="radio-option subcontent">
-        <input type="radio" name="view-mode" value={option.value} checked={viewMode === option.value}
+        <input type="radio" name="view-mode" value={option.value} checked={viewMode === option.value} disabled={!versionSelected && option.value !== VIEW_MODES.SOURCE}
           onChange={(e) => setViewMode(e.target.value)}/>
         <span>{t(option.label)}</span>
       </label>

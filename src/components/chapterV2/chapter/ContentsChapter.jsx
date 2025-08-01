@@ -1,5 +1,5 @@
 import ChapterHeader from "../utils/header/ChapterHeader.jsx";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { VIEW_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
@@ -29,6 +29,14 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
   const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
   const [currentSectionId, setCurrentSectionId] = useState(null);
   const size = 20;
+
+  useEffect(() => {
+    if (versionId) {
+      setViewMode(VIEW_MODES.SOURCE_AND_TRANSLATIONS);
+    } else {
+      setViewMode(VIEW_MODES.SOURCE);
+    }
+  }, [versionId]);
   const { t } = useTranslate();
 
   const infiniteQuery = useInfiniteQuery(
@@ -78,7 +86,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
   
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
-    const propsForChapterHeader = { viewMode, setViewMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId };
+    const propsForChapterHeader = { viewMode, setViewMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!versionId };
     return <ChapterHeader {...propsForChapterHeader} />;
   };
 
