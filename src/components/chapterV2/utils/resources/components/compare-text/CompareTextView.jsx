@@ -3,10 +3,11 @@ import PropTypes from "prop-types";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
 import { fetchCollections } from "../../../../../../components/collections/Collections.jsx";
-import { fetchSubCollections, renderSubCollections } from "../../../../../../components/sub-collections/SubCollections.jsx";
+import { fetchSubCollections } from "../../../../../../components/sub-collections/SubCollections.jsx";
 import { getEarlyReturn } from "../../../../../../utils/helperFunctions.jsx";
 import "./CompareTextView.scss";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const renderCollections = (collectionsData, t, showDescriptions = true, setSelectedTitles, selectedTitles, setSelectedCollection) => {
   const renderCollectionNames = (term) => {
@@ -30,6 +31,16 @@ const renderCollections = (collectionsData, t, showDescriptions = true, setSelec
   );
 };
 
+const renderSubCollectionsTerms = (terms) => {
+  return (
+    <div className="sub-collections-list-container">
+      {terms?.map((term) =>
+        <button type="button">{term.title}</button>
+      )}
+    </div>
+  );
+};
+
 const CompareTextView = ({ setIsCompareTextView }) => {
   const { t } = useTranslate();
   const [selectedTitles, setSelectedTitles] = useState([]);
@@ -40,7 +51,6 @@ const CompareTextView = ({ setIsCompareTextView }) => {
     {refetchOnWindowFocus: false}
   );
 
-  // Fetch subcollections data when a collection is selected
   const {data: subCollectionsData, isLoading: subCollectionsIsLoading, error: subCollectionsError} = useQuery(
     ["sub-collections", selectedCollection?.id],
     () => fetchSubCollections(selectedCollection?.id),
@@ -52,27 +62,12 @@ const CompareTextView = ({ setIsCompareTextView }) => {
 
   // ----------------------------------- helpers -----------------------------------------
   const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, error: collectionsError, t });
-  
-  const subCollectionsEarlyReturn = getEarlyReturn({ 
-    isLoading: subCollectionsIsLoading, 
-    error: subCollectionsError, 
-    t 
-  });
 
   const renderSubCollectionView = () => {
     return (
-      <div className="selected-collection-view">
-        <button 
-          type="button" 
-          className="back-button"
-          onClick={() => setSelectedCollection(null)}
-        >
-          {t("common.back")}
-        </button>
-        <div className="selected-collection-content">
-          <h1 className="listtitle">{selectedCollection?.title}</h1>
-          {subCollectionsEarlyReturn || renderSubCollections(subCollectionsData)}
-        </div>
+      <div className="selected-collection-content">
+        <h1 className="listtitle"></h1>
+        {earlyReturn || renderSubCollectionsTerms(subCollectionsData?.terms || [])}
       </div>
     );
   };

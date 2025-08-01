@@ -21,8 +21,7 @@ export const fetchSubCollections = async (parentId) => {
   return data;
 };
 
-// Export renderSubCollections to be used in other components
-export const renderSubCollections = (subCollectionsData) => {
+const renderSubCollections = (subCollectionsData) => {
   return <div className="sub-collections-list-container">
     {subCollectionsData?.terms?.map((term) =>
       <Link key={term.id} to={`/works/${term.id}`} className="text-item overalltext sub-collection">
