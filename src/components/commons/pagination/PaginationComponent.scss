@@ -13,41 +13,37 @@ $transition-speed: 0.2s;
   .pagination {
     display: flex;
     align-items: center;
-    padding:0.25rem  1rem;
+    padding: 0.25rem 1rem;
 
-    .page-item {
-      margin: 0 4px;
+    .page-link {
+      color: #6e6e6e;
+      border: none;
+      background: none;
+      padding: 6px 10px;
+      margin: 0 2px;
+      transition: background-color $transition-speed ease, color $transition-speed ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      &:focus {
+        box-shadow: none;
+      }
 
       &.active {
-        .page-link {
-          border-bottom: 4px solid  $primary-color;
-          color: #6e6e6e;
-          font-weight: bold;
-          background-color: white;
-        }
-      }
-
-
-      .page-link {
+        border-bottom: 4px solid $primary-color;
         color: #6e6e6e;
-        border: none;
-        padding: 6px 10px;
-        transition: background-color $transition-speed ease, color $transition-speed ease;
-
-        &:hover {
-          cursor: pointer;
-        }
-        &:focus{
-          box-shadow: none;
-        }
+        font-weight: bold;
       }
 
-      &.disabled {
-        .page-link {
-          color: #ccc;
-          pointer-events: none;
-          background: none;
-        }
+      &:disabled {
+        color: #ccc;
+        pointer-events: none;
+        background: none;
       }
     }
   }
@@ -55,16 +51,19 @@ $transition-speed: 0.2s;
   .form-group {
     width: 4rem;
     position: relative;
+    display: flex;
+    align-items: center;
 
     select {
-      padding: 6px 8px;
+      padding: 6px 24px 6px 8px;
+      width: 100%;
       border: 1px solid #ddd;
       border-radius: 6px;
       background-color: white;
       cursor: pointer;
-      appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
+      appearance: none;
       transition: border-color 0.2s ease;
 
       &:hover {
@@ -79,16 +78,23 @@ $transition-speed: 0.2s;
       }
     }
 
+    .dropdown-icon {
+      position: absolute;
+      right: 14px;
+      top: 30%;
+      pointer-events: none;
+    }
   }
 
-  .form-group select:focus option:checked{
-    background-color: $primary-color !important;
-    color: white !important;
+  .form-group select:focus option:checked {
+    background-color: $primary-color;
+    color: white;
 
   }
-  .form-group select:focus option:hover{
-    background-color: $primary-color !important;
-    color: white !important;
+
+  .form-group select:focus option:hover {
+    background-color: $primary-color;
+    color: white;
   }
 
 
