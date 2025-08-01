@@ -286,7 +286,10 @@ describe("Works Component", () => {
       "/api/v1/texts",
       expect.objectContaining({
         params: expect.objectContaining({
-          language: "en",
+          collection_id: "works-id",
+          language: undefined,
+          limit: 10,
+          skip: 0,
         }),
       })
     );
