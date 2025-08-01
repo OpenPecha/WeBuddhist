@@ -90,8 +90,8 @@ describe("TableOfContents", () => {
       return mockQueryData.empty;
     });
     
-    setup({ textId: "text-123" });
-    expect(fetchTableOfContents).toHaveBeenCalledWith("text-123", 0, 1000);
+    setup({ textId: "text-123", language: "bo" });
+    expect(fetchTableOfContents).toHaveBeenCalledWith("text-123", 0, 1000, "bo");
   });
 
   test("calls onSegmentSelect when section title is clicked", () => {
