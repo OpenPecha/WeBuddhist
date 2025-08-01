@@ -8,14 +8,14 @@ import { fetchTableOfContents } from "../../../../texts/Texts.jsx";
 import "./TableOfContents.scss";
 
 const TableOfContents = (props) => {
-  const { textId, showTableOfContents, currentSectionId, onSegmentSelect } = props;
+  const { textId, showTableOfContents, currentSectionId, onSegmentSelect, language } = props;
   const { t } = useTranslate();
   const [expandedSections, setExpandedSections] = useState({});
   const tocContainerRef = useRef(null);
 
   const { data: tableOfContents, error, isLoading } = useQuery(
-    ["toc", textId],
-    () => fetchTableOfContents(textId,0,1000),
+    ["toc", textId, language],
+    () => fetchTableOfContents(textId,0,1000, language),
     {
       enabled: !!textId,
       refetchOnWindowFocus: false,
