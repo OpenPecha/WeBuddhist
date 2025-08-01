@@ -37,6 +37,10 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
       setViewMode(VIEW_MODES.SOURCE);
     }
   }, [versionId]);
+
+  useEffect(() => {
+    setCurrentSegmentId(segmentId);
+  }, [segmentId]);
   const { t } = useTranslate();
 
   const infiniteQuery = useInfiniteQuery(
