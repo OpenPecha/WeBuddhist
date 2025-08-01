@@ -38,12 +38,8 @@
         display: flex;
         flex-direction: column;
         align-items: start;
-        width: 100%;
-        max-width: 600px;
+        width: 80%;
         margin: 0 auto;
-        @media (max-width: 768px) {
-          width: 80%;
-        }
       }
       h2{
         margin-bottom: 10px;
