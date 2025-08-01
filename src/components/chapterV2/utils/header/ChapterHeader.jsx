@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
 import {LuPanelLeftClose, LuPanelLeftOpen} from "react-icons/lu";
-import {BsBookmark, BsBookmarkFill} from "react-icons/bs";
 import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
 import "./ChapterHeader.scss"
 import ViewSelector from "./view-selector/ViewSelector.jsx";
@@ -10,7 +9,6 @@ import {getLanguageClass} from "../../../../utils/helperFunctions.jsx";
 const ChapterHeader = (props) => {
 
   const {viewMode, setViewMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters} = props
-  const [isBookmarked, setIsBookmarked] = useState(false)
   const [showViewSelector, setShowViewSelector] = useState(false)
   // ----------------------- renderers --------------------------
 

@@ -80,6 +80,12 @@ const NavigationBar = () => {
          }}>
            བོད་ཡིག
          </Dropdown.Item>
+         <Dropdown.Item onClick={() => {
+             changeLanguage("zh-Hans-CN");
+             handleNavClick();
+           }}>
+             中文
+           </Dropdown.Item>
        </Dropdown.Menu>
      </Dropdown>
      <Navbar.Toggle aria-controls="navbar-links" />
@@ -214,7 +220,7 @@ const NavigationBar = () => {
              བོད་ཡིག
            </Dropdown.Item>
            <Dropdown.Item onClick={() => {
-             changeLanguage("zh");
+             changeLanguage("zh-Hans-CN");
              handleNavClick();
            }}>
              中文

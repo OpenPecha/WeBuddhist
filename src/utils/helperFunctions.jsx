@@ -34,7 +34,11 @@ export const getEarlyReturn = ({ isLoading, error, t }) => {
   return null;
 };
 export const mapLanguageCode = (languageCode) => {
-  return languageCode === "bo-IN" ? "bo" : languageCode;
+  const languageMap={
+    "zh-Hans-CN": "zh",
+    "bo-IN": "bo",
+  }
+  return languageMap[languageCode]
 };
 export const getLanguageClass = (language) => {
   switch (language) {
