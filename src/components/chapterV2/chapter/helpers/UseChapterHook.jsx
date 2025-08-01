@@ -2,12 +2,13 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.jsx";
 import "./ChapterHook.scss"
+import { VIEW_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
 import { getLanguageClass, getCurrentSectionFromScroll } from "../../../../utils/helperFunctions.jsx";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId } = props;
+  const { showTableOfContents, content, language, viewMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId } = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -102,13 +103,19 @@ const UseChapterHook = (props) => {
     </div>
   );
 
-  const renderScrollSentinelTop = () => (
-    <div ref={topSentinelRef} className="scroll-sentinel-top" />
-  );
+  const renderScrollSentinelTop = () => {
+    if (!infiniteQuery.hasPreviousPage || infiniteQuery.isFetchingPreviousPage) {
+      return null;
+    }
+    return <div ref={topSentinelRef} className="scroll-sentinel-top" />;
+  };
 
-  const renderScrollSentinelBottom = () => (
-    <div ref={sentinelRef} className="scroll-sentinel" />
-  );
+  const renderScrollSentinelBottom = () => {
+    if (!infiniteQuery.hasNextPage || infiniteQuery.isFetchingNextPage) {
+      return null;
+    }
+    return <div ref={sentinelRef} className="scroll-sentinel" />;
+  };
 
   const handleSegmentClick = (segmentId) => {
     setSelectedSegmentId(segmentId);
@@ -135,10 +142,12 @@ const UseChapterHook = (props) => {
             onClick={() => handleSegmentClick(segment.segment_id)}>
               <p className="segment-number">{segment.segment_number}</p>
               <div className="segment-content">
-              <p className={`${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
-              {segment.translation && (
-              <p className={`${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{ __html: segment.translation.content }} />
-            )}
+              {(viewMode === VIEW_MODES.SOURCE || viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                <p className={`${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
+              )}
+              {segment.translation && (viewMode === VIEW_MODES.TRANSLATIONS || viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                <p className={`${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{ __html: segment.translation.content }} />
+              )}
               </div> 
             </button>
             </div>
@@ -157,13 +166,13 @@ const UseChapterHook = (props) => {
     
     return (
       <div className="outmost-container">
-        {infiniteQuery.hasPreviousPage && !infiniteQuery.isFetchingPreviousPage && renderScrollSentinelTop()}
+        {renderScrollSentinelTop()}
         {infiniteQuery.isFetchingPreviousPage && renderLoadingIndicator("Loading previous content...")}
         {content.sections.map((section) => 
           renderSectionRecursive(section)
         )}
         {infiniteQuery.isFetchingNextPage && renderLoadingIndicator("Loading more content...")}
-        {infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage && renderScrollSentinelBottom()}
+        {renderScrollSentinelBottom()}
       </div>
     );
   };

@@ -24,7 +24,6 @@ const CommunityPage = lazy(() => import("./components/community/CommunityPage.js
 const Texts = lazy(() => import("./components/texts/Texts"));
 const Works = lazy(() => import("./components/works/Works.jsx"));
 const SubCollections = lazy(() => import("./components/sub-collections/SubCollections.jsx"));
-// const Chapters = lazy(() => import("./components/chapter/Chapters.jsx"));
 const ChaptersV2 = lazy(() => import("./components/chapterV2/Chapters"));
 
 const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword.jsx"));
@@ -132,7 +131,6 @@ function App() {
               <Route path="/collections/:id" element={<SubCollections/>}/>
               <Route path="/works/:id" element={<Works/>}/>
               <Route path="/chapter" element={<ChaptersV2/>}/>
-              {/*<Route path="/chapter-v2" element={<ChaptersV2/>}/>/!*TODO :    should be removed *!/*/}
               <Route path="/search" element={<SearchResultsPage/>}/>
               <Route path="*" element={<Collections/>}/>
               <Route path="/sheets/:id" element={<Sheets/>}/>

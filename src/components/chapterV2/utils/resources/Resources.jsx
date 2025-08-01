@@ -38,83 +38,121 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
     }
   );
 
-  const renderMainPanel = () => {
-    return <>
-      <div className="headerthing">
-        <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
-        <IoMdClose
-          size={24}
-          onClick={() => {
-            handleClose ? handleClose() : closeResourcesPanel();
-            setActiveView("main");
-          }}
-          className="close-icon"
-        />
-      </div>
-      <div className="panel-content p-3">
-        <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
-        <button onClick={() => setActiveView("search")} >
-          <BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}
+  const handleClosePanel = () => {
+    handleClose ? handleClose() : closeResourcesPanel();
+    setActiveView("main");
+  };
+
+  const renderPanelHeader = () => (
+    <div className="headerthing">
+      <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
+      <IoMdClose
+        size={24}
+        onClick={handleClosePanel}
+        className="close-icon"
+      />
+    </div>
+  );
+
+  const renderAboutSection = () => (
+    <>
+      <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
+      <button onClick={() => setActiveView("search")}>
+        <BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}
+      </button>
+    </>
+  );
+
+  const renderTranslationsSection = () => (
+    sidePanelData?.segment_info?.translations > 0 && (
+      <button type="button" onClick={() => setActiveView("translation")}>
+        <IoLanguage className="m-2"/>
+        {`${t("connection_pannel.translations")} (${sidePanelData.segment_info.translations})`}
+      </button>
+    )
+  );
+
+  const renderCommentaryButton = () => (
+    sidePanelData?.segment_info?.related_text?.commentaries > 0 && (
+      <button className='related-text-item' onClick={() => setActiveView("commentary")}>
+        <BiBookOpen className="m-2"/>
+        {`${t("text.commentary")} (${sidePanelData.segment_info.related_text.commentaries})`}
+      </button>
+    )
+  );
+
+  const renderRootTextButton = () => (
+    sidePanelData?.segment_info?.related_text?.root_text > 0 && (
+      <button className='related-text-item' onClick={() => setActiveView("root_text")}>
+        <BiBookOpen className="m-2"/>
+        {`${t("text.root_text")} (${sidePanelData.segment_info.related_text.root_text})`}
+      </button>
+    )
+  );
+
+  const renderRelatedTextsSection = () => {
+    const hasCommentaries = sidePanelData?.segment_info?.related_text?.commentaries > 0;
+    const hasRootTexts = sidePanelData?.segment_info?.related_text?.root_text > 0;
+
+    return (
+      sidePanelData?.segment_info?.related_text && (hasCommentaries || hasRootTexts) && (
+        <>
+          <p className='text-great'>{t("text.related_texts")}</p>
+          <div className='related-texts-container'>
+            {renderCommentaryButton()}
+            {renderRootTextButton()}
+          </div>
+        </>
+      )
+    );
+  };
+
+  const renderResourcesSection = () => (
+    sidePanelData?.segment_info?.resources?.sheets > 0 && (
+      <>
+        <p className='text-great'>{t("panel.resources")}</p>
+        <p>
+          <IoNewspaperOutline className="m-2"/>
+          {` ${t("common.sheets")} (${sidePanelData.segment_info.resources.sheets})`}
+        </p>
+      </>
+    )
+  );
+
+  const handleMenuItemClick = (item) => {
+    if (item.label === 'common.share') {
+      setActiveView("share");
+    }
+  };
+
+  const renderMenuItems = () => (
+    <>
+      {MENU_ITEMS.map((item) => (
+        <button
+          type="button"
+          key={item.label}
+          className={item.isHeader ? 'text-great' : ''}
+          onClick={() => handleMenuItemClick(item)}
+        >
+          {item.icon && <item.icon className='m-2'/>}
+          {t(`${item.label}`)}
         </button>
+      ))}
+    </>
+  );
 
-        {sidePanelData?.segment_info?.translations > 0 && (
-          <button type="button" onClick={() => setActiveView("translation")}>
-            <IoLanguage className="m-2"/>
-            {`${t("connection_pannel.translations")} (${sidePanelData.segment_info.translations})`}
-          </button>
-        )}
-
-        {sidePanelData?.segment_info?.related_text && (sidePanelData?.segment_info?.related_text?.commentaries > 0 || sidePanelData?.segment_info?.related_text?.root_text > 0) && (
-          <>
-            <p className='text-great'>{t("text.related_texts")}</p>
-            <div className='related-texts-container'>
-              
-              {sidePanelData?.segment_info?.related_text?.commentaries > 0 && (
-                <button className='related-text-item' onClick={() => setActiveView("commentary")}>
-                  <BiBookOpen className="m-2"/>
-                  {`${t("text.commentary")} (${sidePanelData?.segment_info?.related_text?.commentaries})`}
-                </button>
-              )}
-              
-              {sidePanelData?.segment_info?.related_text?.root_text > 0 && (
-                <button className='related-text-item' onClick={() => setActiveView("root_text")}>
-                  <BiBookOpen className="m-2"/>
-                  {`${t("text.root_text")} (${sidePanelData?.segment_info?.related_text?.root_text})`}
-                </button>
-              )}
-            </div>
-          </>
-        )}
-
-        {sidePanelData?.segment_info?.resources?.sheets > 0 && (
-          <>
-            <p className='text-great'>{t("panel.resources")}</p>
-            <p>
-              <IoNewspaperOutline className="m-2"/>
-              {` ${t("common.sheets")} (${sidePanelData?.segment_info?.resources?.sheets})`}
-            </p>
-          </>
-        )}
-
-        {MENU_ITEMS.map((item) => (
-          <button
-            type="button"
-            key={item.label}
-            className={item.isHeader ? 'text-great' : ''}
-            onClick={() => {
-              if (item.label === 'common.share') {
-                setActiveView("share");
-              }
-            }}
-          >
-            {item.icon && <item.icon className='m-2'/>}
-            {t(`${item.label}`)}
-          </button>
-        ))}
+  const renderMainPanel = () => (
+    <>
+      {renderPanelHeader()}
+      <div className="panel-content p-3">
+        {renderAboutSection()}
+        {renderTranslationsSection()}
+        {renderRelatedTextsSection()}
+        {renderResourcesSection()}
+        {renderMenuItems()}
       </div>
     </>
-
-  }
+  );
 
   const renderSidePanel = () => {
     switch (activeView) {

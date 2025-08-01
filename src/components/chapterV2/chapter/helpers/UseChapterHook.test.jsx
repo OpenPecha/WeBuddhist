@@ -3,6 +3,7 @@ import { render, fireEvent, screen } from "@testing-library/react";
 import { vi } from "vitest";
 import UseChapterHook from "./UseChapterHook.jsx";
 import "@testing-library/jest-dom";
+import { VIEW_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
 
 const mockState = {
   panelContext: {
@@ -109,11 +110,11 @@ describe("UseChapterHook", () => {
   });
 
   test("renders section and segment content", () => {
-    setup();
+    setup({ viewMode: VIEW_MODES.SOURCE });
     expect(screen.getByText("Section 1")).toBeInTheDocument();
     expect(screen.getByText("1")).toBeInTheDocument();
-    expect(screen.getByText("Segment 1 Content", { selector: "span" })).toBeInTheDocument();
-    expect(screen.getByText("Translation 1", { selector: "span" })).toBeInTheDocument();
+    const segmentContent = document.querySelector(".segment-content");
+    expect(segmentContent && segmentContent.innerHTML).toContain("Segment 1 Content");
   });
 
   test("renders loading indicators when fetching", () => {
@@ -161,8 +162,9 @@ describe("UseChapterHook", () => {
     expect(document.querySelector(".outmost-container")).not.toBeInTheDocument();
   });
 
-  test("footnote marker click toggles active class", () => {
-    setup({
+  test("footnote marker click toggles active class", async () => {
+    const { container } = setup({
+      viewMode: VIEW_MODES.SOURCE,
       content: {
         sections: [
           {
@@ -180,14 +182,11 @@ describe("UseChapterHook", () => {
         ],
       },
     });
-    
-    const marker = document.querySelector(".footnote-marker");
-    const footnote = document.querySelector(".footnote");
-    
+    const marker = container.querySelector(".footnote-marker");
     expect(marker).toBeInTheDocument();
+    const footnote = marker.nextElementSibling;
     expect(footnote).toBeInTheDocument();
     expect(footnote.classList.contains("active")).toBe(false);
-    
     fireEvent.click(marker);
     expect(footnote.classList.contains("active")).toBe(true);
   });

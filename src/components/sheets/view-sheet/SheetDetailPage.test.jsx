@@ -142,11 +142,23 @@ describe("SheetDetailPage Component", () => {
       };
     });
 
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: mockSheetData,
-      isLoading: false,
-      error: null,
-    }));
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKeyOrConfig, queryFn, options) => {
+      if (Array.isArray(queryKeyOrConfig)) {
+        if (queryKeyOrConfig[0] === 'shortUrl') {
+          return { 
+            data: { shortUrl: 'https://short.url/test' },
+            isLoading: false 
+          };
+        }
+      } 
+      else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
+        if (queryKeyOrConfig.queryKey[0] === 'userInfo') {
+          return { data: mockUserInfoData, isLoading: false, error: null };
+        }
+      }
+      
+      return { data: mockSheetDataWithUserInfo, isLoading: false, error: null };
+    });
 
     vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
       mutate: vi.fn(),
@@ -714,7 +726,6 @@ describe("SheetDetailPage Component", () => {
   let deleteOnErrorCallback;
   
   vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
-    // Check if this is the delete mutation by examining the mutationFn
     if (config.mutationFn && config.mutationFn.toString().includes('deleteSheet')) {
       deleteOnErrorCallback = config.onError;
     }
@@ -1072,10 +1083,21 @@ describe("SheetDetailPage Component", () => {
   test("renders visibility button for sheet owner and handles click", () => {
     const mockUpdateMutation = vi.fn();
     
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((config) => {
-      if (config.queryKey[0] === 'userInfo') {
-        return { data: mockUserInfoData, isLoading: false, error: null };
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKeyOrConfig, queryFn, options) => {
+      if (Array.isArray(queryKeyOrConfig)) {
+        if (queryKeyOrConfig[0] === 'shortUrl') {
+          return { 
+            data: { shortUrl: 'https://short.url/test' },
+            isLoading: false 
+          };
+        }
+      } 
+      else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
+        if (queryKeyOrConfig.queryKey[0] === 'userInfo') {
+          return { data: mockUserInfoData, isLoading: false, error: null };
+        }
       }
+      
       return { data: mockSheetDataWithUserInfo, isLoading: false, error: null };
     });
   
@@ -1122,10 +1144,21 @@ describe("SheetDetailPage Component", () => {
     
     vi.spyOn(reactQuery, "useQueryClient").mockReturnValue(mockQueryClient);
     
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((config) => {
-      if (config.queryKey[0] === 'userInfo') {
-        return { data: mockUserInfoData, isLoading: false, error: null };
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKeyOrConfig, queryFn, options) => {
+      if (Array.isArray(queryKeyOrConfig)) {
+        if (queryKeyOrConfig[0] === 'shortUrl') {
+          return { 
+            data: { shortUrl: 'https://short.url/test' },
+            isLoading: false 
+          };
+        }
+      } 
+      else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
+        if (queryKeyOrConfig.queryKey[0] === 'userInfo') {
+          return { data: mockUserInfoData, isLoading: false, error: null };
+        }
       }
+      
       return { data: mockSheetDataWithUserInfo, isLoading: false, error: null };
     });
   

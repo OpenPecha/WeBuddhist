@@ -44,7 +44,7 @@ describe("SubCollections Component", () => {
       title: "Parent Title",
       id: "parent123"
     },
-    terms: [
+    collections: [
       { id: "1", title: "Term 1" },
       { id: "2", title: "Term 2" },
       { id: "3", title: "Term 3" }
@@ -110,7 +110,7 @@ describe("SubCollections Component", () => {
     setup();
     const links = document.querySelectorAll(".text-item");
     links.forEach((link, index) => {
-      expect(link).toHaveAttribute("href", `/works/${mockTextChildData.terms[index].id}`);
+      expect(link).toHaveAttribute("href", `/works/${mockTextChildData.collections[index].id}`);
     });
   });
 
@@ -139,7 +139,7 @@ describe("SubCollections Component", () => {
 
     const result = await fetchSubCollections(parentId);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/terms", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections", {
       params: {
         language: "bo",
         parent_id: parentId,
@@ -156,7 +156,7 @@ describe("SubCollections Component", () => {
 
     const result = await fetchSubCollections();
 
-    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/terms", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections", {
       params: {
         language: "bo",
         limit: 10,
@@ -173,7 +173,7 @@ describe("SubCollections Component", () => {
 
     const result = await fetchSubCollections(parentId);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/terms", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections", {
       params: {
         language: "bo",
         parent_id: parentId,
