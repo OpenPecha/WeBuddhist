@@ -3,7 +3,6 @@ import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {useMemo, useState} from "react";
 import {useSearchParams} from "react-router-dom";
-import {Button, Card, Col, Container, Form, Pagination, Row} from "react-bootstrap";
 import "./Topics.scss"
 import React from "react";
 import {useTranslate} from "@tolgee/react";
@@ -80,30 +79,30 @@ const Topics = () => {
     return (
       ((searchMode.isDeepSearch && searchFilter) || !searchMode.isDeepSearch) && (
         <>
-          <Row xs={1} md={2} className="g-4">
+        <div className="topics-list-wrapper">
             {filteredTopics.length > 0 ? (
               filteredTopics.map((topic, index) => (
-                <Col key={index}>
-                  <Card className="topic-card">
+                <div key={index}>
+                  <div className="topic-card">
                     <button className="topic-button listtitle" onClick={() => handleTopicClick(topic)}>
                       {topic.title}
                     </button>
-                  </Card>
-                </Col>
+                  </div>
+                </div>
               ))
             ) : (
-              <Col>
+              <div>
                 <p>No topics found</p>
-              </Col>
+              </div>
             )}
-          </Row>
-          {filteredTopics.length > 0 && <Row>
+          </div>
+          {filteredTopics.length > 0 && <div className="pagination-container">
             <PaginationComponent
             pagination={pagination}
             totalPages={totalPages}
             handlePageChange={handlePageChange}
             setPagination={setPagination}
-          /></Row>}
+          /></div>}
         </>
       )
     );
@@ -114,31 +113,29 @@ const Topics = () => {
       <div className="search-container">
         {searchMode.isDeepSearch ? (
           <>
-            <Form.Control
+            <input
               type="text"
               placeholder="Search topics..."
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              className="mb-3"
+              className="search-input"
             />
             <div className="alphabet-filter">
               {cleanAlphabetArray.map((letter, index) => (
-                <Button
+                <button
                   key={index}
-                  variant={searchFilter === letter ? "secondary" : "outline-secondary"}
-                  className="alphabet-button listsubtitle"
+                  className={`alphabet-button listsubtitle ${searchFilter === letter ? "active" : ""}`}
                   onClick={() => setSearchFilter(letter)}
                 >
                   {letter}
-                </Button>
+                </button>
               ))}
-              <Button variant="outline-dark" className="clear-letter-click" onClick={() => setSearchFilter("")}>
+              <button className="clear-letter-click" onClick={() => setSearchFilter("")}>
                 {t("topic.clear")}
-              </Button>
+              </button>
             </div>
-            <Button
+            <button
               className="back-button"
-              variant="outline-secondary"
               onClick={() => {
                 setSearchMode({ isDeepSearch: false, hierarchy: true });
                 setSearchFilter("");
@@ -146,13 +143,13 @@ const Topics = () => {
               }}
             >
               Back
-            </Button>
+            </button>
           </>
         ) : (
           <div className="deep-search-container">
-            <Button className="deep-search-button" variant="outline-secondary" onClick={onDeepSearchButtonClick}>
+            <button className="deep-search-button" onClick={onDeepSearchButtonClick}>
               {t("topic.a_to_z")}
-            </Button>
+            </button>
             <p>{t("topic.browse_topic")}</p>
           </div>
         )}
@@ -162,23 +159,23 @@ const Topics = () => {
 
 
   return (
-    <Container fluid className="topics-container">
-      <Row className="topics-wrapper">
-        <Col xs={12} md={7} className="topics-list">
+    <div className="topics-container">
+      <div className="topics-wrapper">
+        <div className="topics-list">
           <h4 className="topics-title listtitle">{parentId ? topicsData?.parent?.title : t("topic.expore")}</h4>
           {renderSearchBar()}
           {isLoading ? <p>Loading topics...</p> : renderTopicsList()}
-        </Col>
-        <Col xs={12} md={4} className="topic-info">
-          <Card className="topic-info-card">
-            <Card.Body>
+        </div>
+        <div className="topic-info">
+          <div className="topic-info-card">
+            <div className="topic-info-card-body">
               <h5>Topic Information</h5>
               <p>Details about the selected topic will be displayed here.</p>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

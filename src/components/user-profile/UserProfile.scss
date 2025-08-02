@@ -105,7 +105,7 @@
           margin: 10px 0;
           font-size: 14px;
           color: #888;
-          
+
           .separator {
             margin: 0 5px;
           }
@@ -148,6 +148,7 @@
             font-size: 14px;
             color: #888;
             cursor: pointer;
+
             &:hover {
               color: #000;
             }
@@ -168,8 +169,37 @@
             font-size: 14px;
             color: #888;
             cursor: pointer;
+
             &:hover {
               color: #000;
+            }
+          }
+        }
+
+        .social-links {
+          margin-top: 15px;
+          display: flex;
+          gap: 10px;
+
+          @media (max-width: 768px) {
+            justify-content: center;
+          }
+
+          a {
+            color: inherit;
+            text-decoration: none;
+
+            svg {
+              font-size: 20px;
+              transition: opacity 0.3s ease;
+
+              @media (max-width: 480px) {
+                font-size: 18px;
+              }
+
+              &:hover {
+                opacity: 0.8;
+              }
             }
           }
         }
@@ -180,6 +210,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
         .profile-picture {
           width: 120px;
           height: 120px;
@@ -262,6 +293,7 @@
             font-size: 14px;
             border: none;
             outline: none;
+
             @media (max-width: 480px) {
               font-size: 12px;
             }
@@ -281,22 +313,32 @@
         overflow-x: auto;
       }
 
-      .nav-tabs {
-        border-bottom: 2px solid #ddd;
+      .tabs-container {
         width: 100%;
-        display: flex;
-        
-        @media (max-width: 768px) {
-          flex-wrap: nowrap;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-        }
 
-        .nav-item {
+        .nav-tabs {
+          border-bottom: 2px solid #ddd;
+          width: 100%;
+          display: flex;
+
+          @media (max-width: 768px) {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
           .nav-link {
             color: #666;
             font-size: 16px;
             white-space: nowrap;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            display: inline-block;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
 
             @media (max-width: 480px) {
               font-size: 14px;
@@ -308,27 +350,34 @@
               border-color: #A9080E #A9080E #fff;
               color: #A9080E;
             }
-            i {
-              margin-right: 5px;
+
+            svg {
+              font-size: 16px;
+              flex-shrink: 0;
+
+              @media (max-width: 480px) {
+                font-size: 14px;
+                margin-right: 3px;
+              }
             }
           }
         }
-      }
 
-      .tab-content {
-        padding: 5px 20px 20px 20px;
-        font-size: 16px;
-        width: 100%;
-        min-height: 200px;
+        .tab-content {
+          padding: 10px 20px 20px 20px;
+          font-size: 16px;
+          width: 100%;
+          min-height: 200px;
 
-        @media (max-width: 768px) {
-          padding: 5px 15px 15px 15px;
-          min-height: 150px;
-        }
+          @media (max-width: 768px) {
+            padding: 5px 15px 15px 15px;
+            min-height: 150px;
+          }
 
-        @media (max-width: 480px) {
-          padding: 5px 10px 10px 10px;
-          font-size: 14px;
+          @media (max-width: 480px) {
+            padding: 5px 10px 10px 10px;
+            font-size: 14px;
+          }
         }
       }
     }
@@ -345,24 +394,27 @@
     text-align: start;
     border-bottom: 1px solid #f0f0f0;
     padding: 15px 0;
+
     .sheet-content {
       .sheet-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
-        .sheet-title {
+
+      .sheet-title {
         color: #333;
         margin-bottom: 5px;
         font-size: 18px;
       }
-        .sheet-delete {
-          background: transparent;
-          border: none;
-          color: grey;
-          font-size: 20px;
-          cursor: pointer;
-          padding: 0;
+
+      .sheet-delete {
+        background: transparent;
+        border: none;
+        color: grey;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0;
       }
 
       .sheet-summary {
@@ -380,7 +432,7 @@
           color: #ccc;
         }
 
-        .sheet-views, 
+        .sheet-views,
         .sheet-date {
           display: inline-block;
           font-size: 18px;
