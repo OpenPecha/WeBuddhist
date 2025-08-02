@@ -117,7 +117,6 @@ function App() {
           <Routes>
               <Route path="/" element={<Collections/>}/>
               <Route path="/collections" element={<Collections/>}/>
-              <Route path="/chapter-header" element={<ContentsChapter/>}/> {/*TODO :    should be removed */}
               <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
               <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
               <Route path="/reset-password" element={<ResetPassword/>}/>
