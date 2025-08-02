@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FaGlobe, FaSearch } from "react-icons/fa";
+import { LuEyeClosed, LuEye} from "react-icons/lu";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
@@ -22,6 +23,7 @@ const Navigation = () => {
     const queryClient = useQueryClient();
     const [searchTerm, setSearchTerm] = useState("");
     const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
    
      const changeLanguage = async (lng) => {
        await tolgee.changeLanguage(lng);
@@ -40,6 +42,7 @@ const Navigation = () => {
         if (isLoggedIn && !isAuthenticated) {
           navigate('/login');
         }
+        handleMobileMenuToggle();
       }
      const handleSearchSubmit = (e) => {
       e.preventDefault();
@@ -47,6 +50,7 @@ const Navigation = () => {
         navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
         setSearchTerm("");
       }
+      handleMobileMenuToggle();
     };
 
     const handleLangDropdownToggle = () => {
@@ -57,9 +61,14 @@ const Navigation = () => {
       changeLanguage(lng);
       setIsLangDropdownOpen(false);
     };
+
+    const handleMobileMenuToggle = () => {
+      setIsMobileMenuOpen((prev) => !prev);
+      setIsLangDropdownOpen(false);
+    };
 const renderLogo=()=>{
     return(
-        <Link to="/">
+        <Link to="/" onClick={handleMobileMenuToggle}>
          <img className="logo" src="/img/pecha-logo.svg" alt="Pecha"/>
        </Link>
     )
@@ -67,9 +76,9 @@ const renderLogo=()=>{
 const renderNavLinks=()=>{
     return(
         <div className='nav-links navbaritems'>
-            <Link to="/collections">  {t("header.text")}</Link>
-            <Link to="/topics">{t("header.topic")}</Link>
-            <Link to="/community"> {t("header.community")}</Link>
+            <Link to="/collections" onClick={handleMobileMenuToggle}>  {t("header.text")}</Link>
+            <Link to="/topics" onClick={handleMobileMenuToggle}>{t("header.topic")}</Link>
+            <Link to="/community" onClick={handleMobileMenuToggle}> {t("header.community")}</Link>
         </div>
     )
 }
@@ -94,10 +103,10 @@ const renderAuthButtons = () => {
     if (!isLoggedIn && !isAuthenticated) {
       return (
         <div className='auth-buttons navbaritems'>
-          <Link className='auth-button-login'  to="/login" >
+          <Link className='auth-button-login'  to="/login" onClick={handleMobileMenuToggle} >
             {t("login.form.button.login_in")}
           </Link>
-          <Link className='auth-button-register' to="/register" >
+          <Link className='auth-button-register' to="/register" onClick={handleMobileMenuToggle} >
             {t("common.sign_up")}
           </Link>
         </div>
@@ -120,35 +129,48 @@ const renderAuthButtons = () => {
           <FaGlobe />
         </button>
         {isLangDropdownOpen && (
-          <ul className="lang-dropdown-menu">
-            <li
-              className="lang-dropdown-item"
-              onClick={() => handleLangSelect('en')}
-            >
-              English
-            </li>
-            <li
-              className="lang-dropdown-item"
-              onClick={() => handleLangSelect('bo-IN')}
-            >
-              བོད་ཡིག
-            </li>
-            <li
-              className="lang-dropdown-item"
-              onClick={() => handleLangSelect('zh-Hans-CN')}
-            >
-              中文
-            </li>
-          </ul>
+          renderLanguageOptions()
         )}
       </div>
     );
   };
+  const renderLanguageOptions=()=>{
+    return(
+      <div className="lang-dropdown-menu">
+      <button
+        className="lang-dropdown-item"
+        onClick={() => {handleLangSelect('en'); handleMobileMenuToggle()}}
+      >
+        English
+      </button>
+      <button
+        className="lang-dropdown-item"
+        onClick={() => {handleLangSelect('bo-IN'); handleMobileMenuToggle()}}
+      >
+        བོད་ཡིག
+      </button>
+      <button
+        className="lang-dropdown-item"
+        onClick={() => {handleLangSelect('zh-Hans-CN'); handleMobileMenuToggle()}}
+      >
+        中文
+      </button>
+    </div>
+    )
+  }
+  const renderMobileLanguageDropdown=()=>{
+    return(
+        <div className='mobile-language-dropdown navbaritems'>
+          <p className="mobile-language-dropdown-title">Language</p>
+            {renderLanguageOptions()}
+        </div>
+    )
+  }
   const renderProfile=()=>{
     return(
         <div className='profile-link navbaritems'>
             {(isAuthenticated || isLoggedIn) && (
-             <Link to="/profile">
+             <Link to="/profile" onClick={handleMobileMenuToggle}>
                {t("header.profileMenu.profile")}
              </Link>
            )}
@@ -156,18 +178,35 @@ const renderAuthButtons = () => {
     )
   }
   return (
-    <div className='navigation-main'>
-        <div className='navigation-left'>
-            {renderLogo()}
-            {renderNavLinks()}
+    <>
+      <div className='navigation-main'>
+          <div className='navigation-left'>
+              {renderLogo()}
+              {renderNavLinks()}
+          </div>
+          <div className='navigation-right'>
+              {renderSearch()}
+              {renderAuthButtons()}
+              {renderProfile()}
+              {renderLanguageDropdown()}
+              <button
+                className="mobile-menu-trigger"
+                onClick={handleMobileMenuToggle}
+              >
+                {!isMobileMenuOpen ? <LuEyeClosed /> : <LuEye />}
+              </button>
+          </div>
+      </div>
+      {isMobileMenuOpen && (
+        <div className="mobile-menu">
+          {renderSearch()}
+          {renderNavLinks()}
+          {renderAuthButtons()}
+          {renderProfile()}
+          {renderMobileLanguageDropdown()}
         </div>
-        <div className='navigation-right'>
-            {renderSearch()}
-            {renderAuthButtons()}
-            {renderProfile()}
-            {renderLanguageDropdown()}
-        </div>
-    </div>
+      )}
+    </>
   )
 }
 
