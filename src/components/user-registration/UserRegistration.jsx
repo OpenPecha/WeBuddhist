@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import "./UserRegistration.scss";
 import axiosInstance from "../../config/axios-config.js";
 import { useMutation } from "react-query";
 import eyeOpen from "../../assets/icons/eye-open.svg";
 import eyeClose from "../../assets/icons/eye-closed.svg";
+import { IoAlertCircleOutline } from "react-icons/io5";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useTranslate } from "@tolgee/react";
@@ -139,78 +139,64 @@ const UserRegistration = () => {
   const loginWithApple = () => handleSocialLogin('apple');
 
   return (
-    <Container
-      fluid
-      className="register-container d-flex align-items-center justify-content-center"
-    >
-      <Row>
-        <Col xs={ 12 } md={ 18 } lg={ 25 } className="register-box">
-          <h2 className="title text-center register-title" data-testid="signup-title">
+    <div className="register-container">
+      <div className="register-wrapper">
+        <div className="register-box">
+          <h2 className="title register-title" data-testid="signup-title">
             { t("common.sign_up") }
           </h2>
 
-          <Form onSubmit={ registerUser }>
+          <form onSubmit={ registerUser }>
             {/* Email Field */ }
-            <Form.Group className="mb-3" controlId="formEmail">
-              <Form.Control
+            <div className="form-group">
+              <input
                 type="email"
                 placeholder={ t("common.email") }
-                className="form-input"
+                className={`form-input ${errors.email ? 'is-invalid' : ''}`}
                 value={ email }
                 onChange={ (e) => setEmail(e.target.value) }
-                isInvalid={ !!errors.email }
               />
-              <Form.Control.Feedback type="invalid">
-                { errors.email }
-              </Form.Control.Feedback>
-            </Form.Group>
+              {errors.email && <IoAlertCircleOutline className="validation-icon" />}
+              {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+            </div>
 
             {/* First Name Field */ }
-            <Form.Group className="mb-3" controlId="formFirstName">
-              <Form.Control
+            <div className="form-group">
+              <input
                 type="text"
                 placeholder={ t("sign_up.form.first_name") }
-                className="form-input"
+                className={`form-input ${errors.firstName ? 'is-invalid' : ''}`}
                 value={ firstName }
                 onChange={ (e) => setFirstName(e.target.value) }
-                isInvalid={ !!errors.firstName }
               />
-              <Form.Control.Feedback type="invalid">
-                { errors.firstName }
-              </Form.Control.Feedback>
-            </Form.Group>
+              {errors.firstName && <IoAlertCircleOutline className="validation-icon" />}
+              {errors.firstName && <div className="invalid-feedback">{errors.firstName}</div>}
+            </div>
 
             {/* Last Name Field */ }
-            <Form.Group className="mb-3" controlId="formLastName">
-              <Form.Control
+            <div className="form-group">
+              <input
                 type="text"
                 placeholder={ t("sign_up.form.last_name") }
-                className="form-input"
+                className={`form-input ${errors.lastName ? 'is-invalid' : ''}`}
                 value={ lastName }
                 onChange={ (e) => setLastName(e.target.value) }
-                isInvalid={ !!errors.lastName }
               />
-              <Form.Control.Feedback type="invalid">
-                { errors.lastName }
-              </Form.Control.Feedback>
-            </Form.Group>
+              {errors.lastName && <IoAlertCircleOutline className="validation-icon" />}
+              {errors.lastName && <div className="invalid-feedback">{errors.lastName}</div>}
+            </div>
 
             {/* Password Field */ }
-            <Form.Group
-              className="mb-3 position-relative"
-              controlId="formPassword"
-            >
-              <Form.Control
+            <div className="form-group">
+              <input
                 type={ showPassword ? "text" : "password" }
                 placeholder={ t("common.password") }
-                className="form-input"
+                className={`form-input ${errors.password ? 'is-invalid' : ''}`}
                 value={ password }
                 onChange={ (e) => setPassword(e.target.value) }
-                isInvalid={ !!errors.password }
               />
-              <Form.Control.Feedback type="invalid">
-                { errors.password }
-              </Form.Control.Feedback>
+              {errors.password && <IoAlertCircleOutline className="validation-icon password-validation" />}
+              {errors.password && <div className="invalid-feedback">{errors.password}</div>}
 
               {/* Password Toggle Icon */ }
               <button
@@ -218,18 +204,8 @@ const UserRegistration = () => {
                   e.preventDefault();
                   e.stopPropagation();
                   setShowPassword(!showPassword);
-                } } className="position-absolute"
-                aria-label="toggle-password"
-                style={ {
-                  all: "unset",
-                  top: "50%",
-                  right: "10px",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center"
                 } }
+                className="password-toggle"
               >
                 { showPassword ? (
                   <img src={ eyeOpen } alt="Eye Icon" width="16" height="16" />
@@ -237,41 +213,27 @@ const UserRegistration = () => {
                   <img src={ eyeClose } alt="Eye Slash Icon" width="16" height="16" />
                 ) }
               </button>
-            </Form.Group>
+            </div>
 
             {/* Confirm Password Field */ }
-            <Form.Group
-              className="mb-3 position-relative"
-              controlId="formConfirmPassword"
-            >
-              <Form.Control
+            <div className="form-group">
+              <input
                 type={ showConfirmPassword ? "text" : "password" }
                 placeholder={ t("common.confirm_password") }
-                className="form-input"
+                className={`form-input ${errors.confirmPassword ? 'is-invalid' : ''}`}
                 value={ confirmPassword }
                 onChange={ (e) => setConfirmPassword(e.target.value) }
-                isInvalid={ !!errors.confirmPassword }
               />
-              <Form.Control.Feedback type="invalid">
-                { errors.confirmPassword }
-              </Form.Control.Feedback>
+              {errors.confirmPassword && <IoAlertCircleOutline className="validation-icon password-validation" />}
+              {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
               {/* Password Toggle Icon */ }
               <button
                 onClick={ (e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setShowConfirmPassword(!showConfirmPassword);
-                } } className="position-absolute"
-                style={ {
-                  all: "unset",
-                  top: "50%",
-                  right: "10px",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center"
                 } }
+                className="password-toggle"
               >
                 { showConfirmPassword ? (
                   <img src={ eyeOpen } alt="Eye Icon" width="16" height="16" />
@@ -279,15 +241,15 @@ const UserRegistration = () => {
                   <img src={ eyeClose } alt="Eye Slash Icon" width="16" height="16" />
                 ) }
               </button>
-            </Form.Group>
+            </div>
 
             {/* Submit Button */ }
-            <Button type="submit" className="register-button w-100">
+            <button type="submit" className="register-button">
               { t("common.sign_up") }
-            </Button>
+            </button>
 
             {/* Link to Login */ }
-            <div className="content register-links text-center mt-3">
+            <div className="content register-links">
               <span>{ t("sign_up.already_have_account") } </span>
               <br />
               <Link to={ "/login" } className="login-link">
@@ -296,30 +258,29 @@ const UserRegistration = () => {
             </div>
             <hr />
             <div className="social-login-buttons">
-              <Button
-                variant="outline-dark"
+              <button
                 className="social-btn"
                 onClick={loginWithGoogle}
               >
                 <FaGoogle />
                 Google
-              </Button>
-              <Button
-                variant="outline-dark"
+              </button>
+              <button
                 className="social-btn"
                 onClick={loginWithApple}
               >
                 <FaApple />
                 Apple
-              </Button>
+              </button>
             </div>
             { registrationError && <div className="content registration-error">
+              <IoAlertCircleOutline className="validation-icon" />
               { registrationError }
             </div> }
-          </Form>
-        </Col>
-      </Row>
-    </Container>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 };
 

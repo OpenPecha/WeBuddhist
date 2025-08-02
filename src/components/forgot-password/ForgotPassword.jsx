@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button, Form } from "react-bootstrap";
 import "./ForgotPassword.scss";
 import { useMutation } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
@@ -43,21 +42,22 @@ const ForgotPassword = () => {
 
     return (
         <div className="forgot-password-container">
-            <Form onSubmit={handleSubmit}>
-                <Form.Group className="content mb-3" controlId="email">
-                    <Form.Label>{ t("common.email") }</Form.Label>
-                    <Form.Control
+            <form onSubmit={handleSubmit}>
+                <div className="content">
+                    <label className="form-label">{ t("common.email") }</label>
+                    <input
+                        id="email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        isInvalid={!!error}
+                        className={`form-control ${error ? "is-invalid" : ""}`}
                     />
                     {error && <div className="error-message">{error}</div>}
-                </Form.Group>
-                <Button type="submit" className="w-100">
+                </div>
+                <button type="submit" className="btn">
                     { t("common.button.submit") }
-                </Button>
-            </Form>
+                </button>
+            </form>
         </div>
     );
 };
