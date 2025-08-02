@@ -103,7 +103,7 @@ describe("UserLogin Component", () => {
     const passwordInput = screen.getByPlaceholderText("Password");
     expect(passwordInput).toHaveAttribute("type", "password");
   
-    const eyeButton = document.querySelector("button.position-absolute");
+    const eyeButton = document.querySelector(".password-toggle");
     fireEvent.click(eyeButton);
   
     expect(passwordInput).toHaveAttribute("type", "text");

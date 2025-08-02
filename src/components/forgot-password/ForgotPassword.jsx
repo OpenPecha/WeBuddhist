@@ -44,7 +44,7 @@ const ForgotPassword = () => {
         <div className="forgot-password-container">
             <form onSubmit={handleSubmit}>
                 <div className="content">
-                    <label className="form-label">{ t("common.email") }</label>
+                    <label className="form-label" htmlFor="email">{ t("common.email") }</label>
                     <input
                         id="email"
                         type="email"

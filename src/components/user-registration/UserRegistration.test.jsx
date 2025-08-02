@@ -91,7 +91,7 @@ describe("UserRegistration Component", () => {
     setup();
 
     const passwordInput = screen.getByPlaceholderText("Password");
-    const toggleButton = screen.getByRole("button", { name: "toggle-password" });
+    const toggleButton = document.querySelector(".password-toggle");
 
     expect(passwordInput).toHaveAttribute("type", "password");
     expect(toggleButton).toBeInTheDocument();
@@ -124,10 +124,8 @@ describe("UserRegistration Component", () => {
     setup();
   
     const confirmPasswordInput = screen.getByPlaceholderText("common.confirm_password");
-    
-    const confirmPasswordGroup = confirmPasswordInput.closest('.position-relative');
-    
-    const confirmToggleButton = confirmPasswordGroup.querySelector('button');
+    const confirmPasswordGroup = confirmPasswordInput.closest('.form-group');
+    const confirmToggleButton = confirmPasswordGroup.querySelector('.password-toggle');
   
     expect(confirmPasswordInput).toHaveAttribute("type", "password");
     
