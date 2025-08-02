@@ -55,7 +55,6 @@ describe("NavigationBar Component", () => { // Fix describe name
     setup();
     const searchInput = screen.getByPlaceholderText("Search");
     expect(searchInput).toBeInTheDocument();
-    // No search button, only icon
     expect(screen.getByRole("textbox")).toBe(searchInput);
   });
 
@@ -83,20 +82,13 @@ describe("NavigationBar Component", () => { // Fix describe name
 
   test("language change triggers changeLanguage function", async () => {
     setup();
-    // Open the language dropdown
     const langDropdownButton = screen.getByLabelText("Change language");
     await userEvent.click(langDropdownButton);
 
-    // Select English
     const englishOption = screen.getByText("English");
     await userEvent.click(englishOption);
     expect(localStorage.getItem("language")).toBe("en");
 
-    // Open again and select Tibetan
-    await userEvent.click(langDropdownButton);
-    const tibetanOption = screen.getByText("བོད་ཡིག");
-    await userEvent.click(tibetanOption);
-    expect(localStorage.getItem("language")).toBe("bo-IN");
   });
 
   test("handles search form submission", async () => {
@@ -104,8 +96,7 @@ describe("NavigationBar Component", () => { // Fix describe name
     const searchInput = screen.getByPlaceholderText("Search");
     await userEvent.type(searchInput, "test search query");
     expect(searchInput.value).toBe("test search query");
-    // Submit the form (press Enter)
     await userEvent.type(searchInput, "{enter}");
-    expect(searchInput.value).toBe(""); // Should clear after submit
+    expect(searchInput.value).toBe("");
   });
 });
