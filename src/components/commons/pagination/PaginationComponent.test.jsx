@@ -21,6 +21,15 @@ describe("PaginationComponent", () => {
     );
   };
 
+  const getPaginationButtons = () => {
+    const buttons = screen.getAllByRole("button");
+    return {
+      prevButton: buttons[0],
+      nextButton: buttons[buttons.length - 1],
+      allButtons: buttons
+    };
+  };
+
   test("renders pagination buttons correctly", () => {
     setup();
     expect(screen.getByText("1")).toBeInTheDocument();
@@ -31,7 +40,8 @@ describe("PaginationComponent", () => {
 
   test("disables previous button on first page", () => {
     setup();
-    expect(screen.getByText("Previous").parentElement?.parentElement).toHaveClass("page-item disabled");
+    const { prevButton } = getPaginationButtons();
+    expect(prevButton).toBeDisabled();
   });
 
   test("disables next button on last page", () => {
@@ -43,7 +53,8 @@ describe("PaginationComponent", () => {
         setPagination={mockSetPagination}
       />
     );
-    expect(screen.getByText("Next").parentElement?.parentElement).toHaveClass("page-item disabled");
+    const { nextButton } = getPaginationButtons();
+    expect(nextButton).toBeDisabled();
   });
 
   test("calls handlePageChange when clicking a page number", async () => {
@@ -54,7 +65,8 @@ describe("PaginationComponent", () => {
 
   test("calls handlePageChange when clicking next button", async () => {
     setup();
-    await userEvent.click(screen.getByRole("button", { name: /next/i }));
+    const { nextButton } = getPaginationButtons();
+    await userEvent.click(nextButton);
     expect(mockHandlePageChange).toHaveBeenCalledWith(2);
   });
 
@@ -67,7 +79,8 @@ describe("PaginationComponent", () => {
         setPagination={mockSetPagination}
       />
     );
-    await userEvent.click(screen.getByRole("button", { name: /previous/i }));
+    const { prevButton } = getPaginationButtons();
+    await userEvent.click(prevButton);
     expect(mockHandlePageChange).toHaveBeenCalledWith(1);
   });
 

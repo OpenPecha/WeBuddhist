@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button, Col, Form, Row, Tab, Tabs } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./EditUserProfile.scss";
 import { useMutation } from "react-query";
@@ -11,6 +10,7 @@ const EditUserProfile = () => {
   const navigate = useNavigate();
   const { t } = useTranslate();
 
+  const [activeTab, setActiveTab] = useState("personalDetails");
 
   const userInfo = location.state?.userInfo || {};
   const updateProfileMutation = useMutation(async (updateProfileData) => {
@@ -78,162 +78,236 @@ const EditUserProfile = () => {
     <div className="edit-user-profile listtitle">
       <h2>{t("edit_profile.header")}</h2>
       <hr />
-      <Form onSubmit={ handleSubmit } className="textalign">
-        <Tabs defaultActiveKey="personalDetails" id="edit-profile-tabs" className="mb-4">
-          {/* Personal Details Tab */ }
-          <Tab eventKey="personalDetails" title={ t("profile.personal_details") }>
-            <Row className="p-3">
-              <Col md={ 6 }>
-                <Form.Group controlId="formFirstName">
-                  <Form.Label>{ t("sign_up.form.first_name") }</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="firstname"
-                    value={ formData.firstname }
-                    onChange={ handleChange }
-                    placeholder={ t("profile.enter-your-first-name") }
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={ 6 }>
-                <Form.Group controlId="formLastName">
-                  <Form.Label>{ t("sign_up.form.last_name") }</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="lastname"
-                    value={ formData.lastname }
-                    onChange={ handleChange }
-                    placeholder={ t("profile.enter-your-last-name") }
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+      <form onSubmit={handleSubmit} className="textalign">
+        <div className="custom-tabs">
+          <div className="nav-tabs">
+            <button
+              type="button"
+              className={`nav-link ${
+                activeTab === "personalDetails" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("personalDetails")}
+            >
+              {t("profile.personal_details")}
+            </button>
+            <button
+              type="button"
+              className={`nav-link ${
+                activeTab === "contactDetails" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("contactDetails")}
+            >
+              {t("profile.contact_details")}
+            </button>
+          </div>
 
-            <Row className="p-3">
-              <Col md={ 6 }>
-                <Form.Group controlId="formTitle">
-                  <Form.Label>{ t("topic.admin.title") }</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="title"
-                    value={ formData.title }
-                    onChange={ handleChange }
-                    placeholder={ t("profile.enter-your-title") }
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={ 6 }>
-                <Form.Group controlId="formOrganization">
-                  <Form.Label>{ t("edit_profile.organization") }</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="organization"
-                    value={ formData.organization }
-                    onChange={ handleChange }
-                    placeholder={ t("profile.enter-your-organization") }
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row className="p-3">
-              <Col md={ 6 }>
-                <Form.Group controlId="formLocation">
-                  <Form.Label>{ t("edit_profile.location") }</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="location"
-                    value={ formData.location }
-                    onChange={ handleChange }
-                    placeholder={ t("profile.enter-your-location") }
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row className="mb-2 align-items-center p-3">
-              <Form.Group controlId="formEducation">
-                <Form.Label>{ t("edit_profile.education_info") }</Form.Label>
-                { formData.educations.map((edu, index) => (
-                  <div className="form-education" key={ index }>
-                    <Col md={ 12 } className="position-relative">
-                      <Form.Control
+          <div className="tab-content">
+            {/* Personal Details Tab */}
+            {activeTab === "personalDetails" && (
+              <div className="tab-panel">
+                <div className="row">
+                  <div className="col">
+                    <div className="form-group">
+                      <label htmlFor="formFirstName">
+                        {t("sign_up.form.first_name")}
+                      </label>
+                      <input
+                        id="formFirstName"
+                        className="form-control"
                         type="text"
-                        value={ edu }
-                        onChange={ (e) => handleEducationChange(index, e.target.value) }
-                        placeholder={ t("profile.enter-your-education") }
+                        name="firstname"
+                        value={formData.firstname}
+                        onChange={handleChange}
+                        placeholder={t("profile.enter-your-first-name")}
                       />
-                      { index !== 0 && (
-                        <button
-                          type="button"
-                          className="remove-icon"
-                          onClick={ () => {
-                            const updatedEducation = formData.educations.filter((_, i) => i !== index);
-                            setFormData({ ...formData, educations: updatedEducation });
-                          } }
-                        >
-                          ✕
-                        </button>
-                      ) }
-                    </Col>
+                    </div>
                   </div>
-                )) }
-                <Button
-                  variant="outline-dark"
-                  size="sm"
-                  onClick={ addEducation }
-                  className="btn-add p-3"
-                >
-                  {t("edit_profile.line_add")}
-                 </Button>
-              </Form.Group>
-            </Row>
+                  <div className="col">
+                    <div className="form-group">
+                      <label htmlFor="formLastName">
+                        {t("sign_up.form.last_name")}
+                      </label>
+                      <input
+                        id="formLastName"
+                        className="form-control"
+                        type="text"
+                        name="lastname"
+                        value={formData.lastname}
+                        onChange={handleChange}
+                        placeholder={t("profile.enter-your-last-name")}
+                      />
+                    </div>
+                  </div>
+                </div>
 
+                <div className="row">
+                  <div className="col">
+                    <div className="form-group">
+                      <label htmlFor="formTitle">
+                        {t("topic.admin.title")}
+                      </label>
+                      <input
+                        id="formTitle"
+                        className="form-control"
+                        type="text"
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        placeholder={t("profile.enter-your-title")}
+                      />
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="form-group">
+                      <label htmlFor="formOrganization">
+                        {t("edit_profile.organization")}
+                      </label>
+                      <input
+                        id="formOrganization"
+                        className="form-control"
+                        type="text"
+                        name="organization"
+                        value={formData.organization}
+                        onChange={handleChange}
+                        placeholder={t("profile.enter-your-organization")}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-            <Row className="p-3">
-              <Form.Group controlId="formAboutMe">
-                <Form.Label>{ t("edit_profile.about_me") }</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={ 3 }
-                  name="about_me"
-                  value={ formData.about_me }
-                  onChange={ handleChange }
-                  placeholder={ t("profile.tell-us-about-yourself") }
-                />
-              </Form.Group>
-            </Row>
-          </Tab>
+                <div className="row">
+                  <div className="col">
+                    <div className="form-group">
+                      <label htmlFor="formLocation">
+                        {t("edit_profile.location")}
+                      </label>
+                      <input
+                        id="formLocation"
+                        className="form-control"
+                        type="text"
+                        name="location"
+                        value={formData.location}
+                        onChange={handleChange}
+                        placeholder={t("profile.enter-your-location")}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-          {/* Contact Details Tab */ }
-          <Tab eventKey="contactDetails" title={ t("profile.contact_details") }>
-            <Row className="p-3">
-              { formData.social_profiles.map((profile) => (
-                <Col md={ 6 } key={ profile.account } className=" p-3">
-                  <Form.Group controlId={ `form${ profile.account }` }>
-                    <Form.Label>{ t(`common.${ profile.account }`) }</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={ profile.url }
-                      onChange={ (e) => handleSocialProfileChange(profile.account, e.target.value) }
-                      placeholder={ t(`profile.enter-your-${ profile.account }`) }
+                <div className="row">
+                  <div className="form-group">
+                    <label htmlFor="formEducation">
+                      {t("edit_profile.education_info")}
+                    </label>
+                    {formData.educations.map((edu, index) => (
+                      <div className="form-education" key={index}>
+                        <div className="col">
+                          <input
+                            className="form-control"
+                            type="text"
+                            value={edu}
+                            onChange={(e) =>
+                              handleEducationChange(index, e.target.value)
+                            }
+                            placeholder={t("profile.enter-your-education")}
+                          />
+                          {index !== 0 && (
+                            <button
+                              type="button"
+                              className="remove-icon"
+                              onClick={() => {
+                                const updatedEducation =
+                                  formData.educations.filter(
+                                    (_, i) => i !== index
+                                  );
+                                setFormData({
+                                  ...formData,
+                                  educations: updatedEducation,
+                                });
+                              }}
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      className="btn btn-outline-dark btn-sm btn-add p-3"
+                      onClick={addEducation}
+                    >
+                      {t("edit_profile.line_add")}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="form-group">
+                    <label htmlFor="formAboutMe">
+                      {t("edit_profile.about_me")}
+                    </label>
+                    <textarea
+                      id="formAboutMe"
+                      className="form-control"
+                      rows={3}
+                      name="about_me"
+                      value={formData.about_me}
+                      onChange={handleChange}
+                      placeholder={t("profile.tell-us-about-yourself")}
                     />
-                  </Form.Group>
-                </Col>
-              )) }
-            </Row>
-          </Tab>
-        </Tabs>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Contact Details Tab */}
+            {activeTab === "contactDetails" && (
+              <div className="tab-panel">
+                <div className="row">
+                  {formData.social_profiles.map((profile) => (
+                    <div className="col" key={profile.account}>
+                      <div className="form-group">
+                        <label htmlFor={`form${profile.account}`}>
+                          {t(`common.${profile.account}`)}
+                        </label>
+                        <input
+                          id={`form${profile.account}`}
+                          className="form-control"
+                          type="text"
+                          value={profile.url}
+                          onChange={(e) =>
+                            handleSocialProfileChange(
+                              profile.account,
+                              e.target.value
+                            )
+                          }
+                          placeholder={t(
+                            `profile.enter-your-${profile.account}`
+                          )}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
         <div className="form-buttons">
-          <Button className="btn-cancel" type="button" onClick={ () => navigate(-1) }>
-            { t("common.button.cancel") }
-          </Button>
-          <Button className="btn-submit" type="submit">
-            { t("common.button.save") }
-          </Button>
+          <button
+            className="btn btn-cancel"
+            type="button"
+            onClick={() => navigate(-1)}
+          >
+            {t("common.button.cancel")}
+          </button>
+          <button className="btn btn-submit" type="submit">
+            {t("common.button.save")}
+          </button>
         </div>
-      </Form>
+      </form>
     </div>
   );
 };
