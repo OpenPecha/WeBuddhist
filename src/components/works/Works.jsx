@@ -7,7 +7,7 @@ import { useQuery } from 'react-query';
 import { useParams,Link } from 'react-router-dom';
 import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 
-const fetchWorks = async (bookId, limit = 10, skip = 0) => {
+export const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
 
@@ -22,7 +22,7 @@ const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   return data;
 };
 
-const useGroupedTexts = (texts = []) => {
+export const useGroupedTexts = (texts = []) => {
   return useMemo(() => {
     const textTypes = {};
     for (const item of texts) {
@@ -34,6 +34,49 @@ const useGroupedTexts = (texts = []) => {
   }, [texts]);
 };
 
+export const renderRootTexts = (rootTexts, t, getLanguageClass) => {
+  const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>;
+  return (
+    <div className="root-text-section">
+      {renderTitle()}
+      {rootTexts.length === 0 ? (
+        <div className="no-content">{t("text.root_text_not_found")}</div>
+      ) : (
+        <div className="root-text-list">
+          {rootTexts.map((text) => (
+            <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
+                  className={`${getLanguageClass(text.language)} root-text`}>
+              <div className="divider"></div>
+              <p>{text.title}</p>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export const renderCommentaryTexts = (commentaryTexts, t, getLanguageClass) => {
+  const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>;
+  return (
+    <div className="commentary-section">
+      {renderTitle()}
+      {commentaryTexts.length === 0 ? (
+        <div className="no-content">{t("text.commentary_text_not_found")}</div>
+      ) : (
+        <div className="commentary-list">
+          {commentaryTexts.map((text) => (
+            <Link key={text.id} to={`/texts/${text.id}?type=commentary`}
+                  className={`${getLanguageClass(text.language)} commentary-text`}>
+              <div className="divider"></div>
+              <p>{text.title}</p>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Works = () => {
   const {id} = useParams();
@@ -62,56 +105,13 @@ const Works = () => {
 
     return <h1 className="overalltext">{worksData.term?.title}</h1>
   }
-  const renderRootTexts = () => {
-    const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>;
-    return (
-      <div className="root-text-section">
-        {renderTitle()}
-        {rootTexts.length === 0 ? (
-          <div className="no-content">{t("text.root_text_not_found")}</div>
-        ) : (
-          <div className="root-text-list">
-            {rootTexts.map((text) => (
-              <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
-                    className={`${getLanguageClass(text.language)} root-text`}>
-                <div className="divider"></div>
-                <p>{text.title}</p>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  const renderCommentaryTexts = () => {
-    const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>;
-    return (
-      <div className="commentary-section">
-        {renderTitle()}
-        {commentaryTexts.length === 0 ? (
-          <div className="no-content">{t("text.commentary_text_not_found")}</div>
-        ) : (
-          <div className="commentary-list">
-            {commentaryTexts.map((text) => (
-              <Link key={text.id} to={`/texts/${text.id}?type=commentary`}
-                    className={`${getLanguageClass(text.language)} commentary-text`}>
-                <div className="divider"></div>
-                <p>{text.title}</p>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
+  
   return (
     <div className="works-container">
       <div className="left-section">
         <div className="works-title-container">{renderWorksTitle()}</div>
-        <div className="root-text-container">{renderRootTexts()}</div>
-        <div className="commentary-text-container">{renderCommentaryTexts()}</div>
+        <div className="root-text-container">{renderRootTexts(rootTexts, t, getLanguageClass)}</div>
+        <div className="commentary-text-container">{renderCommentaryTexts(commentaryTexts, t, getLanguageClass)}</div>
       </div>
       <div className="right-section">
         <div className="sidebar" />
