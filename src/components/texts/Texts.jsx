@@ -1,4 +1,3 @@
-
 import React, {useMemo, useState} from 'react'
 import {useQuery} from "react-query";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
@@ -10,6 +9,7 @@ import {Link, useParams, useSearchParams} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
+
 export const fetchTableOfContents = async (textId, skip, limit) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -23,6 +23,41 @@ export const fetchTableOfContents = async (textId, skip, limit) => {
   return data;
 
 }
+
+export const renderTabs = (activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId) => {
+  return <div className="tab-container listsubtitle">
+    {/* Tab Navigation */}
+    <div className="tab-nav">
+      <button
+        className={`tab-button ${activeTab === 'contents' ? 'active' : ''}`}
+        onClick={() => setActiveTab('contents')}
+      >
+        {t("text.contents")}
+      </button>
+      <button
+        className={`tab-button ${activeTab === 'versions' ? 'active' : ''}`}
+        onClick={() => setActiveTab('versions')}
+      >
+        {t("common.version")}
+      </button>
+    </div>
+
+    {/* Tab Content */}
+    <div className="tab-content">
+      {activeTab === 'contents' && (
+        <div className="tab-panel">
+          <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={textId} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t}/>
+        </div>
+      )}
+      {activeTab === 'versions' && (
+        <div className="tab-panel">
+          <Versions textId={textId} />
+        </div>
+      )}
+    </div>
+  </div>
+}
+
 const Texts = () => {
   const { t } = useTranslate();
   const { id } = useParams();
@@ -72,41 +107,10 @@ const Texts = () => {
                  to={`/chapter?text_id=${tableOfContents?.text_detail?.id}&contentId=${tableOfContents?.contents[0]?.id}&versionId=&contentIndex=${0}`}>
       {t("text.button.continue_reading")}
     </Link>
-
   }
 
-  const renderTabs = () => {
-    return <div className="tab-container listsubtitle">
-      {/* Tab Navigation */}
-      <div className="tab-nav">
-        <button
-          className={`tab-button ${activeTab === 'contents' ? 'active' : ''}`}
-          onClick={() => setActiveTab('contents')}
-        >
-          {t("text.contents")}
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'versions' ? 'active' : ''}`}
-          onClick={() => setActiveTab('versions')}
-        >
-          {t("common.version")}
-        </button>
-      </div>
-
-      {/* Tab Content */}
-      <div className="tab-content">
-        {activeTab === 'contents' && (
-          <div className="tab-panel">
-            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={tableOfContents?.text_detail?.id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t}/>
-          </div>
-        )}
-        {activeTab === 'versions' && (
-          <div className="tab-panel">
-            <Versions />
-          </div>
-        )}
-      </div>
-    </div>
+  const renderTabsLocal = () => {
+    return renderTabs(activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, id);
   }
 
   const renderVersionsDropdown = () => <div className="select-version">
@@ -171,7 +175,7 @@ const Texts = () => {
       <div className="left-section">
         {renderTextTitleAndType()}
         {renderContinueReadingButton()}
-        {renderTabs()}
+        {renderTabsLocal()}
       </div>
       <div className="right-section">
         {renderDownloadTextOptions()}
