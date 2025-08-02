@@ -53,10 +53,6 @@ const Navigation = () => {
       handleMobileMenuToggle();
     };
 
-    const handleLangDropdownToggle = () => {
-      setIsLangDropdownOpen((prev) => !prev);
-    };
-
     const handleLangSelect = (lng) => {
       changeLanguage(lng);
       setIsLangDropdownOpen(false);
@@ -124,7 +120,7 @@ const renderAuthButtons = () => {
         <button
           className="lang-dropdown-trigger"
           aria-label="Change language"
-          onClick={handleLangDropdownToggle}
+          onClick={()=> setIsLangDropdownOpen((prev) => !prev)}
         >
           <FaGlobe />
         </button>
@@ -134,24 +130,28 @@ const renderAuthButtons = () => {
       </div>
     );
   };
+  const globalLangSelect=(lang)=>{
+    handleLangSelect(lang);
+    handleMobileMenuToggle();
+  }
   const renderLanguageOptions=()=>{
     return(
       <div className="lang-dropdown-menu">
       <button
         className="lang-dropdown-item"
-        onClick={() => {handleLangSelect('en'); handleMobileMenuToggle()}}
+        onClick={() => globalLangSelect("en")}
       >
         English
       </button>
       <button
         className="lang-dropdown-item"
-        onClick={() => {handleLangSelect('bo-IN'); handleMobileMenuToggle()}}
+        onClick={() => globalLangSelect('bo-IN')}
       >
         བོད་ཡིག
       </button>
       <button
         className="lang-dropdown-item"
-        onClick={() => {handleLangSelect('zh-Hans-CN'); handleMobileMenuToggle()}}
+        onClick={() => globalLangSelect('zh-Hans-CN')}
       >
         中文
       </button>
@@ -161,7 +161,7 @@ const renderAuthButtons = () => {
   const renderMobileLanguageDropdown=()=>{
     return(
         <div className='mobile-language-dropdown navbaritems'>
-          <p className="mobile-language-dropdown-title">Language</p>
+          <p className="mobile-language-dropdown-title">{t("header.site_language")}</p>
             {renderLanguageOptions()}
         </div>
     )
