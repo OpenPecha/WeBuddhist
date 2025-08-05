@@ -8,7 +8,7 @@ import {getLanguageClass} from "../../../../utils/helperFunctions.jsx";
 
 const ChapterHeader = (props) => {
 
-  const {viewMode, setViewMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters} = props
+  const {viewMode, setViewMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, versionSelected} = props
   const [showViewSelector, setShowViewSelector] = useState(false)
   // ----------------------- renderers --------------------------
 
@@ -30,7 +30,7 @@ const ChapterHeader = (props) => {
   }
 
   const renderViewSelector = () => {
-    const propsForViewSelectorComponent = { setShowViewSelector, viewMode, setViewMode }
+    const propsForViewSelectorComponent = { setShowViewSelector, viewMode, setViewMode, versionSelected }
     return <div className="view-selector-icon-container">
       <MdOutlineVerticalSplit size={20} onClick={() => setShowViewSelector(true)}/>
       {showViewSelector && <ViewSelector {...propsForViewSelectorComponent}/>}
