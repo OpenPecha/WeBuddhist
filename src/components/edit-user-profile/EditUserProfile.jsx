@@ -74,239 +74,161 @@ const EditUserProfile = () => {
     updateProfileMutation.mutateAsync(formData)
   };
 
+  const renderTabNavigation = () => (
+    <div className="nav-tabs">
+      <button type="button" className={`nav-link ${ activeTab === "personalDetails" ? "active" : "" }`} onClick={() => setActiveTab("personalDetails")}>
+        {t("profile.personal_details")}
+        </button>
+      <button type="button" className={`nav-link ${ activeTab === "contactDetails" ? "active" : "" }`} onClick={() => setActiveTab("contactDetails")}>
+        {t("profile.contact_details")}
+      </button>
+    </div>
+  );
+
+  const renderPersonalDetailsFields = () => (
+    <div className="tab-panel">
+      {/* Name Fields */}
+      <div className="row">
+        <div className="col">
+          <div className="form-group">
+            <label htmlFor="formFirstName">
+              {t("sign_up.form.first_name")}
+            </label>
+            <input id="formFirstName" className="form-control" type="text" name="firstname" value={formData.firstname} onChange={handleChange} placeholder={t("profile.enter-your-first-name")}/>
+          </div>
+        </div>
+        <div className="col">
+          <div className="form-group">
+            <label htmlFor="formLastName">{t("sign_up.form.last_name")}</label>
+            <input id="formLastName" className="form-control" type="text" name="lastname" value={formData.lastname} onChange={handleChange} placeholder={t("profile.enter-your-last-name")}/>
+          </div>
+        </div>
+      </div>
+      {/* Title & Organization Fields */}
+      <div className="row">
+        <div className="col">
+          <div className="form-group">
+            <label htmlFor="formTitle">{t("topic.admin.title")}</label>
+            <input id="formTitle" className="form-control" type="text" name="title" value={formData.title} onChange={handleChange} placeholder={t("profile.enter-your-title")}/>
+          </div>
+        </div>
+        <div className="col">
+          <div className="form-group">
+            <label htmlFor="formOrganization">
+              {t("edit_profile.organization")}
+            </label>
+            <input id="formOrganization" className="form-control" type="text" name="organization" value={formData.organization} onChange={handleChange} placeholder={t("profile.enter-your-organization")}/>
+          </div>
+        </div>
+      </div>
+      {/* Location Field */}
+      <div className="row">
+        <div className="col">
+          <div className="form-group">
+            <label htmlFor="formLocation">{t("edit_profile.location")}</label>
+            <input id="formLocation" className="form-control" type="text" name="location" value={formData.location} onChange={handleChange} placeholder={t("profile.enter-your-location")}/>
+          </div>
+        </div>
+      </div>
+      {/* Education Section */}
+      <div className="row">
+        <div className="form-group">
+          <label htmlFor="formEducation">
+            {t("edit_profile.education_info")}
+          </label>
+          {formData.educations.map((edu, index) => (
+            <div className="form-education" key={index}>
+              <div className="col">
+                <input className="form-control" type="text" value={edu} onChange={(e) => handleEducationChange(index, e.target.value)} placeholder={t("profile.enter-your-education")}/>
+                {index !== 0 && (
+                  <button
+                    type="button"
+                    className="remove-icon"
+                    onClick={() => {
+                      const updatedEducation = formData.educations.filter(
+                        (_, i) => i !== index
+                      );
+                      setFormData({
+                        ...formData,
+                        educations: updatedEducation,
+                      });
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+          <button type="button" className="add-education-btn" onClick={addEducation}>
+            {t("edit_profile.line_add")}
+          </button>
+        </div>
+      </div>
+      {/* About Me Field */}
+      <div className="row">
+        <div className="form-group">
+          <label htmlFor="formAboutMe">{t("edit_profile.about_me")}</label>
+          <textarea id="formAboutMe" className="form-control" rows={3} name="about_me" value={formData.about_me} onChange={handleChange} placeholder={t("profile.tell-us-about-yourself")}/>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderContactDetailsFields = () => (
+    <div className="tab-panel">
+      <div className="row">
+        {formData.social_profiles.map((profile) => (
+          <div className="col" key={profile.account}>
+            <div className="form-group">
+              <label htmlFor={`form${profile.account}`}>
+                {t(`common.${profile.account}`)}
+              </label>
+              <input
+                id={`form${profile.account}`}
+                className="form-control"
+                type="text"
+                value={profile.url}
+                onChange={(e) =>
+                  handleSocialProfileChange(profile.account, e.target.value)
+                }
+                placeholder={t(`profile.enter-your-${profile.account}`)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderTabContent = () => (
+    <div className="tab-content">
+      {activeTab === "personalDetails" && renderPersonalDetailsFields()}
+      {activeTab === "contactDetails" && renderContactDetailsFields()}
+    </div>
+  );
+
+  const renderFormButtons = () => (
+    <div className="form-buttons">
+      <button className="cancel-btn" type="button" onClick={() => navigate(-1)}>
+        {t("common.button.cancel")}
+      </button>
+      <button className="submit-btn" type="submit">
+        {t("common.button.save")}
+      </button>
+    </div>
+  );
+
   return (
     <div className="edit-user-profile listtitle">
       <h2>{t("edit_profile.header")}</h2>
       <hr />
       <form onSubmit={handleSubmit} className="textalign">
         <div className="custom-tabs">
-          <div className="nav-tabs">
-            <button
-              type="button"
-              className={`nav-link ${
-                activeTab === "personalDetails" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("personalDetails")}
-            >
-              {t("profile.personal_details")}
-            </button>
-            <button
-              type="button"
-              className={`nav-link ${
-                activeTab === "contactDetails" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("contactDetails")}
-            >
-              {t("profile.contact_details")}
-            </button>
-          </div>
-
-          <div className="tab-content">
-            {/* Personal Details Tab */}
-            {activeTab === "personalDetails" && (
-              <div className="tab-panel">
-                <div className="row">
-                  <div className="col">
-                    <div className="form-group">
-                      <label htmlFor="formFirstName">
-                        {t("sign_up.form.first_name")}
-                      </label>
-                      <input
-                        id="formFirstName"
-                        className="form-control"
-                        type="text"
-                        name="firstname"
-                        value={formData.firstname}
-                        onChange={handleChange}
-                        placeholder={t("profile.enter-your-first-name")}
-                      />
-                    </div>
-                  </div>
-                  <div className="col">
-                    <div className="form-group">
-                      <label htmlFor="formLastName">
-                        {t("sign_up.form.last_name")}
-                      </label>
-                      <input
-                        id="formLastName"
-                        className="form-control"
-                        type="text"
-                        name="lastname"
-                        value={formData.lastname}
-                        onChange={handleChange}
-                        placeholder={t("profile.enter-your-last-name")}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col">
-                    <div className="form-group">
-                      <label htmlFor="formTitle">
-                        {t("topic.admin.title")}
-                      </label>
-                      <input
-                        id="formTitle"
-                        className="form-control"
-                        type="text"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        placeholder={t("profile.enter-your-title")}
-                      />
-                    </div>
-                  </div>
-                  <div className="col">
-                    <div className="form-group">
-                      <label htmlFor="formOrganization">
-                        {t("edit_profile.organization")}
-                      </label>
-                      <input
-                        id="formOrganization"
-                        className="form-control"
-                        type="text"
-                        name="organization"
-                        value={formData.organization}
-                        onChange={handleChange}
-                        placeholder={t("profile.enter-your-organization")}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="col">
-                    <div className="form-group">
-                      <label htmlFor="formLocation">
-                        {t("edit_profile.location")}
-                      </label>
-                      <input
-                        id="formLocation"
-                        className="form-control"
-                        type="text"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        placeholder={t("profile.enter-your-location")}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="form-group">
-                    <label htmlFor="formEducation">
-                      {t("edit_profile.education_info")}
-                    </label>
-                    {formData.educations.map((edu, index) => (
-                      <div className="form-education" key={index}>
-                        <div className="col">
-                          <input
-                            className="form-control"
-                            type="text"
-                            value={edu}
-                            onChange={(e) =>
-                              handleEducationChange(index, e.target.value)
-                            }
-                            placeholder={t("profile.enter-your-education")}
-                          />
-                          {index !== 0 && (
-                            <button
-                              type="button"
-                              className="remove-icon"
-                              onClick={() => {
-                                const updatedEducation =
-                                  formData.educations.filter(
-                                    (_, i) => i !== index
-                                  );
-                                setFormData({
-                                  ...formData,
-                                  educations: updatedEducation,
-                                });
-                              }}
-                            >
-                              ✕
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      className="add-education-btn"
-                      onClick={addEducation}
-                    >
-                      {t("edit_profile.line_add")}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div className="form-group">
-                    <label htmlFor="formAboutMe">
-                      {t("edit_profile.about_me")}
-                    </label>
-                    <textarea
-                      id="formAboutMe"
-                      className="form-control"
-                      rows={3}
-                      name="about_me"
-                      value={formData.about_me}
-                      onChange={handleChange}
-                      placeholder={t("profile.tell-us-about-yourself")}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Contact Details Tab */}
-            {activeTab === "contactDetails" && (
-              <div className="tab-panel">
-                <div className="row">
-                  {formData.social_profiles.map((profile) => (
-                    <div className="col" key={profile.account}>
-                      <div className="form-group">
-                        <label htmlFor={`form${profile.account}`}>
-                          {t(`common.${profile.account}`)}
-                        </label>
-                        <input
-                          id={`form${profile.account}`}
-                          className="form-control"
-                          type="text"
-                          value={profile.url}
-                          onChange={(e) =>
-                            handleSocialProfileChange(
-                              profile.account,
-                              e.target.value
-                            )
-                          }
-                          placeholder={t(
-                            `profile.enter-your-${profile.account}`
-                          )}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          {renderTabNavigation()}
+          {renderTabContent()}
         </div>
-
-        <div className="form-buttons">
-          <button
-            className="cancel-btn"
-            type="button"
-            onClick={() => navigate(-1)}
-          >
-            {t("common.button.cancel")}
-          </button>
-          <button className="submit-btn" type="submit">
-            {t("common.button.save")}
-          </button>
-        </div>
+        {renderFormButtons()}
       </form>
     </div>
   );

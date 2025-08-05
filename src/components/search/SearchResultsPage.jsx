@@ -31,69 +31,81 @@ const SearchResultsPage = () => {
     </button>
   );
 
+  const renderSearchResultsHeader = () => (
+    <h2 className="search-query-text">
+      {t("search_page.results_for", "Results for: ( {searchedItem} )", {
+        searchedItem: query,
+      })}
+    </h2>
+  );
+
+  const renderTabNavigation = () => (
+    <div className="custom-tabs">
+      <button className={`nav-link ${activeTab === "sources" ? "active" : ""}`} onClick={() => { setActiveTab("sources"); setSortOption(null); }}>
+        {t("sheet.sources", "Sources")}
+      </button>
+      <button className={`nav-link ${activeTab === "sheets" ? "active" : ""}`} onClick={() => { setActiveTab("sheets"); setSortOption(null); }}>
+        {t("common.sheets", "Sheets")}
+      </button>
+    </div>
+  );
+
+  const renderSortDropdown = () => (
+    <div className="sort-dropdown">
+      <button
+        className="sort-toggle"
+        onClick={() => setDropdownOpen(!dropdownOpen)}
+      >
+        {t("profile.tab.dropdown.sort", "Sort")}
+        <IoMdArrowDropdown />
+      </button>
+      {dropdownOpen && (
+        <div className="sort-menu">
+          {activeTab === "sources" ? (
+            <>
+              {renderSortButton("relevance", "filter_list.relevance", "Relevance")}
+              {renderSortButton("chronological", "filter_list.chronological", "Chronological")}
+            </>
+          ) : (
+            <>
+              {renderSortButton("relevance", "filter_list.relevance", "Relevance")}
+              {renderSortButton("date_created", "filter_list.date_created", "Date created")}
+              {renderSortButton("views", "profile.tab.sheet.tag.views", "Views")}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderTabsContainer = () => (
+    <div className="tabs-container">
+      {renderTabNavigation()}
+      {renderSortDropdown()}
+    </div>
+  );
+
+  const renderTabContent = () => (
+    <div className="tab-content-container">
+      {activeTab === "sources" && <Sources query={query} />}
+      {activeTab === "sheets" && <Sheets query={query} />}
+    </div>
+  );
+
+  const renderMainContent = () => (
+    <div className="main-content">
+      <div className="container">
+        {renderSearchResultsHeader()}
+        {renderTabsContainer()}
+        {renderTabContent()}
+      </div>
+    </div>
+  );
+
   return (
     <div className="search-results-wrapper">
       <div className="search-results-container listtitle">
-        <div className="main-content">
-          <div className="container">
-            <h2 className="search-query-text">
-              {t("search_page.results_for", "Results for: ( {searchedItem} )", {
-                searchedItem: query,
-              })}
-            </h2>
-            <div className="tabs-container">
-              <div className="custom-tabs">
-                <button
-                  className={`nav-link ${activeTab === "sources" ? "active" : ""}`}
-                  onClick={() => {
-                    setActiveTab("sources");
-                    setSortOption(null);
-                }}
-              >
-                {t("sheet.sources", "Sources")}
-              </button>
-              <button
-                className={`nav-link ${activeTab === "sheets" ? "active" : ""}`}
-                onClick={() => {
-                  setActiveTab("sheets");
-                  setSortOption(null);
-                }}
-              >
-                {t("common.sheets", "Sheets")}
-              </button>
-              </div>
-              <div className="sort-dropdown">
-                <button
-                  className="sort-toggle"
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                >
-                  {t("profile.tab.dropdown.sort", "Sort")}
-                  <IoMdArrowDropdown />
-                </button>
-                {dropdownOpen && (
-                <div className="sort-menu">
-                  {activeTab === "sources" ? (
-                    <>
-                      {renderSortButton("relevance", "filter_list.relevance", "Relevance")}
-                      {renderSortButton("chronological", "filter_list.chronological", "Chronological")}
-                    </>
-                  ) : (
-                    <>
-                      {renderSortButton("relevance", "filter_list.relevance", "Relevance")}
-                      {renderSortButton("date_created", "filter_list.date_created", "Date created")}
-                      {renderSortButton("views", "profile.tab.sheet.tag.views", "Views")}
-                    </>
-                  )}
-                </div>
-              )}
-              </div>
-            </div>
-            <div className="tab-content-container">
-              {activeTab === "sources" && <Sources query={query} />}
-              {activeTab === "sheets" && <Sheets query={query} />}
-            </div>
-          </div>
-        </div>
+        {renderMainContent()}
         <div className="sidebar">
         </div>
       </div>

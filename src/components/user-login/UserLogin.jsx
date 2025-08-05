@@ -123,122 +123,129 @@ const UserLogin = () => {
         }
     };
 
-    return (
-      <div className="login-container">
-        {showToast && (
-          <div className="my-custom-toast-wrapper">
-            <div className="my-custom-toast-box">
-              <div className="my-toast-content">
-                <span>Error: {errors.error}</span>
-                <button
-                  className="my-toast-close"
-                  onClick={() => setShowToast(false)}
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-          </div>
-        )}  
-          <div className="login-box">
-            <h2 className="title login-title">
-              {t("login.form.button.login_in")}
-            </h2>
-            <form onSubmit={handleSubmit}>
-              {/* Email Field */}
-              <div className="form-group">
-                <input
-                  type="email"
-                  placeholder={t("common.email")}
-                  className={`form-input ${errors.email ? "is-invalid" : ""}`}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                {errors.email && <IoAlertCircleOutline className="validation-icon" />}
-                {errors.email && <div className="invalid-feedback">{errors.email}</div>}
-              </div>
-
-              {/* Password Field */}
-              <div className="form-group">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder={t("common.password")}
-                  className={`form-input ${
-                    errors.password ? "is-invalid" : ""
-                  }`}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                {errors.password && <IoAlertCircleOutline className="validation-icon" />}
-                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
-                {/* Eye Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowPassword(!showPassword);
-                  }}
-                  className="password-toggle"
-                >
-                  {showPassword ? (
-                    <img src={eyeOpen} alt="Eye Icon" width="16" height="16" />
-                  ) : (
-                    <img
-                      src={eyeClose}
-                      alt="Eye Slash Icon"
-                      width="16"
-                      height="16"
-                    />
-                  )}
-                </button>
-              </div>
-
-              {/* Login Button */}
-              <button
-                type="submit"
-                className="login-button"
-                // disabled={loginMutation.isLoading}
-              >
-                {t("login.form.button.login_in")}
-              </button>
-
-              {/* Links */}
-              <div className="login-links">
-                <Link
-                  to={"/forgot-password"}
-                  className="content forgot-password"
-                >
-                  {t("login.forget_password")}
-                </Link>
-                <br />
-                <Link to={"/register"} className="content create-account">
-                  {t("login.create_account")}
-                </Link>
-                <hr />
-                <div className="social-login-buttons">
-                  <button
-                    type="button"
-                    className="social-btn"
-                    onClick={loginWithGoogle}
-                  >
-                    <FaGoogle />
-                    Google
-                  </button>
-                  <button
-                    type="button"
-                    className="social-btn"
-                    onClick={loginWithApple}
-                  >
-                    <FaApple />
-                    Apple
-                  </button>
-                </div>
-              </div>
-            </form>
+  const renderErrorToast = () =>
+    showToast && (
+      <div className="my-custom-toast-wrapper">
+        <div className="my-custom-toast-box">
+          <div className="my-toast-content">
+            <span>Error: {errors.error}</span>
+            <button
+              className="my-toast-close"
+              onClick={() => setShowToast(false)}
+            >
+              ×
+            </button>
           </div>
         </div>
+      </div>
     );
+
+  const renderLoginTitle = () => (
+    <h2 className="title login-title">{t("login.form.button.login_in")}</h2>
+  );
+
+  const renderLoginFields = () => (
+    <>
+      {/* Email Field */}
+      <div className="form-group">
+        <input
+          type="email"
+          placeholder={t("common.email")}
+          className={`form-input ${errors.email ? "is-invalid" : ""}`}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        {errors.email && <IoAlertCircleOutline className="validation-icon" />}
+        {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+      </div>
+
+      {/* Password Field */}
+      <div className="form-group">
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder={t("common.password")}
+          className={`form-input ${errors.password ? "is-invalid" : ""}`}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {errors.password && (
+          <IoAlertCircleOutline className="validation-icon" />
+        )}
+        {errors.password && (
+          <div className="invalid-feedback">{errors.password}</div>
+        )}
+        {/* Password Toggle */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowPassword(!showPassword);
+          }}
+          className="password-toggle"
+        >
+          {showPassword ? (
+            <img src={eyeOpen} alt="Eye Icon" width="16" height="16" />
+          ) : (
+            <img src={eyeClose} alt="Eye Slash Icon" width="16" height="16" />
+          )}
+        </button>
+      </div>
+    </>
+  );
+
+  const renderFormActions = () => (
+    <>
+      <button
+        type="submit"
+        className="login-button"
+        // disabled={loginMutation.isLoading}
+      >
+        {t("login.form.button.login_in")}
+      </button>
+
+      <div className="login-links">
+        <Link to={"/forgot-password"} className="content forgot-password">
+          {t("login.forget_password")}
+        </Link>
+        <br />
+        <Link to={"/register"} className="content create-account">
+          {t("login.create_account")}
+        </Link>
+      </div>
+    </>
+  );
+
+  const renderSocialLoginButtons = () => (
+    <div className="social-login-buttons">
+      <button type="button" className="social-btn" onClick={loginWithGoogle}>
+        <FaGoogle />
+        Google
+      </button>
+      <button type="button" className="social-btn" onClick={loginWithApple}>
+        <FaApple />
+        Apple
+      </button>
+    </div>
+  );
+
+  const renderLoginForm = () => (
+    <form onSubmit={handleSubmit}>
+      {renderLoginFields()}
+      {renderFormActions()}
+      {renderSocialLoginButtons()}
+    </form>
+  );
+
+  return (
+    <div className="login-container">
+      {renderErrorToast()}
+      <div className="login-box">
+        {renderLoginTitle()}
+        {renderLoginForm()}
+      </div>
+    </div>
+  );
 };
 
 export default UserLogin;

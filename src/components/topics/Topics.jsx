@@ -67,24 +67,33 @@ const Topics = () => {
     setSearchParams("");
   };
 
+  const renderTopicsTitle = () => (
+    <h4 className="topics-title listtitle">
+      {parentId ? topicsData?.parent?.title : t("topic.expore")}
+    </h4>
+  );
+
   const renderTopicsList = () => {
     const filteredTopics = topicsList.topics.filter((topic) => {
       if (searchFilter) {
-        return topic.title.toLowerCase().startsWith(searchFilter.toLowerCase())
+        return topic.title.toLowerCase().startsWith(searchFilter.toLowerCase());
       }
       return true;
     });
 
-
     return (
-      ((searchMode.isDeepSearch && searchFilter) || !searchMode.isDeepSearch) && (
+      ((searchMode.isDeepSearch && searchFilter) ||
+        !searchMode.isDeepSearch) && (
         <>
-        <div className="topics-list-wrapper">
+          <div className="topics-list-wrapper">
             {filteredTopics.length > 0 ? (
               filteredTopics.map((topic, index) => (
                 <div key={index}>
                   <div className="topic-card">
-                    <button className="topic-button listtitle" onClick={() => handleTopicClick(topic)}>
+                    <button
+                      className="topic-button listtitle"
+                      onClick={() => handleTopicClick(topic)}
+                    >
                       {topic.title}
                     </button>
                   </div>
@@ -96,84 +105,103 @@ const Topics = () => {
               </div>
             )}
           </div>
-          {filteredTopics.length > 0 && <div className="pagination-container">
-            <PaginationComponent
-            pagination={pagination}
-            totalPages={totalPages}
-            handlePageChange={handlePageChange}
-            setPagination={setPagination}
-          /></div>}
+          {filteredTopics.length > 0 && (
+            <div className="pagination-container">
+              <PaginationComponent
+                pagination={pagination}
+                totalPages={totalPages}
+                handlePageChange={handlePageChange}
+                setPagination={setPagination}
+              />
+            </div>
+          )}
         </>
       )
     );
   };
 
-  const renderSearchBar = () => {
-    return (
-      <div className="search-container">
-        {searchMode.isDeepSearch ? (
-          <>
-            <input
-              type="text"
-              placeholder="Search topics..."
-              value={searchFilter}
-              onChange={(e) => setSearchFilter(e.target.value)}
-              className="search-input"
-            />
-            <div className="alphabet-filter">
-              {cleanAlphabetArray.map((letter, index) => (
-                <button
-                  key={index}
-                  className={`alphabet-button listsubtitle ${searchFilter === letter ? "active" : ""}`}
-                  onClick={() => setSearchFilter(letter)}
-                >
-                  {letter}
-                </button>
-              ))}
-              <button className="clear-letter-click" onClick={() => setSearchFilter("")}>
-                {t("topic.clear")}
-              </button>
-            </div>
-            <button
-              className="back-button"
-              onClick={() => {
-                setSearchMode({ isDeepSearch: false, hierarchy: true });
-                setSearchFilter("");
-                setSearchParams("");
-              }}
-            >
-              Back
-            </button>
-          </>
-        ) : (
-          <div className="deep-search-container">
-            <button className="deep-search-button" onClick={onDeepSearchButtonClick}>
-              {t("topic.a_to_z")}
-            </button>
-            <p>{t("topic.browse_topic")}</p>
-          </div>
-        )}
+  const renderDeepSearchInterface = () => (
+    <>
+      <input
+        type="text"
+        placeholder="Search topics..."
+        value={searchFilter}
+        onChange={(e) => setSearchFilter(e.target.value)}
+        className="search-input"
+      />
+      <div className="alphabet-filter">
+        {cleanAlphabetArray.map((letter, index) => (
+          <button
+            key={index}
+            className={`alphabet-button listsubtitle ${
+              searchFilter === letter ? "active" : ""
+            }`}
+            onClick={() => setSearchFilter(letter)}
+          >
+            {letter}
+          </button>
+        ))}
+        <button
+          className="clear-letter-click"
+          onClick={() => setSearchFilter("")}
+        >
+          {t("topic.clear")}
+        </button>
       </div>
-    );
-  };
+      <button
+        className="back-button"
+        onClick={() => {
+          setSearchMode({ isDeepSearch: false, hierarchy: true });
+          setSearchFilter("");
+          setSearchParams("");
+        }}
+      >
+        Back
+      </button>
+    </>
+  );
 
+  const renderDefaultSearchInterface = () => (
+    <div className="deep-search-container">
+      <button className="deep-search-button" onClick={onDeepSearchButtonClick}>
+        {t("topic.a_to_z")}
+      </button>
+      <p>{t("topic.browse_topic")}</p>
+    </div>
+  );
+
+  const renderSearchBar = () => (
+    <div className="search-container">
+      {searchMode.isDeepSearch
+        ? renderDeepSearchInterface()
+        : renderDefaultSearchInterface()}
+    </div>
+  );
+
+  const renderTopicsListSection = () => (
+    <div className="topics-list">
+      {renderTopicsTitle()}
+      {renderSearchBar()}
+      {isLoading ? <p>Loading topics...</p> : renderTopicsList()}
+    </div>
+  );
+
+  const renderTopicInfoSection = () => (
+    <div className="topic-info">
+      <div className="topic-info-card">
+        <div className="topic-info-card-body">
+          <h5>Topic Information</h5>
+          <p>Details about the selected topic will be displayed here.</p>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="topics-container">
       <div className="topics-wrapper">
-        <div className="topics-list">
-          <h4 className="topics-title listtitle">{parentId ? topicsData?.parent?.title : t("topic.expore")}</h4>
-          {renderSearchBar()}
-          {isLoading ? <p>Loading topics...</p> : renderTopicsList()}
-        </div>
-        <div className="topic-info">
-          <div className="topic-info-card">
-            <div className="topic-info-card-body">
-              <h5>Topic Information</h5>
-              <p>Details about the selected topic will be displayed here.</p>
-            </div>
-          </div>
-        </div>
+        {renderTopicsListSection()}
+        {renderTopicInfoSection()}
       </div>
     </div>
   );

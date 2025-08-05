@@ -116,123 +116,158 @@ const UserProfile = () => {
     );
   };
 
+  const renderProfileLeftSection = () => (
+    <div className="profile-left">
+      {/* Basic Info */}
+      <h2 className="profile-name">
+        {userInfo?.firstname + " " + userInfo?.lastname}
+      </h2>
+      <p className="profile-job-title">{userInfo?.title}</p>
+      {/* Profile Details */}
+      <p className="profile-details">
+        {userInfo?.location && (
+          <>
+            <span className="location">{userInfo?.location}</span>{" "}
+            <span className="separator">·</span>
+          </>
+        )}
+        {userInfo?.educations?.length ? (
+          <>
+            <span className="degree">
+              {userInfo.educations.reduce((acc, curr) => acc + " " + curr)}
+            </span>{" "}
+            <span className="separator">·</span>
+          </>
+        ) : (
+          <></>
+        )}
+      </p>
+      {/* Action Buttons */}
+      <div className="actions-row">
+        <button className="edit-profile-btn" onClick={handleEditProfile}>
+          {t("profile.edit_profile")}
+        </button>
+        <button className="settings-btn">
+          <span className="icon">⚙️</span> {t("profile.setting")}
+        </button>
+        <button onClick={handleLogout} className="logout-text">
+          {t("profile.log_out")}
+        </button>
+      </div>
+      {/* Followers Info */}
+      <div className="followers">
+        <span className="number-followers">
+          {userInfo?.followers} {t("common.followers")}
+        </span>
+        <span className="number-following">
+          {userInfo?.following} {t("common.following")}
+        </span>
+      </div>
+      {/* Social Links */}
+      {userInfo?.social_profiles?.length > 0 &&
+        renderSocialLinks(userInfo?.social_profiles)}
+    </div>
+  );
+
+  const renderProfileRightSection = () => (
+    <div className="profile-right">
+      <div className="profile-picture">
+        {userInfo?.avatar_url ? (
+          <div className="profile-image-container">
+            <img
+              src={userInfo.avatar_url}
+              alt="Profile"
+              className="profile-image"
+            />
+            <div className="edit-overlay" data-testid="edit-overlay">
+              <FaEdit onClick={handleEditImageClick} />
+            </div>
+          </div>
+        ) : (
+          <button className="add-picture-btn" onClick={handleEditImageClick}>
+            {t("profile.picture.add_picture")}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderSection1 = () => (
+    <div className="section1">
+      {renderProfileLeftSection()}
+      {renderProfileRightSection()}
+    </div>
+  );
+
+  const renderNavTabs = () => (
+    <div className="nav-tabs">
+      <button
+        className={`nav-link ${activeTab === "sheets" ? "active" : ""}`}
+        onClick={() => handleTabClick("sheets")}
+      >
+        <BsFileEarmark />
+        {t("profile.tab.sheets")}
+      </button>
+      <button
+        className={`nav-link ${activeTab === "collections" ? "active" : ""}`}
+        onClick={() => handleTabClick("collections")}
+      >
+        <BsStack />
+        {t("profile.tab.collection")}
+      </button>
+      <button
+        className={`nav-link ${activeTab === "notes" ? "active" : ""}`}
+        onClick={() => handleTabClick("notes")}
+      >
+        <BsPencil /> {t("user_profile.notes")}
+      </button>
+      <button
+        className={`nav-link ${activeTab === "tracker" ? "active" : ""}`}
+        onClick={() => handleTabClick("tracker")}
+      >
+        <BsReception4 />
+        {t("profile.buddhish_text_tracker")}
+      </button>
+    </div>
+  );
+
+  const renderSection2 = () => (
+    <div className="section2 listtitle">
+      <div className="tabs-container">
+        {renderNavTabs()}
+        <div className="tab-content">{renderTabContent()}</div>
+      </div>
+    </div>
+  );
+
+  const renderProfileContent = () => (
+    <div className="user-profile listtitle">
+      <div className="pecha-user-profile">
+        {renderSection1()}
+        {renderSection2()}
+      </div>
+    </div>
+  );
+
+  const renderImageUploadModal = () =>
+    isImageUploadModalOpen &&
+    createPortal(
+      <ImageUploadModal
+        onClose={handleCloseImageUploadModal}
+        onUpload={handleImageUpload}
+        isCameFromProfile={true}
+      />,
+      document.body
+    );
+
   return (
     <>
       {!userInfoIsLoading ? (
-        <div className="user-profile listtitle">
-          <div className="pecha-user-profile">
-            <div className="section1">
-              <div className="profile-left">
-                <h2 className="profile-name">
-                  {userInfo?.firstname + " " + userInfo?.lastname}
-                </h2>
-                <p className="profile-job-title">{userInfo?.title}</p>
-                <p className="profile-details">
-                  {userInfo?.location && (
-                    <>
-                      <span className="location">{userInfo?.location}</span>{" "}
-                      <span className="separator">·</span>
-                    </>
-                  )}
-                  {userInfo?.educations?.length ? (
-                    <>
-                      <span className="degree">
-                        {userInfo.educations.reduce(
-                          (acc, curr) => acc + " " + curr
-                        )}
-                      </span>{" "}
-                      <span className="separator">·</span>
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                </p>
-                <div className="actions-row">
-                  <button
-                    className="edit-profile-btn"
-                    onClick={handleEditProfile}
-                  >
-                    {t("profile.edit_profile")}
-                  </button>
-                  <button className="settings-btn">
-                    <span className="icon">⚙️</span> {t("profile.setting")}
-                  </button>
-                  <button onClick={handleLogout} className="logout-text">
-                    {t("profile.log_out")}
-                  </button>
-                </div>
-                <div className="followers">
-                  <span className="number-followers">
-                    {userInfo?.followers} {t("common.followers")}
-                  </span>
-                  <span className="number-following">
-                    {userInfo?.following} {t("common.following")}
-                  </span>
-                </div>
-                {userInfo?.social_profiles?.length > 0 &&
-                  renderSocialLinks(userInfo?.social_profiles)}
-              </div>
-              <div className="profile-right">
-                <div className="profile-picture">
-                  {userInfo?.avatar_url ? (
-                    <div className="profile-image-container">
-                      <img
-                        src={userInfo.avatar_url}
-                        alt="Profile"
-                        className="profile-image"
-                      />
-                      <div className="edit-overlay" data-testid="edit-overlay">
-                        <FaEdit onClick={handleEditImageClick} />
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      className="add-picture-btn"
-                      onClick={handleEditImageClick}
-                    >
-                      {t("profile.picture.add_picture")}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="section2 listtitle">
-              <div className="tabs-container">
-                <div className="nav-tabs">
-                  <button className={`nav-link ${ activeTab === "sheets" ? "active" : "" }`} onClick={() => handleTabClick("sheets")}>
-                    <BsFileEarmark />
-                    {t("profile.tab.sheets")}
-                  </button>
-                  <button className={`nav-link ${ activeTab === "collections" ? "active" : "" }`} onClick={() => handleTabClick("collections")}>
-                    <BsStack />
-                    {t("profile.tab.collection")}
-                  </button>
-                  <button className={`nav-link ${ activeTab === "notes" ? "active" : "" }`} onClick={() => handleTabClick("notes")}>
-                    <BsPencil /> {t("user_profile.notes")}
-                  </button>
-                  <button className={`nav-link ${ activeTab === "tracker" ? "active" : "" }`} onClick={() => handleTabClick("tracker")}>
-                    <BsReception4 />
-                    {t("profile.buddhish_text_tracker")}
-                  </button>
-                </div>
-                <div className="tab-content">{renderTabContent()}</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        renderProfileContent()
       ) : (
         <p className="listsubtitle">{t("common.loading")}</p>
       )}
-      {isImageUploadModalOpen &&
-        createPortal(
-          <ImageUploadModal
-            onClose={handleCloseImageUploadModal}
-            onUpload={handleImageUpload}
-            isCameFromProfile={true}
-          />,
-          document.body
-        )}
+      {renderImageUploadModal()}
     </>
   );
 };
