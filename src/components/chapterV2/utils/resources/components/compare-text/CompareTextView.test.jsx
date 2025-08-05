@@ -135,4 +135,41 @@ describe("CompareTextView Component Rendering Tests", () => {
     fireEvent.click(closeIcon);
     expect(mockProps.setIsCompareTextView).toHaveBeenCalledWith("main");
   });
+
+  test("Should navigate from collections to subcollections, then return when clicking the panel close icon", () => {
+    const mockSubCollectionsData = {
+      collections: [
+        { id: "subCol1", title: "Subcollection 1" }
+      ]
+    };
+    
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
+      if (queryKey[0] === "collections") {
+        return {
+          data: mockCollectionsData,
+          isLoading: false,
+          error: null
+        };
+      } else if (queryKey[0] === "sub-collections") {
+        return {
+          data: mockSubCollectionsData,
+          isLoading: false,
+          error: null
+        };
+      }
+      return { data: null, isLoading: false, error: null };
+    });
+    
+    const { container } = setup();
+    
+    const collectionButton = screen.getByText("Collection 1");
+    fireEvent.click(collectionButton);
+    
+    expect(screen.getByText("Subcollection 1")).toBeInTheDocument();
+    
+    const closeIcon = container.querySelector(".close-icon");
+    fireEvent.click(closeIcon);
+    
+    expect(mockProps.setIsCompareTextView).toHaveBeenCalledWith("main");
+  });
 });
