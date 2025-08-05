@@ -9,10 +9,10 @@ import {Link, useParams, useSearchParams} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
-
-export const fetchTableOfContents = async (textId, skip, limit) => {
+export const fetchTableOfContents = async (textId, skip, limit, languageFromContent = null) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
+  const fallbackLanguage = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
+  const language = languageFromContent || fallbackLanguage;
   const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/contents`, {
     params: {
       language,

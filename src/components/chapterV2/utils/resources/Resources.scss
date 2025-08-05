@@ -45,7 +45,7 @@
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 
-    .textgreat{
+    .text-great{
       color: #828282;
       border-bottom: 1px solid #f0f0f0;
       background: none;
@@ -70,7 +70,7 @@
       border: none;
       width: 100%;
 
-      &:not(.textgreat):hover {
+      &:not(.text-great):hover {
         color: #7b7b7b;
         background-color: #f8f9fa;
       }
@@ -100,7 +100,7 @@
       }
 
     }
-    .textgreat {
+    .text-great {
       color: #828282;
       border-bottom: 1px solid #f0f0f0;
       margin-bottom: 12px;

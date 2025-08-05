@@ -1,6 +1,26 @@
+export const getFirstSegmentId = (sections) => {
+  if (!sections?.length) {
+    return null;
+  }
+  const [firstSection] = sections;
+  return (
+    getFirstSegmentId(firstSection.sections) ?? firstSection.segments?.[0]?.segment_id ?? null
+  );
+};
+
+export const getLastSegmentId = (sections) => {
+  if (!sections?.length) {
+    return null;
+  }
+  const lastSection = sections.at(-1);
+  return (
+    getLastSegmentId(lastSection.sections) ?? lastSection.segments?.at(-1)?.segment_id ?? null
+  );
+};
+
 export const getEarlyReturn = ({ isLoading, error, t }) => {
   if (isLoading) {
-    return <div className="notfound listtitle">{t("common.loading")}</div>;
+    return <div className="search-message">{t("common.loading")}</div>;
   }
 
   if (error) {
@@ -14,7 +34,11 @@ export const getEarlyReturn = ({ isLoading, error, t }) => {
   return null;
 };
 export const mapLanguageCode = (languageCode) => {
-  return languageCode === "bo-IN" ? "bo" : languageCode;
+  const languageMap={
+    "zh-Hans-CN": "zh",
+    "bo-IN": "bo",
+  }
+  return languageMap[languageCode]
 };
 export const getLanguageClass = (language) => {
   switch (language) {
@@ -30,132 +54,74 @@ export const getLanguageClass = (language) => {
       return "overalltext";
   }
 };
-export const checkSectionsForTranslation = (sections) => {
-  if (!sections || sections.length === 0) return false;
 
-  for (const section of sections) {
-    if (section.segments && section.segments.length > 0) {
-      for (const segment of section.segments) {
-        if (segment.translation && segment.translation.content) {
-          return true;
+export const mergeSections = (existingSections, newSections) => {
+  if (!existingSections || existingSections.length === 0) return newSections;
+  if (!newSections || newSections.length === 0) return existingSections;
+
+  const mergedSections = [...existingSections];
+  newSections.forEach(newSection => {
+    const existingIndex = mergedSections.findIndex(section => section.id === newSection.id);
+    if (existingIndex !== -1) {
+      const existingSection = mergedSections[existingIndex];
+      // Merge segments
+      const mergedSegments = [...(existingSection.segments || [])];
+      (newSection.segments || []).forEach(newSegment => {
+        if (!mergedSegments.some(segment => segment.segment_id === newSegment.segment_id)) {
+          mergedSegments.push(newSegment);
         }
-      }
-    }
-
-    if (section.sections && section.sections.length > 0) {
-      const hasTranslationInNestedSections = checkSectionsForTranslation(
-        section.sections
-      );
-      if (hasTranslationInNestedSections) return true;
-    }
-  }
-
-  return false;
-};
-export const findAndScrollToSegment = (
-  targetId,
-  setSelectedSegmentId,
-  currentChapter
-) => {
-  if (targetId) {
-    setSelectedSegmentId(targetId);
-  }
-
-  setTimeout(() => {
-    if (!currentChapter) return;
-
-    const targetContainer = document.querySelector(
-      `[data-chapter-id="${currentChapter.uniqueId}"]`
-    );
-
-    if (!targetContainer) return;
-
-    // Scenario 1: Scroll to segment
-    if (targetId) {
-      const segmentElement = targetContainer.querySelector(
-        `[data-segment-id="${targetId}"]`
-      );
-
-      if (segmentElement) {
-        const scrollContainer = targetContainer.querySelector(
-          ".tibetan-text-container"
-        );
-        if (scrollContainer) {
-          const elementTop =
-            segmentElement.offsetTop - scrollContainer.offsetTop;
-          scrollContainer.scrollTo({
-            top: elementTop - 50,
-            behavior: "smooth",
-          });
-        }
-        segmentElement.classList.add("highlighted-segment");
-        return;
-      }
-    }
-
-    // Scenario 2: Scroll to section
-    if (currentChapter.sectionId) {
-      const sectionElement = targetContainer.querySelector(
-        `[data-section-id="${currentChapter.sectionId}"]`
-      );
-
-      if (sectionElement) {
-        const scrollContainer = targetContainer.querySelector(
-          ".tibetan-text-container"
-        );
-        if (scrollContainer) {
-          const elementTop =
-            sectionElement.offsetTop - scrollContainer.offsetTop;
-          scrollContainer.scrollTo({
-            top: elementTop - 50,
-            behavior: "smooth",
-          });
-        }
-        sectionElement.classList.add("highlighted-segment");
-      }
-    }
-  }, 500);
-};
-export const findAndScrollToSection = (sectionId, currentChapter) => {
-  if (!sectionId || !currentChapter) return;
-
-  setTimeout(() => {
-    const targetContainer = document.querySelector(
-      `[data-chapter-id="${currentChapter.uniqueId}"]`
-    );
-
-    if (!targetContainer) {
-      return;
-    }
-
-    const scrollContainer = targetContainer.querySelector(
-      ".tibetan-text-container"
-    );
-    if (!scrollContainer) {
-      return;
-    }
-
-    let sectionElement = targetContainer.querySelector(`#section-${sectionId}`);
-
-    if (!sectionElement) {
-      const sectionElements = targetContainer.querySelectorAll(
-        `[data-section-id="${sectionId}"]`
-      );
-      if (sectionElements && sectionElements.length > 0) {
-        sectionElement = sectionElements[0];
-      }
-    }
-
-    if (sectionElement) {
-      const elementRect = sectionElement.getBoundingClientRect();
-      const containerRect = scrollContainer.getBoundingClientRect();
-      const relativeTop =
-        elementRect.top - containerRect.top + scrollContainer.scrollTop;
-
-      scrollContainer.scrollTo({
-        top: relativeTop - 50,
-        behavior: "smooth",
       });
+      // Merge nested sections recursively
+      const mergedNestedSections = mergeSections(existingSection.sections || [], newSection.sections || []);
+      mergedSections[existingIndex] = {
+        ...existingSection,
+        segments: mergedSegments,
+        sections: mergedNestedSections
+      };
+    } else {
+      mergedSections.push(newSection);
     }
-  }, 300);
+  });
+  return mergedSections;
+};
+
+export const getCurrentSectionFromScroll = (sections, containerRect, sectionRefs) => {
+  if (!sections || sections.length === 0) return null;
+
+  const flatSections = [];
+  const walk = (secs, depth = 0) => {
+    secs.forEach((sec) => {
+      flatSections.push({ sec, depth });
+      if (sec.sections && sec.sections.length > 0) {
+        walk(sec.sections, depth + 1);
+      }
+    });
+  };
+  walk(sections);
+
+  let candidateBelow = { id: null, dist: Infinity, depth: -1 };
+  let candidateAbove = { id: null, dist: Infinity, depth: -1 };
+
+  flatSections.forEach(({ sec, depth }) => {
+    const element = sectionRefs.current?.get(sec.id);
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    if (rect.bottom <= containerRect.top || rect.top >= containerRect.bottom) return;
+    const offsetFromTop = rect.top - containerRect.top; 
+    if (offsetFromTop >= 0) {
+      const isCloser = offsetFromTop < candidateBelow.dist;
+      const isSameDistButDeeper = offsetFromTop === candidateBelow.dist && depth > candidateBelow.depth;
+      if (isCloser || isSameDistButDeeper) {
+        candidateBelow = { id: sec.id, dist: offsetFromTop, depth };
+      }
+    } else {
+      const distance = Math.abs(offsetFromTop);
+      const isCloser = distance < candidateAbove.dist;
+      const isSameDistButDeeper = distance === candidateAbove.dist && depth > candidateAbove.depth;
+      if (isCloser || isSameDistButDeeper) {
+        candidateAbove = { id: sec.id, dist: distance, depth };
+      }
+    }
+  });
+  return candidateBelow.id ?? candidateAbove.id;
 };

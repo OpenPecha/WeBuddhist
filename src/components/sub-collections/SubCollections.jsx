@@ -10,7 +10,7 @@ import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 export const fetchSubCollections = async (parentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const { data } = await axiosInstance.get("/api/v1/terms", {
+  const { data } = await axiosInstance.get("/api/v1/collections", {
     params: {
       language,
       ...(parentId && { parent_id: parentId }),
@@ -51,6 +51,18 @@ const SubCollections = () => {
 
   // ----------------------------------- renderers ---------------------------------------
   const renderTitle = () =>  <h1 className="listtitle">{subCollectionsData?.parent?.title?.toUpperCase()}</h1>
+
+  const renderSubCollections = () => {
+
+    return <div className="sub-collections-list-container">
+      {subCollectionsData?.collections?.map((collection) =>
+        <Link key={collection.id} to={`/works/${collection.id}`} className="text-item overalltext sub-collection">
+          <div className="divider"></div>
+          <p>{collection.title}</p>
+        </Link>
+      )}
+    </div>
+  }
 
   const renderAboutSection = () => {
     const subCollectionTitle = subCollectionsData?.parent?.title

@@ -44,8 +44,8 @@ vi.mock("../../utils/constants.js", () => ({
 
 describe("Collections Component", () => {
   const queryClient = new QueryClient();
-  const mockTermsData = {
-    terms: [
+  const mockCollectionsData = {
+    collections: [
       { title: "content.title.words_of_buddha", description: "content.subtitle.words_of_buddha" },
       { title: "content.title.liturgy", description: "content.subtitle.prayers_rutuals" },
       { title: "content.title.Buddhavacana", description: "content.subtitle.buddhavacana" },
@@ -59,7 +59,7 @@ describe("Collections Component", () => {
     vi.resetAllMocks();
     useParams.mockReturnValue({ id: null });
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: mockTermsData,
+      data: mockCollectionsData,
       isLoading: false,
     }));
     vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
@@ -140,9 +140,9 @@ describe("Collections Component", () => {
     });
   });
 
-  test("renders correct number of terms from data", () => {
-    const customTermsData = {
-      terms: [
+  test("renders correct number of collections from data", () => {
+    const customCollectionsData = {
+      collections: [
         { title: "Term 1", description: "Description 1" },
         { title: "Term 2", description: "Description 2" },
         { title: "Term 3", description: "Description 3" },
@@ -154,14 +154,14 @@ describe("Collections Component", () => {
     };
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: customTermsData,
+      data: customCollectionsData,
       isLoading: false,
     }));
 
     setup();
 
-    const termElements = document.querySelectorAll(".collections");
-    expect([...termElements].map(e => e.textContent)).toEqual(
+    const collectionElements = document.querySelectorAll(".collections");
+    expect([...collectionElements].map(e => e.textContent)).toEqual(
       expect.arrayContaining([
         "Term 1Description 1",
         "Term 2Description 2",
@@ -186,7 +186,7 @@ describe("Collections Component", () => {
 
 
     isLoadingValue = false;
-    dataValue = mockTermsData;
+    dataValue = mockCollectionsData;
 
     rerender(
       <Router>
@@ -218,10 +218,10 @@ describe("Collections Component", () => {
 
   test("fetches term with correct parameters", async () => {
     vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en");
-    axiosInstance.get.mockResolvedValueOnce({ data: mockTermsData });
+    axiosInstance.get.mockResolvedValueOnce({ data: mockCollectionsData });
 
     const result = await fetchCollections();
-    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/terms", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/collections", {
       params: {
         language: "en",
         limit: 10,
@@ -229,6 +229,6 @@ describe("Collections Component", () => {
       }
     });
 
-    expect(result).toEqual(mockTermsData);
+    expect(result).toEqual(mockCollectionsData);
   });
 });

@@ -3,7 +3,7 @@ import { useParams,useNavigate, useSearchParams } from 'react-router-dom';
 import pechaIcon from '../../../assets/icons/pecha_icon.png';
 import './SheetDetailPage.scss';
 import YouTube from 'react-youtube';
-import { FiEdit, FiTrash, FiEye, FiShare, FiPrinter } from "react-icons/fi";
+import { FiEdit, FiTrash, FiEye, FiPrinter } from "react-icons/fi";
 import { usePanelContext, PanelProvider } from '../../../context/PanelContext';
 import { extractSpotifyInfo } from '../sheet-utils/Constant';
 import axiosInstance from '../../../config/axios-config';
@@ -12,6 +12,7 @@ import { useTranslate } from '@tolgee/react';
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import Resources from "../../chapterV2/utils/resources/Resources.jsx";
 import { SheetDeleteModal } from '../local-components/modals/sheet-delete-modal/SheetDeleteModal';
+import SheetShare from '../local-components/sheet-share/sheetShare';
 
 export const getUserInfo=async()=>{
   const {data}=await axiosInstance.get(`/api/v1/users/info`,{
@@ -217,7 +218,7 @@ const SheetDetailPage = () => {
         </div>
         <div className="view-toolbar-item">
           <FiPrinter onClick={() => window.print()}/>
-          <FiShare/>
+          <SheetShare />         
           {sheetData.publisher.email === userInfo?.email && (
             <>
           <FiEdit onClick={()=>{

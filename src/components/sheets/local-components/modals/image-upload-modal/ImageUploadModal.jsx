@@ -55,8 +55,8 @@ const ImageUploadModal = ({ onClose, onUpload, isCameFromProfile = false }) => {
         onUpload(data, file.name);
       } else {
         data = await UploadImageToS3(file, sheetId);
-        if (data && data.url) {
-          onUpload(data.url, file.name);
+        if (data?.url) {
+          onUpload(data, file.name);
         }
       }
     } catch (error) {

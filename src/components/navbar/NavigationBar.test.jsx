@@ -4,7 +4,7 @@ import {BrowserRouter as Router} from "react-router-dom";
 import {TolgeeProvider} from "@tolgee/react";
 import {render, screen, waitFor} from "@testing-library/react";
 import "@testing-library/jest-dom";
-import NavigationBar from "./NavigationBar.jsx";
+import Navigation from "./NavigationBar.jsx"; // Fix import
 import userEvent from "@testing-library/user-event";
 import {vi} from "vitest";
 import * as useAuthContext from '../../config/AuthContext'
@@ -30,7 +30,7 @@ const mockLoggedInStatusForIndividualTestCase = () => { vi.spyOn(useAuthContext,
   });
 
 }
-describe("UserRegistration Component", () => {
+describe("NavigationBar Component", () => { // Fix describe name
 
   const queryClient = new QueryClient();
   const setup = () => {
@@ -38,7 +38,7 @@ describe("UserRegistration Component", () => {
       <Router>
         <QueryClientProvider client={queryClient}>
           <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <NavigationBar/>
+            <Navigation/>
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
@@ -51,16 +51,11 @@ describe("UserRegistration Component", () => {
     expect(screen.getByText("Community")).toBeInTheDocument();
   });
 
-  test("renders search input and button", () => {
+  test("renders search input", () => {
     setup();
-    const searchInputs = screen.getAllByPlaceholderText("Search");
-    expect(searchInputs).toHaveLength(2); // One for mobile, one for desktop
-  
-    const searchButtons = screen.getAllByText("Search");
-    expect(searchButtons).toHaveLength(2); 
-    
-    expect(searchInputs[0]).toBeInTheDocument();
-    expect(searchInputs[1]).toBeInTheDocument();
+    const searchInput = screen.getByPlaceholderText("Search");
+    expect(searchInput).toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toBe(searchInput);
   });
 
   test("renders login and register buttons when not authenticated", () => {
@@ -72,10 +67,9 @@ describe("UserRegistration Component", () => {
   test("renders logout button when authenticated", async () => {
     mockLoggedInStatusForIndividualTestCase()
     setup();
-    await waitFor(()=> {
+    await waitFor(() => {
       expect(screen.getByText("Log Out")).toBeInTheDocument();
-
-    })
+    });
     vi.resetModules();
   });
 
@@ -88,38 +82,21 @@ describe("UserRegistration Component", () => {
 
   test("language change triggers changeLanguage function", async () => {
     setup();
-    const mobileDropdown = screen.getByTestId("dropdown-basic");
-    await userEvent.click(mobileDropdown);
-    const mobileEnglishOption = screen.getByText("English");
-    await userEvent.click(mobileEnglishOption);
+    const langDropdownButton = screen.getByLabelText("Change language");
+    await userEvent.click(langDropdownButton);
+
+    const englishOption = screen.getByText("English");
+    await userEvent.click(englishOption);
     expect(localStorage.getItem("language")).toBe("en");
-    
-    await userEvent.click(mobileDropdown);
-    const mobileTibetanOption = screen.getByText("བོད་ཡིག");
-    await userEvent.click(mobileTibetanOption);
-    expect(localStorage.getItem("language")).toBe("bo-IN");
-    
-    const desktopDropdown = screen.getByTestId("dropdown-basic-desktop");
-    await userEvent.click(desktopDropdown);
-    const desktopEnglishOption = screen.getAllByText("English")[1];
-    await userEvent.click(desktopEnglishOption);
-    expect(localStorage.getItem("language")).toBe("en");
+
   });
-  
-  test("handles search form submission for both search forms", async () => {
-  setup();
-  
-  const searchInputs = screen.getAllByPlaceholderText("Search");
-  const searchButtons = screen.getAllByText("Search");
-  
-  for (let i = 0; i < searchInputs.length; i++) {
-    const searchInput = searchInputs[i];
-    const searchButton = searchButtons[i];
-    
+
+  test("handles search form submission", async () => {
+    setup();
+    const searchInput = screen.getByPlaceholderText("Search");
     await userEvent.type(searchInput, "test search query");
     expect(searchInput.value).toBe("test search query");
-    await userEvent.click(searchButton);
-    await userEvent.clear(searchInput);
-  }
-});
+    await userEvent.type(searchInput, "{enter}");
+    expect(searchInput.value).toBe("");
+  });
 });

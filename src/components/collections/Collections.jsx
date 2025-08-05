@@ -11,7 +11,7 @@ import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 export const fetchCollections = async () => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const {data} = await axiosInstance.get("api/v1/terms", {
+  const {data} = await axiosInstance.get("api/v1/collections", {
     params: {
       language,
       limit: 10,
@@ -63,6 +63,27 @@ const Collections = () => {
         <Button className="listtitle explore-collections-button">
           {t("side_nav.explore_collections")}
         </Button>
+      </div>
+    );
+  };
+
+  const renderCollections = () => {
+    const renderCollectionNames = (collection) => {
+      return collection.has_child ?
+        <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
+          {collection.title}
+        </Link> :
+        collection.title
+    }
+    return (
+      <div className="collections-list-container">
+        {collectionsData?.collections.map((collection, index) => (
+          <div className="collections" key={collection.id}>
+            <div className={"red-line"}></div>
+              {renderCollectionNames(collection)}
+              <p className="content collections-description">{collection.description}</p>
+          </div>
+        ))}
       </div>
     );
   };

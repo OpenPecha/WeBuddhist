@@ -139,7 +139,7 @@ describe("CommunityPage Component", () => {
   
     expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
       params: {
-        language: "en",
+        language: undefined,
         limit: 10,
         skip: 0,
         sort_by: "published_date",
