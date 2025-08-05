@@ -22,7 +22,7 @@ const renderCollections = (collectionsData, t, showDescriptions = true, setSelec
   }
   return (
     <div className="collections-list-container">
-      {collectionsData?.terms.map((term, index) => (
+      {collectionsData?.collections.map((term, index) => (
         <div className="collections" key={term.id}>
           <div className={"red-line"}></div>
             {renderCollectionNames(term)}
@@ -195,7 +195,7 @@ const CompareTextView = ({ setIsCompareTextView }) => {
     return (
       <div className="selected-collection-content">
         <h1 className="listtitle"></h1>
-        {earlyReturn || renderSubCollectionsTerms(subCollectionsData?.terms || [], (term) => {
+        {earlyReturn || renderSubCollectionsTerms(subCollectionsData?.collections || [], (term) => {
           setSelectedTerm(term);
           setTermView(true);
         })}

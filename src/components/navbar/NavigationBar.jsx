@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FaGlobe, FaSearch } from "react-icons/fa";
-import { LuEyeClosed, LuEye} from "react-icons/lu";
+import { LuEyeOff, LuEye} from "react-icons/lu";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
@@ -193,7 +193,7 @@ const renderAuthButtons = () => {
                 className="mobile-menu-trigger"
                 onClick={handleMobileMenuToggle}
               >
-                {!isMobileMenuOpen ? <LuEyeClosed /> : <LuEye />}
+                {!isMobileMenuOpen ? <LuEyeOff /> : <LuEye />}
               </button>
           </div>
       </div>
