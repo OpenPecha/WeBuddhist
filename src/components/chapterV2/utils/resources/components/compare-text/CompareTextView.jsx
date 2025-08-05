@@ -2,15 +2,13 @@ import { IoMdClose } from "react-icons/io";
 import PropTypes from "prop-types";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
-import { GoLinkExternal } from "react-icons/go";
 import { fetchCollections } from "../../../../../../components/collections/Collections.jsx";
 import { fetchSubCollections } from "../../../../../../components/sub-collections/SubCollections.jsx";
 import { fetchTableOfContents, renderTabs } from "../../../../../../components/texts/Texts.jsx";
-import { getEarlyReturn, getLanguageClass, mapLanguageCode } from "../../../../../../utils/helperFunctions.jsx";
-import { renderRootTexts, renderCommentaryTexts, fetchWorks, useGroupedTexts } from "../../../../../../components/works/Works.jsx";
+import { getEarlyReturn, getLanguageClass } from "../../../../../../utils/helperFunctions.jsx";
+import { fetchWorks, useGroupedTexts } from "../../../../../../components/works/Works.jsx";
 import "./CompareTextView.scss";
 import { useState } from "react";
-import TableOfContents from "../../../../../../components/texts/table-of-contents/TableOfContents.jsx";
 import { usePanelContext } from "../../../../../../context/PanelContext.jsx";
 
 const renderCollections = (collectionsData, t, showDescriptions = true, setSelectedTitles, selectedTitles, setSelectedCollection) => {
@@ -200,19 +198,6 @@ const CompareTextView = ({ setIsCompareTextView, addChapter, currentChapter }) =
           t,
           selectedText?.id,
           handleContentItemClick
-        )}
-      </div>
-    );
-  };
-
-  const renderRootCommentaryView = () => {
-    return (
-      <div className="term-content">
-        {earlyReturn || (
-          <div className="term-body">
-            <div className="root-text-container">{renderRootTexts(rootTexts, t, getLanguageClass)}</div>
-            <div className="commentary-text-container">{renderCommentaryTexts(commentaryTexts, t, getLanguageClass)}</div>
-          </div>
         )}
       </div>
     );
