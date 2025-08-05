@@ -212,6 +212,8 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
         return (
           <CompareTextView
             setIsCompareTextView={setActiveView}
+            addChapter={addChapter}
+            currentChapter={currentChapter}
           />
         );
       default:

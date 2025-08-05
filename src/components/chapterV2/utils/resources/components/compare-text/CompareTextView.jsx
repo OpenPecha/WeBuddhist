@@ -2,6 +2,7 @@ import { IoMdClose } from "react-icons/io";
 import PropTypes from "prop-types";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
+import { GoLinkExternal } from "react-icons/go";
 import { fetchCollections } from "../../../../../../components/collections/Collections.jsx";
 import { fetchSubCollections } from "../../../../../../components/sub-collections/SubCollections.jsx";
 import { fetchTableOfContents, renderTabs } from "../../../../../../components/texts/Texts.jsx";
@@ -10,6 +11,7 @@ import { renderRootTexts, renderCommentaryTexts, fetchWorks, useGroupedTexts } f
 import "./CompareTextView.scss";
 import { useState } from "react";
 import TableOfContents from "../../../../../../components/texts/table-of-contents/TableOfContents.jsx";
+import { usePanelContext } from "../../../../../../context/PanelContext.jsx";
 
 const renderCollections = (collectionsData, t, showDescriptions = true, setSelectedTitles, selectedTitles, setSelectedCollection) => {
   const renderCollectionNames = (term) => {
@@ -117,8 +119,9 @@ const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass,
   );
 }
 
-const CompareTextView = ({ setIsCompareTextView }) => {
+const CompareTextView = ({ setIsCompareTextView, addChapter, currentChapter }) => {
   const { t } = useTranslate();
+  const { closeResourcesPanel } = usePanelContext();
   const [selectedTitles, setSelectedTitles] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [selectedTerm, setSelectedTerm] = useState(null);
@@ -163,7 +166,24 @@ const CompareTextView = ({ setIsCompareTextView }) => {
 
   const handleContentItemClick = (contentItem) => {
     setSelectedContentItem(contentItem);
-    console.log("hi");
+
+    if (selectedText && addChapter) {
+      const segmentId = contentItem.segments && contentItem.segments.length > 0 
+        ? contentItem.segments[0].segment_id 
+        : (contentItem.sections && contentItem.sections[0].segments && contentItem.sections[0].segments.length > 0 
+            ? contentItem.sections[0].segments[0].segment_id 
+            : null);
+                  
+      if (segmentId) {
+        addChapter({
+          textId: selectedText.id,
+          segmentId: segmentId,
+        }, currentChapter);
+        
+        closeResourcesPanel();
+        setIsCompareTextView("main");
+      }
+    }
   };
 
   const contentsVersionView = () => {
@@ -243,6 +263,8 @@ const CompareTextView = ({ setIsCompareTextView }) => {
 
 CompareTextView.propTypes = {
   setIsCompareTextView: PropTypes.func.isRequired,
+  addChapter: PropTypes.func,
+  currentChapter: PropTypes.object
 };
 
 export default CompareTextView;
