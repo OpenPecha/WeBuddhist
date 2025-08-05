@@ -234,7 +234,7 @@ const EditUserProfile = () => {
                     ))}
                     <button
                       type="button"
-                      className="btn btn-outline-dark btn-sm btn-add p-3"
+                      className="add-education-btn"
                       onClick={addEducation}
                     >
                       {t("edit_profile.line_add")}
@@ -297,13 +297,13 @@ const EditUserProfile = () => {
 
         <div className="form-buttons">
           <button
-            className="btn btn-cancel"
+            className="cancel-btn"
             type="button"
             onClick={() => navigate(-1)}
           >
             {t("common.button.cancel")}
           </button>
-          <button className="btn btn-submit" type="submit">
+          <button className="submit-btn" type="submit">
             {t("common.button.save")}
           </button>
         </div>

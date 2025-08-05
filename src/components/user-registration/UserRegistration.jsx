@@ -140,7 +140,6 @@ const UserRegistration = () => {
 
   return (
     <div className="register-container">
-      <div className="register-wrapper">
         <div className="register-box">
           <h2 className="title register-title" data-testid="signup-title">
             { t("common.sign_up") }
@@ -195,7 +194,7 @@ const UserRegistration = () => {
                 value={ password }
                 onChange={ (e) => setPassword(e.target.value) }
               />
-              {errors.password && <IoAlertCircleOutline className="validation-icon password-validation" />}
+              {errors.password && <IoAlertCircleOutline className="validation-icon" />}
               {errors.password && <div className="invalid-feedback">{errors.password}</div>}
 
               {/* Password Toggle Icon */ }
@@ -224,7 +223,7 @@ const UserRegistration = () => {
                 value={ confirmPassword }
                 onChange={ (e) => setConfirmPassword(e.target.value) }
               />
-              {errors.confirmPassword && <IoAlertCircleOutline className="validation-icon password-validation" />}
+              {errors.confirmPassword && <IoAlertCircleOutline className="validation-icon" />}
               {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
               {/* Password Toggle Icon */ }
               <button
@@ -279,7 +278,6 @@ const UserRegistration = () => {
             </div> }
           </form>
         </div>
-      </div>
     </div>
   );
 };

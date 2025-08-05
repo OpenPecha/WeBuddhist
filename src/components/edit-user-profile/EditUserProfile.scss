@@ -1,17 +1,17 @@
-$h2-color:#333;
-$shadow-color:rgba(0, 0, 0, 0.1);
-$nav-color:#555;
-$primary-color:#C39F48;
-$primary-dark-color:#ba9439;
-$white-color:white;
-$form-border-color:#ced4da;
-$button-outline-dark-color:#343a40;
-$secondary-color:grey;
-$secondary-dark-color:darkgrey;
-$dark:black;
-$removeicon:#4d5154;
+$h2-color: #333;
+$shadow-color: rgba(0, 0, 0, 0.1);
+$nav-color: #555;
+$primary-color: #C39F48;
+$primary-dark-color: #ba9439;
+$white-color: white;
+$form-border-color: #ced4da;
+$button-outline-dark-color: #343a40;
+$secondary-color: grey;
+$secondary-dark-color: darkgrey;
+$dark: black;
+$removeicon: #4d5154;
 
-.textalign{
+.textalign {
   text-align: left;
 }
 
@@ -76,7 +76,7 @@ $removeicon:#4d5154;
   }
 
   .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 
     label {
       display: block;
@@ -94,10 +94,6 @@ $removeicon:#4d5154;
     box-sizing: border-box;
   }
 
-  .p-3 {
-    padding: 1rem !important;
-  }
-
   .form-buttons {
     display: flex;
     justify-content: flex-start;
@@ -106,43 +102,55 @@ $removeicon:#4d5154;
     margin-left: 0.8rem;
   }
 
-  .btn {
+  .add-education-btn {
+    background: transparent;
+    border: 1px solid $button-outline-dark-color;
+    color: $button-outline-dark-color;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 0.5rem;
+
+    &:hover {
+      background-color: $button-outline-dark-color;
+      color: $white-color;
+    }
+  }
+
+  .cancel-btn {
+    background-color: $secondary-color;
+    border: none;
+    color: $white-color;
     padding: 12px 20px;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
-
-    &.btn-outline-dark {
-      background: transparent;
-      border: 1px solid $button-outline-dark-color;
-      color: $button-outline-dark-color;
-
-      &:hover {
-        background-color: $button-outline-dark-color;
-        color: $white-color;
-      }
-    }
-
-    &.btn-cancel {
-      background-color: $secondary-color;
-      border: none;
+    font-size: 16px;
+    &:hover {
+      background-color: $secondary-dark-color;
       color: $white-color;
-
-      &:hover {
-        background-color: $secondary-dark-color;
-        color: $white-color;
-      }
     }
+  }
 
-    &.btn-submit {
-      background-color: $primary-color;
-      border: none;
+  .submit-btn {
+    background-color: $primary-color;
+    border: none;
+    color: $white-color;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+
+    &:hover {
+      background-color: $primary-dark-color;
       color: $white-color;
-
-      &:hover {
-        background-color: $primary-dark-color;
-        color: $white-color;
-      }
     }
   }
 
@@ -150,21 +158,8 @@ $removeicon:#4d5154;
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding-bottom: 1rem;
+    padding-bottom: 0.5rem;
     position: relative;
-
-    .btn-add {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 14px;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 0.5rem;
-    }
 
     .remove-icon {
       position: absolute;
@@ -184,8 +179,12 @@ $removeicon:#4d5154;
     }
   }
 
-  .tab-panel .row .col{
-    min-width: calc(50% - 0.5rem);
+  .tab-panel {
+    .row {
+      .col {
+        min-width: calc(50% - 0.5rem);
+      }
+    }
   }
 
   @media (max-width: 1024px) {
@@ -215,7 +214,8 @@ $removeicon:#4d5154;
       justify-content: center;
       margin-left: 0;
 
-      button {
+      .cancel-btn,
+      .submit-btn {
         flex: 1;
         max-width: 200px;
       }
@@ -232,18 +232,15 @@ $removeicon:#4d5154;
         padding: 0.75rem 1rem;
       }
     }
-
-    .form-education {
-      .btn-add {
-        width: auto;
-        font-size: 14px;
-      }
-    }
   }
 
   @media (max-width: 480px) {
     margin: 1rem;
-    padding: 1rem;
+    padding: 0.5rem;
+
+    .row {
+      padding: 0.25rem 0;
+    }
 
     h2 {
       font-size: 1.3rem;
@@ -256,16 +253,13 @@ $removeicon:#4d5154;
       gap: 0.5rem;
       margin-left: 0;
 
-      button {
+      .cancel-btn,
+      .submit-btn {
         width: 100%;
         max-width: none;
+        font-size: 1rem;
+        padding: 0.75rem;
       }
-    }
-
-    .btn-submit,
-    .btn-cancel {
-      font-size: 1rem;
-      padding: 0.75rem;
     }
 
     .nav-tabs {
@@ -281,15 +275,15 @@ $removeicon:#4d5154;
     }
 
     .form-group {
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
 
     .form-control {
       padding: 0.5rem;
     }
 
-    .p-3 {
-      padding: 0.5rem !important;
+    .add-education-btn {
+      padding: 0.5rem;
     }
   }
 }

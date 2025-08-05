@@ -16,13 +16,6 @@ $black-color: black;
   position: relative;
 }
 
-.login-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
 .login-box {
   background: $white-color;
   padding: 2rem;
@@ -109,7 +102,6 @@ $black-color: black;
 
   .login-links {
     text-align: center;
-    margin-top: 0;
 
     .forgot-password,
     .create-account {
@@ -142,7 +134,6 @@ $black-color: black;
       &:hover {
         background-color: $background-color;
         border-color: $dark-grey;
-        color: $dark-grey;
       }
 
       &:focus {

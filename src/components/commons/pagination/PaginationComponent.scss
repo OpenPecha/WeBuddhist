@@ -58,7 +58,7 @@ $transition-speed: 0.2s;
       padding: 6px 24px 6px 8px;
       width: 100%;
       border: 1px solid #ddd;
-      border-radius: 6px;
+      border-radius: $border-radius;
       background-color: white;
       cursor: pointer;
       -webkit-appearance: none;
@@ -68,7 +68,6 @@ $transition-speed: 0.2s;
 
       &:hover {
         border-color: $primary-color;
-        box-shadow: none;
       }
 
       &:focus {
@@ -85,17 +84,4 @@ $transition-speed: 0.2s;
       pointer-events: none;
     }
   }
-
-  .form-group select:focus option:checked {
-    background-color: $primary-color;
-    color: white;
-
-  }
-
-  .form-group select:focus option:hover {
-    background-color: $primary-color;
-    color: white;
-  }
-
-
 }

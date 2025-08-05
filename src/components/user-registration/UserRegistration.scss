@@ -17,13 +17,6 @@ $error-color: red;
   align-items: center;
 }
 
-.register-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
 .register-box {
   background: $white-color;
   padding: 2rem;
@@ -66,10 +59,6 @@ $error-color: red;
     right: 8px;
     transform: translateY(-50%);
     color: $error-color;
-    &.password-validation {
-      top: 35%;
-      right: 8px;
-    }
   }
 
   .password-toggle {
@@ -104,8 +93,6 @@ $error-color: red;
   }
 
   .register-links {
-    margin-top: 0;
-
     .login-link {
       color: black;
       text-decoration: none;

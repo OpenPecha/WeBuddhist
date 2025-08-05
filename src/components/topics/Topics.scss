@@ -30,8 +30,7 @@ $card-shadow: rgba(0, 0, 0, 0.1);
     }
 
     .topics-list-wrapper {
-      margin: 0 5.7rem;
-      margin-top: 0.5rem;
+      margin: 0.5rem 5.7rem 0;
       width: auto;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -76,9 +75,7 @@ $card-shadow: rgba(0, 0, 0, 0.1);
     }
 
     .pagination-container {
-      margin: 0;
-      margin-top: 0.5rem;
-      margin-left: 5.7rem;
+      margin: 0.5rem 0 0 5.7rem;
       display: flex;
       gap: 1rem;
       justify-content: flex-start;
@@ -253,16 +250,11 @@ $card-shadow: rgba(0, 0, 0, 0.1);
       }
 
       .topics-list-wrapper {
-        margin: 0 2rem;
-        margin-top: 0.5rem;
-        margin-bottom: 0;
+        margin: 0.5rem 2rem 0;
       }
 
       .pagination-container {
-        margin: 0;
-        margin-left: 2rem;
-        margin-top: 0.5rem;
-
+        margin: 0.5rem 0 0 2rem;
       }
     }
 
@@ -292,16 +284,12 @@ $card-shadow: rgba(0, 0, 0, 0.1);
       }
 
       .topics-list-wrapper {
-        margin: 0 1rem;
-        margin-top: 0.5rem;
-        margin-bottom: 0;
+        margin: 0.5rem 1rem 0;
         grid-template-columns: 1fr;
       }
       
       .pagination-container {
-        margin: 0;
-        margin-left: 1rem;
-        margin-top: 0.5rem;
+        margin: 0.5rem 0 0 1rem;
       }
     }
 

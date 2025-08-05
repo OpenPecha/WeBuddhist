@@ -82,6 +82,7 @@ const UserLogin = () => {
             setShowToast(false);
         } else {
             setErrors({});
+            setShowToast(false);
             loginMutation.mutate({email, password});
         }
     };
@@ -138,10 +139,9 @@ const UserLogin = () => {
               </div>
             </div>
           </div>
-        )}
-        <div className="login-wrapper">
+        )}  
           <div className="login-box">
-            <h2 className="title text-center login-title">
+            <h2 className="title login-title">
               {t("login.form.button.login_in")}
             </h2>
             <form onSubmit={handleSubmit}>
@@ -197,7 +197,7 @@ const UserLogin = () => {
               {/* Login Button */}
               <button
                 type="submit"
-                className="login-button w-100"
+                className="login-button"
                 // disabled={loginMutation.isLoading}
               >
                 {t("login.form.button.login_in")}
@@ -238,7 +238,6 @@ const UserLogin = () => {
             </form>
           </div>
         </div>
-      </div>
     );
 };
 
