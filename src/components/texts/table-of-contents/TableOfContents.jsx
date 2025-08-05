@@ -6,7 +6,7 @@ import {Link} from "react-router-dom";
 import "./TableOfContents.scss"
 import PropTypes from "prop-types";
 
-const TableOfContents = ({textId, pagination, setPagination, tableOfContents, error, loading, t }) => {
+const TableOfContents = ({textId, pagination, setPagination, tableOfContents, error, loading, t, onContentItemClick }) => {
   const [expandedSections, setExpandedSections] = useState({});
 
   // -------------------------------------------- helpers ----------------------------------------------
@@ -42,7 +42,19 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
     const isExpanded = expandedSections[section.id];
     const hasChildren = section.sections && section.sections.length > 0;
     const renderContentTitle = () => {
-      const segmentId=hasChildren?section.sections[0].segments[0].segment_id:section.segments[0].segment_id
+      const segmentId=hasChildren?section.sections[0].segments[0].segment_id:section.segments[0].segment_id;
+      
+      if (onContentItemClick) {
+        return (
+          <button 
+            className={`toc-title-btn ${getLanguageClass(tableOfContents.text_detail?.language)}`}
+            onClick={() => onContentItemClick(section)}
+          >
+            {section.title}
+          </button>
+        );
+      }
+      
       return <Link
         to={`/chapter?text_id=${textId}&content_id=${tocId}&segment_id=${segmentId}`}
         className={`toc-title ${getLanguageClass(tableOfContents.text_detail?.language)}`}>
@@ -69,11 +81,15 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
     }
     return (
       <div key={`${section.id}`} className="toc-list-container">
-        <button className="toc-header"
-             onClick={(e) => e.target.tagName !== 'A' && toggleSection(section.id)}>
+        <div className="toc-header"
+             onClick={(e) => {
+               if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON') {
+                 toggleSection(section.id);
+               }
+             }}>
           {renderDropIcons()}
           {renderContentTitle()}
-        </button>
+        </div>
         {renderRecursiveSubContents()}
       </div>
     );
@@ -118,5 +134,6 @@ TableOfContents.propTypes = {
     limit: PropTypes.number.isRequired
   }).isRequired,
   setPagination: PropTypes.func.isRequired,
-  tableOfContents : PropTypes.object
+  tableOfContents : PropTypes.object,
+  onContentItemClick: PropTypes.func
 }

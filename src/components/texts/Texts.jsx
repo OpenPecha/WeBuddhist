@@ -24,7 +24,7 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
 
 }
 
-export const renderTabs = (activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId) => {
+export const renderTabs = (activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId, onContentItemClick) => {
   return <div className="tab-container listsubtitle">
     {/* Tab Navigation */}
     <div className="tab-nav">
@@ -46,7 +46,7 @@ export const renderTabs = (activeTab, setActiveTab, tableOfContents, pagination,
     <div className="tab-content">
       {activeTab === 'contents' && (
         <div className="tab-panel">
-          <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={textId} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t}/>
+          <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={textId} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t} onContentItemClick={onContentItemClick}/>
         </div>
       )}
       {activeTab === 'versions' && (

@@ -4,12 +4,12 @@ import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
 import { fetchCollections } from "../../../../../../components/collections/Collections.jsx";
 import { fetchSubCollections } from "../../../../../../components/sub-collections/SubCollections.jsx";
-import { fetchTableOfContents } from "../../../../../../components/texts/Texts.jsx";
+import { fetchTableOfContents, renderTabs } from "../../../../../../components/texts/Texts.jsx";
 import { getEarlyReturn, getLanguageClass, mapLanguageCode } from "../../../../../../utils/helperFunctions.jsx";
 import { renderRootTexts, renderCommentaryTexts, fetchWorks, useGroupedTexts } from "../../../../../../components/works/Works.jsx";
-import { renderTabs } from "../../../../../../components/texts/Texts.jsx";
 import "./CompareTextView.scss";
 import { useState } from "react";
+import TableOfContents from "../../../../../../components/texts/table-of-contents/TableOfContents.jsx";
 
 const renderCollections = (collectionsData, t, showDescriptions = true, setSelectedTitles, selectedTitles, setSelectedCollection) => {
   const renderCollectionNames = (term) => {
@@ -127,6 +127,7 @@ const CompareTextView = ({ setIsCompareTextView }) => {
   const [selectedText, setSelectedText] = useState(null); 
   const [activeTab, setActiveTab] = useState('contents');
   const [pagination, setPagination] = useState({ skip: 0, limit: 10 });
+  const [selectedContentItem, setSelectedContentItem] = useState(null);
 
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
     ["collections"],
@@ -160,6 +161,11 @@ const CompareTextView = ({ setIsCompareTextView }) => {
   const rootTexts = groupedTexts["root_text"] || [];
   const commentaryTexts = groupedTexts["commentary"] || [];
 
+  const handleContentItemClick = (contentItem) => {
+    setSelectedContentItem(contentItem);
+    console.log("hi");
+  };
+
   const contentsVersionView = () => {
     return (
       <div className="contents-version-view">
@@ -172,7 +178,8 @@ const CompareTextView = ({ setIsCompareTextView }) => {
           tableOfContentsIsError,
           tableOfContentsIsLoading,
           t,
-          selectedText?.id
+          selectedText?.id,
+          handleContentItemClick
         )}
       </div>
     );
