@@ -156,6 +156,11 @@
         .sort-dropdown {
           align-self: flex-start;
           margin-bottom: 4px;
+
+          .sort-menu {
+            left: 0;
+            right: auto;
+          }
         }
       }
     }

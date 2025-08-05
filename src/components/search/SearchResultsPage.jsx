@@ -15,6 +15,22 @@ const SearchResultsPage = () => {
   const [sortOption, setSortOption] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const renderSortButton = (optionKey, labelKey, defaultLabel) => (
+    <button
+      key={optionKey}
+      className={`dropdown-item ${sortOption === optionKey ? "active" : ""}`}
+      onClick={() => {
+        setSortOption(optionKey);
+        setDropdownOpen(false);
+      }}
+    >
+      {sortOption === optionKey && (
+        <span className="checkmark"><IoCheckmarkOutline/></span>
+      )}
+      {t(labelKey, defaultLabel)}
+    </button>
+  );
+
   return (
     <div className="search-results-wrapper">
       <div className="search-results-container listtitle">
@@ -58,69 +74,14 @@ const SearchResultsPage = () => {
                 <div className="sort-menu">
                   {activeTab === "sources" ? (
                     <>
-                      <button
-                        className={`dropdown-item ${sortOption === "relevance" ? "active" : ""}`}
-                        onClick={() => {
-                          setSortOption("relevance");
-                          setDropdownOpen(false);
-                        }}
-                      >
-                        {sortOption === "relevance" && (
-                          <span className="checkmark"><IoCheckmarkOutline/></span>
-                        )}
-                        {t("filter_list.relevance", "Relevance")}
-                      </button>
-                      <button
-                        className={`dropdown-item ${sortOption === "chronological" ? "active" : ""}`}
-                        onClick={() => {
-                          setSortOption("chronological");
-                          setDropdownOpen(false);
-                        }}
-                      >
-                        {sortOption === "chronological" && (
-                          <span className="checkmark"><IoCheckmarkOutline/></span>
-                        )}
-                        {t("filter_list.chronological", "Chronological")}
-                      </button>
+                      {renderSortButton("relevance", "filter_list.relevance", "Relevance")}
+                      {renderSortButton("chronological", "filter_list.chronological", "Chronological")}
                     </>
                   ) : (
                     <>
-                      <button 
-                        className={`dropdown-item ${sortOption === "relevance" ? "active" : ""}`}
-                        onClick={() => {
-                          setSortOption("relevance");
-                          setDropdownOpen(false);
-                        }}
-                      >
-                        {sortOption === "relevance" && (
-                          <span className="checkmark"><IoCheckmarkOutline/></span>
-                        )}
-                        {t("filter_list.relevance", "Relevance")}
-                      </button>
-                      <button
-                        className={`dropdown-item ${sortOption === "date_created" ? "active" : ""}`}
-                        onClick={() => {
-                          setSortOption("date_created");
-                          setDropdownOpen(false);
-                        }}
-                      >
-                        {sortOption === "date_created" && (
-                          <span className="checkmark"><IoCheckmarkOutline/></span>
-                        )}
-                        {t("filter_list.date_created", "Date created")}
-                      </button>
-                      <button
-                        className={`dropdown-item ${sortOption === "views" ? "active" : ""}`}
-                        onClick={() => {
-                          setSortOption("views");
-                          setDropdownOpen(false);
-                        }}
-                      >
-                        {sortOption === "views" && (
-                          <span className="checkmark"><IoCheckmarkOutline/></span>
-                        )}
-                        {t("profile.tab.sheet.tag.views", "Views")}
-                      </button>
+                      {renderSortButton("relevance", "filter_list.relevance", "Relevance")}
+                      {renderSortButton("date_created", "filter_list.date_created", "Date created")}
+                      {renderSortButton("views", "profile.tab.sheet.tag.views", "Views")}
                     </>
                   )}
                 </div>
