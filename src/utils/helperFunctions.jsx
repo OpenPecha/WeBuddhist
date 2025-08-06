@@ -1,3 +1,4 @@
+
 export const getFirstSegmentId = (sections) => {
   if (!sections?.length) {
     return null;

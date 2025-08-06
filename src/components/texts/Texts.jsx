@@ -1,7 +1,8 @@
 
 import React, {useMemo, useState} from 'react'
 import {useQuery} from "react-query";
-import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
+import {useDynamicTabTitle} from "../../utils/dynamicTitle.jsx";
 import "./Texts.scss"
 import {LANGUAGE} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
@@ -40,10 +41,9 @@ const Texts = () => {
     {refetchOnWindowFocus: false, enabled: !!id, retry: false}
   );
 
-
- 
   // -------------------------------------------- helpers ----------------------------------------------
   const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
+  useDynamicTabTitle(tableOfContents?.text_detail?.title);
 
 
   // --------------------------------------------- renderers -------------------------------------------

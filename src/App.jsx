@@ -11,7 +11,6 @@ import EditUserProfile from "./components/edit-user-profile/EditUserProfile.jsx"
 import UserProfile from "./components/user-profile/UserProfile.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
-import ContentsChapter from "./components/chapterV2/chapter/ContentsChapter.jsx";
 import Sheets from "./components/sheets/Sheets.jsx";
 import SheetDetailPage from "./components/sheets/view-sheet/SheetDetailPage.jsx";
 
