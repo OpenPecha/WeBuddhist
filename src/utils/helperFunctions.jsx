@@ -1,4 +1,3 @@
-import React from 'react';
 
 export const getFirstSegmentId = (sections) => {
   if (!sections?.length) {
@@ -126,15 +125,4 @@ export const getCurrentSectionFromScroll = (sections, containerRect, sectionRefs
     }
   });
   return candidateBelow.id ?? candidateAbove.id;
-};
-
-export const useDynamicTabTitle = (title) => {
-  React.useEffect(() => {
-    if (title) {
-      document.title = title + " | " + "Webuddhist";
-    }
-    return () => {
-      document.title = "Webuddhist - Buddhism in your own words";
-    };
-  }, [title]);
 };

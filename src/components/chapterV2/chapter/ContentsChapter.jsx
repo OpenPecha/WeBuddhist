@@ -5,7 +5,8 @@ import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import { useInfiniteQuery } from "react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
-import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections, useDynamicTabTitle } from "../../../utils/helperFunctions.jsx";
+import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } from "../../../utils/helperFunctions.jsx";
+import { useDynamicTabTitle } from "../../../utils/dynamicTitle.jsx";
 import { useTranslate } from "@tolgee/react";
 import PropTypes from "prop-types";
 

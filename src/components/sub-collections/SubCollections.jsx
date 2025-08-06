@@ -5,7 +5,8 @@ import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config';
 import './SubCollections.scss';
 import { useTranslate } from '@tolgee/react';
-import {getEarlyReturn, mapLanguageCode, useDynamicTabTitle} from "../../utils/helperFunctions.jsx";
+import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
+import {useDynamicTabTitle} from "../../utils/dynamicTitle.jsx";
 
 export const fetchSubCollections = async (parentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);

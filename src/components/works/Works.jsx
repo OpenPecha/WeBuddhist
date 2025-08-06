@@ -5,7 +5,8 @@ import './Works.scss';
 import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
 import { useParams,Link } from 'react-router-dom';
-import {getEarlyReturn, getLanguageClass, mapLanguageCode, useDynamicTabTitle} from "../../utils/helperFunctions.jsx";
+import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import {useDynamicTabTitle} from "../../utils/dynamicTitle.jsx";
 
 const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
