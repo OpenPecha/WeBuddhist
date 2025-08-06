@@ -26,6 +26,7 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
   getFirstSegmentId: vi.fn(() => "first-segment-id"),
   getLastSegmentId: vi.fn(() => "last-segment-id"),
   mergeSections: vi.fn((a, b) => [...(a || []), ...(b || [])]),
+  useDynamicTabTitle: () => {},
 }));
 
 vi.mock("../utils/header/ChapterHeader.jsx", () => ({
