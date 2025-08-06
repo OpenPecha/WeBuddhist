@@ -41,7 +41,6 @@ const renderSubCollectionsTerms = (terms, setSelectedTerm) => {
           key={term.id} 
           type="button" 
           onClick={() => {
-            console.log(`Term clicked: ${term.title}`);
             setSelectedTerm(term);
           }}
         >
@@ -53,7 +52,7 @@ const renderSubCollectionsTerms = (terms, setSelectedTerm) => {
 };
 
 const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass, setSelectedText, setActiveView) => {
-  const renderRootTextButtons = () => {
+  const renderRootText = () => {
     return (
       <div className="root-text-section">
         <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>
@@ -66,7 +65,6 @@ const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass,
                 key={text.id}
                 type="button"
                 onClick={() => {
-                  console.log("hi");
                   setSelectedText(text);
                   setActiveView("contents");
                 }}
@@ -81,7 +79,7 @@ const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass,
     );
   };
 
-  const renderCommentaryButtons = () => {
+  const renderCommentaryText = () => {
     return (
       <div className="commentary-section">
         <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>
@@ -94,7 +92,6 @@ const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass,
                 key={text.id}
                 type="button"
                 onClick={() => {
-                  console.log("hi");
                   setSelectedText(text);
                   setActiveView("contents");
                 }}
@@ -111,8 +108,8 @@ const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass,
 
   return (
     <div className="navigate-root-commentary">
-      {renderRootTextButtons()}
-      {renderCommentaryButtons()}
+      {renderRootText()}
+      {renderCommentaryText()}
     </div>
   );
 }
