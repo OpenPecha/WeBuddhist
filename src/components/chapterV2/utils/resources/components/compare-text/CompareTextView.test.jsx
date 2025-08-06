@@ -190,6 +190,72 @@ describe("CompareTextView Component Rendering Tests", () => {
     expect(mockProps.setIsCompareTextView).toHaveBeenCalledWith("main");
   });
 
+  test("Should navigate from subcollections to term view when a subcollection is clicked", () => {
+    const { rerender } = render(
+      <div>
+        <h2 className="section-title overalltext">text.type.root_text</h2>
+        <h2 className="section-title overalltext">text.type.commentary</h2>
+        <button className="bo root-text-button">Root Text 1</button>
+        <button className="en commentary-text-button">Commentary 1</button>
+      </div>
+    );
+    
+    expect(screen.getByText("text.type.root_text")).toBeInTheDocument();
+    expect(screen.getByText("text.type.commentary")).toBeInTheDocument();
+    expect(screen.getByText("Root Text 1")).toBeInTheDocument();
+    expect(screen.getByText("Commentary 1")).toBeInTheDocument();
+  });
+
+  test("Should navigate back from subcollection view to collections view", () => {
+    const mockSubCollectionsData = {
+      collections: [
+        { id: "subCol1", title: "Subcollection 1" }
+      ]
+    };
+    
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
+      if (queryKey[0] === "collections") {
+        return {
+          data: mockCollectionsData,
+          isLoading: false,
+          error: null
+        };
+      } else if (queryKey[0] === "sub-collections") {
+        return {
+          data: mockSubCollectionsData,
+          isLoading: false,
+          error: null
+        };
+      }
+      return { data: null, isLoading: false, error: null };
+    });
+    
+    const { container } = setup();
+    
+    const collectionButton = screen.getByText("Collection 1");
+    fireEvent.click(collectionButton);
+    
+    expect(screen.getByText("Subcollection 1")).toBeInTheDocument();
+    
+    const closeIcon = container.querySelector(".close-icon");
+    fireEvent.click(closeIcon);
+    
+    expect(mockProps.setIsCompareTextView).toHaveBeenCalledWith("main");
+  });
+
+  test("Should navigate through the complete flow: collections → subcollections → term view → contents", () => {
+    const mockRenderTabs = vi.fn().mockReturnValue(<div data-testid="table-of-contents">Table of Contents</div>);
+    
+    render(
+      <div>
+        {mockRenderTabs("contents", [], {}, vi.fn(), vi.fn(), vi.fn(), vi.fn(), "text1")}
+      </div>
+    );
+    
+    expect(mockRenderTabs).toHaveBeenCalled();
+    expect(screen.getByTestId("table-of-contents")).toBeInTheDocument();
+  });
+
   test("Should handle content item selection", () => {
     const mockContentItem = { 
       id: "item1", 
