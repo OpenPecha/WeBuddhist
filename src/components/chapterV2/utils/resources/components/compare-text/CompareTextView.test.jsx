@@ -313,6 +313,210 @@ describe("CompareTextView Component Rendering Tests", () => {
     expect(mockSetPagination).toHaveBeenCalledWith({ skip: 10, limit: 10 });
   });
 
+  describe("Content Item Click Handler Tests", () => {
+    const testHandleContentItemClick = (contentItem, selectedText, addChapter, currentChapter, setSelectedContentItem, setIsCompareTextView, closeResourcesPanel) => {
+      setSelectedContentItem(contentItem);
+
+      if (selectedText && addChapter) {
+        const segmentId = contentItem.segments && contentItem.segments.length > 0 
+          ? contentItem.segments[0].segment_id 
+          : (contentItem.sections && contentItem.sections[0]?.segments && contentItem.sections[0].segments.length > 0 
+              ? contentItem.sections[0].segments[0].segment_id 
+              : null);
+                    
+        if (segmentId) {
+          addChapter({
+            textId: selectedText.id,
+            segmentId: segmentId,
+          }, currentChapter);
+          
+          closeResourcesPanel();
+          setIsCompareTextView("main");
+        }
+      }
+    };
+
+    test("Should add chapter when content item with direct segments is clicked", () => {
+      const mockAddChapter = vi.fn();
+      const mockSetIsCompareTextView = vi.fn();
+      const mockCloseResourcesPanel = vi.fn();
+      const mockSetSelectedContentItem = vi.fn();
+      
+      const contentItem = {
+        id: "content1",
+        title: "Chapter 1",
+        segments: [{ segment_id: "seg123" }]
+      };
+      
+      const selectedText = { id: "text123", title: "Selected Text" };
+      
+      testHandleContentItemClick(
+        contentItem,
+        selectedText,
+        mockAddChapter,
+        "chapter1",
+        mockSetSelectedContentItem,
+        mockSetIsCompareTextView,
+        mockCloseResourcesPanel
+      );
+      
+      expect(mockSetSelectedContentItem).toHaveBeenCalledWith(contentItem);
+      
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        { textId: "text123", segmentId: "seg123" },
+        "chapter1"
+      );
+      
+      expect(mockCloseResourcesPanel).toHaveBeenCalled();
+      
+      expect(mockSetIsCompareTextView).toHaveBeenCalledWith("main");
+    });
+    
+    test("Should add chapter when content item with nested segments is clicked", () => {
+      const mockAddChapter = vi.fn();
+      const mockSetIsCompareTextView = vi.fn();
+      const mockCloseResourcesPanel = vi.fn();
+      const mockSetSelectedContentItem = vi.fn();
+      
+      const contentItem = {
+        id: "content2",
+        title: "Chapter 2",
+        segments: [],
+        sections: [
+          {
+            id: "section1",
+            title: "Section 1",
+            segments: [{ segment_id: "nestedSeg456" }]
+          }
+        ]
+      };
+      
+      const selectedText = { id: "text123", title: "Selected Text" };
+      
+      testHandleContentItemClick(
+        contentItem,
+        selectedText,
+        mockAddChapter,
+        "chapter1",
+        mockSetSelectedContentItem,
+        mockSetIsCompareTextView,
+        mockCloseResourcesPanel
+      );
+      
+      expect(mockSetSelectedContentItem).toHaveBeenCalledWith(contentItem);
+      
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        { textId: "text123", segmentId: "nestedSeg456" },
+        "chapter1"
+      );
+      
+      expect(mockCloseResourcesPanel).toHaveBeenCalled();
+      
+      expect(mockSetIsCompareTextView).toHaveBeenCalledWith("main");
+    });
+    
+    test("Should not add chapter when content item has no segments", () => {
+      const mockAddChapter = vi.fn();
+      const mockSetIsCompareTextView = vi.fn();
+      const mockCloseResourcesPanel = vi.fn();
+      const mockSetSelectedContentItem = vi.fn();
+      
+      const contentItem = {
+        id: "content3",
+        title: "Chapter 3",
+        segments: [],
+        sections: [
+          {
+            id: "section2",
+            title: "Section 2",
+            segments: []
+          }
+        ]
+      };
+      
+      const selectedText = { id: "text123", title: "Selected Text" };
+      
+      testHandleContentItemClick(
+        contentItem,
+        selectedText,
+        mockAddChapter,
+        "chapter1",
+        mockSetSelectedContentItem,
+        mockSetIsCompareTextView,
+        mockCloseResourcesPanel
+      );
+      
+      expect(mockSetSelectedContentItem).toHaveBeenCalledWith(contentItem);
+      
+      expect(mockAddChapter).not.toHaveBeenCalled();
+      
+      expect(mockCloseResourcesPanel).not.toHaveBeenCalled();
+      
+      expect(mockSetIsCompareTextView).not.toHaveBeenCalled();
+    });
+    
+    test("Should not add chapter when selectedText is not available", () => {
+      const mockAddChapter = vi.fn();
+      const mockSetIsCompareTextView = vi.fn();
+      const mockCloseResourcesPanel = vi.fn();
+      const mockSetSelectedContentItem = vi.fn();
+      
+      const contentItem = {
+        id: "content1",
+        title: "Chapter 1",
+        segments: [{ segment_id: "seg123" }]
+      };
+      
+      testHandleContentItemClick(
+        contentItem,
+        null, 
+        mockAddChapter,
+        "chapter1",
+        mockSetSelectedContentItem,
+        mockSetIsCompareTextView,
+        mockCloseResourcesPanel
+      );
+      
+      expect(mockSetSelectedContentItem).toHaveBeenCalledWith(contentItem);
+      
+      expect(mockAddChapter).not.toHaveBeenCalled();
+      
+      expect(mockCloseResourcesPanel).not.toHaveBeenCalled();
+      
+      expect(mockSetIsCompareTextView).not.toHaveBeenCalled();
+    });
+    
+    test("Should not add chapter when addChapter is not available", () => {
+      const mockSetIsCompareTextView = vi.fn();
+      const mockCloseResourcesPanel = vi.fn();
+      const mockSetSelectedContentItem = vi.fn();
+      
+      const contentItem = {
+        id: "content1",
+        title: "Chapter 1",
+        segments: [{ segment_id: "seg123" }]
+      };
+      
+      const selectedText = { id: "text123", title: "Selected Text" };
+      
+      testHandleContentItemClick(
+        contentItem,
+        selectedText,
+        null, 
+        "chapter1",
+        mockSetSelectedContentItem,
+        mockSetIsCompareTextView,
+        mockCloseResourcesPanel
+      );
+      
+      expect(mockSetSelectedContentItem).toHaveBeenCalledWith(contentItem);
+      
+      expect(mockCloseResourcesPanel).not.toHaveBeenCalled();
+      
+      expect(mockSetIsCompareTextView).not.toHaveBeenCalled();
+    });
+  });
+
   describe("Term View Tests", () => {
     const renderTermView = (rootTexts, commentaryTexts) => {
       const tMock = vi.fn(key => key);
