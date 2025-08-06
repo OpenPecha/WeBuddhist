@@ -20,7 +20,7 @@ WORKDIR /app
 
 RUN chown nginx:nginx /app && apk add --no-cache gettext
 
-ARG BACKEND="https://pecha-backend-12341825340-1fb0112.onrender.com"
+ARG BACKEND="https://api.webuddhist.com"
 ENV VITE_BACKEND_BASE_URL=$BACKEND
 
 ENV PORT=4173
