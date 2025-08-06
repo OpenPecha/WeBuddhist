@@ -159,22 +159,20 @@ const CompareTextView = ({ setIsCompareTextView, addChapter, currentChapter }) =
   const rootTexts = groupedTexts["root_text"] || [];
   const commentaryTexts = groupedTexts["commentary"] || [];
 
+  
   const handleContentItemClick = (contentItem) => {
     setSelectedContentItem(contentItem);
-
     if (selectedText && addChapter) {
       const segmentId = contentItem.segments && contentItem.segments.length > 0 
         ? contentItem.segments[0].segment_id 
         : (contentItem.sections && contentItem.sections[0].segments && contentItem.sections[0].segments.length > 0 
             ? contentItem.sections[0].segments[0].segment_id 
-            : null);
-                  
+            : null);                 
       if (segmentId) {
         addChapter({
           textId: selectedText.id,
           segmentId: segmentId,
-        }, currentChapter);
-        
+        }, currentChapter);        
         closeResourcesPanel();
         setIsCompareTextView("main");
       }
@@ -212,6 +210,7 @@ const CompareTextView = ({ setIsCompareTextView, addChapter, currentChapter }) =
     );
   };
 
+  // --------------------------------------- renderer --------------------------------------------------------------------
   return (
     <>
       <div className="headerthing">
