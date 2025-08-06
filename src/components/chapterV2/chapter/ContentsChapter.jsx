@@ -5,7 +5,7 @@ import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import { useInfiniteQuery } from "react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
-import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } from "../../../utils/helperFunctions.jsx";
+import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections, useDynamicTabTitle } from "../../../utils/helperFunctions.jsx";
 import { useTranslate } from "@tolgee/react";
 import PropTypes from "prop-types";
 
@@ -76,7 +76,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
   }, [infiniteQuery.data?.pages]);
 
   // ----------------------------- helpers ---------------------------------------
-
+  useDynamicTabTitle(allContent?.text_detail?.title);
   const earlyReturn = getEarlyReturn({ isLoading: infiniteQuery.isLoading, error: infiniteQuery.error, t });
   if (earlyReturn) return earlyReturn;
 

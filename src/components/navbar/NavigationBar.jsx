@@ -73,7 +73,7 @@ const renderNavLinks=()=>{
     return(
         <div className='nav-links navbaritems'>
             <Link to="/collections" onClick={handleMobileMenuToggle}>  {t("header.text")}</Link>
-            <Link to="/topics" onClick={handleMobileMenuToggle}>{t("header.topic")}</Link>
+            {/* <Link to="/topics" onClick={handleMobileMenuToggle}>{t("header.topic")}</Link> */}
             <Link to="/community" onClick={handleMobileMenuToggle}> {t("header.community")}</Link>
         </div>
     )

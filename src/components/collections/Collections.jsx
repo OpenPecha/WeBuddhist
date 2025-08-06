@@ -6,7 +6,7 @@ import axiosInstance from "../../config/axios-config.js";
 import {LANGUAGE} from "../../utils/constants.js";
 import {useQuery} from "react-query";
 import {Link} from "react-router-dom";
-import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import {getEarlyReturn, mapLanguageCode, useDynamicTabTitle} from "../../utils/helperFunctions.jsx";
 
 export const fetchCollections = async () => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -29,7 +29,7 @@ const Collections = () => {
   );
 
   // ----------------------------- helpers ---------------------------------------
-
+  useDynamicTabTitle("Pecha - Buddhism in your own words");
   const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, error: collectionsError, t });
   if (earlyReturn) return earlyReturn;
 
