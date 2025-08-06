@@ -52,15 +52,19 @@ const renderSubCollectionsTerms = (terms, setSelectedTerm) => {
 };
 
 const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass, setSelectedText, setActiveView) => {
-  const renderRootText = () => {
+  const renderTextSection = (texts, textType) => {
+    const isRootText = textType === "root_text";
+    const titleKey = isRootText ? "text.type.root_text" : "text.type.commentary";
+    const notFoundKey = isRootText ? "text.root_text_not_found" : "text.commentary_text_not_found";
+    
     return (
-      <div className="root-text-section">
-        <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>
-        {rootTexts.length === 0 ? (
-          <div className="no-content">{t("text.root_text_not_found")}</div>
+      <div className={`text-section ${textType}-section`}>
+        <h2 className="section-title">{t(titleKey)}</h2>
+        {texts.length === 0 ? (
+          <div className="no-content">{t(notFoundKey)}</div>
         ) : (
-          <div className="root-text-list">
-            {rootTexts.map((text) => (
+          <div className="text-list">
+            {texts.map((text) => (
               <button
                 key={text.id}
                 type="button"
@@ -68,34 +72,7 @@ const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass,
                   setSelectedText(text);
                   setActiveView("contents");
                 }}
-                className={`${getLanguageClass(text.language)} root-text-button`}
-              >
-                {text.title}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderCommentaryText = () => {
-    return (
-      <div className="commentary-section">
-        <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>
-        {commentaryTexts.length === 0 ? (
-          <div className="no-content">{t("text.commentary_text_not_found")}</div>
-        ) : (
-          <div className="commentary-list">
-            {commentaryTexts.map((text) => (
-              <button
-                key={text.id}
-                type="button"
-                onClick={() => {
-                  setSelectedText(text);
-                  setActiveView("contents");
-                }}
-                className={`${getLanguageClass(text.language)} commentary-text-button`}
+                className={`${getLanguageClass(text.language)} text-button`}
               >
                 {text.title}
               </button>
@@ -108,8 +85,8 @@ const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass,
 
   return (
     <div className="navigate-root-commentary">
-      {renderRootText()}
-      {renderCommentaryText()}
+      {renderTextSection(rootTexts, "root_text")}
+      {renderTextSection(commentaryTexts, "commentary")}
     </div>
   );
 }
