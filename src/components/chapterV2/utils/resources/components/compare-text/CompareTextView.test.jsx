@@ -312,4 +312,188 @@ describe("CompareTextView Component Rendering Tests", () => {
     
     expect(mockSetPagination).toHaveBeenCalledWith({ skip: 10, limit: 10 });
   });
+
+  describe("Term View Tests", () => {
+    const renderTermView = (rootTexts, commentaryTexts) => {
+      const tMock = vi.fn(key => key);
+      const getLanguageClassMock = vi.fn(language => {
+        switch (language) {
+          case "bo": return "bo-text";
+          case "en": return "en-text";
+          case "sa": return "bo-text"; 
+          case "bhu": return "bo-text"; 
+          default: return "overalltext";
+        }
+      });
+      const setSelectedTextMock = vi.fn();
+      const setActiveViewMock = vi.fn();
+      
+      return {
+        ui: (
+          <div className="navigate-root-commentary">
+            <div className="root-text-section">
+              <h2 className="section-title overalltext">{tMock("text.type.root_text")}</h2>
+              {rootTexts.length === 0 ? (
+                <div className="no-content">{tMock("text.root_text_not_found")}</div>
+              ) : (
+                <div className="root-text-list">
+                  {rootTexts.map((text) => (
+                    <button
+                      key={text.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedTextMock(text);
+                        setActiveViewMock("contents");
+                      }}
+                      className={`${getLanguageClassMock(text.language)} root-text-button`}
+                      data-testid={`root-text-${text.id}`}
+                    >
+                      {text.title}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="commentary-section">
+              <h2 className="section-title overalltext">{tMock("text.type.commentary")}</h2>
+              {commentaryTexts.length === 0 ? (
+                <div className="no-content">{tMock("text.commentary_text_not_found")}</div>
+              ) : (
+                <div className="commentary-list">
+                  {commentaryTexts.map((text) => (
+                    <button
+                      key={text.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedTextMock(text);
+                        setActiveViewMock("contents");
+                      }}
+                      className={`${getLanguageClassMock(text.language)} commentary-text-button`}
+                      data-testid={`commentary-text-${text.id}`}
+                    >
+                      {text.title}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ),
+        mocks: {
+          tMock,
+          getLanguageClassMock,
+          setSelectedTextMock,
+          setActiveViewMock
+        }
+      };
+    };
+
+    test("Should render root texts and commentary texts in term view", () => {
+      const rootTexts = [
+        { id: "root1", title: "Root Text 1", language: "bo" },
+        { id: "root2", title: "Root Text 2", language: "sa" }
+      ];
+      
+      const commentaryTexts = [
+        { id: "comm1", title: "Commentary 1", language: "en" },
+        { id: "comm2", title: "Commentary 2", language: "bo" }
+      ];
+      
+      const { ui, mocks } = renderTermView(rootTexts, commentaryTexts);
+      render(ui);
+      
+      expect(screen.getByText("text.type.root_text")).toBeInTheDocument();
+      expect(screen.getByText("text.type.commentary")).toBeInTheDocument();
+      
+      expect(screen.getByText("Root Text 1")).toBeInTheDocument();
+      expect(screen.getByText("Root Text 2")).toBeInTheDocument();
+      
+      expect(screen.getByText("Commentary 1")).toBeInTheDocument();
+      expect(screen.getByText("Commentary 2")).toBeInTheDocument();
+      
+      expect(mocks.getLanguageClassMock).toHaveBeenCalledWith("bo");
+      expect(mocks.getLanguageClassMock).toHaveBeenCalledWith("sa");
+      expect(mocks.getLanguageClassMock).toHaveBeenCalledWith("en");
+    });
+    
+    test("Should display empty state message when no root texts are available", () => {
+      const rootTexts = [];
+      const commentaryTexts = [
+        { id: "comm1", title: "Commentary 1", language: "en" }
+      ];
+      
+      const { ui } = renderTermView(rootTexts, commentaryTexts);
+      render(ui);
+      
+      expect(screen.getByText("text.root_text_not_found")).toBeInTheDocument();
+      
+      expect(screen.getByText("Commentary 1")).toBeInTheDocument();
+    });
+    
+    test("Should display empty state message when no commentary texts are available", () => {
+      const rootTexts = [
+        { id: "root1", title: "Root Text 1", language: "bo" }
+      ];
+      const commentaryTexts = [];
+      
+      const { ui } = renderTermView(rootTexts, commentaryTexts);
+      render(ui);
+      
+      expect(screen.getByText("text.commentary_text_not_found")).toBeInTheDocument();
+      
+      expect(screen.getByText("Root Text 1")).toBeInTheDocument();
+    });
+    
+    test("Should apply correct language classes to text buttons", () => {
+      const rootTexts = [
+        { id: "root1", title: "Tibetan Text", language: "bo" },
+        { id: "root2", title: "Sanskrit Text", language: "sa" }
+      ];
+      
+      const commentaryTexts = [
+        { id: "comm1", title: "English Text", language: "en" },
+        { id: "comm2", title: "Unknown Language", language: "unknown" }
+      ];
+      
+      const { ui } = renderTermView(rootTexts, commentaryTexts);
+      const { container } = render(ui);
+      
+      const tibetanButton = screen.getByTestId("root-text-root1");
+      const sanskritButton = screen.getByTestId("root-text-root2");
+      const englishButton = screen.getByTestId("commentary-text-comm1");
+      const unknownButton = screen.getByTestId("commentary-text-comm2");
+      
+      expect(tibetanButton).toHaveClass("bo-text");
+      expect(sanskritButton).toHaveClass("bo-text"); 
+      expect(englishButton).toHaveClass("en-text");
+      expect(unknownButton).toHaveClass("overalltext");
+    });
+    
+    test("Should navigate to contents view when a text button is clicked", () => {
+      const rootTexts = [
+        { id: "root1", title: "Root Text 1", language: "bo" }
+      ];
+      const commentaryTexts = [
+        { id: "comm1", title: "Commentary 1", language: "en" }
+      ];
+      
+      const { ui, mocks } = renderTermView(rootTexts, commentaryTexts);
+      render(ui);
+      
+      fireEvent.click(screen.getByText("Root Text 1"));
+      
+      expect(mocks.setSelectedTextMock).toHaveBeenCalledWith(rootTexts[0]);
+      
+      expect(mocks.setActiveViewMock).toHaveBeenCalledWith("contents");
+      
+      mocks.setSelectedTextMock.mockReset();
+      mocks.setActiveViewMock.mockReset();
+      
+      fireEvent.click(screen.getByText("Commentary 1"));
+      
+      expect(mocks.setSelectedTextMock).toHaveBeenCalledWith(commentaryTexts[0]);
+      
+      expect(mocks.setActiveViewMock).toHaveBeenCalledWith("contents");
+    });
+  });
 });
