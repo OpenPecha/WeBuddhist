@@ -67,105 +67,94 @@ const Topics = () => {
     setSearchParams("");
   };
 
+  const handleBackToDefaultSearch = () => {
+    setSearchMode({ isDeepSearch: false, hierarchy: true });
+    setSearchFilter("");
+    setSearchParams("");
+  };
+
   const renderTopicsTitle = () => (
     <h4 className="topics-title listtitle">
       {parentId ? topicsData?.parent?.title : t("topic.expore")}
     </h4>
   );
 
-  const renderTopicsList = () => {
-    const filteredTopics = topicsList.topics.filter((topic) => {
-      if (searchFilter) {
-        return topic.title.toLowerCase().startsWith(searchFilter.toLowerCase());
-      }
-      return true;
-    });
+  const renderTopicCard = (topic, index) => (
+    <div key={index}>
+      <div className="topic-card">
+        <button
+          className="topic-button listtitle"
+          onClick={() => handleTopicClick(topic)}
+        >
+          {topic.title}
+        </button>
+      </div>
+    </div>
+  );
 
-    return (
-      ((searchMode.isDeepSearch && searchFilter) ||
-        !searchMode.isDeepSearch) && (
-        <>
-          <div className="topics-list-wrapper">
-            {filteredTopics.length > 0 ? (
-              filteredTopics.map((topic, index) => (
-                <div key={index}>
-                  <div className="topic-card">
-                    <button
-                      className="topic-button listtitle"
-                      onClick={() => handleTopicClick(topic)}
-                    >
-                      {topic.title}
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div>
-                <p>No topics found</p>
-              </div>
-            )}
-          </div>
-          {filteredTopics.length > 0 && (
-            <div className="pagination-container">
-              <PaginationComponent
-                pagination={pagination}
-                totalPages={totalPages}
-                handlePageChange={handlePageChange}
-                setPagination={setPagination}
-              />
-            </div>
-          )}
-        </>
-      )
-    );
-  };
+  const renderAlphabetButton = (letter, index) => (
+    <button
+      key={index}
+      className={`alphabet-button listsubtitle ${
+        searchFilter === letter ? "active" : ""
+      }`}
+      onClick={() => setSearchFilter(letter)}
+    >
+      {letter}
+    </button>
+  );
+
+  const renderAlphabetFilter = () => (
+    <div className="alphabet-filter">
+      {cleanAlphabetArray.map((letter, index) => renderAlphabetButton(letter, index))}
+      <button
+        className="clear-letter-click"
+        onClick={() => setSearchFilter("")}
+      >
+        {t("topic.clear")}
+      </button>
+    </div>
+  );
+
+  const renderSearchInput = () => (
+    <input
+      type="text"
+      placeholder="Search topics..."
+      value={searchFilter}
+      onChange={(e) => setSearchFilter(e.target.value)}
+      className="search-input"
+    />
+  );
+
+  const renderBackButton = () => (
+    <button
+      className="back-button"
+      onClick={handleBackToDefaultSearch}
+    >
+      Back
+    </button>
+  );
+
+  const renderDeepSearchButton = () => (
+    <button 
+      className="deep-search-button" 
+      onClick={onDeepSearchButtonClick}
+    >
+      {t("topic.a_to_z")}
+    </button>
+  );
 
   const renderDeepSearchInterface = () => (
     <>
-      <input
-        type="text"
-        placeholder="Search topics..."
-        value={searchFilter}
-        onChange={(e) => setSearchFilter(e.target.value)}
-        className="search-input"
-      />
-      <div className="alphabet-filter">
-        {cleanAlphabetArray.map((letter, index) => (
-          <button
-            key={index}
-            className={`alphabet-button listsubtitle ${
-              searchFilter === letter ? "active" : ""
-            }`}
-            onClick={() => setSearchFilter(letter)}
-          >
-            {letter}
-          </button>
-        ))}
-        <button
-          className="clear-letter-click"
-          onClick={() => setSearchFilter("")}
-        >
-          {t("topic.clear")}
-        </button>
-      </div>
-      <button
-        className="back-button"
-        onClick={() => {
-          setSearchMode({ isDeepSearch: false, hierarchy: true });
-          setSearchFilter("");
-          setSearchParams("");
-        }}
-      >
-        Back
-      </button>
+      {renderSearchInput()}
+      {renderAlphabetFilter()}
+      {renderBackButton()}
     </>
   );
 
   const renderDefaultSearchInterface = () => (
     <div className="deep-search-container">
-      <button className="deep-search-button" onClick={onDeepSearchButtonClick}>
-        {t("topic.a_to_z")}
-      </button>
+      {renderDeepSearchButton()}
       <p>{t("topic.browse_topic")}</p>
     </div>
   );
@@ -177,6 +166,55 @@ const Topics = () => {
         : renderDefaultSearchInterface()}
     </div>
   );
+
+  const renderEmptyState = () => (
+    <div>
+      <p>No topics found</p>
+    </div>
+  );
+
+  const renderTopicsGrid = (filteredTopics) => (
+    <div className="topics-list-wrapper">
+      {filteredTopics.length > 0 
+        ? filteredTopics.map((topic, index) => renderTopicCard(topic, index))
+        : renderEmptyState()
+      }
+    </div>
+  );
+
+  const renderPaginationSection = (showPagination) => (
+    showPagination && (
+      <div className="pagination-container">
+        <PaginationComponent
+          pagination={pagination}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          setPagination={setPagination}
+        />
+      </div>
+    )
+  );
+
+  const renderTopicsList = () => {
+    const filteredTopics = topicsList.topics.filter((topic) => {
+      if (searchFilter) {
+        return topic.title.toLowerCase().startsWith(searchFilter.toLowerCase());
+      }
+      return true;
+    });
+
+    const shouldShowContent = (searchMode.isDeepSearch && searchFilter) || !searchMode.isDeepSearch;
+    const showPagination = filteredTopics.length > 0;
+
+    return (
+      shouldShowContent && (
+        <>
+          {renderTopicsGrid(filteredTopics)}
+          {renderPaginationSection(showPagination)}
+        </>
+      )
+    );
+  };
 
   const renderTopicsListSection = () => (
     <div className="topics-list">
@@ -196,7 +234,7 @@ const Topics = () => {
       </div>
     </div>
   );
-
+  
   return (
     <div className="topics-container">
       <div className="topics-wrapper">

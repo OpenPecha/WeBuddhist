@@ -144,101 +144,109 @@ const UserRegistration = () => {
     </h2>
   );
 
-  const renderBasicInfoFields = () => (
-    <>
-      {/* Email Field */}
-      <div className="form-group">
-        <input
-          type="email"
-          placeholder={t("common.email")}
-          className={`form-input ${errors.email ? 'is-invalid' : ''}`}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        {errors.email && <IoAlertCircleOutline className="validation-icon" />}
-        {errors.email && <div className="invalid-feedback">{errors.email}</div>}
-      </div>
-      {/* First Name Field */}
-      <div className="form-group">
-        <input
-          type="text"
-          placeholder={t("sign_up.form.first_name")}
-          className={`form-input ${errors.firstName ? 'is-invalid' : ''}`}
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-        {errors.firstName && <IoAlertCircleOutline className="validation-icon" />}
-        {errors.firstName && <div className="invalid-feedback">{errors.firstName}</div>}
-      </div>
-      {/* Last Name Field */}
-      <div className="form-group">
-        <input
-          type="text"
-          placeholder={t("sign_up.form.last_name")}
-          className={`form-input ${errors.lastName ? 'is-invalid' : ''}`}
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
-        {errors.lastName && <IoAlertCircleOutline className="validation-icon" />}
-        {errors.lastName && <div className="invalid-feedback">{errors.lastName}</div>}
-      </div>
-    </>
+  const renderInputField = (field) => (
+    <div className="form-group" key={field.name}>
+      <input
+        type={field.type}
+        placeholder={t(field.placeholderKey)}
+        className={`form-input ${errors[field.name] ? "is-invalid" : ""}`}
+        value={field.value}
+        onChange={field.onChange}
+      />
+      {errors[field.name] && (
+        <IoAlertCircleOutline className="validation-icon" />
+      )}
+      {errors[field.name] && (
+        <div className="invalid-feedback">{errors[field.name]}</div>
+      )}
+    </div>
+  );
+
+  const renderBasicInfoFields = () => {
+    const basicFields = [
+      {
+        name: "email",
+        type: "email",
+        placeholderKey: "common.email",
+        value: email,
+        onChange: (e) => setEmail(e.target.value),
+      },
+      {
+        name: "firstName",
+        type: "text",
+        placeholderKey: "sign_up.form.first_name",
+        value: firstName,
+        onChange: (e) => setFirstName(e.target.value),
+      },
+      {
+        name: "lastName",
+        type: "text",
+        placeholderKey: "sign_up.form.last_name",
+        value: lastName,
+        onChange: (e) => setLastName(e.target.value),
+      },
+    ];
+
+    return <>{basicFields.map((field) => renderInputField(field))}</>;
+  };
+
+  const renderPasswordToggle = (isVisible, toggleFunction) => (
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleFunction(!isVisible);
+      }}
+      className="password-toggle"
+    >
+      {isVisible ? (
+        <img src={eyeOpen} alt="Eye Icon" width="16" height="16" />
+      ) : (
+        <img src={eyeClose} alt="Eye Slash Icon" width="16" height="16" />
+      )}
+    </button>
+  );
+
+  const renderPasswordField = () => (
+    <div className="form-group">
+      <input
+        type={showPassword ? "text" : "password"}
+        placeholder={t("common.password")}
+        className={`form-input ${errors.password ? "is-invalid" : ""}`}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      {errors.password && <IoAlertCircleOutline className="validation-icon" />}
+      {errors.password && (
+        <div className="invalid-feedback">{errors.password}</div>
+      )}
+      {renderPasswordToggle(showPassword, setShowPassword)}
+    </div>
+  );
+
+  const renderConfirmPasswordField = () => (
+    <div className="form-group">
+      <input
+        type={showConfirmPassword ? "text" : "password"}
+        placeholder={t("common.confirm_password")}
+        className={`form-input ${errors.confirmPassword ? "is-invalid" : ""}`}
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+      />
+      {errors.confirmPassword && (
+        <IoAlertCircleOutline className="validation-icon" />
+      )}
+      {errors.confirmPassword && (
+        <div className="invalid-feedback">{errors.confirmPassword}</div>
+      )}
+      {renderPasswordToggle(showConfirmPassword, setShowConfirmPassword)}
+    </div>
   );
 
   const renderPasswordFields = () => (
     <>
-      {/* Password Field */}
-      <div className="form-group">
-        <input
-          type={showPassword ? "text" : "password"}
-          placeholder={t("common.password")}
-          className={`form-input ${errors.password ? 'is-invalid' : ''}`}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {errors.password && <IoAlertCircleOutline className="validation-icon" />}
-        {errors.password && <div className="invalid-feedback">{errors.password}</div>}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setShowPassword(!showPassword);
-          }}
-          className="password-toggle"
-        >
-          {showPassword ? (
-            <img src={eyeOpen} alt="Eye Icon" width="16" height="16" />
-          ) : (
-            <img src={eyeClose} alt="Eye Slash Icon" width="16" height="16" />
-          )}
-        </button>
-      </div>
-      {/* Confirm Password Field */}
-      <div className="form-group">
-        <input
-          type={showConfirmPassword ? "text" : "password"}
-          placeholder={t("common.confirm_password")}
-          className={`form-input ${errors.confirmPassword ? 'is-invalid' : ''}`}
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-        {errors.confirmPassword && <IoAlertCircleOutline className="validation-icon" />}
-        {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setShowConfirmPassword(!showConfirmPassword);
-          }}
-          className="password-toggle"
-        >
-          {showConfirmPassword ? (
-            <img src={eyeOpen} alt="Eye Icon" width="16" height="16" />
-          ) : (
-            <img src={eyeClose} alt="Eye Slash Icon" width="16" height="16" />
-          )}
-        </button>
-      </div>
+      {renderPasswordField()}
+      {renderConfirmPasswordField()}
     </>
   );
 

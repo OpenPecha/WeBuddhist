@@ -85,43 +85,65 @@ const EditUserProfile = () => {
     </div>
   );
 
-  const renderPersonalDetailsFields = () => (
-    <div className="tab-panel">
-      {/* Name Fields */}
+  const renderNameFields = () => {
+    const nameFields = [
+      { name: 'firstname', labelKey: 'sign_up.form.first_name', placeholderKey: 'profile.enter-your-first-name' },
+      { name: 'lastname', labelKey: 'sign_up.form.last_name', placeholderKey: 'profile.enter-your-last-name' }
+    ];
+
+    return (
       <div className="row">
-        <div className="col">
-          <div className="form-group">
-            <label htmlFor="formFirstName">
-              {t("sign_up.form.first_name")}
-            </label>
-            <input id="formFirstName" className="form-control" type="text" name="firstname" value={formData.firstname} onChange={handleChange} placeholder={t("profile.enter-your-first-name")}/>
+        {nameFields.map((field) => (
+          <div className="col" key={field.name}>
+            <div className="form-group">
+              <label htmlFor={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}>
+                {t(field.labelKey)}
+              </label>
+              <input 
+                id={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}
+                className="form-control" 
+                type="text" 
+                name={field.name} 
+                value={formData[field.name]} 
+                onChange={handleChange} 
+                placeholder={t(field.placeholderKey)}
+              />
+            </div>
           </div>
-        </div>
-        <div className="col">
-          <div className="form-group">
-            <label htmlFor="formLastName">{t("sign_up.form.last_name")}</label>
-            <input id="formLastName" className="form-control" type="text" name="lastname" value={formData.lastname} onChange={handleChange} placeholder={t("profile.enter-your-last-name")}/>
-          </div>
-        </div>
+        ))}
       </div>
-      {/* Title & Organization Fields */}
+    );
+  };
+  const renderTitleOrgFields = () => {
+    const titleOrgFields = [
+      { name: 'title', labelKey: 'topic.admin.title', placeholderKey: 'profile.enter-your-title' },
+      { name: 'organization', labelKey: 'edit_profile.organization', placeholderKey: 'profile.enter-your-organization' }
+    ];
+
+    return (
       <div className="row">
-        <div className="col">
-          <div className="form-group">
-            <label htmlFor="formTitle">{t("topic.admin.title")}</label>
-            <input id="formTitle" className="form-control" type="text" name="title" value={formData.title} onChange={handleChange} placeholder={t("profile.enter-your-title")}/>
+        {titleOrgFields.map((field) => (
+          <div className="col" key={field.name}>
+            <div className="form-group">
+              <label htmlFor={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}>
+                {t(field.labelKey)}
+              </label>
+              <input 
+                id={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}
+                className="form-control" 
+                type="text" 
+                name={field.name} 
+                value={formData[field.name]} 
+                onChange={handleChange} 
+                placeholder={t(field.placeholderKey)}
+              />
+            </div>
           </div>
-        </div>
-        <div className="col">
-          <div className="form-group">
-            <label htmlFor="formOrganization">
-              {t("edit_profile.organization")}
-            </label>
-            <input id="formOrganization" className="form-control" type="text" name="organization" value={formData.organization} onChange={handleChange} placeholder={t("profile.enter-your-organization")}/>
-          </div>
-        </div>
+        ))}
       </div>
-      {/* Location Field */}
+    );
+  };
+  const renderLocationField = () => (
       <div className="row">
         <div className="col">
           <div className="form-group">
@@ -130,7 +152,8 @@ const EditUserProfile = () => {
           </div>
         </div>
       </div>
-      {/* Education Section */}
+    );
+  const renderEducationSection = () => (
       <div className="row">
         <div className="form-group">
           <label htmlFor="formEducation">
@@ -165,16 +188,24 @@ const EditUserProfile = () => {
           </button>
         </div>
       </div>
-      {/* About Me Field */}
+    );
+    const renderAboutMeField = () => (
       <div className="row">
         <div className="form-group">
           <label htmlFor="formAboutMe">{t("edit_profile.about_me")}</label>
           <textarea id="formAboutMe" className="form-control" rows={3} name="about_me" value={formData.about_me} onChange={handleChange} placeholder={t("profile.tell-us-about-yourself")}/>
         </div>
       </div>
+  );
+  const renderPersonalDetailsFields = () => (
+    <div className="tab-panel">
+      {renderNameFields()}
+      {renderTitleOrgFields()}
+      {renderLocationField()}
+      {renderEducationSection()}
+      {renderAboutMeField()}
     </div>
   );
-
   const renderContactDetailsFields = () => (
     <div className="tab-panel">
       <div className="row">

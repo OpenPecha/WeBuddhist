@@ -87,6 +87,73 @@ const UserProfile = () => {
     }
   };
 
+  const renderBasicInfo = () => (
+    <>
+      <h2 className="profile-name">
+        {userInfo?.firstname + " " + userInfo?.lastname}
+      </h2>
+      <p className="profile-job-title">{userInfo?.title}</p>
+    </>
+  );
+
+  const renderProfileDetails = () => (
+    <p className="profile-details">
+      {userInfo?.location && (
+        <>
+          <span className="location">{userInfo?.location}</span>{" "}
+          <span className="separator">·</span>
+        </>
+      )}
+      {userInfo?.educations?.length ? (
+        <>
+          <span className="degree">
+            {userInfo.educations.reduce((acc, curr) => acc + " " + curr)}
+          </span>{" "}
+          <span className="separator">·</span>
+        </>
+      ) : (
+        <></>
+      )}
+    </p>
+  );
+
+  const renderEditProfileButton = () => (
+    <button className="edit-profile-btn" onClick={handleEditProfile}>
+      {t("profile.edit_profile")}
+    </button>
+  );
+
+  const renderSettingsButton = () => (
+    <button className="settings-btn">
+      <span className="icon">⚙️</span> {t("profile.setting")}
+    </button>
+  );
+
+  const renderLogoutButton = () => (
+    <button onClick={handleLogout} className="logout-text">
+      {t("profile.log_out")}
+    </button>
+  );
+
+  const renderActionButtons = () => (
+    <div className="actions-row">
+      {renderEditProfileButton()}
+      {renderSettingsButton()}
+      {renderLogoutButton()}
+    </div>
+  );
+
+  const renderFollowersInfo = () => (
+    <div className="followers">
+      <span className="number-followers">
+        {userInfo?.followers} {t("common.followers")}
+      </span>
+      <span className="number-following">
+        {userInfo?.following} {t("common.following")}
+      </span>
+    </div>
+  );
+
   const renderSocialLinks = (socialProfiles) => {
     const socialIcons = {
       linkedin: { icon: BsLinkedin, color: "#0A66C2" },
@@ -98,12 +165,16 @@ const UserProfile = () => {
 
     return (
       <div className="social-links">
-        { socialProfiles.map((profile) => {
+        {socialProfiles.map((profile) => {
           const { icon: Icon, color } = socialIcons[profile.account] || {};
           return Icon ? (
             <a
               key={profile.account}
-              href={profile.account === "email" ? "mailto:" + profile.url : profile.url}
+              href={
+                profile.account === "email"
+                  ? "mailto:" + profile.url
+                  : profile.url
+              }
               target="_blank"
               rel="noopener noreferrer"
               aria-label={profile.account}
@@ -118,78 +189,38 @@ const UserProfile = () => {
 
   const renderProfileLeftSection = () => (
     <div className="profile-left">
-      {/* Basic Info */}
-      <h2 className="profile-name">
-        {userInfo?.firstname + " " + userInfo?.lastname}
-      </h2>
-      <p className="profile-job-title">{userInfo?.title}</p>
-      {/* Profile Details */}
-      <p className="profile-details">
-        {userInfo?.location && (
-          <>
-            <span className="location">{userInfo?.location}</span>{" "}
-            <span className="separator">·</span>
-          </>
-        )}
-        {userInfo?.educations?.length ? (
-          <>
-            <span className="degree">
-              {userInfo.educations.reduce((acc, curr) => acc + " " + curr)}
-            </span>{" "}
-            <span className="separator">·</span>
-          </>
-        ) : (
-          <></>
-        )}
-      </p>
-      {/* Action Buttons */}
-      <div className="actions-row">
-        <button className="edit-profile-btn" onClick={handleEditProfile}>
-          {t("profile.edit_profile")}
-        </button>
-        <button className="settings-btn">
-          <span className="icon">⚙️</span> {t("profile.setting")}
-        </button>
-        <button onClick={handleLogout} className="logout-text">
-          {t("profile.log_out")}
-        </button>
-      </div>
-      {/* Followers Info */}
-      <div className="followers">
-        <span className="number-followers">
-          {userInfo?.followers} {t("common.followers")}
-        </span>
-        <span className="number-following">
-          {userInfo?.following} {t("common.following")}
-        </span>
-      </div>
-      {/* Social Links */}
+      {renderBasicInfo()}
+      {renderProfileDetails()}
+      {renderActionButtons()}
+      {renderFollowersInfo()}
       {userInfo?.social_profiles?.length > 0 &&
         renderSocialLinks(userInfo?.social_profiles)}
     </div>
   );
 
-  const renderProfileRightSection = () => (
-    <div className="profile-right">
-      <div className="profile-picture">
-        {userInfo?.avatar_url ? (
-          <div className="profile-image-container">
-            <img
-              src={userInfo.avatar_url}
-              alt="Profile"
-              className="profile-image"
-            />
-            <div className="edit-overlay" data-testid="edit-overlay">
-              <FaEdit onClick={handleEditImageClick} />
-            </div>
-          </div>
-        ) : (
-          <button className="add-picture-btn" onClick={handleEditImageClick}>
-            {t("profile.picture.add_picture")}
-          </button>
-        )}
+  const renderProfileImage = () => (
+    <div className="profile-image-container">
+      <img src={userInfo.avatar_url} alt="Profile" className="profile-image" />
+      <div className="edit-overlay" data-testid="edit-overlay">
+        <FaEdit onClick={handleEditImageClick} />
       </div>
     </div>
+  );
+
+  const renderAddPictureButton = () => (
+    <button className="add-picture-btn" onClick={handleEditImageClick}>
+      {t("profile.picture.add_picture")}
+    </button>
+  );
+
+  const renderProfilePicture = () => (
+    <div className="profile-picture">
+      {userInfo?.avatar_url ? renderProfileImage() : renderAddPictureButton()}
+    </div>
+  );
+
+  const renderProfileRightSection = () => (
+    <div className="profile-right">{renderProfilePicture()}</div>
   );
 
   const renderSection1 = () => (
@@ -199,53 +230,66 @@ const UserProfile = () => {
     </div>
   );
 
-  const renderNavTabs = () => (
-    <div className="nav-tabs">
-      <button
-        className={`nav-link ${activeTab === "sheets" ? "active" : ""}`}
-        onClick={() => handleTabClick("sheets")}
-      >
-        <BsFileEarmark />
-        {t("profile.tab.sheets")}
-      </button>
-      <button
-        className={`nav-link ${activeTab === "collections" ? "active" : ""}`}
-        onClick={() => handleTabClick("collections")}
-      >
-        <BsStack />
-        {t("profile.tab.collection")}
-      </button>
-      <button
-        className={`nav-link ${activeTab === "notes" ? "active" : ""}`}
-        onClick={() => handleTabClick("notes")}
-      >
-        <BsPencil /> {t("user_profile.notes")}
-      </button>
-      <button
-        className={`nav-link ${activeTab === "tracker" ? "active" : ""}`}
-        onClick={() => handleTabClick("tracker")}
-      >
-        <BsReception4 />
-        {t("profile.buddhish_text_tracker")}
-      </button>
+  const renderTabButton = (tabKey, icon, labelKey) => (
+    <button
+      className={`nav-link ${activeTab === tabKey ? "active" : ""}`}
+      onClick={() => handleTabClick(tabKey)}
+    >
+      {icon}
+      {t(labelKey)}
+    </button>
+  );
+
+  const renderNavTabs = () => {
+    const tabsConfig = [
+      {
+        key: "sheets",
+        icon: <BsFileEarmark />,
+        labelKey: "profile.tab.sheets",
+      },
+      {
+        key: "collections",
+        icon: <BsStack />,
+        labelKey: "profile.tab.collection",
+      },
+      { key: "notes", icon: <BsPencil />, labelKey: "user_profile.notes" },
+      {
+        key: "tracker",
+        icon: <BsReception4 />,
+        labelKey: "profile.buddhish_text_tracker",
+      },
+    ];
+
+    return (
+      <div className="nav-tabs">
+        {tabsConfig.map((tab) =>
+          renderTabButton(tab.key, tab.icon, tab.labelKey)
+        )}
+      </div>
+    );
+  };
+
+  const renderTabsContainer = () => (
+    <div className="tabs-container">
+      {renderNavTabs()}
+      <div className="tab-content">{renderTabContent()}</div>
     </div>
   );
 
   const renderSection2 = () => (
-    <div className="section2 listtitle">
-      <div className="tabs-container">
-        {renderNavTabs()}
-        <div className="tab-content">{renderTabContent()}</div>
-      </div>
+    <div className="section2 listtitle">{renderTabsContainer()}</div>
+  );
+
+  const renderMainProfile = () => (
+    <div className="pecha-user-profile">
+      {renderSection1()}
+      {renderSection2()}
     </div>
   );
 
   const renderProfileContent = () => (
     <div className="user-profile listtitle">
-      <div className="pecha-user-profile">
-        {renderSection1()}
-        {renderSection2()}
-      </div>
+      {renderMainProfile()}
     </div>
   );
 
