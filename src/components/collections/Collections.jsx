@@ -29,7 +29,7 @@ const Collections = () => {
   );
 
   // ----------------------------- helpers ---------------------------------------
-  useDynamicTabTitle("Pecha - Buddhism in your own words");
+  useDynamicTabTitle("Webuddhist - Buddhism in your own words");
   const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, error: collectionsError, t });
   if (earlyReturn) return earlyReturn;
 
