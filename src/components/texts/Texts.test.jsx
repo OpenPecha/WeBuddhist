@@ -105,10 +105,10 @@ describe("Texts Component", () => {
     expect(screen.queryByText("Test Title")).not.toBeInTheDocument();
   });
 
-  test("renders download button", () => {
-    setup();
-    expect(screen.getByText("Download Text")).toBeInTheDocument();
-  });
+  // test("renders download button", () => {
+  //   setup();
+  //   expect(screen.getByText("Download Text")).toBeInTheDocument();
+  // });
 
   test("renders continue reading button", () => {
     setup();

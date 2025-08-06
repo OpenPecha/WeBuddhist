@@ -175,7 +175,7 @@ const Texts = () => {
         {renderTabs()}
       </div>
       <div className="right-section">
-        {renderDownloadTextOptions()}
+        {/* {renderDownloadTextOptions()} */}
       </div>
     </div>
   )
