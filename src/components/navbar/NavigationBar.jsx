@@ -65,7 +65,7 @@ const Navigation = () => {
 const renderLogo=()=>{
     return(
         <Link to="/" onClick={handleMobileMenuToggle}>
-         <img className="logo" src="/img/webuddhist.svg" alt="Pecha"/>
+         <img className="logo" src="/img/webuddhist_logo.svg" alt="Pecha"/>
        </Link>
     )
 }
