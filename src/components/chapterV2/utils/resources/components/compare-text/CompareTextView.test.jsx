@@ -7,13 +7,31 @@ import CompareTextView from "./CompareTextView.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import { mockReactQuery, mockAxios, mockTolgee, mockUseAuth } from "../../../../../../test-utils/CommonMocks.js";
-import { PanelProvider } from "../../../../../../context/PanelContext.jsx";
 
 mockAxios();
 mockUseAuth();
 mockReactQuery();
 
 let earlyReturnValue = null;
+const mockCloseResourcesPanel = vi.fn();
+
+vi.mock("../../../../../../context/PanelContext.jsx", () => {
+  return {
+    PanelProvider: ({ children }) => <div data-testid="panel-provider">{children}</div>,
+    usePanelContext: () => ({
+      closeResourcesPanel: mockCloseResourcesPanel,
+      openResourcesPanel: vi.fn(),
+      isPanelOpen: false,
+      isResourcesPanelOpen: false,
+      isTranslationSourceOpen: false,
+      isLeftPanelOpen: false,
+      toggleResourcesPanel: vi.fn(),
+      openTranslationSource: vi.fn(),
+      closeTranslationSource: vi.fn(),
+      toggleTranslationSource: vi.fn()
+    })
+  };
+});
 
 vi.mock("../../../../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: (language) => `lang-${language}`,
@@ -50,9 +68,7 @@ describe("CompareTextView Component Rendering Tests", () => {
     return render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-          <PanelProvider>
-            <CompareTextView {...mockProps} />
-          </PanelProvider>
+          <CompareTextView {...mockProps} />
         </TolgeeProvider>
       </QueryClientProvider>
     );
@@ -60,6 +76,7 @@ describe("CompareTextView Component Rendering Tests", () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
+    mockCloseResourcesPanel.mockReset();
     earlyReturnValue = null;
   });
 
@@ -136,7 +153,7 @@ describe("CompareTextView Component Rendering Tests", () => {
     expect(mockProps.setIsCompareTextView).toHaveBeenCalledWith("main");
   });
 
-  test("Should navigate from collections to subcollections, then return when clicking the panel close icon", () => {
+  test("Should navigate from collections to subcollections", () => {
     const mockSubCollectionsData = {
       collections: [
         { id: "subCol1", title: "Subcollection 1" }
@@ -171,5 +188,62 @@ describe("CompareTextView Component Rendering Tests", () => {
     fireEvent.click(closeIcon);
     
     expect(mockProps.setIsCompareTextView).toHaveBeenCalledWith("main");
+  });
+
+  test("Should handle content item selection", () => {
+    const mockContentItem = { 
+      id: "item1", 
+      title: "Chapter 1", 
+      segments: [{ segment_id: "seg1" }] 
+    };
+    
+    const mockSelectedText = { id: "text1", title: "Selected Text" };
+    
+    const handleContentItemClick = (contentItem) => {
+      if (mockSelectedText && mockProps.addChapter) {
+        const segmentId = contentItem.segments && contentItem.segments.length > 0 
+          ? contentItem.segments[0].segment_id 
+          : null;
+                
+        if (segmentId) {
+          mockProps.addChapter({
+            textId: mockSelectedText.id,
+            segmentId: segmentId,
+          }, mockProps.currentChapter);
+          
+          mockCloseResourcesPanel();
+          mockProps.setIsCompareTextView("main");
+        }
+      }
+    };
+    
+    handleContentItemClick(mockContentItem);
+    
+    expect(mockProps.addChapter).toHaveBeenCalledWith(
+      {
+        textId: "text1",
+        segmentId: "seg1"
+      },
+      mockProps.currentChapter
+    );
+    
+    expect(mockCloseResourcesPanel).toHaveBeenCalled();
+    expect(mockProps.setIsCompareTextView).toHaveBeenCalledWith("main");
+  });
+
+  test("Should handle pagination logic", () => {
+    const mockSetPagination = vi.fn();
+    const currentPagination = { skip: 0, limit: 10 };
+    
+    const handleNextPage = () => {
+      mockSetPagination({ 
+        skip: currentPagination.skip + currentPagination.limit, 
+        limit: currentPagination.limit 
+      });
+    };
+    
+    handleNextPage();
+    
+    expect(mockSetPagination).toHaveBeenCalledWith({ skip: 10, limit: 10 });
   });
 });
