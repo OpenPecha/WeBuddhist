@@ -24,8 +24,7 @@ vi.mock("./table-of-contents/TableOfContents.jsx", () => ({
 vi.mock("../../utils/helperFunctions.jsx", () => ({
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
   getLanguageClass: () => "language-class",
-  getEarlyReturn: () => "",
-  useDynamicTabTitle: () => {},
+  getEarlyReturn: () => ""
 }));
 
 vi.mock("../../utils/constants.js", () => ({

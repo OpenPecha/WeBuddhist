@@ -47,7 +47,7 @@ describe("NavigationBar Component", () => { // Fix describe name
   test("renders navigation links", () => {
     setup();
     expect(screen.getByText("Texts")).toBeInTheDocument();
-    // expect(screen.getByText("Topics")).toBeInTheDocument();
+    expect(screen.getByText("Topics")).toBeInTheDocument();
     expect(screen.getByText("Community")).toBeInTheDocument();
   });
 
