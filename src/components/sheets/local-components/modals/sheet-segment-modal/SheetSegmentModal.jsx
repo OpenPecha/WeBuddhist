@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { IoClose } from "react-icons/io5";
 import {useDebounce} from "use-debounce";
 import "./SheetSegmentModal.scss";
-import { Form } from 'react-bootstrap';
 import { useQuery } from 'react-query';
 import axiosInstance from "../../../../../config/axios-config";
 import PaginationComponent from '../../../../../components/commons/pagination/PaginationComponent';
@@ -56,11 +55,12 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
 
     return (
       <div className="segment-content">
-        <Form.Control
+        <input
           type="text"
           placeholder="Search Segments..."
           value={searchFilter}
           onChange={(e) => setSearchFilter(e.target.value)}
+          className="search-segment-input"
         />  
         <div className='segment-list-container'>
           {isLoading ? (

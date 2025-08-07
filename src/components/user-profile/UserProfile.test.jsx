@@ -193,20 +193,20 @@ describe("UserProfile Component", () => {
     expect(emailLink).toHaveAttribute("href", "mailto:test@pecha.com");
 
     // Check for icons
-    expect(twitterLink.querySelector(".bi-twitter")).toBeInTheDocument();
-    expect(youtubeLink.querySelector(".bi-youtube")).toBeInTheDocument();
-    expect(linkedInLink.querySelector(".bi-linkedin")).toBeInTheDocument();
-    expect(facebookLink.querySelector(".bi-facebook")).toBeInTheDocument();
-    expect(emailLink.querySelector(".bi-envelope")).toBeInTheDocument();
+    expect(twitterLink.querySelector("svg")).toBeInTheDocument();
+    expect(youtubeLink.querySelector("svg")).toBeInTheDocument();
+    expect(linkedInLink.querySelector("svg")).toBeInTheDocument();
+    expect(facebookLink.querySelector("svg")).toBeInTheDocument();
+    expect(emailLink.querySelector("svg")).toBeInTheDocument();
   });
 
   test("renders and switches between tabs correctly", async () => {
     setup();
 
-    const sheetsTab = screen.getByRole('tab', { name: /sheets/i });
-    const collectionsTab = screen.getByRole('tab', { name: /collections/i });
-    const notesTab = screen.getByRole('tab', { name: /notes/i });
-    const trackerTab = screen.getByRole('tab', { name: "Buddhist Text Tracker" });
+    const sheetsTab = screen.getByRole('button', { name: /sheets/i });
+    const collectionsTab = screen.getByRole('button', { name: /collections/i });
+    const notesTab = screen.getByRole('button', { name: /notes/i });
+    const trackerTab = screen.getByRole('button', { name: "Buddhist Text Tracker" });
 
     // Check initial state (Sheets tab should be active)
     expect(screen.getByTestId("sheet-listing")).toBeInTheDocument();

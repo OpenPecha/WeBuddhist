@@ -1,32 +1,39 @@
 import React from "react";
-import { Pagination, Form } from "react-bootstrap";
 import "./PaginationComponent.scss"
+import { GrFormPrevious, GrFormNext } from "react-icons/gr";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import PropTypes from "prop-types";
 const PaginationComponent = ({ pagination, totalPages, handlePageChange, setPagination }) => {
   return (
     <div className="pagination-container">
-      <Pagination>
-        <Pagination.Prev
+      <div className="pagination">
+        <button
+          className="page-link"
           onClick={() => handlePageChange(pagination.currentPage - 1)}
           disabled={pagination.currentPage === 1}
-        />
+        >
+          <GrFormPrevious />
+        </button>
         {[...Array(totalPages).keys()].map(number => (
-          <Pagination.Item
+          <button
             key={number + 1}
-            active={number + 1 === pagination.currentPage}
+            className={`page-link ${number + 1 === pagination.currentPage ? 'active' : ''}`}
             onClick={() => handlePageChange(number + 1)}
           >
             {number + 1}
-          </Pagination.Item>
+          </button>
         ))}
-        <Pagination.Next
+        <button
+          className="page-link"
           onClick={() => handlePageChange(pagination.currentPage + 1)}
           disabled={pagination.currentPage === totalPages}
-        />
-      </Pagination>
+        >
+          <GrFormNext />
+        </button>
+      </div>
 
-      <Form.Group controlId="limitSelect" className="form-group mb-3">
-        <Form.Select
+      <div className="form-group">
+        <select
           value={pagination.limit}
           onChange={(e) => setPagination({ currentPage: 1, limit: Number(e.target.value) })}
         >
@@ -35,8 +42,9 @@ const PaginationComponent = ({ pagination, totalPages, handlePageChange, setPagi
           <option value="12">12</option>
           <option value="20">20</option>
           <option value="50">50</option>
-        </Form.Select>
-      </Form.Group>
+        </select>
+        <RiArrowDropDownLine className="dropdown-icon" />
+      </div>
     </div>
   );
 };
