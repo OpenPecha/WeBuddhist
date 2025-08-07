@@ -207,6 +207,19 @@ const UserRegistration = () => {
     </button>
   );
 
+  const renderPasswordIcons = (error, showPassword, toggleFunction) => (
+    error ? (
+      <div className="input-icons">
+        {renderPasswordToggle(showPassword, toggleFunction)}
+        <IoAlertCircleOutline className="validation-icon" />
+      </div>
+    ) : (
+      <div className="password-toggle-standalone">
+        {renderPasswordToggle(showPassword, toggleFunction)}
+      </div>
+    )
+  );
+
   const renderPasswordField = () => (
     <div className="form-group">
       <input
@@ -219,16 +232,7 @@ const UserRegistration = () => {
       {errors.password && (
         <div className="invalid-feedback">{errors.password}</div>
       )}
-      {errors.password ? (
-        <div className="input-icons">
-          {renderPasswordToggle(showPassword, setShowPassword)}
-          <IoAlertCircleOutline className="validation-icon" />
-        </div>
-      ) : (
-        <div className="password-toggle-standalone">
-          {renderPasswordToggle(showPassword, setShowPassword)}
-        </div>
-      )}
+      {renderPasswordIcons(errors.password, showPassword, setShowPassword)}
     </div>
   );
 
@@ -244,16 +248,7 @@ const UserRegistration = () => {
       {errors.confirmPassword && (
         <div className="invalid-feedback">{errors.confirmPassword}</div>
       )}
-      {errors.confirmPassword ? (
-        <div className="input-icons">
-          {renderPasswordToggle(showConfirmPassword, setShowConfirmPassword)}
-          <IoAlertCircleOutline className="validation-icon" />
-        </div>
-      ) : (
-        <div className="password-toggle-standalone">
-          {renderPasswordToggle(showConfirmPassword, setShowConfirmPassword)}
-        </div>
-      )}
+      {renderPasswordIcons(errors.confirmPassword, showConfirmPassword, setShowConfirmPassword)}
     </div>
   );
 
