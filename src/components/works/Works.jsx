@@ -129,8 +129,8 @@ const Works = () => {
     <div className="works-container">
       <div className="left-section">
         <div className="works-title-container">{renderWorksTitle()}</div>
-        <div className="root-text-container">{renderRootTexts(rootTexts, t, getLanguageClass)}</div>
-        <div className="commentary-text-container">{renderCommentaryTexts(commentaryTexts, t, getLanguageClass)}</div>
+        <div className="root-text-container">{renderRootTexts(rootTexts, t, getLanguageClass, {})}</div>
+        <div className="commentary-text-container">{renderCommentaryTexts(commentaryTexts, t, getLanguageClass, {})}</div>
       </div>
       <div className="right-section">
         <div className="sidebar" />
