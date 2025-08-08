@@ -56,7 +56,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
 
   const renderAboutSection = () => (
     <>
-      <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p>
+      {/* <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p> */}
       <button onClick={() => setActiveView("search")}>
         <BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}
       </button>
