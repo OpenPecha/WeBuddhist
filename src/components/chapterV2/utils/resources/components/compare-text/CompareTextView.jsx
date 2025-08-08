@@ -2,33 +2,14 @@ import { IoMdClose } from "react-icons/io";
 import PropTypes from "prop-types";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
-import { fetchCollections } from "../../../../../../components/collections/Collections.jsx";
-import { fetchSubCollections } from "../../../../../../components/sub-collections/SubCollections.jsx";
+import { renderCollections,fetchCollections } from "../../../../../../components/collections/Collections.jsx";
+import { fetchSubCollections, renderSubCollections } from "../../../../../../components/sub-collections/SubCollections.jsx";
 import { fetchTableOfContents, renderTabs } from "../../../../../../components/texts/Texts.jsx";
 import { getEarlyReturn, getLanguageClass } from "../../../../../../utils/helperFunctions.jsx";
 import { fetchWorks, useGroupedTexts } from "../../../../../../components/works/Works.jsx";
 import "./CompareTextView.scss";
 import { useState } from "react";
 import { usePanelContext } from "../../../../../../context/PanelContext.jsx";
-import { renderCollections } from "../../../../../../components/collections/Collections.jsx";
-
-const renderSubCollectionsTerms = (terms, setSelectedTerm) => {
-  return (
-    <div className="sub-collections-list-container">
-      {terms?.map((term) =>
-        <button 
-          key={term.id} 
-          type="button" 
-          onClick={() => {
-            setSelectedTerm(term);
-          }}
-        >
-          {term.title}
-        </button>
-      )}
-    </div>
-  );
-};
 
 const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass, setSelectedText, setActiveView) => {
   const renderTextSection = (texts, textType) => {
@@ -158,9 +139,12 @@ const CompareTextView = ({ setIsCompareTextView, addChapter, currentChapter }) =
     return (
       <div className="selected-collection-content">
         <h1 className="listtitle"></h1>
-        {earlyReturn || renderSubCollectionsTerms(subCollectionsData?.collections || [], (term) => {
-          setSelectedTerm(term);
-          setTermView(true);
+        {earlyReturn || renderSubCollections(subCollectionsData, {
+          useButtons: true,
+          setSelectedTerm: (term) => {
+            setSelectedTerm(term);
+            setTermView(true);
+          }
         })}
       </div>
     );

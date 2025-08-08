@@ -21,6 +21,32 @@ export const fetchSubCollections = async (parentId) => {
   return data;
 };
 
+export const renderSubCollections = (subCollectionsData, options = {}) => {
+  const {
+    useButtons = false,
+    setSelectedTerm = null
+  } = options;
+
+  if (!subCollectionsData?.collections) {
+    return null;
+  }
+
+  return <div className="sub-collections-list-container">
+    {subCollectionsData.collections.map((collection) =>
+      useButtons ? (
+        <button key={collection.id} type="button" onClick={() => { if(setSelectedTerm) {setSelectedTerm(collection)}}}>
+          {collection.title}
+        </button>
+      ) : (
+        <Link key={collection.id} to={`/works/${collection.id}`} className="text-item overalltext sub-collection">
+          <div className="divider"></div>
+          <p>{collection.title}</p>
+        </Link>
+      )
+    )}
+  </div>
+}
+
 const SubCollections = () => {
   const {id} = useParams();
   const {t} = useTranslate();
@@ -41,18 +67,6 @@ const SubCollections = () => {
   // ----------------------------------- renderers ---------------------------------------
   const renderTitle = () =>  <h1 className="listtitle">{subCollectionsData?.parent?.title?.toUpperCase()}</h1>
 
-  const renderSubCollections = () => {
-
-    return <div className="sub-collections-list-container">
-      {subCollectionsData?.collections?.map((collection) =>
-        <Link key={collection.id} to={`/works/${collection.id}`} className="text-item overalltext sub-collection">
-          <div className="divider"></div>
-          <p>{collection.title}</p>
-        </Link>
-      )}
-    </div>
-  }
-
   const renderAboutSection = () => {
     const subCollectionTitle = subCollectionsData?.parent?.title
 
@@ -66,7 +80,7 @@ const SubCollections = () => {
     <div className="sub-collections-container">
       <div className="sub-collection-details">
         {renderTitle()}
-        {renderSubCollections(subCollectionsData)}
+        {renderSubCollections(subCollectionsData, {})}
       </div>
       <div className="about-section">
         {renderAboutSection()}
