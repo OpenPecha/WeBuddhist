@@ -131,14 +131,14 @@ const CommunityPage = () => {
           </div>
         </div>
 
-        <div className='sidebar-section '>
+        {/* <div className='sidebar-section '>
           <h3 className='sidebar-title listtitle'>{t("side_nav.who_to_follow")}</h3>
           <div className='follow-list'>
             
           </div>
-        </div>
+        </div> */}
 
-        <div className='sidebar-section'>
+        {/* <div className='sidebar-section'>
           <h3 className='sidebar-title listtitle'>{t("collection")}</h3>
           <p className='collections-description navbaritems'>
 {            t("side_nav.collection.description")
@@ -147,7 +147,7 @@ const CommunityPage = () => {
             <span className='btn-icon'></span>
            {t("side_nav.explore_collections")}
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
