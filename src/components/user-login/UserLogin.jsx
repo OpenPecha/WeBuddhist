@@ -17,7 +17,6 @@ const UserLogin = () => {
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
-    const [showToast, setShowToast] = useState(false);
     const { loginWithRedirect } = useAuth0();
     const { login } = useAuth();
     const navigate = useNavigate();
@@ -41,7 +40,6 @@ const UserLogin = () => {
                 console.error("Login failed", error);
                 const errorMsg = error?.response?.data?.message || error?.response?.data?.detail || "Login failed";
                 setErrors({ error: errorMsg });
-                setShowToast(true);
             },
         }
     );
@@ -79,10 +77,8 @@ const UserLogin = () => {
 
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
-            setShowToast(false);
         } else {
             setErrors({});
-            setShowToast(false);
             loginMutation.mutate({email, password});
         }
     };
@@ -123,22 +119,14 @@ const UserLogin = () => {
         }
     };
 
-  const renderErrorToast = () =>
-    showToast && (
-      <div className="my-custom-toast-wrapper">
-        <div className="my-custom-toast-box">
-          <div className="my-toast-content">
-            <span>Error: {errors.error}</span>
-            <button
-              className="my-toast-close"
-              onClick={() => setShowToast(false)}
-            >
-              ×
-            </button>
-          </div>
+  const renderServerError = () => (
+    errors.error && (
+        <div className="server-error-message">
+            <IoAlertCircleOutline className="server-error-icon" />
+            <span>{errors.error}</span>
         </div>
-      </div>
-    );
+    )
+);
 
   const renderLoginTitle = () => (
     <h2 className="title login-title">{t("login.form.button.login_in")}</h2>
@@ -153,7 +141,7 @@ const UserLogin = () => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      {errors.email && <IoAlertCircleOutline className="validation-icon" />}
+      {errors.email && <IoAlertCircleOutline className="validation-icon-standalone" />}
       {errors.email && <div className="invalid-feedback">{errors.email}</div>}
     </div>
   );
@@ -185,11 +173,19 @@ const UserLogin = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      {errors.password && <IoAlertCircleOutline className="validation-icon" />}
       {errors.password && (
         <div className="invalid-feedback">{errors.password}</div>
       )}
-      {renderPasswordToggle()}
+      {errors.password ? (
+        <div className="input-icons">
+          {renderPasswordToggle()}
+          <IoAlertCircleOutline className="validation-icon" />
+        </div>
+      ) : (
+        <div className="password-toggle-standalone">
+          {renderPasswordToggle()}
+        </div>
+      )}
     </div>
   );
 
@@ -202,6 +198,7 @@ const UserLogin = () => {
 
   const renderFormActions = () => (
     <>
+     {renderServerError()} 
       <button
         type="submit"
         className="login-button"
@@ -248,7 +245,6 @@ const UserLogin = () => {
 
   return (
     <div className="login-container">
-      {renderErrorToast()}
       <div className="login-box">
         {renderLoginTitle()}
         {renderLoginForm()}
