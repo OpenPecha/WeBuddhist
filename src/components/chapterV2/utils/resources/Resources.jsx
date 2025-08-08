@@ -1,7 +1,7 @@
 import {useQuery} from "react-query";
 import {IoMdClose} from "react-icons/io";
 import { IoLanguage, IoNewspaperOutline,} from "react-icons/io5";
-import {FiInfo} from "react-icons/fi";
+// import {FiInfo} from "react-icons/fi";
 import {BiSearch, BiBookOpen} from "react-icons/bi";
 import {useState} from "react";
 import {useTranslate} from "@tolgee/react";
