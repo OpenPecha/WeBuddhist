@@ -138,7 +138,7 @@ const UserProfile = () => {
   const renderActionButtons = () => (
     <div className="actions-row">
       {renderEditProfileButton()}
-      {renderSettingsButton()}
+      {/* {renderSettingsButton()} */}
       {renderLogoutButton()}
     </div>
   );
