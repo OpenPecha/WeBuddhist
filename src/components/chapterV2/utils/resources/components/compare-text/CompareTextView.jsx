@@ -6,55 +6,14 @@ import { renderCollections,fetchCollections } from "../../../../../../components
 import { fetchSubCollections, renderSubCollections } from "../../../../../../components/sub-collections/SubCollections.jsx";
 import { fetchTableOfContents, renderTabs } from "../../../../../../components/texts/Texts.jsx";
 import { getEarlyReturn, getLanguageClass } from "../../../../../../utils/helperFunctions.jsx";
-import { fetchWorks, useGroupedTexts } from "../../../../../../components/works/Works.jsx";
+import { fetchWorks, useGroupedTexts, renderRootTexts, renderCommentaryTexts } from "../../../../../../components/works/Works.jsx";
 import "./CompareTextView.scss";
 import { useState } from "react";
 import { usePanelContext } from "../../../../../../context/PanelContext.jsx";
 
-const navigateRootCommentary = (rootTexts, commentaryTexts, t, getLanguageClass, setSelectedText, setActiveView) => {
-  const renderTextSection = (texts, textType) => {
-    const isRootText = textType === "root_text";
-    const titleKey = isRootText ? "text.type.root_text" : "text.type.commentary";
-    const notFoundKey = isRootText ? "text.root_text_not_found" : "text.commentary_text_not_found";
-    
-    return (
-      <div className={`text-section ${textType}-section`}>
-        <h2 className="section-title">{t(titleKey)}</h2>
-        {texts.length === 0 ? (
-          <div className="no-content">{t(notFoundKey)}</div>
-        ) : (
-          <div className="text-list">
-            {texts.map((text) => (
-              <button
-                key={text.id}
-                type="button"
-                onClick={() => {
-                  setSelectedText(text);
-                  setActiveView("contents");
-                }}
-                className={`${getLanguageClass(text.language)} text-button`}
-              >
-                {text.title}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  return (
-    <div className="navigate-root-commentary">
-      {renderTextSection(rootTexts, "root_text")}
-      {renderTextSection(commentaryTexts, "commentary")}
-    </div>
-  );
-}
-
 const CompareTextView = ({ setIsCompareTextView, addChapter, currentChapter }) => {
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext();
-  const [selectedTitles, setSelectedTitles] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState(null);
   const [selectedTerm, setSelectedTerm] = useState(null);
   const [termView, setTermView] = useState(false);
@@ -167,7 +126,10 @@ const CompareTextView = ({ setIsCompareTextView, addChapter, currentChapter }) =
             {activeView === "contents" ? (
               contentsVersionView()
             ) : termView ? (
-              navigateRootCommentary(rootTexts, commentaryTexts, t, getLanguageClass, setSelectedText, setActiveView)
+              <div className="navigate-root-commentary">
+                {renderRootTexts(rootTexts, t, getLanguageClass, { useButtons: true, setSelectedText: (text) => { setSelectedText(text); setActiveView("contents");}})}
+                {renderCommentaryTexts(commentaryTexts, t, getLanguageClass, { useButtons: true, setSelectedText: (text) => { setSelectedText(text); setActiveView("contents");}})}
+              </div>
             ) : selectedCollection ? (
               renderSubCollectionView()
             ) : (

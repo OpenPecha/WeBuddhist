@@ -34,7 +34,8 @@ export const useGroupedTexts = (texts = []) => {
   }, [texts]);
 };
 
-export const renderRootTexts = (rootTexts, t, getLanguageClass) => {
+export const renderRootTexts = (rootTexts, t, getLanguageClass, {useButtons = false, setSelectedText = null}) => {
+
   const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>;
   return (
     <div className="root-text-section">
@@ -44,19 +45,28 @@ export const renderRootTexts = (rootTexts, t, getLanguageClass) => {
       ) : (
         <div className="root-text-list">
           {rootTexts.map((text) => (
+            useButtons ? (
+              <button key={text.id} type="button" onClick={() => {
+                  setSelectedText(text);
+                  setActiveView("contents");
+              }}
+                className={`${getLanguageClass(text.language)} text-button`}>
+                {text.title}
+              </button>
+            ) : (
             <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
                   className={`${getLanguageClass(text.language)} root-text`}>
               <div className="divider"></div>
               <p>{text.title}</p>
             </Link>
-          ))}
+          )))}
         </div>
       )}
     </div>
   );
 };
 
-export const renderCommentaryTexts = (commentaryTexts, t, getLanguageClass) => {
+export const renderCommentaryTexts = (commentaryTexts, t, getLanguageClass, {useButtons = false, setSelectedText = null}) => {
   const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>;
   return (
     <div className="commentary-section">
@@ -66,12 +76,21 @@ export const renderCommentaryTexts = (commentaryTexts, t, getLanguageClass) => {
       ) : (
         <div className="commentary-list">
           {commentaryTexts.map((text) => (
+            useButtons ? (
+              <button key={text.id} type="button" onClick={() => {
+                  setSelectedText(text);
+                  setActiveView("contents");
+              }}
+                className={`${getLanguageClass(text.language)} text-button`}>
+                {text.title}
+              </button>
+            ) : (
             <Link key={text.id} to={`/texts/${text.id}?type=commentary`}
                   className={`${getLanguageClass(text.language)} commentary-text`}>
               <div className="divider"></div>
               <p>{text.title}</p>
             </Link>
-          ))}
+          )))}
         </div>
       )}
     </div>
