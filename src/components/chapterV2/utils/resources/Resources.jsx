@@ -127,7 +127,12 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
 
   const renderMenuItems = () => (
     <>
-      {MENU_ITEMS.map((item) => (
+      {MENU_ITEMS
+      .filter(item => 
+        item.label !== 'sheet.add_to_sheet' && 
+        item.label !== 'connection_panel.notes'
+      )
+      .map((item) => (
         <button
           type="button"
           key={item.label}
