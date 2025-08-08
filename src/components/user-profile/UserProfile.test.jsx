@@ -204,32 +204,17 @@ describe("UserProfile Component", () => {
     setup();
 
     const sheetsTab = screen.getByRole('button', { name: /sheets/i });
-    const collectionsTab = screen.getByRole('button', { name: /collections/i });
-    const notesTab = screen.getByRole('button', { name: /notes/i });
-    const trackerTab = screen.getByRole('button', { name: "Buddhist Text Tracker" });
 
+    expect(sheetsTab).toBeInTheDocument();
+    expect(sheetsTab).toHaveClass('active');
     // Check initial state (Sheets tab should be active)
     expect(screen.getByTestId("sheet-listing")).toBeInTheDocument();
+    // Check if collections, notes, and tracker tabs are not rendered
+    expect(screen.queryByRole('button', { name: /collections/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /notes/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: "Buddhist Text Tracker" })).not.toBeInTheDocument();
 
-    // Switch to Collections tab
-    await act(async () => {
-      fireEvent.click(collectionsTab);
-    });
-    expect(screen.getByTestId("collections-tab")).toBeInTheDocument();
-
-    // Switch to Notes tab
-    await act(async () => {
-      fireEvent.click(notesTab);
-    });
-    expect(screen.getByTestId("notes-tab")).toBeInTheDocument();
-
-    // Switch to Buddhist Tracker tab
-    await act(async () => {
-      fireEvent.click(trackerTab);
-    });
-    expect(screen.getByTestId("buddhist-tracker-tab")).toBeInTheDocument();
-
-    // Switch back to Sheets tab
+    // Clicking on Sheets tab should keep its content visible
     await act(async () => {
       fireEvent.click(sheetsTab);
     });
