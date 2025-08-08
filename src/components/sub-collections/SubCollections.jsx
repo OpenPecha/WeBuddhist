@@ -21,17 +21,6 @@ export const fetchSubCollections = async (parentId) => {
   return data;
 };
 
-const renderSubCollections = (subCollectionsData) => {
-  return <div className="sub-collections-list-container">
-    {subCollectionsData?.terms?.map((term) =>
-      <Link key={term.id} to={`/works/${term.id}`} className="text-item overalltext sub-collection">
-        <div className="divider"></div>
-        <p>{term.title}</p>
-      </Link>
-    )}
-  </div>
-}
-
 const SubCollections = () => {
   const {id} = useParams();
   const {t} = useTranslate();
