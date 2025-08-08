@@ -103,13 +103,10 @@ $black-color: black;
   }
 
   .server-error-message {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    background-color: $white-color;
-    border: 1px solid $red-color;
-    border-radius: 5px;
+    margin-bottom: 0.25rem;
+    padding: 0.5rem;
     color: $red-color;
     font-size: 0.875rem;
     
