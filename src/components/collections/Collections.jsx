@@ -21,6 +21,44 @@ export const fetchCollections = async () => {
   return data;
 }
 
+export const renderCollections = (collectionsData, t, options = {}) => {
+
+  const {
+    showDescriptions = true,
+    useButtons = false,
+    setSelectedCollection = null
+  } = options;
+
+  const renderCollectionNames = (collection) => {
+    if (useButtons && setSelectedCollection) {
+      return (
+        <button type="button" onClick={() => setSelectedCollection(collection)}>
+          {collection.title}
+        </button>
+      );
+    } else {
+      return collection.has_child ?
+        <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
+          {collection.title}
+        </Link> :
+        collection.title
+    }
+  }
+  return (
+    <div className="collections-list-container">
+      {collectionsData?.collections.map((collection, index) => (
+        <div className="collections" key={collection.id}>
+          <div className={"red-line"}></div>
+            {renderCollectionNames(collection)}
+            {showDescriptions && (
+              <p className="content collections-description">{collection.description}</p>
+            )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const Collections = () => {
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
@@ -46,27 +84,6 @@ const Collections = () => {
     );
   };
 
-  const renderCollections = () => {
-    const renderCollectionNames = (collection) => {
-      return collection.has_child ?
-        <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
-          {collection.title}
-        </Link> :
-        collection.title
-    }
-    return (
-      <div className="collections-list-container">
-        {collectionsData?.collections.map((collection, index) => (
-          <div className="collections" key={collection.id}>
-            <div className={"red-line"}></div>
-              {renderCollectionNames(collection)}
-              <p className="content collections-description">{collection.description}</p>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   const renderAboutSection = () => {
     return (
       <div className="right-section-content">
@@ -85,7 +102,7 @@ const Collections = () => {
     <div className="collections-container">
       <div className="left-section">
         {renderBrowseLibrary()}
-        {renderCollections(collectionsData, t)}
+        {renderCollections(collectionsData, t, {})}
       </div>
       <div className="right-section">
         {renderAboutSection()}

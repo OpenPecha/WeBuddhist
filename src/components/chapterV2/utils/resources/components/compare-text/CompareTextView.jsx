@@ -10,28 +10,7 @@ import { fetchWorks, useGroupedTexts } from "../../../../../../components/works/
 import "./CompareTextView.scss";
 import { useState } from "react";
 import { usePanelContext } from "../../../../../../context/PanelContext.jsx";
-
-const renderCollections = (collectionsData, t, showDescriptions = true, setSelectedTitles, selectedTitles, setSelectedCollection) => {
-  const renderCollectionNames = (term) => {
-    const handleOnClick = () => {
-      setSelectedCollection(term);
-    }
-    return term.has_child ?
-      <button type="button" onClick={handleOnClick}>{term.title}</button> :
-      term.title
-  }
-  return (
-    <div className="collections-list-container">
-      {collectionsData?.collections.map((term, index) => (
-        <div className="collections" key={term.id}>
-          <div className={"red-line"}></div>
-            {renderCollectionNames(term)}
-            {showDescriptions && <p className="content collections-description">{term.description}</p>}
-        </div>
-      ))}
-    </div>
-  );
-};
+import { renderCollections } from "../../../../../../components/collections/Collections.jsx";
 
 const renderSubCollectionsTerms = (terms, setSelectedTerm) => {
   return (
@@ -209,7 +188,7 @@ const CompareTextView = ({ setIsCompareTextView, addChapter, currentChapter }) =
               renderSubCollectionView()
             ) : (
               <div className="left-section">
-                {renderCollections(collectionsData, t, false, setSelectedTitles, selectedTitles, setSelectedCollection)}
+                {renderCollections(collectionsData, t, {showDescriptions: false, useButtons: true, setSelectedCollection: setSelectedCollection})}
               </div>
             )}
           </div>
