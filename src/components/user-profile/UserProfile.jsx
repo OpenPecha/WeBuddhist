@@ -138,7 +138,7 @@ const UserProfile = () => {
   const renderActionButtons = () => (
     <div className="actions-row">
       {renderEditProfileButton()}
-      {renderSettingsButton()}
+      {/* {renderSettingsButton()} */}
       {renderLogoutButton()}
     </div>
   );
@@ -262,8 +262,9 @@ const UserProfile = () => {
 
     return (
       <div className="nav-tabs">
-        {tabsConfig.map((tab) =>
-          renderTabButton(tab.key, tab.icon, tab.labelKey)
+        {tabsConfig.filter(tab => tab.key !== "collections" && tab.key !== "tracker" && tab.key !== "notes")
+          .map((tab) =>
+            renderTabButton(tab.key, tab.icon, tab.labelKey)
         )}
       </div>
     );
