@@ -21,11 +21,7 @@ export const fetchSubCollections = async (parentId) => {
   return data;
 };
 
-export const renderSubCollections = (subCollectionsData, options = {}) => {
-  const {
-    useButtons = false,
-    setSelectedTerm = null
-  } = options;
+export const renderSubCollections = (subCollectionsData, {useButtons = false, setSelectedTerm = null}) => {
 
   if (!subCollectionsData?.collections) {
     return null;

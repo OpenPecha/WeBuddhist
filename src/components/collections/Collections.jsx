@@ -21,13 +21,7 @@ export const fetchCollections = async () => {
   return data;
 }
 
-export const renderCollections = (collectionsData, t, options = {}) => {
-
-  const {
-    showDescriptions = true,
-    useButtons = false,
-    setSelectedCollection = null
-  } = options;
+export const renderCollections = (collectionsData, t, {showDescriptions = true, useButtons = false, setSelectedCollection = null}) => {
 
   const renderCollectionNames = (collection) => {
     if (useButtons && setSelectedCollection) {
