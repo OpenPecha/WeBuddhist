@@ -52,24 +52,43 @@ $error-color: red;
       padding-right: 4rem;
     }
   }
-  .validation-icon {
+
+  .input-icons {
     position: absolute;
-    font-size: 1.2rem;
+    top: 13px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  .validation-icon-standalone {
+    position: absolute;
     top: 35%;
     right: 8px;
     transform: translateY(-50%);
+    font-size: 1.2rem;
     color: $error-color;
   }
 
-  .password-toggle {
+  .validation-icon {
+    font-size: 1.2rem;
+    color: $error-color;
+  }
+
+  .password-toggle-standalone {
     position: absolute;
     top: 50%;
-    right: 3px;
+    right: 4px;
     transform: translateY(-50%);
+  }
+  
+  .password-toggle {
     background: none;
     border: none;
     cursor: pointer;
     z-index: 1;
+    margin-right: 4px;
+    transform: translateY(-1px);
   }
 }
   .register-button {

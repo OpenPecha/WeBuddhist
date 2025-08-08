@@ -154,7 +154,7 @@ const UserRegistration = () => {
         onChange={field.onChange}
       />
       {errors[field.name] && (
-        <IoAlertCircleOutline className="validation-icon" />
+        <IoAlertCircleOutline className="validation-icon-standalone" />
       )}
       {errors[field.name] && (
         <div className="invalid-feedback">{errors[field.name]}</div>
@@ -207,6 +207,19 @@ const UserRegistration = () => {
     </button>
   );
 
+  const renderPasswordIcons = (error, showPassword, toggleFunction) => (
+    error ? (
+      <div className="input-icons">
+        {renderPasswordToggle(showPassword, toggleFunction)}
+        <IoAlertCircleOutline className="validation-icon" />
+      </div>
+    ) : (
+      <div className="password-toggle-standalone">
+        {renderPasswordToggle(showPassword, toggleFunction)}
+      </div>
+    )
+  );
+
   const renderPasswordField = () => (
     <div className="form-group">
       <input
@@ -216,11 +229,10 @@ const UserRegistration = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      {errors.password && <IoAlertCircleOutline className="validation-icon" />}
       {errors.password && (
         <div className="invalid-feedback">{errors.password}</div>
       )}
-      {renderPasswordToggle(showPassword, setShowPassword)}
+      {renderPasswordIcons(errors.password, showPassword, setShowPassword)}
     </div>
   );
 
@@ -234,12 +246,9 @@ const UserRegistration = () => {
         onChange={(e) => setConfirmPassword(e.target.value)}
       />
       {errors.confirmPassword && (
-        <IoAlertCircleOutline className="validation-icon" />
-      )}
-      {errors.confirmPassword && (
         <div className="invalid-feedback">{errors.confirmPassword}</div>
       )}
-      {renderPasswordToggle(showConfirmPassword, setShowConfirmPassword)}
+      {renderPasswordIcons(errors.confirmPassword, showConfirmPassword, setShowConfirmPassword)}
     </div>
   );
 
