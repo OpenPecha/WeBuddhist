@@ -21,27 +21,6 @@ export const fetchCollections = async () => {
   return data;
 }
 
-export const renderCollections = (collectionsData, t, showDescriptions = true) => {
-  const renderCollectionNames = (term) => {
-    return term.has_child ?
-      <Link to={`/collections/${term.id}`} className="listtitle collection-link">
-        {term.title}
-      </Link> :
-      term.title
-  }
-  return (
-    <div className="collections-list-container">
-      {collectionsData?.terms.map((term, index) => (
-        <div className="collections" key={term.id}>
-          <div className={"red-line"}></div>
-            {renderCollectionNames(term)}
-            {showDescriptions && <p className="content collections-description">{term.description}</p>}
-        </div>
-      ))}
-    </div>
-  );
-};
-
 const Collections = () => {
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
