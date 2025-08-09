@@ -72,12 +72,10 @@ describe("Topics Component", () => {
 
   test("filters topics based on search input", () => {
     setup();
-    const nextButton = screen.getByText("Next")
-    expect(nextButton).toBeInTheDocument()
-    fireEvent.click(nextButton)
+    expect(document.querySelector('.pagination-container')).toBeInTheDocument();
     fireEvent.click(screen.getByText("All Topics A-Z"));
     const searchInput = screen.getByPlaceholderText("Search topics...");
-    expect(nextButton).not.toBeInTheDocument()
+    expect(document.querySelector('.pagination-container')).not.toBeInTheDocument();
     fireEvent.change(searchInput, {target: {value: "Patience"}});
     expect(screen.getByText("Patience")).toBeInTheDocument();
   });

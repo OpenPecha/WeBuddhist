@@ -59,10 +59,11 @@
   overflow: hidden;
   padding-right: 10px;
 
-  .form-control {
+  .search-segment-input {
     border: 1px solid #e0e0e0;
-    padding: 8px 12px;
+    padding: 0.625rem 0.75rem;
     margin-bottom: 10px;
+    border-radius: 0.5rem;
     
     &:focus {
       box-shadow: none;
@@ -78,7 +79,7 @@
     min-height: 0;
     overflow-y: auto;
     gap: 20px;
-    height: calc(100% - 90px);
+    height: calc(100% - 100px);
     
     .state-message {
       display: flex;

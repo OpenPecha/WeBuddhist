@@ -68,7 +68,7 @@ const Sources = (query) => {
             <button type="button" key={segment.segment_id} className="segment" 
             onClick={() => {
               if (segment.segment_id && source.text?.text_id) {
-                navigate(`/texts/text-details?textId=${source.text.text_id}&segmentId=${segment.segment_id}`);
+                navigate(`/chapter?text_id=${source.text.text_id}&segment_id=${segment.segment_id}&versionId=`);
               }
             }}
             >

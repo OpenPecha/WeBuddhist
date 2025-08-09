@@ -215,7 +215,7 @@ describe("Sources Component", () => {
     // Verify navigation was called with the correct URL format
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith(
-      "/texts/text-details?textId=uuid()&segmentId=uuid()"
+      "/chapter?text_id=uuid()&segment_id=uuid()&versionId="
     );
   });
 });

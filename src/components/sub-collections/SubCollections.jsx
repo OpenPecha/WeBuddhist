@@ -5,7 +5,8 @@ import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config';
 import './SubCollections.scss';
 import { useTranslate } from '@tolgee/react';
-import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx";
+import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
+import {useDynamicTabTitle} from "../../utils/dynamicTitle.jsx";
 
 export const fetchSubCollections = async (parentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -51,12 +52,12 @@ const SubCollections = () => {
     () => fetchSubCollections(id),
     {refetchOnWindowFocus: false}
   );
+  useDynamicTabTitle(subCollectionsData?.parent?.title);
 
   if (subCollectionsDataIsLoading) {
     return <div className="loading listtitle">{t("common.loading")}</div>;
   }
   // ----------------------------------- helpers -----------------------------------------
-
   const earlyReturn = getEarlyReturn({ isLoading: subCollectionsDataIsLoading, error: subCollectionsError, t });
   if (earlyReturn) return earlyReturn;
 

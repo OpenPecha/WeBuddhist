@@ -42,19 +42,6 @@ vi.mock("../../../../../config/axios-config", () => ({
     get: vi.fn(),
   },
 }));
-vi.mock("react-bootstrap", () => ({
-  Form: {
-    Control: ({ onChange, value, placeholder, type }) => (
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        data-testid="search-input"
-      />
-    ),
-  },
-}));
 vi.mock(
   "../../../../../components/commons/pagination/PaginationComponent",
   () => ({
@@ -105,7 +92,6 @@ describe("SheetSegmentModal", () => {
 
     expect(screen.getByText("Search Segment")).toBeInTheDocument();
     expect(screen.getByTestId("close-icon")).toBeInTheDocument();
-    expect(screen.getByTestId("search-input")).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText("Search Segments...")
     ).toBeInTheDocument();
@@ -169,7 +155,7 @@ describe("SheetSegmentModal", () => {
 
     render(<SheetSegmentModal {...defaultProps} />);
 
-    const searchInput = screen.getByTestId("search-input");
+    const searchInput = screen.getByPlaceholderText("Search Segments...");
 
     fireEvent.change(searchInput, { target: { value: "test search" } });
     expect(searchInput.value).toBe("test search");

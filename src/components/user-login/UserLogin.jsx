@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useMutation } from "react-query";
-import { Button, Col, Container, Form, Row, Toast, ToastContainer } from "react-bootstrap";
 import "./UserLogin.scss";
 import axiosInstance from "../../config/axios-config";
 import { Link, useNavigate } from "react-router-dom";
 import eyeOpen from "../../assets/icons/eye-open.svg";
 import eyeClose from "../../assets/icons/eye-closed.svg";
+import { IoAlertCircleOutline } from "react-icons/io5";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useTranslate } from "@tolgee/react";
@@ -119,124 +119,138 @@ const UserLogin = () => {
         }
     };
 
-    return (
-        <Container
-            fluid
-            className="login-container d-flex align-items-center justify-content-center"
-        >
-            { errors.error && <ToastContainer position="bottom-end">
-                <Toast bg={ "danger" } onClose={ () => setErrors({ error: null }) }>
-                    <Toast.Header>
-                        <strong className="me-auto">Error!</strong>
-                    </Toast.Header>
-                    <Toast.Body>{ errors.error }</Toast.Body>
-                </Toast>
-            </ToastContainer> }
-            <Row>
-                <Col xs={12} md={18} lg={25} className="login-box">
-                    <h2 className="title text-center login-title">{ t("login.form.button.login_in") }</h2>
-                    <Form onSubmit={handleSubmit}>
-                        {/* Email Field */}
-                        <Form.Group className="mb-3" controlId="formEmail">
-                            <Form.Control
-                                type="email"
-                                placeholder={ t("common.email") }
-                                className="form-input"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                isInvalid={!!errors.email}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.email}
-                            </Form.Control.Feedback>
-                        </Form.Group>
+  const renderServerError = () => (
+    errors.error && (
+        <div className="server-error-message">
+            <IoAlertCircleOutline className="server-error-icon" />
+            <span>{errors.error}</span>
+        </div>
+    )
+);
 
-                        {/* Password Field */}
-                        <Form.Group
-                            className="mb-3 position-relative"
-                            controlId="formPassword"
-                        >
-                            <Form.Control
-                                type={showPassword ? "text" : "password"}
-                                placeholder={ t("common.password") }
-                                className="form-input"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                isInvalid={!!errors.password}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.password}
-                            </Form.Control.Feedback>
+  const renderLoginTitle = () => (
+    <h2 className="title login-title">{t("login.form.button.login_in")}</h2>
+  );
 
-                            {/* Eye Button */}
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setShowPassword(!showPassword);
-                                }} className="position-absolute"
-                                style={{
-                                    all: "unset",
-                                    top: "50%",
-                                    right: "10px",
-                                    transform: "translateY(-50%)",
-                                    cursor: "pointer",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    justifyContent: "center"
-                                }}
-                            >
-                                {showPassword ? (
-                                    <img src={eyeOpen} alt="Eye Icon" width="16" height="16"/>
-                                ) : (
-                                    <img src={eyeClose} alt="Eye Slash Icon" width="16" height="16"/>
-                                )}
-                            </button>
-                        </Form.Group>
+  const renderEmailField = () => (
+    <div className="form-group">
+      <input
+        type="email"
+        placeholder={t("common.email")}
+        className={`form-input ${errors.email ? "is-invalid" : ""}`}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      {errors.email && <IoAlertCircleOutline className="validation-icon-standalone" />}
+      {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+    </div>
+  );
 
-                        {/* Login Button */}
-                        <Button
-                            type="submit"
-                            className="login-button w-100"
-                            // disabled={loginMutation.isLoading}
-                        >
-                            { t("login.form.button.login_in") }
-                        </Button>
+  const renderPasswordToggle = () => (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setShowPassword(!showPassword);
+      }}
+      className="password-toggle"
+    >
+      {showPassword ? (
+        <img src={eyeOpen} alt="Eye Icon" width="16" height="16" />
+      ) : (
+        <img src={eyeClose} alt="Eye Slash Icon" width="16" height="16" />
+      )}
+    </button>
+  );
 
-                        {/* Links */}
-                        <div className="login-links text-center mt-3">
-                            <Link to={ "/forgot-password" } className="content forgot-password">
-                                { t("login.forget_password") }
-                            </Link>
-                            <br/>
-                            <Link to={ "/register" } className="content create-account">
-                                { t("login.create_account") }
-                            </Link>
-                            <hr/>
-                            <div className="social-login-buttons">
-                                <Button
-                                    variant="outline-dark"
-                                    className="social-btn"
-                                    onClick={loginWithGoogle}
-                                >
-                                    <FaGoogle />
-                                    Google
-                                </Button>
-                                <Button
-                                    variant="outline-dark"
-                                    className="social-btn"
-                                    onClick={loginWithApple}
-                                >
-                                    <FaApple />
-                                    Apple
-                                </Button>
-                            </div>
-                        </div>
-                    </Form>
-                </Col>
-            </Row>
-        </Container>
-    );
+  const renderPasswordField = () => (
+    <div className="form-group">
+      <input
+        type={showPassword ? "text" : "password"}
+        placeholder={t("common.password")}
+        className={`form-input ${errors.password ? "is-invalid" : ""}`}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      {errors.password && (
+        <div className="invalid-feedback">{errors.password}</div>
+      )}
+      {errors.password ? (
+        <div className="input-icons">
+          {renderPasswordToggle()}
+          <IoAlertCircleOutline className="validation-icon" />
+        </div>
+      ) : (
+        <div className="password-toggle-standalone">
+          {renderPasswordToggle()}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderLoginFields = () => (
+    <>
+      {renderEmailField()}
+      {renderPasswordField()}
+    </>
+  );
+
+  const renderFormActions = () => (
+    <>
+     {renderServerError()} 
+      <button
+        type="submit"
+        className="login-button"
+        // disabled={loginMutation.isLoading}
+      >
+        {t("login.form.button.login_in")}
+      </button>
+
+      <div className="login-links">
+        <Link to={"/forgot-password"} className="content forgot-password">
+          {t("login.forget_password")}
+        </Link>
+        <br />
+        <Link to={"/register"} className="content create-account">
+          {t("login.create_account")}
+        </Link>
+      </div>
+    </>
+  );
+
+  const renderSocialLoginButtons = () => (
+    <>
+    <hr />
+    <div className="social-login-buttons">
+      <button type="button" className="social-btn" onClick={loginWithGoogle}>
+        <FaGoogle />
+        Google
+      </button>
+      <button type="button" className="social-btn" onClick={loginWithApple}>
+        <FaApple />
+        Apple
+      </button>
+    </div>
+    </>
+  );
+
+  const renderLoginForm = () => (
+    <form onSubmit={handleSubmit}>
+      {renderLoginFields()}
+      {renderFormActions()}
+      {renderSocialLoginButtons()}
+    </form>
+  );
+
+  return (
+    <div className="login-container">
+      <div className="login-box">
+        {renderLoginTitle()}
+        {renderLoginForm()}
+      </div>
+    </div>
+  );
 };
 
 export default UserLogin;

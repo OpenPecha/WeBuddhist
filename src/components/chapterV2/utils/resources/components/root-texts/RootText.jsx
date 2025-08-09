@@ -1,5 +1,5 @@
 import { IoMdClose } from "react-icons/io";
-import { IoAddCircleOutline, IoShareSocialSharp } from "react-icons/io5";
+// import { IoAddCircleOutline, IoShareSocialSharp } from "react-icons/io5";
 import { GoLinkExternal } from "react-icons/go";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
@@ -121,7 +121,7 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
                               <span>{t("text.translation.open_text")}</span>
                             </button>
 
-                            <div className="root-text-button">
+                            {/* <div className="root-text-button">
                               <IoAddCircleOutline size={14} className="mr-1"/>
                               <span>{t("sheet.add_to_sheet")}</span>
                             </div>
@@ -129,7 +129,7 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
                             <div className="root-text-button">
                               <IoShareSocialSharp size={14} className="mr-1"/>
                               <span>{t("common.share")}</span>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>

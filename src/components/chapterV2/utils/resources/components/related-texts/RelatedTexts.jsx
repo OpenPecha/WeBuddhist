@@ -1,5 +1,5 @@
 import { IoMdClose } from "react-icons/io";
-import { IoAddCircleOutline, IoShareSocialSharp } from "react-icons/io5";
+// import { IoAddCircleOutline, IoShareSocialSharp } from "react-icons/io5";
 import { GoLinkExternal } from "react-icons/go";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
@@ -97,15 +97,15 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, expandedCommentaries, 
                               <span>{t("text.translation.open_text")}</span>
                             </button>
 
-                            <div className="commentary-button">
+                            {/* <div className="commentary-button">
                               <IoAddCircleOutline size={14} className="mr-1"/>
                               <span>{t("sheet.add_to_sheet")}</span>
-                            </div>
+                            </div> */}
 
-                            <div className="commentary-button">
+                            {/* <div className="commentary-button">
                               <IoShareSocialSharp size={14} className="mr-1"/>
                               <span>{t("common.share")}</span>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>
