@@ -4,7 +4,7 @@ import {QueryClient, QueryClientProvider} from "react-query";
 import {BrowserRouter as Router, useParams} from "react-router-dom";
 import * as reactQuery from "react-query";
 import axiosInstance from "../../config/axios-config.js";
-import {render, screen} from "@testing-library/react";
+import {render, screen, fireEvent} from "@testing-library/react";
 import {TolgeeProvider} from "@tolgee/react";
 import React from "react";
 import Texts, {fetchTableOfContents} from "./Texts.jsx";
@@ -130,5 +130,28 @@ describe("Texts Component", () => {
     );
 
     expect(result).toEqual(mockTextDetailData);
+  });
+
+  test("switches to versions tab when clicked", () => {
+    setup();
+
+    const buttons = document.querySelectorAll('.tab-button');
+    expect(buttons[0]).toHaveClass('active');
+    expect(screen.getByTestId("table-of-content-component")).toBeInTheDocument();
+    fireEvent.click(buttons[1]);
+    expect(buttons[1]).toHaveClass('active');
+    expect(screen.getByTestId("versions-component")).toBeInTheDocument();
+  });
+
+  test("switches back to contents from versions tab", () => {
+    setup();
+    
+    const buttons = document.querySelectorAll('.tab-button');
+    fireEvent.click(buttons[1]);
+    expect(screen.getByTestId("versions-component")).toBeInTheDocument();
+    fireEvent.click(buttons[0]);
+    expect(buttons[0]).toHaveClass('active');
+    expect(screen.getByTestId("table-of-content-component")).toBeInTheDocument();
+    expect(screen.queryByTestId("versions-component")).not.toBeInTheDocument();
   });
 });
