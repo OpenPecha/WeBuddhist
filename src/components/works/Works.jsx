@@ -35,7 +35,7 @@ export const useGroupedTexts = (texts = []) => {
   }, [texts]);
 };
 
-export const renderRootTexts = (rootTexts, t, getLanguageClass, {useButtons = false, setSelectedText = null}) => {
+export const renderRootTexts = (rootTexts, t, getLanguageClass, {useButtons = false, setSelectedText = null, setActiveView = null}) => {
 
   const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>;
   return (
@@ -49,7 +49,7 @@ export const renderRootTexts = (rootTexts, t, getLanguageClass, {useButtons = fa
             useButtons ? (
               <button key={text.id} type="button" onClick={() => {
                   setSelectedText(text);
-                  setActiveView("contents");
+                  setActiveView && setActiveView("contents");
               }}
                 className={`${getLanguageClass(text.language)} text-button`}>
                 {text.title}

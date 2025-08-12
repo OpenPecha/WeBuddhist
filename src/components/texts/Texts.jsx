@@ -26,22 +26,25 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
 }
 
 export const tabNavigation = (activeTab, setActiveTab, t) => {
+  const contentsClass = activeTab === "contents" ? "active" : "";
+  const versionsClass = activeTab === "versions" ? "active" : "";
+  
   return (
     <div className="tab-nav">
       <button
-        className={`tab-button ${activeTab === "contents" ? "active" : ""}`}
+        className={`tab-button ${contentsClass}`}
         onClick={() => setActiveTab("contents")}
       >
         {t("text.contents")}
       </button>
       <button
-        className={`tab-button ${activeTab === "versions" ? "active" : ""}`}
+        className={`tab-button ${versionsClass}`}
         onClick={() => setActiveTab("versions")}
       >
         {t("common.version")}
       </button>
     </div>
-  )
+  );
 }
 
 export const tabContent = (activeTab, tableOfContents, pagination, setPagination, textId, tableOfContentsIsError, tableOfContentsIsLoading, t, onContentItemClick) => {
