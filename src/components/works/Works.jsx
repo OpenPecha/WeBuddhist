@@ -67,33 +67,61 @@ export const renderRootTexts = (rootTexts, t, getLanguageClass, {useButtons = fa
   );
 };
 
-export const renderCommentaryTexts = (commentaryTexts, t, getLanguageClass, {useButtons = false, setSelectedText = null}) => {
-  const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>;
+export const renderCommentaryHeader = (t, isEmpty = false) => {
+  return (
+    <>
+      <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>
+      {isEmpty && <div className="no-content">{t("text.commentary_text_not_found")}</div>}
+    </>
+  );
+};
+
+export const renderCommentaryTextButton = (text, getLanguageClass, setSelectedText, setActiveView) => {
+  return (
+    <button 
+      key={text.id} 
+      type="button" 
+      onClick={() => {
+        setSelectedText(text);
+        setActiveView && setActiveView("contents");
+      }}
+      className={`${getLanguageClass(text.language)} text-button`}
+    >
+      {text.title}
+    </button>
+  );
+};
+
+export const renderCommentaryTextLink = (text, getLanguageClass) => {
+  return (
+    <Link 
+      key={text.id} 
+      to={`/texts/${text.id}?type=commentary`}
+      className={`${getLanguageClass(text.language)} commentary-text`}
+    >
+      <div className="divider"></div>
+      <p>{text.title}</p>
+    </Link>
+  );
+};
+
+export const renderCommentaryTextsList = (commentaryTexts, getLanguageClass, useButtons, setSelectedText, setActiveView) => {
+  return (
+    <div className="commentary-list">
+      {commentaryTexts.map((text) => (
+        useButtons 
+          ? renderCommentaryTextButton(text, getLanguageClass, setSelectedText, setActiveView)
+          : renderCommentaryTextLink(text, getLanguageClass)
+      ))}
+    </div>
+  );
+};
+
+export const renderCommentaryTexts = (commentaryTexts, t, getLanguageClass, {useButtons = false, setSelectedText = null, setActiveView = null}) => {
   return (
     <div className="commentary-section">
-      {renderTitle()}
-      {commentaryTexts.length === 0 ? (
-        <div className="no-content">{t("text.commentary_text_not_found")}</div>
-      ) : (
-        <div className="commentary-list">
-          {commentaryTexts.map((text) => (
-            useButtons ? (
-              <button key={text.id} type="button" onClick={() => {
-                  setSelectedText(text);
-                  setActiveView("contents");
-              }}
-                className={`${getLanguageClass(text.language)} text-button`}>
-                {text.title}
-              </button>
-            ) : (
-            <Link key={text.id} to={`/texts/${text.id}?type=commentary`}
-                  className={`${getLanguageClass(text.language)} commentary-text`}>
-              <div className="divider"></div>
-              <p>{text.title}</p>
-            </Link>
-          )))}
-        </div>
-      )}
+      {renderCommentaryHeader(t, commentaryTexts.length === 0)}
+      {commentaryTexts.length > 0 && renderCommentaryTextsList(commentaryTexts, getLanguageClass, useButtons, setSelectedText, setActiveView)}
     </div>
   );
 };
