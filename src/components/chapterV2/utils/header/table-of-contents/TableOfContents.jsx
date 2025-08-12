@@ -127,4 +127,5 @@ TableOfContents.propTypes = {
   showTableOfContents: PropTypes.bool,
   currentSectionId: PropTypes.string,
   onSegmentSelect: PropTypes.func,
+  language: PropTypes.string.isRequired,
 };

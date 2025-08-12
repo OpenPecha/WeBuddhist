@@ -2,6 +2,7 @@ import React from "react"
 import "./ViewSelector.scss"
 import {useTranslate} from "@tolgee/react";
 import {MdClose} from "react-icons/md";
+import PropTypes from "prop-types";
 
 export const VIEW_MODES = {
   SOURCE: "SOURCE",
@@ -43,3 +44,10 @@ const ViewSelector = (props) => {
 };
 
 export default React.memo(ViewSelector);
+
+ViewSelector.propTypes = {
+  setShowViewSelector: PropTypes.func.isRequired,
+  viewMode: PropTypes.string.isRequired,
+  setViewMode: PropTypes.func.isRequired,
+  versionSelected: PropTypes.object,
+};
