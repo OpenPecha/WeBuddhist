@@ -69,5 +69,5 @@ ChapterHeader.propTypes = {
   removeChapter: PropTypes.func.isRequired,
   currentChapter: PropTypes.object.isRequired,
   totalChapters: PropTypes.number.isRequired,
-  versionSelected: PropTypes.object,
+  versionSelected: PropTypes.bool,
 };

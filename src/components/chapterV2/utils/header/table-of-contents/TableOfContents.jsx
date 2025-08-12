@@ -55,13 +55,13 @@ const TableOfContents = (props) => {
   };
 
   const renderSectionTitle = (section, segmentId) => (
-    <div
-      onKeyDown={(e) => e.key === 'Enter' && onSegmentSelect(segmentId)}
+    <button
+      type="button"
       onClick={() => onSegmentSelect(segmentId)}
       className={`section-title ${getLanguageClass(tableOfContents?.text_detail?.language)}`}
     >
       {section.title}
-    </div>
+    </button>
   );
 
   const renderNestedSections = (section, contentId) => (
@@ -126,6 +126,6 @@ TableOfContents.propTypes = {
   textId: PropTypes.string.isRequired,
   showTableOfContents: PropTypes.bool,
   currentSectionId: PropTypes.string,
-  onSegmentSelect: PropTypes.func,
+  onSegmentSelect: PropTypes.func.isRequired,
   language: PropTypes.string.isRequired,
 };

@@ -49,5 +49,5 @@ ViewSelector.propTypes = {
   setShowViewSelector: PropTypes.func.isRequired,
   viewMode: PropTypes.string.isRequired,
   setViewMode: PropTypes.func.isRequired,
-  versionSelected: PropTypes.object,
+  versionSelected: PropTypes.bool,
 };
