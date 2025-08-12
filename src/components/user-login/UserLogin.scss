@@ -7,16 +7,14 @@ $dark-red-color: darkred;
 $orange-color: #f39c12;
 $black-color: black;
 
-
 .login-container {
   min-height: 90vh;
   background-color: $background-color;
-
-  .row {
-    --bs-gutter-x: 5rem;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
-
 
 .login-box {
   background: $white-color;
@@ -26,24 +24,102 @@ $black-color: black;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
   .login-title {
+    text-align: center;
     font-weight: bold;
     color: $dark-grey;
     margin-bottom: 2rem;
   }
 
-  .form-input {
-    padding: 0.8rem;
-    border-radius: 5px;
-    border: 1px solid $light-grey;
+  .form-group {
+    position: relative;
+    margin-bottom: 1rem;
 
-    &:focus {
-      outline: none;
-      border-color: $orange-color;
-      box-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
+    .form-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.8rem;
+      padding-right: 2rem;
+      border-radius: 5px;
+      border: 1px solid $light-grey;
+
+      &:focus {
+        outline: none;
+        border-color: $orange-color;
+        box-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
+      }
+
+      &.is-invalid {
+        padding-right: 4rem;
+      }
+    }
+
+    .invalid-feedback {
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: block;
+    }
+
+    .input-icons {
+      position: absolute;
+      top: 13px;
+      right: 8px;
+      display: flex;
+      align-items: center;
+    }
+
+    .validation-icon-standalone {
+      position: absolute;
+      right: 8px;
+      top: 35%;
+      font-size: 1.2rem;
+      transform: translateY(-50%);
+      color: $red-color;
+    }
+
+    .validation-icon {
+      font-size: 1.2rem;
+      color: $red-color;
+    }
+    
+    .password-toggle-standalone {
+      position: absolute;
+      top: 50%;
+      right: 5px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .password-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 1;
+      margin-right: 4px;
+      transform: translateY(-1px);
+    }
+  }
+
+  .server-error-message {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+    padding: 0.5rem;
+    color: $red-color;
+    font-size: 0.875rem;
+    
+    .server-error-icon {
+      margin-right: 0.5rem;
+      font-size: 1rem;
+      flex-shrink: 0;
     }
   }
 
   .login-button {
+    width: 100%;
+    margin-bottom: 1rem;
     background-color: brown;
     color: $white-color;
     padding: 0.8rem;
@@ -62,7 +138,7 @@ $black-color: black;
   }
 
   .login-links {
-    margin-top: 1rem;
+    text-align: center;
 
     .forgot-password,
     .create-account {
@@ -78,6 +154,7 @@ $black-color: black;
   .social-login-buttons {
     display: flex;
     gap: 0.5rem;
+
     .social-btn {
       flex: 1;
       padding: 0.8rem;
@@ -89,17 +166,18 @@ $black-color: black;
       justify-content: center;
       transition: all 0.2s ease;
       color: $dark-grey;
+      background-color: $white-color;
 
       &:hover {
         background-color: $background-color;
         border-color: $dark-grey;
-        color: $dark-grey;
       }
 
       &:focus {
         outline: none;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
       }
+
       svg {
         margin-right: 0.5rem;
       }

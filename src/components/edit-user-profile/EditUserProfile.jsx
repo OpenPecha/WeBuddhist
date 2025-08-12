@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button, Col, Form, Row, Tab, Tabs } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./EditUserProfile.scss";
 import { useMutation } from "react-query";
@@ -11,6 +10,7 @@ const EditUserProfile = () => {
   const navigate = useNavigate();
   const { t } = useTranslate();
 
+  const [activeTab, setActiveTab] = useState("personalDetails");
 
   const userInfo = location.state?.userInfo || {};
   const updateProfileMutation = useMutation(async (updateProfileData) => {
@@ -74,166 +74,193 @@ const EditUserProfile = () => {
     updateProfileMutation.mutateAsync(formData)
   };
 
+  const renderTabNavigation = () => (
+    <div className="nav-tabs">
+      <button type="button" className={`nav-link ${ activeTab === "personalDetails" ? "active" : "" }`} onClick={() => setActiveTab("personalDetails")}>
+        {t("profile.personal_details")}
+        </button>
+      <button type="button" className={`nav-link ${ activeTab === "contactDetails" ? "active" : "" }`} onClick={() => setActiveTab("contactDetails")}>
+        {t("profile.contact_details")}
+      </button>
+    </div>
+  );
+
+  const renderNameFields = () => {
+    const nameFields = [
+      { name: 'firstname', labelKey: 'sign_up.form.first_name', placeholderKey: 'profile.enter-your-first-name' },
+      { name: 'lastname', labelKey: 'sign_up.form.last_name', placeholderKey: 'profile.enter-your-last-name' }
+    ];
+
+    return (
+      <div className="row">
+        {nameFields.map((field) => (
+          <div className="col" key={field.name}>
+            <div className="form-group">
+              <label htmlFor={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}>
+                {t(field.labelKey)}
+              </label>
+              <input 
+                id={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}
+                className="form-control" 
+                type="text" 
+                name={field.name} 
+                value={formData[field.name]} 
+                onChange={handleChange} 
+                placeholder={t(field.placeholderKey)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+  const renderTitleOrgFields = () => {
+    const titleOrgFields = [
+      { name: 'title', labelKey: 'topic.admin.title', placeholderKey: 'profile.enter-your-title' },
+      { name: 'organization', labelKey: 'edit_profile.organization', placeholderKey: 'profile.enter-your-organization' }
+    ];
+
+    return (
+      <div className="row">
+        {titleOrgFields.map((field) => (
+          <div className="col" key={field.name}>
+            <div className="form-group">
+              <label htmlFor={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}>
+                {t(field.labelKey)}
+              </label>
+              <input 
+                id={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}
+                className="form-control" 
+                type="text" 
+                name={field.name} 
+                value={formData[field.name]} 
+                onChange={handleChange} 
+                placeholder={t(field.placeholderKey)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+  const renderLocationField = () => (
+      <div className="row">
+        <div className="col">
+          <div className="form-group">
+            <label htmlFor="formLocation">{t("edit_profile.location")}</label>
+            <input id="formLocation" className="form-control" type="text" name="location" value={formData.location} onChange={handleChange} placeholder={t("profile.enter-your-location")}/>
+          </div>
+        </div>
+      </div>
+    );
+  const renderEducationSection = () => (
+      <div className="row">
+        <div className="form-group">
+          <label htmlFor="formEducation">
+            {t("edit_profile.education_info")}
+          </label>
+          {formData.educations.map((edu, index) => (
+            <div className="form-education" key={index}>
+              <div className="col">
+                <input className="form-control" type="text" value={edu} onChange={(e) => handleEducationChange(index, e.target.value)} placeholder={t("profile.enter-your-education")}/>
+                {index !== 0 && (
+                  <button
+                    type="button"
+                    className="remove-icon"
+                    onClick={() => {
+                      const updatedEducation = formData.educations.filter(
+                        (_, i) => i !== index
+                      );
+                      setFormData({
+                        ...formData,
+                        educations: updatedEducation,
+                      });
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+          <button type="button" className="add-education-btn" onClick={addEducation}>
+            {t("edit_profile.line_add")}
+          </button>
+        </div>
+      </div>
+    );
+    const renderAboutMeField = () => (
+      <div className="row">
+        <div className="form-group">
+          <label htmlFor="formAboutMe">{t("edit_profile.about_me")}</label>
+          <textarea id="formAboutMe" className="form-control" rows={3} name="about_me" value={formData.about_me} onChange={handleChange} placeholder={t("profile.tell-us-about-yourself")}/>
+        </div>
+      </div>
+  );
+  const renderPersonalDetailsFields = () => (
+    <div className="tab-panel">
+      {renderNameFields()}
+      {renderTitleOrgFields()}
+      {renderLocationField()}
+      {renderEducationSection()}
+      {renderAboutMeField()}
+    </div>
+  );
+  const renderContactDetailsFields = () => (
+    <div className="tab-panel">
+      <div className="row">
+        {formData.social_profiles.map((profile) => (
+          <div className="col" key={profile.account}>
+            <div className="form-group">
+              <label htmlFor={`form${profile.account}`}>
+                {t(`common.${profile.account}`)}
+              </label>
+              <input
+                id={`form${profile.account}`}
+                className="form-control"
+                type="text"
+                value={profile.url}
+                onChange={(e) =>
+                  handleSocialProfileChange(profile.account, e.target.value)
+                }
+                placeholder={t(`profile.enter-your-${profile.account}`)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderTabContent = () => (
+    <div className="tab-content">
+      {activeTab === "personalDetails" && renderPersonalDetailsFields()}
+      {activeTab === "contactDetails" && renderContactDetailsFields()}
+    </div>
+  );
+
+  const renderFormButtons = () => (
+    <div className="form-buttons">
+      <button className="cancel-btn" type="button" onClick={() => navigate(-1)}>
+        {t("common.button.cancel")}
+      </button>
+      <button className="submit-btn" type="submit">
+        {t("common.button.save")}
+      </button>
+    </div>
+  );
+
   return (
     <div className="edit-user-profile listtitle">
       <h2>{t("edit_profile.header")}</h2>
       <hr />
-      <Form onSubmit={ handleSubmit } className="textalign">
-        <Tabs defaultActiveKey="personalDetails" id="edit-profile-tabs" className="mb-4">
-          {/* Personal Details Tab */ }
-          <Tab eventKey="personalDetails" title={ t("profile.personal_details") }>
-            <Row className="p-3">
-              <Col md={ 6 }>
-                <Form.Group controlId="formFirstName">
-                  <Form.Label>{ t("sign_up.form.first_name") }</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="firstname"
-                    value={ formData.firstname }
-                    onChange={ handleChange }
-                    placeholder={ t("profile.enter-your-first-name") }
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={ 6 }>
-                <Form.Group controlId="formLastName">
-                  <Form.Label>{ t("sign_up.form.last_name") }</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="lastname"
-                    value={ formData.lastname }
-                    onChange={ handleChange }
-                    placeholder={ t("profile.enter-your-last-name") }
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row className="p-3">
-              <Col md={ 6 }>
-                <Form.Group controlId="formTitle">
-                  <Form.Label>{ t("topic.admin.title") }</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="title"
-                    value={ formData.title }
-                    onChange={ handleChange }
-                    placeholder={ t("profile.enter-your-title") }
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={ 6 }>
-                <Form.Group controlId="formOrganization">
-                  <Form.Label>{ t("edit_profile.organization") }</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="organization"
-                    value={ formData.organization }
-                    onChange={ handleChange }
-                    placeholder={ t("profile.enter-your-organization") }
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row className="p-3">
-              <Col md={ 6 }>
-                <Form.Group controlId="formLocation">
-                  <Form.Label>{ t("edit_profile.location") }</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="location"
-                    value={ formData.location }
-                    onChange={ handleChange }
-                    placeholder={ t("profile.enter-your-location") }
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row className="mb-2 align-items-center p-3">
-              <Form.Group controlId="formEducation">
-                <Form.Label>{ t("edit_profile.education_info") }</Form.Label>
-                { formData.educations.map((edu, index) => (
-                  <div className="form-education" key={ index }>
-                    <Col md={ 12 } className="position-relative">
-                      <Form.Control
-                        type="text"
-                        value={ edu }
-                        onChange={ (e) => handleEducationChange(index, e.target.value) }
-                        placeholder={ t("profile.enter-your-education") }
-                      />
-                      { index !== 0 && (
-                        <button
-                          type="button"
-                          className="remove-icon"
-                          onClick={ () => {
-                            const updatedEducation = formData.educations.filter((_, i) => i !== index);
-                            setFormData({ ...formData, educations: updatedEducation });
-                          } }
-                        >
-                          ✕
-                        </button>
-                      ) }
-                    </Col>
-                  </div>
-                )) }
-                <Button
-                  variant="outline-dark"
-                  size="sm"
-                  onClick={ addEducation }
-                  className="btn-add p-3"
-                >
-                  {t("edit_profile.line_add")}
-                 </Button>
-              </Form.Group>
-            </Row>
-
-
-            <Row className="p-3">
-              <Form.Group controlId="formAboutMe">
-                <Form.Label>{ t("edit_profile.about_me") }</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={ 3 }
-                  name="about_me"
-                  value={ formData.about_me }
-                  onChange={ handleChange }
-                  placeholder={ t("profile.tell-us-about-yourself") }
-                />
-              </Form.Group>
-            </Row>
-          </Tab>
-
-          {/* Contact Details Tab */ }
-          <Tab eventKey="contactDetails" title={ t("profile.contact_details") }>
-            <Row className="p-3">
-              { formData.social_profiles.map((profile) => (
-                <Col md={ 6 } key={ profile.account } className=" p-3">
-                  <Form.Group controlId={ `form${ profile.account }` }>
-                    <Form.Label>{ t(`common.${ profile.account }`) }</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={ profile.url }
-                      onChange={ (e) => handleSocialProfileChange(profile.account, e.target.value) }
-                      placeholder={ t(`profile.enter-your-${ profile.account }`) }
-                    />
-                  </Form.Group>
-                </Col>
-              )) }
-            </Row>
-          </Tab>
-        </Tabs>
-
-        <div className="form-buttons">
-          <Button className="btn-cancel" type="button" onClick={ () => navigate(-1) }>
-            { t("common.button.cancel") }
-          </Button>
-          <Button className="btn-submit" type="submit">
-            { t("common.button.save") }
-          </Button>
+      <form onSubmit={handleSubmit} className="textalign">
+        <div className="custom-tabs">
+          {renderTabNavigation()}
+          {renderTabContent()}
         </div>
-      </Form>
+        {renderFormButtons()}
+      </form>
     </div>
   );
 };

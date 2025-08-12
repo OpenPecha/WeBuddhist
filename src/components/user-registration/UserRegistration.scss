@@ -12,9 +12,9 @@ $error-color: red;
 .register-container {
   height: 100vh;
   background-color: $background-color;
-  .row{
-    --bs-gutter-x:5rem;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .register-box {
@@ -25,13 +25,20 @@ $error-color: red;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
   .register-title {
+    text-align: center;
     font-weight: bold;
     color: $dark-grey;
     margin-bottom: 2rem;
   }
 
+  .form-group {
+    margin-bottom: 1rem;
+    position: relative;
   .form-input {
+    width: 100%;
+    box-sizing: border-box;
     padding: 0.8rem;
+    padding-right: 2rem;
     border-radius: 5px;
     border: 1px solid $light-grey;
 
@@ -40,9 +47,53 @@ $error-color: red;
       border-color: $orange-color;
       box-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
     }
+
+    &.is-invalid {
+      padding-right: 4rem;
+    }
   }
 
+  .input-icons {
+    position: absolute;
+    top: 13px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  .validation-icon-standalone {
+    position: absolute;
+    top: 35%;
+    right: 8px;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: $error-color;
+  }
+
+  .validation-icon {
+    font-size: 1.2rem;
+    color: $error-color;
+  }
+
+  .password-toggle-standalone {
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    transform: translateY(-50%);
+  }
+  
+  .password-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1;
+    margin-right: 4px;
+    transform: translateY(-1px);
+  }
+}
   .register-button {
+    width: 100%;
+    margin-bottom: 1rem;
     background-color: brown;
     color: $white-color;
     padding: 0.8rem;
@@ -61,8 +112,6 @@ $error-color: red;
   }
 
   .register-links {
-    margin-top: 1rem;
-
     .login-link {
       color: black;
       text-decoration: none;
@@ -95,6 +144,7 @@ $error-color: red;
       justify-content: center;
       transition: all 0.2s ease;
       color: $dark-grey;
+      background-color: $white-color;
 
       &:hover {
         background-color: $background-color;

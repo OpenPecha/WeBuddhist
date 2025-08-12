@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { FaGlobe, FaSearch } from "react-icons/fa";
-import { LuEyeOff, LuEye} from "react-icons/lu";
+import { RxHamburgerMenu , RxCross1 } from "react-icons/rx";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
@@ -65,7 +65,7 @@ const Navigation = () => {
 const renderLogo=()=>{
     return(
         <Link to="/" onClick={handleMobileMenuToggle}>
-         <img className="logo" src="/img/pecha-logo.svg" alt="Pecha"/>
+         <img className="logo" src="/img/webuddhist_logo.svg" alt="Pecha"/>
        </Link>
     )
 }
@@ -73,7 +73,7 @@ const renderNavLinks=()=>{
     return(
         <div className='nav-links navbaritems'>
             <Link to="/collections" onClick={handleMobileMenuToggle}>  {t("header.text")}</Link>
-            <Link to="/topics" onClick={handleMobileMenuToggle}>{t("header.topic")}</Link>
+            {/* <Link to="/topics" onClick={handleMobileMenuToggle}>{t("header.topic")}</Link> */}
             <Link to="/community" onClick={handleMobileMenuToggle}> {t("header.community")}</Link>
         </div>
     )
@@ -193,7 +193,7 @@ const renderAuthButtons = () => {
                 className="mobile-menu-trigger"
                 onClick={handleMobileMenuToggle}
               >
-                {!isMobileMenuOpen ? <LuEyeOff /> : <LuEye />}
+                {!isMobileMenuOpen ? <RxHamburgerMenu /> : <RxCross1 />}
               </button>
           </div>
       </div>

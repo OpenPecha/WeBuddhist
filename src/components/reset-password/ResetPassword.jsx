@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button, Form } from "react-bootstrap";
 import "./ResetPassword.scss";
 import eyeOpen from "../../assets/icons/eye-open.svg";
 import eyeClose from "../../assets/icons/eye-closed.svg";
@@ -92,17 +91,19 @@ const ResetPassword = () => {
 
   // Reusable Field Component
   const renderInputField = (label, name) => (
-    <Form.Group className="content mb-3 reset-password-form" controlId={ name }>
-      <Form.Label>{ label }</Form.Label>
-      <div className="password-input-container position-relative">
-        <Form.Control
+    <div className="content reset-password-form">
+      <label className="form-label" htmlFor={ name }>{ label }</label>
+      <div className="password-input-container">
+        <input
+          id={ name }
           type={ showPassword[name] ? "text" : "password" }
           name={ name }
           value={ formData[name] }
           onChange={ handleInputChange }
-          isInvalid={ !!errors[name] }
+          className={`form-control ${errors[name] ? "is-invalid" : ""}`}
         />
         <button
+          type="button"
           onClick={ (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -119,18 +120,18 @@ const ResetPassword = () => {
         </button>
         { errors[name] && <div className="error-message">{ errors[name] }</div> }
       </div>
-    </Form.Group>
+    </div>
   );
 
   return (
     <div className="reset-password-container">
-      <Form onSubmit={ handleSubmit }>
+      <form onSubmit={ handleSubmit }>
         { renderInputField("New Password", "newPassword") }
         { renderInputField("Confirm Password", "confirmPassword") }
-        <Button type="submit" className="reset-button w-100">
+        <button type="submit" className="reset-button">
           Reset Password
-        </Button>
-      </Form>
+        </button>
+      </form>
     </div>
   );
 };

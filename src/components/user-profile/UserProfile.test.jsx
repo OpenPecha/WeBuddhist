@@ -193,43 +193,28 @@ describe("UserProfile Component", () => {
     expect(emailLink).toHaveAttribute("href", "mailto:test@pecha.com");
 
     // Check for icons
-    expect(twitterLink.querySelector(".bi-twitter")).toBeInTheDocument();
-    expect(youtubeLink.querySelector(".bi-youtube")).toBeInTheDocument();
-    expect(linkedInLink.querySelector(".bi-linkedin")).toBeInTheDocument();
-    expect(facebookLink.querySelector(".bi-facebook")).toBeInTheDocument();
-    expect(emailLink.querySelector(".bi-envelope")).toBeInTheDocument();
+    expect(twitterLink.querySelector("svg")).toBeInTheDocument();
+    expect(youtubeLink.querySelector("svg")).toBeInTheDocument();
+    expect(linkedInLink.querySelector("svg")).toBeInTheDocument();
+    expect(facebookLink.querySelector("svg")).toBeInTheDocument();
+    expect(emailLink.querySelector("svg")).toBeInTheDocument();
   });
 
   test("renders and switches between tabs correctly", async () => {
     setup();
 
-    const sheetsTab = screen.getByRole('tab', { name: /sheets/i });
-    const collectionsTab = screen.getByRole('tab', { name: /collections/i });
-    const notesTab = screen.getByRole('tab', { name: /notes/i });
-    const trackerTab = screen.getByRole('tab', { name: "Buddhist Text Tracker" });
+    const sheetsTab = screen.getByRole('button', { name: /sheets/i });
 
+    expect(sheetsTab).toBeInTheDocument();
+    expect(sheetsTab).toHaveClass('active');
     // Check initial state (Sheets tab should be active)
     expect(screen.getByTestId("sheet-listing")).toBeInTheDocument();
+    // Check if collections, notes, and tracker tabs are not rendered
+    expect(screen.queryByRole('button', { name: /collections/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /notes/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: "Buddhist Text Tracker" })).not.toBeInTheDocument();
 
-    // Switch to Collections tab
-    await act(async () => {
-      fireEvent.click(collectionsTab);
-    });
-    expect(screen.getByTestId("collections-tab")).toBeInTheDocument();
-
-    // Switch to Notes tab
-    await act(async () => {
-      fireEvent.click(notesTab);
-    });
-    expect(screen.getByTestId("notes-tab")).toBeInTheDocument();
-
-    // Switch to Buddhist Tracker tab
-    await act(async () => {
-      fireEvent.click(trackerTab);
-    });
-    expect(screen.getByTestId("buddhist-tracker-tab")).toBeInTheDocument();
-
-    // Switch back to Sheets tab
+    // Clicking on Sheets tab should keep its content visible
     await act(async () => {
       fireEvent.click(sheetsTab);
     });

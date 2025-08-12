@@ -3,7 +3,6 @@ import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
 import {useMemo, useState} from "react";
 import {useSearchParams} from "react-router-dom";
-import {Button, Card, Col, Container, Form, Pagination, Row} from "react-bootstrap";
 import "./Topics.scss"
 import React from "react";
 import {useTranslate} from "@tolgee/react";
@@ -68,117 +67,181 @@ const Topics = () => {
     setSearchParams("");
   };
 
+  const handleBackToDefaultSearch = () => {
+    setSearchMode({ isDeepSearch: false, hierarchy: true });
+    setSearchFilter("");
+    setSearchParams("");
+  };
+
+  const renderTopicsTitle = () => (
+    <h4 className="topics-title listtitle">
+      {parentId ? topicsData?.parent?.title : t("topic.expore")}
+    </h4>
+  );
+
+  const renderTopicCard = (topic, index) => (
+    <div key={index}>
+      <div className="topic-card">
+        <button
+          className="topic-button listtitle"
+          onClick={() => handleTopicClick(topic)}
+        >
+          {topic.title}
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderAlphabetButton = (letter, index) => (
+    <button
+      key={index}
+      className={`alphabet-button listsubtitle ${
+        searchFilter === letter ? "active" : ""
+      }`}
+      onClick={() => setSearchFilter(letter)}
+    >
+      {letter}
+    </button>
+  );
+
+  const renderAlphabetFilter = () => (
+    <div className="alphabet-filter">
+      {cleanAlphabetArray.map((letter, index) => renderAlphabetButton(letter, index))}
+      <button
+        className="clear-letter-click"
+        onClick={() => setSearchFilter("")}
+      >
+        {t("topic.clear")}
+      </button>
+    </div>
+  );
+
+  const renderSearchInput = () => (
+    <input
+      type="text"
+      placeholder="Search topics..."
+      value={searchFilter}
+      onChange={(e) => setSearchFilter(e.target.value)}
+      className="search-input"
+    />
+  );
+
+  const renderBackButton = () => (
+    <button
+      className="back-button"
+      onClick={handleBackToDefaultSearch}
+    >
+      Back
+    </button>
+  );
+
+  const renderDeepSearchButton = () => (
+    <button 
+      className="deep-search-button" 
+      onClick={onDeepSearchButtonClick}
+    >
+      {t("topic.a_to_z")}
+    </button>
+  );
+
+  const renderDeepSearchInterface = () => (
+    <>
+      {renderSearchInput()}
+      {renderAlphabetFilter()}
+      {renderBackButton()}
+    </>
+  );
+
+  const renderDefaultSearchInterface = () => (
+    <div className="deep-search-container">
+      {renderDeepSearchButton()}
+      <p>{t("topic.browse_topic")}</p>
+    </div>
+  );
+
+  const renderSearchBar = () => (
+    <div className="search-container">
+      {searchMode.isDeepSearch
+        ? renderDeepSearchInterface()
+        : renderDefaultSearchInterface()}
+    </div>
+  );
+
+  const renderEmptyState = () => (
+    <div>
+      <p>No topics found</p>
+    </div>
+  );
+
+  const renderTopicsGrid = (filteredTopics) => (
+    <div className="topics-list-wrapper">
+      {filteredTopics.length > 0 
+        ? filteredTopics.map((topic, index) => renderTopicCard(topic, index))
+        : renderEmptyState()
+      }
+    </div>
+  );
+
+  const renderPaginationSection = (showPagination) => (
+    showPagination && (
+      <div className="pagination-container">
+        <PaginationComponent
+          pagination={pagination}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          setPagination={setPagination}
+        />
+      </div>
+    )
+  );
+
   const renderTopicsList = () => {
     const filteredTopics = topicsList.topics.filter((topic) => {
       if (searchFilter) {
-        return topic.title.toLowerCase().startsWith(searchFilter.toLowerCase())
+        return topic.title.toLowerCase().startsWith(searchFilter.toLowerCase());
       }
       return true;
     });
 
+    const shouldShowContent = (searchMode.isDeepSearch && searchFilter) || !searchMode.isDeepSearch;
+    const showPagination = filteredTopics.length > 0;
 
     return (
-      ((searchMode.isDeepSearch && searchFilter) || !searchMode.isDeepSearch) && (
+      shouldShowContent && (
         <>
-          <Row xs={1} md={2} className="g-4">
-            {filteredTopics.length > 0 ? (
-              filteredTopics.map((topic, index) => (
-                <Col key={index}>
-                  <Card className="topic-card">
-                    <button className="topic-button listtitle" onClick={() => handleTopicClick(topic)}>
-                      {topic.title}
-                    </button>
-                  </Card>
-                </Col>
-              ))
-            ) : (
-              <Col>
-                <p>No topics found</p>
-              </Col>
-            )}
-          </Row>
-          {filteredTopics.length > 0 && <Row>
-            <PaginationComponent
-            pagination={pagination}
-            totalPages={totalPages}
-            handlePageChange={handlePageChange}
-            setPagination={setPagination}
-          /></Row>}
+          {renderTopicsGrid(filteredTopics)}
+          {renderPaginationSection(showPagination)}
         </>
       )
     );
   };
 
-  const renderSearchBar = () => {
-    return (
-      <div className="search-container">
-        {searchMode.isDeepSearch ? (
-          <>
-            <Form.Control
-              type="text"
-              placeholder="Search topics..."
-              value={searchFilter}
-              onChange={(e) => setSearchFilter(e.target.value)}
-              className="mb-3"
-            />
-            <div className="alphabet-filter">
-              {cleanAlphabetArray.map((letter, index) => (
-                <Button
-                  key={index}
-                  variant={searchFilter === letter ? "secondary" : "outline-secondary"}
-                  className="alphabet-button listsubtitle"
-                  onClick={() => setSearchFilter(letter)}
-                >
-                  {letter}
-                </Button>
-              ))}
-              <Button variant="outline-dark" className="clear-letter-click" onClick={() => setSearchFilter("")}>
-                {t("topic.clear")}
-              </Button>
-            </div>
-            <Button
-              className="back-button"
-              variant="outline-secondary"
-              onClick={() => {
-                setSearchMode({ isDeepSearch: false, hierarchy: true });
-                setSearchFilter("");
-                setSearchParams("");
-              }}
-            >
-              Back
-            </Button>
-          </>
-        ) : (
-          <div className="deep-search-container">
-            <Button className="deep-search-button" variant="outline-secondary" onClick={onDeepSearchButtonClick}>
-              {t("topic.a_to_z")}
-            </Button>
-            <p>{t("topic.browse_topic")}</p>
-          </div>
-        )}
+  const renderTopicsListSection = () => (
+    <div className="topics-list">
+      {renderTopicsTitle()}
+      {renderSearchBar()}
+      {isLoading ? <p>Loading topics...</p> : renderTopicsList()}
+    </div>
+  );
+
+  const renderTopicInfoSection = () => (
+    <div className="topic-info">
+      <div className="topic-info-card">
+        <div className="topic-info-card-body">
+          <h5>Topic Information</h5>
+          <p>Details about the selected topic will be displayed here.</p>
+        </div>
       </div>
-    );
-  };
-
-
+    </div>
+  );
+  
   return (
-    <Container fluid className="topics-container">
-      <Row className="topics-wrapper">
-        <Col xs={12} md={7} className="topics-list">
-          <h4 className="topics-title listtitle">{parentId ? topicsData?.parent?.title : t("topic.expore")}</h4>
-          {renderSearchBar()}
-          {isLoading ? <p>Loading topics...</p> : renderTopicsList()}
-        </Col>
-        <Col xs={12} md={4} className="topic-info">
-          <Card className="topic-info-card">
-            <Card.Body>
-              <h5>Topic Information</h5>
-              <p>Details about the selected topic will be displayed here.</p>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+    <div className="topics-container">
+      <div className="topics-wrapper">
+        {renderTopicsListSection()}
+        {renderTopicInfoSection()}
+      </div>
+    </div>
   );
 };
 

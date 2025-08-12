@@ -135,6 +135,9 @@ describe("EditUserProfile Component", () => {
   it("updates social profile URLs correctly", () => {
     setup();
 
+    const contactDetailsTab = screen.getByRole('button', { name: "Contact Details" });
+    fireEvent.click(contactDetailsTab);
+
     const linkedInInput = screen.getByPlaceholderText("Enter your LinkedIn");
     fireEvent.change(linkedInInput, { target: { value: "https://linkedin.com/in/newprofile" } });
 
@@ -163,4 +166,18 @@ describe("EditUserProfile Component", () => {
     await screen.findByText(/Save/); // Wait for any mutation-related UI updates
   });
 
+  it("switches between tabs correctly", () => {
+    setup();
+  
+    expect(screen.getByLabelText("First Name")).toBeInTheDocument();
+    
+    const personalDetailsTab = screen.getByRole('button', { name: "Personal Details" });
+    fireEvent.click(personalDetailsTab);
+    
+    const contactDetailsTab = screen.getByRole('button', { name: "Contact Details" });
+    fireEvent.click(contactDetailsTab);
+    
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByText("Personal Details")).toBeInTheDocument(); 
+  });
 });
