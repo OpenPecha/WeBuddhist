@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react';
 import axiosInstance from '../../config/axios-config';
-import { LANGUAGE } from "../../utils/constants.js";
+import { LANGUAGE, siteName } from "../../utils/constants.js";
 import './Works.scss';
 import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
@@ -50,7 +50,7 @@ const Works = () => {
 
   const texts = worksData?.texts || [];
   const groupedTexts = useGroupedTexts(texts);
-  const siteName = "Webuddhist";
+
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const pageTitle = worksData?.collection?.title ? `${worksData.collection.title} | ${siteName}` : `Works | ${siteName}`;

@@ -9,6 +9,7 @@ import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } fr
 import Seo from "../../commons/seo/Seo.jsx";
 import { useTranslate } from "@tolgee/react";
 import PropTypes from "prop-types";
+import { siteName } from "../../../utils/constants.js";
 
 const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
   const [, textId, contentId, versionId, size, initialSegmentId] = queryKey;
@@ -77,7 +78,6 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
   }, [infiniteQuery.data?.pages]);
 
   // ----------------------------- helpers ---------------------------------------
-  const siteName = "Webuddhist";
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const pageTitle = allContent?.text_detail?.title ? `${allContent.text_detail.title} | ${siteName}` : `Chapter | ${siteName}`;

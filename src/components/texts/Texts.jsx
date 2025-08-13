@@ -4,7 +4,7 @@ import {useQuery} from "react-query";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
 import Seo from "../commons/seo/Seo.jsx";
 import "./Texts.scss"
-import {LANGUAGE} from "../../utils/constants.js";
+import {LANGUAGE, siteName} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useTranslate} from "@tolgee/react";
 import {Link, useParams, useSearchParams} from "react-router-dom";
@@ -43,7 +43,6 @@ const Texts = () => {
 
   // -------------------------------------------- helpers ----------------------------------------------
   const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
-  const siteName = "Webuddhist";
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const dynamicTitle = tableOfContents?.text_detail?.title ? `${tableOfContents.text_detail.title} | ${siteName}` : `Text | ${siteName}`;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LANGUAGE } from '../../utils/constants.js';
+import { LANGUAGE, siteName } from '../../utils/constants.js';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config';
@@ -30,7 +30,6 @@ const SubCollections = () => {
     () => fetchSubCollections(id),
     {refetchOnWindowFocus: false}
   );
-  const siteName = "Webuddhist";
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const pageTitle = subCollectionsData?.parent?.title ? `${subCollectionsData.parent.title} | ${siteName}` : `Collection | ${siteName}`;

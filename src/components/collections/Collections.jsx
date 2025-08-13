@@ -2,7 +2,7 @@ import React from "react";
 import "./Collections.scss";
 import {useTranslate} from "@tolgee/react";
 import axiosInstance from "../../config/axios-config.js";
-import {LANGUAGE} from "../../utils/constants.js";
+import {LANGUAGE, siteName} from "../../utils/constants.js";
 import {useQuery} from "react-query";
 import {Link} from "react-router-dom";
 import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
@@ -29,7 +29,6 @@ const Collections = () => {
   );
 
   // ----------------------------- helpers ---------------------------------------
-  const siteName = "Webuddhist";
   const siteBaseUrl =  window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, error: collectionsError, t });
