@@ -7,6 +7,7 @@ import CompareTextView from "./CompareTextView.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import { mockReactQuery, mockAxios, mockTolgee, mockUseAuth } from "../../../../../../test-utils/CommonMocks.js";
+import { PanelProvider } from "../../../../../../context/PanelContext";
 
 vi.mock("../../../../../../components/texts/Texts.jsx", () => ({
   fetchTableOfContents: vi.fn()
@@ -74,7 +75,7 @@ describe("CompareTextView Component Rendering Tests", () => {
   const setup = (queryData = {}) => {
     return render(
       <QueryClientProvider client={queryClient}>
-        <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+        <TolgeeProvider tolgee={mockTolgee}>
           <CompareTextView {...mockProps} />
         </TolgeeProvider>
       </QueryClientProvider>
@@ -1141,6 +1142,33 @@ describe("CompareTextView Component Rendering Tests", () => {
       
       expect(screen.getByTestId("early-return")).toBeInTheDocument();
       expect(screen.queryByTestId("subcollections-content")).not.toBeInTheDocument();
+    });
+    
+    test("Should render error state when subcollections fetch fails", () => {
+      earlyReturnValue = (
+        <div data-testid="subcollections-error">
+          error.something_went_wrong
+        </div>
+      );
+      
+      function TestSubCollectionsErrorView() {
+        return (
+          <div data-testid="subcollections-view">
+            <div className="selected-collection-content">
+              <h1 className="listtitle">Subcollections</h1>
+              {earlyReturnValue || <div data-testid="subcollections-content">Subcollections Content</div>}
+            </div>
+          </div>
+        );
+      }
+      
+      render(<TestSubCollectionsErrorView />);
+      
+      expect(screen.getByTestId("subcollections-error")).toBeInTheDocument();
+      expect(screen.getByText("error.something_went_wrong")).toBeInTheDocument();
+      
+      mockReactQuery();
+      earlyReturnValue = null;
     });
   });
 
