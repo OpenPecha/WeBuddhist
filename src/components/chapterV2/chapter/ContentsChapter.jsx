@@ -6,12 +6,12 @@ import axiosInstance from "../../../config/axios-config.js";
 import { useInfiniteQuery } from "react-query";
 import { PanelProvider } from '../../../context/PanelContext.jsx';
 import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } from "../../../utils/helperFunctions.jsx";
-import { useDynamicTabTitle } from "../../../utils/dynamicTitle.jsx";
+import Seo from "../../commons/seo/Seo.jsx";
 import { useTranslate } from "@tolgee/react";
 import PropTypes from "prop-types";
 
 const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
-  const [_key, textId, contentId, versionId, size, initialSegmentId] = queryKey;
+  const [, textId, contentId, versionId, size, initialSegmentId] = queryKey;
   const segmentId = pageParam?.segmentId ?? initialSegmentId;
   const direction = pageParam?.direction ?? "next";
   const { data } = await axiosInstance.post(`/api/v1/texts/${textId}/details`, {
@@ -77,7 +77,10 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
   }, [infiniteQuery.data?.pages]);
 
   // ----------------------------- helpers ---------------------------------------
-  useDynamicTabTitle(allContent?.text_detail?.title);
+  const siteName = "Webuddhist";
+  const siteBaseUrl = import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin;
+  const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
+  const pageTitle = allContent?.text_detail?.title ? `${allContent.text_detail.title} | ${siteName}` : `Chapter | ${siteName}`;
   const earlyReturn = getEarlyReturn({ isLoading: infiniteQuery.isLoading, error: infiniteQuery.error, t });
   if (earlyReturn) return earlyReturn;
 
@@ -119,6 +122,12 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
 
   return (
     <div className="contents-chapter-container">
+      <Seo
+        title={pageTitle}
+        description="Read chapter content with source and translations."
+        canonical={canonicalUrl}
+        type="article"
+      />
       {renderChapterHeader()}
       {renderChapter()}
     </div>
