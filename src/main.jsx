@@ -10,6 +10,7 @@ import { BackendFetch, DevTools, FormatSimple, Tolgee, TolgeeProvider } from "@t
 import localeEn from "./i18n/en.json";
 import localeBoIn from "./i18n/bo-IN.json";
 import { LANGUAGE } from "./utils/constants.js";
+import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
 const defaultLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE || "bo-IN";
@@ -35,7 +36,9 @@ createRoot(document.getElementById('root')).render(
       <TolgeeProvider tolgee={ tolgee }>
         <Auth0ProviderWithNavigate>
           <PechaAuthProvider>
-            <App />
+            <HelmetProvider>
+              <App />
+            </HelmetProvider>
           </PechaAuthProvider>
         </Auth0ProviderWithNavigate>
       </TolgeeProvider>

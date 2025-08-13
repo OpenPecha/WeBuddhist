@@ -2,11 +2,11 @@ import React from "react";
 import "./Collections.scss";
 import {useTranslate} from "@tolgee/react";
 import axiosInstance from "../../config/axios-config.js";
-import {LANGUAGE} from "../../utils/constants.js";
+import {LANGUAGE, siteName} from "../../utils/constants.js";
 import {useQuery} from "react-query";
 import {Link} from "react-router-dom";
 import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
-import {useDynamicTabTitle} from "../../utils/dynamicTitle.jsx";
+import Seo from "../commons/seo/Seo.jsx";
 
 export const fetchCollections = async () => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -29,7 +29,8 @@ const Collections = () => {
   );
 
   // ----------------------------- helpers ---------------------------------------
-  useDynamicTabTitle("Webuddhist - Buddhism in your own words");
+  const siteBaseUrl =  window.location.origin;
+  const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, error: collectionsError, t });
   if (earlyReturn) return earlyReturn;
 
@@ -82,6 +83,11 @@ const Collections = () => {
 
   return (
     <div className="collections-container">
+      <Seo
+        title={`${siteName} - Tibetan Buddhism in your own words`}
+        description="Explore Tibetan Buddhist texts, collections, and community discussions. Create notes, track your studies, and share insights."
+        canonical={canonicalUrl}
+      />
       <div className="left-section">
         {renderBrowseLibrary()}
         {renderCollections()}

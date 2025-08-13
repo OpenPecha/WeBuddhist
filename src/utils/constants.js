@@ -1,4 +1,9 @@
-import {BsFileDiff, BsFileEarmarkPlus, BsShare, BsStickies,} from "react-icons/bs";
+import {
+  BsFileDiff,
+  BsFileEarmarkPlus,
+  BsShare,
+  BsStickies,
+} from "react-icons/bs";
 
 export const LOGGED_IN_VIA = "loggedInVia";
 export const REFRESH_TOKEN = "refreshToken";
@@ -6,6 +11,7 @@ export const ACCESS_TOKEN = "accessToken";
 export const RESET_PASSWORD_TOKEN = "resetPasswordToken";
 export const RESET_PASSWORD = "reset-password";
 export const LANGUAGE = "language";
+export const siteName = "Webuddhist";
 
 export const MENU_ITEMS = [
   {
@@ -39,4 +45,3 @@ export const SOURCE_TRANSLATION_OPTIONS_MAPPER = {
   translation: "TRANSLATION",
   source_translation: "SOURCE_TRANSLATION",
 };
-

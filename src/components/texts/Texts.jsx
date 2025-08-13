@@ -2,9 +2,9 @@
 import React, {useMemo, useState} from 'react'
 import {useQuery} from "react-query";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
-import {useDynamicTabTitle} from "../../utils/dynamicTitle.jsx";
+import Seo from "../commons/seo/Seo.jsx";
 import "./Texts.scss"
-import {LANGUAGE} from "../../utils/constants.js";
+import {LANGUAGE, siteName} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useTranslate} from "@tolgee/react";
 import {Link, useParams, useSearchParams} from "react-router-dom";
@@ -43,8 +43,10 @@ const Texts = () => {
 
   // -------------------------------------------- helpers ----------------------------------------------
   const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
-  useDynamicTabTitle(tableOfContents?.text_detail?.title);
-
+  const siteBaseUrl = window.location.origin;
+  const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
+  const dynamicTitle = tableOfContents?.text_detail?.title ? `${tableOfContents.text_detail.title} | ${siteName}` : `Text | ${siteName}`;
+  const description = "Read Buddhist texts with translations and related resources.";
 
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
@@ -151,24 +153,14 @@ const Texts = () => {
     </div>
   </div>
 
-  const renderDownloadTextOptions = () => {
-
-    const renderTitle = () => {
-      return <p className="download-text-title navbaritems">{t("side_nav.download_text")}</p>
-    }
-    const renderDownloadButton = () => <button className="download-button">{t("text.download")}</button>
-
-    return <div className="download-options-container">
-      {renderTitle()}
-      {renderVersionsDropdown()}
-      {renderFormatDropdown()}
-      {renderDownloadButton()}
-    </div>
-
-  }
 
   return (
     <div className="texts-container">
+      <Seo
+        title={dynamicTitle}
+        description={description}
+        canonical={canonicalUrl}
+      />
       <div className="left-section">
         {renderTextTitleAndType()}
         {renderContinueReadingButton()}

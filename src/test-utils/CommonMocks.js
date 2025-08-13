@@ -6,7 +6,7 @@ import "@testing-library/jest-dom";
 export const mockAxios = () => {
   vi.mock("../config/axios-config.js", () => ({
     default: {
-      get: vi.fn(),
+      get: vi.fn(() => Promise.resolve({ data: {} })),
       post: vi.fn(() => Promise.resolve({ data: "Success" })),
     },
   }));
@@ -20,7 +20,7 @@ export const mockUseAuth = () => {
       logout: vi.fn(),
     }),
   }));
-}
+};
 
 export const mockUseAuth0 = () => {
   vi.mock("@auth0/auth0-react", () => ({
@@ -31,7 +31,7 @@ export const mockUseAuth0 = () => {
       user: null,
     }),
   }));
-}
+};
 
 export const mockReactQuery = () => {
   vi.mock("react-query", async () => {
@@ -65,12 +65,17 @@ export const mockReactQuery = () => {
   });
 };
 
+export const mockTolgee = Tolgee().init({
+  language: "en",
+  fallbackLanguage: "en",
+  staticData: {
+    en: localeEn,
+  },
+});
 
-export const mockTolgee = Tolgee()
-  .init({
-    language: 'en',
-    fallbackLanguage: 'en',
-    staticData: {
-      en: localeEn
-    }
-  });
+vi.mock("react-helmet-async", () => ({
+  Helmet: ({ children }) => children ?? null,
+  HelmetProvider: ({ children }) => children ?? null,
+}));
+
+window.alert = vi.fn();

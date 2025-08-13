@@ -1,12 +1,12 @@
 import React, {useMemo} from 'react';
 import axiosInstance from '../../config/axios-config';
-import { LANGUAGE } from "../../utils/constants.js";
+import { LANGUAGE, siteName } from "../../utils/constants.js";
 import './Works.scss';
 import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
 import { useParams,Link } from 'react-router-dom';
 import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
-import {useDynamicTabTitle} from "../../utils/dynamicTitle.jsx";
+import Seo from "../commons/seo/Seo.jsx";
 
 const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -50,7 +50,10 @@ const Works = () => {
 
   const texts = worksData?.texts || [];
   const groupedTexts = useGroupedTexts(texts);
-  useDynamicTabTitle(worksData?.collection?.title);
+
+  const siteBaseUrl = window.location.origin;
+  const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
+  const pageTitle = worksData?.collection?.title ? `${worksData.collection.title} | ${siteName}` : `Works | ${siteName}`;
   const earlyReturn = getEarlyReturn({ isLoading: worksDataIsLoading, error: worksDataIsError, t });
   if (earlyReturn) return earlyReturn;
 
@@ -109,6 +112,11 @@ const Works = () => {
 
   return (
     <div className="works-container">
+      <Seo
+        title={pageTitle}
+        description="Browse texts grouped by type within this collection."
+        canonical={canonicalUrl}
+      />
       <div className="left-section">
         <div className="works-title-container">{renderWorksTitle()}</div>
         <div className="root-text-container">{renderRootTexts()}</div>

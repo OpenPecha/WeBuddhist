@@ -1,12 +1,12 @@
 import React from 'react';
-import { LANGUAGE } from '../../utils/constants.js';
+import { LANGUAGE, siteName } from '../../utils/constants.js';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../config/axios-config';
 import './SubCollections.scss';
 import { useTranslate } from '@tolgee/react';
 import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
-import {useDynamicTabTitle} from "../../utils/dynamicTitle.jsx";
+import Seo from "../commons/seo/Seo.jsx";
 
 export const fetchSubCollections = async (parentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -30,7 +30,9 @@ const SubCollections = () => {
     () => fetchSubCollections(id),
     {refetchOnWindowFocus: false}
   );
-  useDynamicTabTitle(subCollectionsData?.parent?.title);
+  const siteBaseUrl = window.location.origin;
+  const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
+  const pageTitle = subCollectionsData?.parent?.title ? `${subCollectionsData.parent.title} | ${siteName}` : `Collection | ${siteName}`;
 
   if (subCollectionsDataIsLoading) {
     return <div className="loading listtitle">{t("common.loading")}</div>;
@@ -65,6 +67,11 @@ const SubCollections = () => {
 
   return (
     <div className="sub-collections-container">
+      <Seo
+        title={pageTitle}
+        description="Explore sub-collections and navigate to works."
+        canonical={canonicalUrl}
+      />
       <div className="sub-collection-details">
         {renderTitle()}
         {renderSubCollections()}
