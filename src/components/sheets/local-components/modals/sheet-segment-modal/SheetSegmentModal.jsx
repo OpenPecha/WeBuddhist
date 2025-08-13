@@ -53,6 +53,23 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
   const renderSegmentContent = () => {
     const sources = searchData?.sources || [];
 
+    const renderSegmentList = () => {
+      if (sources.length === 0) {
+        return (
+          <div className="state-message empty">
+            <p>No data found</p>
+            <span className="empty-description">Try adjusting your search terms</span>
+          </div>
+        );
+      }
+      return sources.map((source) => (
+        <SourceItem
+          key={source.text.text_id}
+          source={source}
+          onSegment={onSegment}
+        />
+      ));
+    };
     return (
       <div className="segment-content">
         <input
@@ -67,19 +84,8 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
             <div className="state-message loading">
               <p>Loading segments...</p>
             </div>
-          ) : sources.length === 0 ? (
-            <div className="state-message empty">
-              <p>No data found</p>
-              <span className="empty-description">Try adjusting your search terms</span>
-            </div>
           ) : (
-            sources.map((source) => (
-              <SourceItem
-                key={source.text.text_id}
-                source={source}
-                onSegment={onSegment}
-              />
-            ))
+            renderSegmentList()
           )}
         </div>
         <div className='segment-pagination-container'>
