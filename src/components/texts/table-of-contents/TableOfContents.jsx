@@ -136,4 +136,7 @@ TableOfContents.propTypes = {
   setPagination: PropTypes.func.isRequired,
   tableOfContents : PropTypes.object,
   onContentItemClick: PropTypes.func
+  error: PropTypes.object,
+  loading: PropTypes.bool,
+  t: PropTypes.func.isRequired
 }

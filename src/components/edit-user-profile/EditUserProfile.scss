@@ -161,11 +161,16 @@ $removeicon: #4d5154;
     padding-bottom: 0.5rem;
     position: relative;
 
+    .col {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
     .remove-icon {
       position: absolute;
-      top: 38%;
       right: 10px;
-      transform: translateY(-50%);
       font-size: 18px;
       cursor: pointer;
       color: $removeicon;

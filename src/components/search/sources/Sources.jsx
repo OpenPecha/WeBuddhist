@@ -46,7 +46,7 @@ const Sources = (query) => {
       }
       return <div className="listtitle">Error loading content: {error.message}</div>;
     }
-    if (!sourceData || !sourceData.sources || sourceData.sources.length === 0) {
+    if (!sourceData?.sources || sourceData.sources.length === 0) {
       return <div className="listtitle">{t('search.zero_result', 'No results to display.')}</div>;
     }
     const totalVersions = sourceData.sources?.length || 0;

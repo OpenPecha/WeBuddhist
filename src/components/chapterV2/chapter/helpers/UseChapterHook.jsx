@@ -6,6 +6,7 @@ import { VIEW_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
 import { getLanguageClass, getCurrentSectionFromScroll } from "../../../../utils/helperFunctions.jsx";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
+import PropTypes from "prop-types";
 
 const UseChapterHook = (props) => {
   const { showTableOfContents, content, language, viewMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId } = props;
@@ -198,3 +199,46 @@ const UseChapterHook = (props) => {
 }
 
 export default React.memo(UseChapterHook)
+
+UseChapterHook.propTypes = {
+  showTableOfContents: PropTypes.bool.isRequired,
+  content: PropTypes.shape({
+    sections: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string,
+        title: PropTypes.string,
+        segments: PropTypes.arrayOf(
+          PropTypes.shape({
+            segment_id: PropTypes.string.isRequired,
+            segment_number: PropTypes.number.isRequired,
+            content: PropTypes.string,
+            translation: PropTypes.shape({
+              language: PropTypes.string.isRequired,
+              content: PropTypes.string.isRequired,
+            }),
+          })
+        ),
+        sections: PropTypes.array,
+      })
+    ).isRequired,
+  }).isRequired,
+  language: PropTypes.string.isRequired,
+  viewMode: PropTypes.string.isRequired,
+  addChapter: PropTypes.func.isRequired,
+  currentChapter: PropTypes.shape({
+    segmentId: PropTypes.string,
+  }).isRequired,
+  setVersionId: PropTypes.func.isRequired,
+  handleSegmentNavigate: PropTypes.func.isRequired,
+  infiniteQuery: PropTypes.shape({
+    hasNextPage: PropTypes.bool,
+    hasPreviousPage: PropTypes.bool,
+    isFetchingNextPage: PropTypes.bool,
+    isFetchingPreviousPage: PropTypes.bool,
+    fetchNextPage: PropTypes.func,
+    fetchPreviousPage: PropTypes.func,
+  }).isRequired,
+  onCurrentSectionChange: PropTypes.func.isRequired,
+  currentSectionId: PropTypes.string,
+  textId: PropTypes.string.isRequired,
+};
