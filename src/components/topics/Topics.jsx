@@ -1,10 +1,9 @@
 import {LANGUAGE} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useQuery} from "react-query";
-import {useMemo, useState} from "react";
 import {useSearchParams} from "react-router-dom";
 import "./Topics.scss"
-import React from "react";
+import React, {useMemo, useState} from "react";
 import {useTranslate} from "@tolgee/react";
 import {useDebounce} from "use-debounce";
 import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
@@ -39,7 +38,8 @@ const Topics = () => {
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
   const cleanAlphabetArray = useMemo(() => {
-    return t("topic.alphabet").split("").filter(char => char.match(/[a-zA-Z.\u0F00-\u0FFF]/));
+    const regex = /[a-zA-Z.\u0F00-\u0FFF]/;
+    return t("topic.alphabet").split("").filter(char => regex.exec(char) !== null);
   }, [t]);
 
   const { data: topicsData, isLoading } = useQuery(
