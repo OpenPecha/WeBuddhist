@@ -51,7 +51,7 @@ const Works = () => {
   const texts = worksData?.texts || [];
   const groupedTexts = useGroupedTexts(texts);
   const siteName = "Webuddhist";
-  const siteBaseUrl = import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin;
+  const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const pageTitle = worksData?.collection?.title ? `${worksData.collection.title} | ${siteName}` : `Works | ${siteName}`;
   const earlyReturn = getEarlyReturn({ isLoading: worksDataIsLoading, error: worksDataIsError, t });
@@ -116,7 +116,6 @@ const Works = () => {
         title={pageTitle}
         description="Browse texts grouped by type within this collection."
         canonical={canonicalUrl}
-        type="website"
       />
       <div className="left-section">
         <div className="works-title-container">{renderWorksTitle()}</div>

@@ -30,7 +30,7 @@ const Collections = () => {
 
   // ----------------------------- helpers ---------------------------------------
   const siteName = "Webuddhist";
-  const siteBaseUrl = import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin;
+  const siteBaseUrl =  window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, error: collectionsError, t });
   if (earlyReturn) return earlyReturn;
@@ -88,7 +88,6 @@ const Collections = () => {
         title={`${siteName} - Tibetan Buddhism in your own words`}
         description="Explore Tibetan Buddhist texts, collections, and community discussions. Create notes, track your studies, and share insights."
         canonical={canonicalUrl}
-        type="website"
       />
       <div className="left-section">
         {renderBrowseLibrary()}

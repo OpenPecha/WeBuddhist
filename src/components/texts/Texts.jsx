@@ -44,11 +44,10 @@ const Texts = () => {
   // -------------------------------------------- helpers ----------------------------------------------
   const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
   const siteName = "Webuddhist";
-  const siteBaseUrl = import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin;
+  const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const dynamicTitle = tableOfContents?.text_detail?.title ? `${tableOfContents.text_detail.title} | ${siteName}` : `Text | ${siteName}`;
   const description = "Read Buddhist texts with translations and related resources.";
-
 
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
@@ -162,7 +161,6 @@ const Texts = () => {
         title={dynamicTitle}
         description={description}
         canonical={canonicalUrl}
-        type="article"
       />
       <div className="left-section">
         {renderTextTitleAndType()}

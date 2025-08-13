@@ -31,7 +31,7 @@ const SubCollections = () => {
     {refetchOnWindowFocus: false}
   );
   const siteName = "Webuddhist";
-  const siteBaseUrl = import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin;
+  const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const pageTitle = subCollectionsData?.parent?.title ? `${subCollectionsData.parent.title} | ${siteName}` : `Collection | ${siteName}`;
 
@@ -72,7 +72,6 @@ const SubCollections = () => {
         title={pageTitle}
         description="Explore sub-collections and navigate to works."
         canonical={canonicalUrl}
-        type="website"
       />
       <div className="sub-collection-details">
         {renderTitle()}

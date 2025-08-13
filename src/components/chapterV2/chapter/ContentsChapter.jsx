@@ -78,7 +78,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
 
   // ----------------------------- helpers ---------------------------------------
   const siteName = "Webuddhist";
-  const siteBaseUrl = import.meta.env.VITE_PUBLIC_SITE_URL || window.location.origin;
+  const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const pageTitle = allContent?.text_detail?.title ? `${allContent.text_detail.title} | ${siteName}` : `Chapter | ${siteName}`;
   const earlyReturn = getEarlyReturn({ isLoading: infiniteQuery.isLoading, error: infiniteQuery.error, t });
@@ -126,7 +126,6 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
         title={pageTitle}
         description="Read chapter content with source and translations."
         canonical={canonicalUrl}
-        type="article"
       />
       {renderChapterHeader()}
       {renderChapter()}
