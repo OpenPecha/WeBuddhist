@@ -8,6 +8,12 @@ import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import { mockReactQuery, mockAxios, mockTolgee, mockUseAuth } from "../../../../../../test-utils/CommonMocks.js";
 
+vi.mock("../../../../../../components/texts/Texts.jsx", () => ({
+  fetchTableOfContents: vi.fn()
+}));
+
+import axiosInstance from "../../../../../../config/axios-config.js";
+
 mockAxios();
 mockUseAuth();
 mockReactQuery();
@@ -1124,8 +1130,7 @@ describe("CompareTextView Component Rendering Tests", () => {
     
     const fetchCollectionsSpy = vi.spyOn(collectionsModule, "fetchCollections");
     
-    const axiosInstance = (await import("../../../../../../config/axios-config.js")).default;
-    const mockAxiosGet = vi.spyOn(axiosInstance, "get").mockResolvedValueOnce({
+    axiosInstance.get.mockResolvedValueOnce({
       data: mockCollectionsData
     });
     
@@ -1144,7 +1149,7 @@ describe("CompareTextView Component Rendering Tests", () => {
     
     const result = await collectionsModule.fetchCollections();
     
-    expect(mockAxiosGet).toHaveBeenCalledWith("api/v1/collections", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/collections", {
       params: {
         language: "bo",
         limit: 10,
@@ -1153,6 +1158,153 @@ describe("CompareTextView Component Rendering Tests", () => {
     });
     
     expect(result).toEqual(mockCollectionsData);
+    
+    Object.defineProperty(window, 'localStorage', { value: originalLocalStorage });
+    vi.restoreAllMocks();
+    
+    mockReactQuery();
+  });
+
+  it("Should call fetchSubCollections with proper parameters and handle the response", async () => {
+    const originalLocalStorage = window.localStorage;
+    const mockGetItem = vi.fn().mockReturnValue("en");
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem: mockGetItem
+      },
+      writable: true
+    });
+
+    const mockSubCollectionsData = {
+      collections: [
+        { id: "sub1", title: "Sub Collection 1" },
+        { id: "sub2", title: "Sub Collection 2" }
+      ],
+      total: 2
+    };
+    
+    axiosInstance.get.mockResolvedValueOnce({ data: mockSubCollectionsData });
+    
+    const { fetchSubCollections } = await import("../../../../../../components/sub-collections/SubCollections.jsx");
+    const result = await fetchSubCollections("parent123");
+    
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections", {
+      params: {
+        language: "en",
+        parent_id: "parent123",
+        limit: 10,
+        skip: 0
+      }
+    });
+    
+    expect(result).toEqual(mockSubCollectionsData);
+    
+    Object.defineProperty(window, 'localStorage', { value: originalLocalStorage });
+    vi.restoreAllMocks();
+    
+    mockReactQuery();
+  });
+
+  it("Should call fetchWorks with proper parameters and handle the response", async () => {
+    const originalLocalStorage = window.localStorage;
+    const mockGetItem = vi.fn().mockReturnValue("en");
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem: mockGetItem
+      },
+      writable: true
+    });
+
+    const mockWorksData = {
+      texts: [
+        { id: "text1", title: "Text 1", type: "root" },
+        { id: "text2", title: "Text 2", type: "commentary" }
+      ],
+      total: 2
+    };
+    
+    axiosInstance.get.mockResolvedValueOnce({ data: mockWorksData });
+    
+    const { fetchWorks } = await import("../../../../../../components/works/Works.jsx");
+    const result = await fetchWorks("term123");
+    
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/texts", {
+      params: {
+        language: "en",
+        collection_id: "term123",
+        limit: 10,
+        skip: 0
+      }
+    });
+    
+    expect(result).toEqual(mockWorksData);
+    
+    Object.defineProperty(window, 'localStorage', { value: originalLocalStorage });
+    vi.restoreAllMocks();
+    
+    mockReactQuery();
+  });
+
+  it("Should call fetchTableOfContents with proper parameters and handle the response", async () => {
+    const originalLocalStorage = window.localStorage;
+    const mockGetItem = vi.fn().mockReturnValue("en");
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem: mockGetItem
+      },
+      writable: true
+    });
+
+    const mockContentsData = {
+      contents: [
+        { id: "content1", title: "Chapter 1", segments: ["seg1", "seg2"] },
+        { id: "content2", title: "Chapter 2", segments: ["seg3", "seg4"] }
+      ],
+      total: 2
+    };
+    
+    const { fetchTableOfContents } = await import("../../../../../../components/texts/Texts.jsx");
+    fetchTableOfContents.mockReset();
+    fetchTableOfContents.mockResolvedValueOnce(mockContentsData);
+    
+    const result = await fetchTableOfContents("text123", 0, 10);
+    
+    expect(fetchTableOfContents).toHaveBeenCalledWith("text123", 0, 10);
+    
+    expect(result).toEqual(mockContentsData);
+    
+    Object.defineProperty(window, 'localStorage', { value: originalLocalStorage });
+    vi.restoreAllMocks();
+    
+    mockReactQuery();
+  });
+
+  it("Should call fetchTableOfContents with language from content when provided", async () => {
+    const originalLocalStorage = window.localStorage;
+    const mockGetItem = vi.fn().mockReturnValue("en");
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem: mockGetItem
+      },
+      writable: true
+    });
+
+    const mockContentsData = {
+      contents: [
+        { id: "content1", title: "Chapter 1" }
+      ],
+      total: 1
+    };
+    
+    const { fetchTableOfContents } = await import("../../../../../../components/texts/Texts.jsx");
+    fetchTableOfContents.mockReset();
+    fetchTableOfContents.mockResolvedValueOnce(mockContentsData);
+    
+    const result = await fetchTableOfContents("text123", 0, 10, "bo");
+    
+    expect(fetchTableOfContents).toHaveBeenCalledWith("text123", 0, 10, "bo");
+    
+    expect(result).toEqual(mockContentsData);
     
     Object.defineProperty(window, 'localStorage', { value: originalLocalStorage });
     vi.restoreAllMocks();
