@@ -34,6 +34,7 @@ vi.mock("react-router-dom", async () => {
 
 vi.mock("../../utils/constants.js", () => ({
   LANGUAGE: "LANGUAGE",
+  siteName: "Webuddhist",
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
 }));
 

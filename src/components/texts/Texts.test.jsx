@@ -29,6 +29,7 @@ vi.mock("../../utils/helperFunctions.jsx", () => ({
 
 vi.mock("../../utils/constants.js", () => ({
   LANGUAGE: "LANGUAGE",
+  siteName: "Webuddhist",
 }));
 
 vi.mock("react-router-dom", async () => {
