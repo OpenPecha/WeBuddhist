@@ -25,69 +25,38 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
 
 }
 
-export const tabNavigation = (activeTab, setActiveTab, t) => {
-  const contentsClass = activeTab === "contents" ? "active" : "";
-  const versionsClass = activeTab === "versions" ? "active" : "";
-  
-  return (
+export const renderTabs = (activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId, onContentItemClick) => {
+  return <div className="tab-container listsubtitle">
+    {/* Tab Navigation */}
     <div className="tab-nav">
       <button
-        className={`tab-button ${contentsClass}`}
-        onClick={() => setActiveTab("contents")}
+        className={`tab-button ${activeTab === 'contents' ? 'active' : ''}`}
+        onClick={() => setActiveTab('contents')}
       >
         {t("text.contents")}
       </button>
       <button
-        className={`tab-button ${versionsClass}`}
-        onClick={() => setActiveTab("versions")}
+        className={`tab-button ${activeTab === 'versions' ? 'active' : ''}`}
+        onClick={() => setActiveTab('versions')}
       >
         {t("common.version")}
       </button>
     </div>
-  );
-}
 
-export const tabContent = (activeTab, tableOfContents, pagination, setPagination, textId, tableOfContentsIsError, tableOfContentsIsLoading, t, onContentItemClick) => {
-  return (
+    {/* Tab Content */}
     <div className="tab-content">
       {activeTab === 'contents' && (
         <div className="tab-panel">
-          <TableOfContents 
-            tableOfContents={tableOfContents} 
-            pagination={pagination} 
-            setPagination={setPagination} 
-            textId={textId}
-            error={tableOfContentsIsError}
-            loading={tableOfContentsIsLoading}
-            t={t}
-            onContentItemClick={onContentItemClick}
-          />
+          <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={textId} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t} onContentItemClick={onContentItemClick}/>
         </div>
       )}
-    </div>
-  )
-}
-
-export const tabVersion = (activeTab, textId) => {
-  return (
-    <div className="tab-content">
       {activeTab === 'versions' && (
         <div className="tab-panel">
-          <Versions textId={textId}/>
+          <Versions textId={textId} />
         </div>
       )}
     </div>
-  )
-}
-
-export const renderTabs = (activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId, onContentItemClick) => {
-  return (
-    <div className="tab-container listsubtitle">
-      {tabNavigation(activeTab, setActiveTab, t)}
-      {tabContent(activeTab, tableOfContents, pagination, setPagination, textId, tableOfContentsIsError, tableOfContentsIsLoading, t, onContentItemClick)}
-      {tabVersion(activeTab, textId)}
-    </div>
-  )
+  </div>
 }
 
 const Texts = () => {
