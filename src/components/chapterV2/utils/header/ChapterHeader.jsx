@@ -4,6 +4,7 @@ import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
 import "./ChapterHeader.scss"
 import ViewSelector from "./view-selector/ViewSelector.jsx";
 import {getLanguageClass} from "../../../../utils/helperFunctions.jsx";
+import PropTypes from "prop-types";
 
 
 const ChapterHeader = (props) => {
@@ -55,3 +56,18 @@ const ChapterHeader = (props) => {
 }
 
 export default React.memo(ChapterHeader)
+
+ChapterHeader.propTypes = {
+  viewMode: PropTypes.string.isRequired,
+  setViewMode: PropTypes.func.isRequired,
+  textdetail: PropTypes.shape({
+    language: PropTypes.string,
+    title: PropTypes.string,
+  }),
+  showTableOfContents: PropTypes.bool.isRequired,
+  setShowTableOfContents: PropTypes.func.isRequired,
+  removeChapter: PropTypes.func.isRequired,
+  currentChapter: PropTypes.object.isRequired,
+  totalChapters: PropTypes.number.isRequired,
+  versionSelected: PropTypes.bool,
+};

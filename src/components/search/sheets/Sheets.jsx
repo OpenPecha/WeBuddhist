@@ -42,7 +42,7 @@ const Sheets = (query) => {
     return <div className="listtitle">Error loading content: {error.message}</div>;
   }
 
-  if (!sheetData || !sheetData.sheets || sheetData.sheets.length === 0) {
+  if (!sheetData?.sheets || sheetData.sheets.length === 0) {
     return <div className="listtitle">{t('search.zero_result', 'No results to display.')}</div>;
   }
   const totalVersions = sheetData.sheets?.length || 0;
