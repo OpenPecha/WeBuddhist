@@ -256,61 +256,142 @@ describe("CompareTextView Component Rendering Tests", () => {
     expect(screen.getByTestId("table-of-contents")).toBeInTheDocument();
   });
 
-  test("Should handle content item selection", () => {
-    const mockContentItem = { 
-      id: "item1", 
-      title: "Chapter 1", 
-      segments: [{ segment_id: "seg1" }] 
-    };
-    
-    const mockSelectedText = { id: "text1", title: "Selected Text" };
-    
-    const handleContentItemClick = (contentItem) => {
-      if (mockSelectedText && mockProps.addChapter) {
-        const segmentId = contentItem.segments && contentItem.segments.length > 0 
-          ? contentItem.segments[0].segment_id 
-          : null;
-                
-        if (segmentId) {
-          mockProps.addChapter({
-            textId: mockSelectedText.id,
-            segmentId: segmentId,
-          }, mockProps.currentChapter);
-          
-          mockCloseResourcesPanel();
-          mockProps.setIsCompareTextView("main");
-        }
-      }
-    };
-    
-    handleContentItemClick(mockContentItem);
-    
-    expect(mockProps.addChapter).toHaveBeenCalledWith(
-      {
-        textId: "text1",
-        segmentId: "seg1"
-      },
-      mockProps.currentChapter
-    );
-    
-    expect(mockCloseResourcesPanel).toHaveBeenCalled();
-    expect(mockProps.setIsCompareTextView).toHaveBeenCalledWith("main");
-  });
+  describe("handleContentItemClick Error Handling Tests", () => {
+    beforeEach(() => {
+      vi.resetAllMocks();
+      mockCloseResourcesPanel.mockReset();
+    });
 
-  test("Should handle pagination logic", () => {
-    const mockSetPagination = vi.fn();
-    const currentPagination = { skip: 0, limit: 10 };
-    
-    const handleNextPage = () => {
-      mockSetPagination({ 
-        skip: currentPagination.skip + currentPagination.limit, 
-        limit: currentPagination.limit 
-      });
-    };
-    
-    handleNextPage();
-    
-    expect(mockSetPagination).toHaveBeenCalledWith({ skip: 10, limit: 10 });
+    test("Should not call addChapter when no segments are available", () => {
+      const mockAddChapter = vi.fn();
+      const mockSetIsCompareTextView = vi.fn();
+      
+      const contentItemWithNoSegments = {
+        title: "Content with no segments",
+        segments: [],
+        sections: []
+      };
+      
+      const mockSelectedText = { id: "text-1", title: "Test Text" };
+      
+      const mockCurrentChapter = { id: "chapter-1" };
+      
+      const handleContentItemClick = (contentItem) => {
+        if (mockSelectedText && mockAddChapter) {
+          const segmentId = contentItem.segments && contentItem.segments.length > 0 
+            ? contentItem.segments[0].segment_id 
+            : (contentItem.sections && contentItem.sections[0]?.segments && contentItem.sections[0]?.segments.length > 0 
+                ? contentItem.sections[0].segments[0].segment_id 
+                : null);
+                    
+          if (segmentId) {
+            mockAddChapter({
+              textId: mockSelectedText.id,
+              segmentId: segmentId,
+            }, mockCurrentChapter);
+            
+            mockCloseResourcesPanel();
+            mockSetIsCompareTextView("main");
+          }
+        }
+      };
+      
+      handleContentItemClick(contentItemWithNoSegments);
+      
+      expect(mockAddChapter).not.toHaveBeenCalled();
+      expect(mockCloseResourcesPanel).not.toHaveBeenCalled();
+      expect(mockSetIsCompareTextView).not.toHaveBeenCalled();
+    });
+
+    test("Should not call addChapter when selectedText is null", () => {
+      const mockAddChapter = vi.fn();
+      const mockSetIsCompareTextView = vi.fn();
+      
+      const contentItemWithSegments = {
+        title: "Content with segments",
+        segments: [{ segment_id: "segment-1" }]
+      };
+      
+      const mockSelectedText = null;
+      
+      const mockCurrentChapter = { id: "chapter-1" };
+      
+      const handleContentItemClick = (contentItem) => {
+        if (mockSelectedText && mockAddChapter) {
+          const segmentId = contentItem.segments && contentItem.segments.length > 0 
+            ? contentItem.segments[0].segment_id 
+            : (contentItem.sections && contentItem.sections[0]?.segments && contentItem.sections[0]?.segments.length > 0 
+                ? contentItem.sections[0].segments[0].segment_id 
+                : null);
+                    
+          if (segmentId) {
+            mockAddChapter({
+              textId: mockSelectedText?.id,
+              segmentId: segmentId,
+            }, mockCurrentChapter);
+            
+            mockCloseResourcesPanel();
+            mockSetIsCompareTextView("main");
+          }
+        }
+      };
+      
+      handleContentItemClick(contentItemWithSegments);
+      
+      expect(mockAddChapter).not.toHaveBeenCalled();
+      expect(mockCloseResourcesPanel).not.toHaveBeenCalled();
+      expect(mockSetIsCompareTextView).not.toHaveBeenCalled();
+    });
+
+    test("Should handle content item with segments in nested sections", () => {
+      const mockAddChapter = vi.fn();
+      const mockSetIsCompareTextView = vi.fn();
+      
+      const contentItemWithNestedSegments = {
+        title: "Content with nested segments",
+        segments: [], 
+        sections: [{
+          title: "Section 1",
+          segments: [{ segment_id: "nested-segment-1" }]
+        }]
+      };
+      
+      const mockSelectedText = { id: "text-1", title: "Test Text" };
+      
+      const mockCurrentChapter = { id: "chapter-1" };
+      
+      const handleContentItemClick = (contentItem) => {
+        if (mockSelectedText && mockAddChapter) {
+          const segmentId = contentItem.segments && contentItem.segments.length > 0 
+            ? contentItem.segments[0].segment_id 
+            : (contentItem.sections && contentItem.sections[0]?.segments && contentItem.sections[0]?.segments.length > 0 
+                ? contentItem.sections[0].segments[0].segment_id 
+                : null);
+                    
+          if (segmentId) {
+            mockAddChapter({
+              textId: mockSelectedText.id,
+              segmentId: segmentId,
+            }, mockCurrentChapter);
+            
+            mockCloseResourcesPanel();
+            mockSetIsCompareTextView("main");
+          }
+        }
+      };
+      
+      handleContentItemClick(contentItemWithNestedSegments);
+      
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: "text-1",
+          segmentId: "nested-segment-1",
+        },
+        mockCurrentChapter
+      );
+      expect(mockCloseResourcesPanel).toHaveBeenCalled();
+      expect(mockSetIsCompareTextView).toHaveBeenCalledWith("main");
+    });
   });
 
   describe("Content Item Click Handler Tests", () => {
