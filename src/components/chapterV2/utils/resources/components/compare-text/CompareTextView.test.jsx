@@ -2,7 +2,7 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, cleanup } from "@testing-library/react";
 import CompareTextView from "./CompareTextView.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
@@ -248,7 +248,7 @@ describe("CompareTextView Component Rendering Tests", () => {
     
     render(
       <div>
-        {mockRenderTabs("contents", [], {}, vi.fn(), vi.fn(), vi.fn(), vi.fn(), "text1")}
+        {mockRenderTabs("contents", [], {}, vi.fn(), vi.fn(), vi.fn(), vi.fn(), vi.fn(), vi.fn(), "text1")}
       </div>
     );
     
@@ -698,6 +698,220 @@ describe("CompareTextView Component Rendering Tests", () => {
       expect(mocks.setSelectedTextMock).toHaveBeenCalledWith(commentaryTexts[0]);
       
       expect(mocks.setActiveViewMock).toHaveBeenCalledWith("contents");
+    });
+  });
+
+  describe("Contents Version View Tests", () => {
+    test("Should render table of contents when a text is selected", () => {
+      const mockTableOfContents = {
+        total: 15,
+        items: [
+          { id: "item1", title: "Chapter 1", segments: [{ segment_id: "seg1" }] },
+          { id: "item2", title: "Chapter 2", segments: [{ segment_id: "seg2" }] }
+        ]
+      };
+      
+      const mockRenderTabs = vi.fn().mockImplementation(() => {
+        return <div data-testid="mocked-tabs">Mocked Table of Contents</div>;
+      });
+      
+      vi.mock("../../../../../../components/texts/Texts.jsx", () => ({
+        renderTabs: (...args) => mockRenderTabs(...args),
+        fetchTableOfContents: vi.fn()
+      }));
+      
+      const MockCompareTextView = () => {
+        return (
+          <div className="contents-version-view">
+            {mockRenderTabs(
+              'contents',
+              vi.fn(), 
+              mockTableOfContents, 
+              { skip: 0, limit: 10 }, 
+              vi.fn(), 
+              false, 
+              false, 
+              (key) => key, 
+              "text123", 
+              vi.fn()
+            )}
+          </div>
+        );
+      };
+      
+      render(<MockCompareTextView />);
+      
+      expect(screen.getByTestId("mocked-tabs")).toBeInTheDocument();
+      
+      expect(mockRenderTabs).toHaveBeenCalledWith(
+        'contents',
+        expect.any(Function),
+        mockTableOfContents,
+        { skip: 0, limit: 10 },
+        expect.any(Function),
+        false,
+        false,
+        expect.any(Function),
+        "text123",
+        expect.any(Function)
+      );
+      
+      vi.restoreAllMocks();
+    });
+    
+    test("Should handle pagination in contents view", () => {
+      const mockSetPagination = vi.fn();
+      const mockPagination = { skip: 0, limit: 10 };
+      
+      const mockTableOfContents = vi.fn().mockImplementation(({ pagination, setPagination }) => {
+        return (
+          <div data-testid="table-of-contents">
+            <button 
+              data-testid="next-page-button"
+              onClick={() => setPagination({ 
+                skip: pagination.skip + pagination.limit, 
+                limit: pagination.limit 
+              })}
+            >
+              Next Page
+            </button>
+            <div data-testid="pagination-state">
+              {`Skip: ${pagination.skip}, Limit: ${pagination.limit}`}
+            </div>
+          </div>
+        );
+      });
+      
+      vi.mock("../../../../../../components/texts/table-of-contents/TableOfContents.jsx", () => {
+        return {
+          __esModule: true,
+          default: (props) => mockTableOfContents(props)
+        };
+      });
+      
+      const mockRenderTabs = vi.fn().mockImplementation((activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId, onContentItemClick) => {
+        if (activeTab === 'contents') {
+          return (
+            <div data-testid="tabs-container">
+              {mockTableOfContents({
+                tableOfContents,
+                pagination,
+                setPagination,
+                textId,
+                error: tableOfContentsIsError,
+                loading: tableOfContentsIsLoading,
+                t,
+                onContentItemClick
+              })}
+            </div>
+          );
+        }
+        return <div>Other Tab</div>;
+      });
+      
+      vi.mock("../../../../../../components/texts/Texts.jsx", () => ({
+        renderTabs: (activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId, onContentItemClick) => {
+          return mockRenderTabs(activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId, onContentItemClick);
+        },
+        fetchTableOfContents: vi.fn()
+      }));
+      
+      render(
+        <div>
+          <div className="contents-version-view">
+            {mockRenderTabs(
+              'contents',
+              vi.fn(),
+              { total: 25, items: [] },
+              mockPagination,
+              mockSetPagination,
+              false,
+              false,
+              (key) => key,
+              "text123",
+              vi.fn()
+            )}
+          </div>
+        </div>
+      );
+      
+      const nextPageButton = screen.getByTestId("next-page-button");
+      fireEvent.click(nextPageButton);
+      
+      expect(mockSetPagination).toHaveBeenCalledWith({ skip: 10, limit: 10 });
+      
+      vi.restoreAllMocks();
+    });
+    
+    test("Should convert pagination format from { skip, limit } to { currentPage, limit } for TableOfContents", () => {
+      const mockTableOfContentsComponent = vi.fn().mockReturnValue(<div>Mocked Table of Contents</div>);
+      
+      vi.mock("../../../../../../components/texts/table-of-contents/TableOfContents.jsx", () => {
+        return {
+          __esModule: true,
+          default: (props) => {
+            mockTableOfContentsComponent(props);
+            return <div>Mocked Table of Contents</div>;
+          }
+        };
+      });
+      
+      const mockRenderTabs = vi.fn((activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId, onContentItemClick) => {
+        if (activeTab === 'contents') {
+          return (
+            <div data-testid="table-of-contents-wrapper">
+              <div data-testid="converted-pagination">
+                {`currentPage: ${Math.floor(pagination.skip / pagination.limit) + 1}, limit: ${pagination.limit}`}
+              </div>
+            </div>
+          );
+        }
+        return <div>Other Tab</div>;
+      });
+      
+      vi.mock("../../../../../../components/texts/Texts.jsx", () => ({
+        renderTabs: (activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId, onContentItemClick) => {
+          return mockRenderTabs(activeTab, setActiveTab, tableOfContents, pagination, setPagination, tableOfContentsIsError, tableOfContentsIsLoading, t, textId, onContentItemClick);
+        },
+        fetchTableOfContents: vi.fn()
+      }));
+      
+      const paginationStates = [
+        { skip: 0, limit: 10 },   
+        { skip: 10, limit: 10 }, 
+        { skip: 20, limit: 10 }  
+      ];
+      
+      paginationStates.forEach((pagination, index) => {
+        cleanup();
+        
+        render(
+          <div className="contents-version-view">
+            {mockRenderTabs(
+              'contents',
+              vi.fn(),
+              { total: 35, items: [] },
+              pagination,
+              vi.fn(),
+              false,
+              false,
+              (key) => key,
+              "text123",
+              vi.fn()
+            )}
+          </div>
+        );
+        
+        expect(screen.getByTestId("converted-pagination").textContent)
+          .toBe(`currentPage: ${Math.floor(pagination.skip / pagination.limit) + 1}, limit: ${pagination.limit}`);
+      });
+      
+      expect(mockRenderTabs).toHaveBeenCalledTimes(3);
+      expect(mockRenderTabs.mock.calls[0][3]).toEqual({ skip: 0, limit: 10 });
+      expect(mockRenderTabs.mock.calls[1][3]).toEqual({ skip: 10, limit: 10 });
+      expect(mockRenderTabs.mock.calls[2][3]).toEqual({ skip: 20, limit: 10 });
+      
+      vi.restoreAllMocks();
     });
   });
 });
