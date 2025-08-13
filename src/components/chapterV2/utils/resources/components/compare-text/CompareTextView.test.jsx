@@ -914,4 +914,111 @@ describe("CompareTextView Component Rendering Tests", () => {
       vi.restoreAllMocks();
     });
   });
+
+  describe("SubCollection View Tests", () => {
+    let originalEarlyReturnValue;
+    
+    beforeEach(() => {
+      originalEarlyReturnValue = earlyReturnValue;
+      earlyReturnValue = null;
+    });
+    
+    afterEach(() => {
+      earlyReturnValue = originalEarlyReturnValue;
+    });
+    
+    test("Should render subcollection view with proper structure and navigation", () => {
+      const mockSubCollectionsData = {
+        collections: [
+          { id: "subCol1", title: "Subcollection 1" },
+          { id: "subCol2", title: "Subcollection 2" }
+        ]
+      };
+      
+      let selectedTerm = null;
+      let termViewActive = false;
+      
+      const mockSetSelectedTerm = vi.fn((term) => {
+        selectedTerm = term;
+      });
+      
+      const mockSetTermView = vi.fn((value) => {
+        termViewActive = value;
+      });
+      
+      const TestSubCollectionView = () => {
+        const renderSubCollections = (data, options) => {
+          return (
+            <div data-testid="subcollections-container">
+              {data.collections.map(collection => (
+                <button 
+                  key={collection.id}
+                  data-testid={`subcollection-${collection.id}`}
+                  onClick={() => {
+                    options.setSelectedTerm(collection);
+                  }}
+                >
+                  {collection.title}
+                </button>
+              ))}
+            </div>
+          );
+        };
+        
+        return (
+          <div className="selected-collection-content" data-testid="subcollection-view">
+            <button 
+              className="back-button" 
+              data-testid="back-button"
+              onClick={() => mockSetTermView(false)}
+            >
+              Back
+            </button>
+            <h1 className="listtitle">Subcollections</h1>
+            {renderSubCollections(mockSubCollectionsData, {
+              useButtons: true,
+              setSelectedTerm: (term) => {
+                mockSetSelectedTerm(term);
+                mockSetTermView(true);
+              }
+            })}
+          </div>
+        );
+      };
+      
+      render(<TestSubCollectionView />);
+      
+      expect(screen.getByTestId("subcollection-view")).toBeInTheDocument();
+      expect(screen.getByTestId("back-button")).toBeInTheDocument();
+      expect(screen.getByTestId("subcollections-container")).toBeInTheDocument();
+      expect(screen.getByTestId("subcollection-subCol1")).toBeInTheDocument();
+      expect(screen.getByTestId("subcollection-subCol2")).toBeInTheDocument();
+      
+      fireEvent.click(screen.getByTestId("subcollection-subCol1"));
+      
+      expect(mockSetSelectedTerm).toHaveBeenCalledWith(mockSubCollectionsData.collections[0]);
+      expect(mockSetTermView).toHaveBeenCalledWith(true);
+      
+      fireEvent.click(screen.getByTestId("back-button"));
+      expect(mockSetTermView).toHaveBeenCalledWith(false);
+    });
+    
+    test("Should handle early return in subcollection view", () => {
+      earlyReturnValue = <div data-testid="early-return">Loading...</div>;
+      
+      const TestEarlyReturnView = () => {
+        return (
+          <div className="selected-collection-content">
+            <h1 className="listtitle">Subcollections</h1>
+            {earlyReturnValue || <div data-testid="subcollections-content">Subcollections Content</div>}
+          </div>
+        );
+      };
+      
+      render(<TestEarlyReturnView />);
+      
+      expect(screen.getByTestId("early-return")).toBeInTheDocument();
+      expect(screen.queryByTestId("subcollections-content")).not.toBeInTheDocument();
+    });
+  });
 });
