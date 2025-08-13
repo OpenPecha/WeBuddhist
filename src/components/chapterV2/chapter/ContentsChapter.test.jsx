@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter as Router } from "react-router-dom";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import ContentsChapter from "./ContentsChapter.jsx";
@@ -64,11 +65,13 @@ const defaultProps = {
 
 const setup = (props = {}) => {
   return render(
-    <QueryClientProvider client={queryClient}>
-      <TolgeeProvider tolgee={mockTolgee} fallback={"Loading tolgee..."}>
-        <ContentsChapter {...defaultProps} {...props} />
-      </TolgeeProvider>
-    </QueryClientProvider>
+    <Router>
+      <QueryClientProvider client={queryClient}>
+        <TolgeeProvider tolgee={mockTolgee} fallback={"Loading tolgee..."}>
+          <ContentsChapter {...defaultProps} {...props} />
+        </TolgeeProvider>
+      </QueryClientProvider>
+    </Router>
   );
 };
 
