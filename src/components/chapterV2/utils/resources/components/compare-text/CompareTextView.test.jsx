@@ -707,6 +707,40 @@ describe("CompareTextView Component Rendering Tests", () => {
       expect(mocks.getLanguageClassMock).toHaveBeenCalledWith("sa");
       expect(mocks.getLanguageClassMock).toHaveBeenCalledWith("en");
     });
+
+    test("Should call setSelectedText and setActiveView when clicking on root text button", () => {
+      const rootTexts = [
+        { id: "root1", title: "Root Text 1", language: "bo" }
+      ];
+      
+      const commentaryTexts = [];
+      
+      const { ui, mocks } = renderTermView(rootTexts, commentaryTexts);
+      render(ui);
+      
+      fireEvent.click(screen.getByTestId("root-text-root1"));
+      
+      expect(mocks.setSelectedTextMock).toHaveBeenCalledWith(rootTexts[0]);
+      
+      expect(mocks.setActiveViewMock).toHaveBeenCalledWith("contents");
+    });
+
+    test("Should call setSelectedText and setActiveView when clicking on commentary text button", () => {
+      const rootTexts = [];
+      
+      const commentaryTexts = [
+        { id: "comm1", title: "Commentary 1", language: "en" }
+      ];
+      
+      const { ui, mocks } = renderTermView(rootTexts, commentaryTexts);
+      render(ui);
+      
+      fireEvent.click(screen.getByTestId("commentary-text-comm1"));
+      
+      expect(mocks.setSelectedTextMock).toHaveBeenCalledWith(commentaryTexts[0]);
+      
+      expect(mocks.setActiveViewMock).toHaveBeenCalledWith("contents");
+    });
     
     test("Should display empty state message when no root texts are available", () => {
       const rootTexts = [];
