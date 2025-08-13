@@ -35,7 +35,8 @@ vi.mock("../../../../../../context/PanelContext.jsx", () => {
 
 vi.mock("../../../../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: (language) => `lang-${language}`,
-  getEarlyReturn: ({ isLoading, error, t }) => earlyReturnValue
+  getEarlyReturn: ({ isLoading, error, t }) => earlyReturnValue,
+  mapLanguageCode: (code) => code
 }));
 
 vi.mock("@tolgee/react", async () => {
@@ -1101,5 +1102,61 @@ describe("CompareTextView Component Rendering Tests", () => {
       expect(screen.getByTestId("early-return")).toBeInTheDocument();
       expect(screen.queryByTestId("subcollections-content")).not.toBeInTheDocument();
     });
+  });
+
+  test("Should call fetchCollections with proper parameters and handle the response", async () => {
+    vi.resetAllMocks();
+    
+    const originalLocalStorage = window.localStorage;
+    const mockLocalStorage = {
+      getItem: vi.fn().mockReturnValue("bo"),
+    };
+    Object.defineProperty(window, 'localStorage', { value: mockLocalStorage, configurable: true });
+    
+    const mockCollectionsData = {
+      collections: [
+        { id: "col1", title: "Collection 1", has_child: true },
+        { id: "col2", title: "Collection 2", has_child: false }
+      ]
+    };
+    
+    const collectionsModule = await import("../../../../../../components/collections/Collections.jsx");
+    
+    const fetchCollectionsSpy = vi.spyOn(collectionsModule, "fetchCollections");
+    
+    const axiosInstance = (await import("../../../../../../config/axios-config.js")).default;
+    const mockAxiosGet = vi.spyOn(axiosInstance, "get").mockResolvedValueOnce({
+      data: mockCollectionsData
+    });
+    
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
+      if (Array.isArray(queryKey) && queryKey[0] === "collections") {
+        return {
+          data: mockCollectionsData,
+          isLoading: false,
+          error: null
+        };
+      }
+      return { data: null, isLoading: false, error: null };
+    });
+    
+    setup();
+    
+    const result = await collectionsModule.fetchCollections();
+    
+    expect(mockAxiosGet).toHaveBeenCalledWith("api/v1/collections", {
+      params: {
+        language: "bo",
+        limit: 10,
+        skip: 0
+      }
+    });
+    
+    expect(result).toEqual(mockCollectionsData);
+    
+    Object.defineProperty(window, 'localStorage', { value: originalLocalStorage });
+    vi.restoreAllMocks();
+    
+    mockReactQuery();
   });
 });
