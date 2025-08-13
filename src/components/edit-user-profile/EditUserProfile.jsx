@@ -60,6 +60,11 @@ const EditUserProfile = () => {
     setFormData({ ...formData, educations: [...formData.educations, ""] });
   };
 
+  const removeEducation = (indexToRemove) => {
+    const updatedEducation = formData.educations.filter((_, i) => i !== indexToRemove);
+    setFormData({ ...formData, educations: updatedEducation });
+  };
+
   // Handle social profile changes
   const handleSocialProfileChange = (account, value) => {
     const updatedProfiles = formData.social_profiles.map((profile) =>
@@ -160,7 +165,7 @@ const EditUserProfile = () => {
             {t("edit_profile.education_info")}
           </label>
           {formData.educations.map((edu, index) => (
-            <div className="form-education" key={index}>
+            <div className="form-education" key={index}> 
               <div className="col">
                 <input className="form-control" type="text" value={edu} onChange={(e) => handleEducationChange(index, e.target.value)} placeholder={t("profile.enter-your-education")}/>
                 {index !== 0 && (
@@ -168,13 +173,7 @@ const EditUserProfile = () => {
                     type="button"
                     className="remove-icon"
                     onClick={() => {
-                      const updatedEducation = formData.educations.filter(
-                        (_, i) => i !== index
-                      );
-                      setFormData({
-                        ...formData,
-                        educations: updatedEducation,
-                      });
+                      removeEducation(index);
                     }}
                   >
                     ✕

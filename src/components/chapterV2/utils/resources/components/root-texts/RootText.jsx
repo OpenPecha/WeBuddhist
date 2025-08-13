@@ -26,13 +26,13 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
   );
   
   const handleFootnoteClick = (event) => {
-    if (event.target.classList && event.target.classList.contains('footnote-marker')) {
+    if (event.target.classList?.contains('footnote-marker')) {
       event.stopPropagation();
       event.preventDefault();
       const footnoteMarker = event.target;
       const footnote = footnoteMarker.nextElementSibling;
 
-      if (footnote && footnote.classList.contains('footnote')) {
+      if (footnote?.classList.contains('footnote')) {
         footnote.classList.toggle('active');
       }
       return false;
@@ -76,8 +76,7 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
       </div>
       <div className="translation-content p-4">
         <div className="root-texts-list">
-          {rootTextData && rootTextData.segment_root_mapping && 
-           rootTextData.segment_root_mapping.length > 0 && (
+          {rootTextData?.segment_root_mapping?.length > 0 && (
             <div className="all-root-texts">
               {rootTextData.segment_root_mapping.map((rootText) => {
                 const rootTextId = rootText.text_id;
