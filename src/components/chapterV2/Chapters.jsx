@@ -61,7 +61,7 @@ const Chapters = () => {
     <div className="chapters-container">
       {chapters.map((chapter, index) => (
         <div
-          key={index}
+          key={`${chapter.textId}-${chapter.contentId || 'no-content'}-${chapter.segmentId || 'no-segment'}`}
           className="chapter-container"
           style={{ width: `${100 / chapters.length}%` }}
         >

@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
 import { siteName } from "../../../utils/constants.js";
 
 const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
-  const [, textId, contentId, versionId, size, initialSegmentId] = queryKey;
+  const [_, textId, contentId, versionId, size, initialSegmentId] = queryKey;
   const segmentId = pageParam?.segmentId ?? initialSegmentId;
   const direction = pageParam?.direction ?? "next";
   const { data } = await axiosInstance.post(`/api/v1/texts/${textId}/details`, {

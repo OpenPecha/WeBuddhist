@@ -118,5 +118,8 @@ TableOfContents.propTypes = {
     limit: PropTypes.number.isRequired
   }).isRequired,
   setPagination: PropTypes.func.isRequired,
-  tableOfContents : PropTypes.object
+  tableOfContents : PropTypes.object,
+  error: PropTypes.object,
+  loading: PropTypes.bool,
+  t: PropTypes.func.isRequired
 }
