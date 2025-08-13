@@ -152,14 +152,15 @@ const ImageUploadModal = ({ onClose, onUpload, isCameFromProfile = false }) => {
 
   const renderUploadButton = () => {
     if (!selectedFile) return null;
-
+    const imageStatus = croppedFile ? 'Cropped ' : '';
+    const buttonText = isUploading ? 'Uploading...' : `Upload ${imageStatus}Image`;
     return (
       <button
         className="upload-button"
         onClick={() => handleFile(displayFile)}
         disabled={isUploading}
       >
-        {isUploading ? 'Uploading...' : `Upload ${croppedFile ? 'Cropped ' : ''}Image`}
+        {buttonText}
       </button>
     );
   };

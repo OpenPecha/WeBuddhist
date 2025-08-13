@@ -51,11 +51,13 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
     }
 
     const renderDropIcons = () => {
-      return hasChildren ? (
-        isExpanded ?
-          <FiChevronDown size={16} className="toggle-icon" /> :
-          <FiChevronRight size={16} className="toggle-icon" />
-      ) : <span className="empty-icon"></span>
+      const getChevronIcon = () => {
+        if (isExpanded) {
+          return <FiChevronDown size={16} className="toggle-icon" />;
+        }
+        return <FiChevronRight size={16} className="toggle-icon" />;
+      };
+      return hasChildren ? getChevronIcon() : <span className="empty-icon"></span>
     }
 
     const renderRecursiveSubContents = () => {
