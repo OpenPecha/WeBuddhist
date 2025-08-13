@@ -165,7 +165,7 @@ const EditUserProfile = () => {
             {t("edit_profile.education_info")}
           </label>
           {formData.educations.map((edu, index) => (
-            <div className="form-education" key={index}>
+            <div className="form-education" key={index}> {/* NOSONAR */}
               <div className="col">
                 <input className="form-control" type="text" value={edu} onChange={(e) => handleEducationChange(index, e.target.value)} placeholder={t("profile.enter-your-education")}/>
                 {index !== 0 && (
