@@ -39,9 +39,6 @@ const Collections = () => {
     return (
       <div className="browse-section">
         <h2 className="title browse-library-text">{t("home.browse_text")}</h2>
-        <button className="listtitle explore-collections-button">
-          {t("side_nav.explore_collections")}
-        </button>
       </div>
     );
   };
@@ -74,7 +71,6 @@ const Collections = () => {
         <hr className="divider"/>
         <p className="content about-content">
           {t("side_nav.about_pecha_description")}
-          <span className="learn-more"> {t("common.learn_more")}</span>
         </p>
       </div>
     );

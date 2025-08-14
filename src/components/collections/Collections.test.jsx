@@ -110,7 +110,6 @@ describe("Collections Component", () => {
     const browseSection = document.querySelector(".browse-section");
     expect(browseSection).toBeInTheDocument();
     expect(browseSection.querySelector("h2")).toBeInTheDocument();
-    expect(browseSection.querySelector("button")).toBeInTheDocument();
   });
 
   test("renders the content section correctly", () => {
@@ -132,14 +131,6 @@ describe("Collections Component", () => {
     expect(paragraph).toBeInTheDocument();
   });
 
-  test("handles click on buttons without errors", () => {
-    setup();
-    const buttons = document.querySelectorAll("button");
-    expect(buttons.length).toBeGreaterThan(0);
-    buttons.forEach(button => {
-      fireEvent.click(button);
-    });
-  });
 
   test("renders correct number of collections from data", () => {
     const customCollectionsData = {
