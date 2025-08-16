@@ -20,7 +20,8 @@ export const fetchCollections = async () => {
   });
   return data;
 }
-const Collections = () => {
+const Collections = (props) => {
+  const {requiredInfo, setRequiredInfo} = props
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
     ["collections"],
@@ -78,19 +79,19 @@ const Collections = () => {
 
 
   return (
-    <div className="collections-container">
+    <div className={`${!requiredInfo.from ? "collections-container" : "collections-container no-margin"}`}>
       <Seo
         title={`${siteName} - Tibetan Buddhism in your own words`}
         description="Explore Tibetan Buddhist texts, collections, and community discussions. Create notes, track your studies, and share insights."
         canonical={canonicalUrl}
       />
-      <div className="left-section">
+      <div className={`${!requiredInfo.from  ? "left-section" : "minified-left-section"}`}>
         {renderBrowseLibrary()}
         {renderCollections()}
       </div>
-      <div className="right-section">
+      {!requiredInfo.from  && <div className="right-section">
         {renderAboutSection()}
-      </div>
+      </div>}
     </div>
   );
 };

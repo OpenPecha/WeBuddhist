@@ -52,6 +52,10 @@ $font-size-content-sm: 14px;
       }
     }
   }
+
+  &.no-margin{
+    margin: 0;
+  }
   .left-section{
     width: 65%;
     .collections-list-container{
@@ -103,6 +107,20 @@ $font-size-content-sm: 14px;
       }
     }
   }
+
+
+
+  .minified-left-section{
+    margin: 0!important;
+    background-color: darkred;
+    width: 100%;
+  }
+
+
+
+
+
+
   .right-section{
     width: 35%;
     background-color: $rightsection-color;
