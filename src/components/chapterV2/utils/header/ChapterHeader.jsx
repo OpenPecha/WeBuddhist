@@ -1,16 +1,28 @@
-import React, {useState} from 'react'
+import React, {useEffect} from 'react'
 import {LuPanelLeftClose, LuPanelLeftOpen} from "react-icons/lu";
 import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
 import "./ChapterHeader.scss"
 import ViewSelector from "./view-selector/ViewSelector.jsx";
 import {getLanguageClass} from "../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
+import { usePanelContext } from "../../../../context/PanelContext.jsx";
 
 
 const ChapterHeader = (props) => {
 
   const {viewMode, setViewMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, versionSelected} = props
-  const [showViewSelector, setShowViewSelector] = useState(false)
+  const { isResourcesPanelOpen, isViewSelectorOpen, setIsViewSelectorOpen, closeResourcesPanel } = usePanelContext()
+
+  useEffect(() => {
+    if (isResourcesPanelOpen) {
+      setIsViewSelectorOpen(false);
+    }
+  }, [isResourcesPanelOpen, setIsViewSelectorOpen]);
+
+  const handleViewSelectorClick = () => {
+    closeResourcesPanel();
+    setIsViewSelectorOpen((prev) => !prev);
+  };
   // ----------------------- renderers --------------------------
 
   const renderTableOfContentsIcon = () => {
@@ -31,10 +43,10 @@ const ChapterHeader = (props) => {
   }
 
   const renderViewSelector = () => {
-    const propsForViewSelectorComponent = { setShowViewSelector, viewMode, setViewMode, versionSelected }
+    const propsForViewSelectorComponent = { setShowViewSelector: () => setIsViewSelectorOpen(false), viewMode, setViewMode, versionSelected }
     return <div className="view-selector-icon-container">
-      <MdOutlineVerticalSplit size={20} onClick={() => setShowViewSelector(true)}/>
-      {showViewSelector && <ViewSelector {...propsForViewSelectorComponent}/>}
+      <MdOutlineVerticalSplit size={20} onClick={handleViewSelectorClick}/>
+      {isViewSelectorOpen && <ViewSelector {...propsForViewSelectorComponent}/>}
     </div>
   }
 

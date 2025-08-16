@@ -2,6 +2,7 @@ import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
 import { vi } from "vitest";
 import ChapterHeader from "./ChapterHeader.jsx";
+import { PanelProvider } from "../../../../context/PanelContext.jsx";
 import "@testing-library/jest-dom";
 
 vi.mock("../../../../utils/helperFunctions.jsx", () => ({
@@ -25,7 +26,11 @@ describe("ChapterHeader Component", () => {
   };
 
   const setup = (props = {}) =>
-    render(<ChapterHeader {...defaultProps} {...props} />);
+    render(
+      <PanelProvider>
+        <ChapterHeader {...defaultProps} {...props} />
+      </PanelProvider>
+    );
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -81,7 +86,19 @@ describe("ChapterHeader Component", () => {
   });
 
   test("handles missing props without crashing", () => {
-    render(<ChapterHeader />);
+    render(
+      <PanelProvider>
+        <ChapterHeader />
+      </PanelProvider>
+    );
     expect(document.querySelector(".chapter-header-container")).toBeInTheDocument();
+  });
+
+  test("calls setShowTableOfContents when TOC close icon is clicked", () => {
+    const setShowTableOfContents = vi.fn();
+    setup({ showTableOfContents: true, setShowTableOfContents });
+    const tocCloseIcon = document.querySelector(".toc-icon-container svg");
+    fireEvent.click(tocCloseIcon);
+    expect(setShowTableOfContents).toHaveBeenCalled();
   });
 });
