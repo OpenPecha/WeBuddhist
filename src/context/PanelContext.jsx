@@ -6,6 +6,7 @@ export const PanelProvider = ({ children }) => {
   const [isResourcesPanelOpen, setIsResourcesPanelOpen] = useState(false);
   const [isTranslationSourceOpen, setIsTranslationSourceOpen] = useState(false);
   const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false);
+  const [isViewSelectorOpen, setIsViewSelectorOpen] = useState(false);
 
  
   const openResourcesPanel = () => {
@@ -67,6 +68,8 @@ export const PanelProvider = ({ children }) => {
     isResourcesPanelOpen,
     isTranslationSourceOpen,
     isLeftPanelOpen,
+    isViewSelectorOpen,
+    setIsViewSelectorOpen,
     openResourcesPanel,
     closeResourcesPanel,
     toggleResourcesPanel,

@@ -114,9 +114,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
       currentSectionId
     };
     return (
-      <PanelProvider>
         <UseChapterHook {...propsForUseChapterHookComponent} />
-      </PanelProvider>
     );
   }
 
@@ -127,8 +125,10 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
         description="Read chapter content with source and translations."
         canonical={canonicalUrl}
       />
-      {renderChapterHeader()}
-      {renderChapter()}
+      <PanelProvider>
+        {renderChapterHeader()}
+        {renderChapter()}
+      </PanelProvider>
     </div>
   )
 }
