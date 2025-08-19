@@ -100,7 +100,7 @@ const SubCollections = (props) => {
         />
       )}
       <div className={`sub-collection-details ${from === "compare-text" ? "full-width" : ""}`}>
-        {renderTitle()}
+        {!from && renderTitle()}
         {renderSubCollections()}
       </div>
       {renderAboutSection() && (
