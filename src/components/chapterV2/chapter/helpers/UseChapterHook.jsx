@@ -9,7 +9,7 @@ import Resources from "../../utils/resources/Resources.jsx";
 import PropTypes from "prop-types";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, viewMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId } = props;
+  const { showTableOfContents, content, language, viewMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId} = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -59,6 +59,12 @@ const UseChapterHook = (props) => {
       setSelectedSegmentId(currentChapter.segmentId);
     }
   }, [currentChapter.segmentId]);
+
+  useEffect(() => {
+    if (currentSegmentId && currentSegmentId !== selectedSegmentId) {
+      setSelectedSegmentId(currentSegmentId);
+    }
+  }, [currentSegmentId]);
 
   useEffect(() => {
     const container = contentsContainerRef.current;
@@ -241,4 +247,5 @@ UseChapterHook.propTypes = {
   onCurrentSectionChange: PropTypes.func.isRequired,
   currentSectionId: PropTypes.string,
   textId: PropTypes.string.isRequired,
+  currentSegmentId: PropTypes.string,
 };

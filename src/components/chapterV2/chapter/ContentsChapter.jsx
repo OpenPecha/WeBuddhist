@@ -111,7 +111,8 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
       handleSegmentNavigate,
       infiniteQuery,
       onCurrentSectionChange: handleCurrentSectionChange,
-      currentSectionId
+      currentSectionId,
+      currentSegmentId
     };
     return (
         <UseChapterHook {...propsForUseChapterHookComponent} />
