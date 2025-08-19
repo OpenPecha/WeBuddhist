@@ -21,6 +21,7 @@ export const fetchCollections = async () => {
   return data;
 }
 const Collections = (props) => {
+  const {showDescription = true} = props;  
   const {requiredInfo = {}, setRequiredInfo, setRequiredId, setRenderer} = props
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
@@ -72,7 +73,7 @@ const Collections = (props) => {
           <div className="collections" key={collection.id}>
             <div className={"red-line"}></div>
               {renderCollectionNames(collection)}
-              <p className="content collections-description">{collection.description}</p>
+              {showDescription && <p className="content collections-description">{collection.description}</p>}
           </div>
         ))}
       </div>
@@ -100,7 +101,7 @@ const Collections = (props) => {
         canonical={canonicalUrl}
       />
       <div className={`${!requiredInfo.from ? "left-section" : "minified-left-section"}`}>
-        {renderBrowseLibrary()}
+        {!requiredInfo.from && renderBrowseLibrary()}
         {renderCollections()}
       </div>
       {!requiredInfo.from && <div className="right-section">

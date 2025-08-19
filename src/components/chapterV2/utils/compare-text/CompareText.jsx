@@ -29,6 +29,7 @@ const CompareText = ({ setIsCompareTextView }) => {
                     setRequiredInfo={() => {}} 
                     setRenderer={setRenderer} 
                     setRequiredId={setRequiredId} 
+                    showDescription={false}
                 />;
             case "sub-collections": 
                 return <SubCollections 
