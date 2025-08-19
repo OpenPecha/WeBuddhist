@@ -15,7 +15,7 @@ import {MENU_ITEMS} from "../../../../utils/constants.js";
 import PropTypes from "prop-types";
 import IndividualTextSearch from "./components/individual-text-search/IndividualTextSearch.jsx";
 import "./Resources.scss"
-import CompareText from "../../../CompareText.jsx";
+import CompareText from "../../../chapterV2/utils/compare-text/CompareText.jsx";
 
 export const fetchSidePanelData = async (segmentId) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segmentId}/info`);

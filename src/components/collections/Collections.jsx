@@ -21,7 +21,7 @@ export const fetchCollections = async () => {
   return data;
 }
 const Collections = (props) => {
-  const {requiredInfo, setRequiredInfo} = props
+  const {requiredInfo = {}, setRequiredInfo} = props
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
     ["collections"],
@@ -85,11 +85,11 @@ const Collections = (props) => {
         description="Explore Tibetan Buddhist texts, collections, and community discussions. Create notes, track your studies, and share insights."
         canonical={canonicalUrl}
       />
-      <div className={`${!requiredInfo.from  ? "left-section" : "minified-left-section"}`}>
+      <div className={`${!requiredInfo.from ? "left-section" : "minified-left-section"}`}>
         {renderBrowseLibrary()}
         {renderCollections()}
       </div>
-      {!requiredInfo.from  && <div className="right-section">
+      {!requiredInfo.from && <div className="right-section">
         {renderAboutSection()}
       </div>}
     </div>
