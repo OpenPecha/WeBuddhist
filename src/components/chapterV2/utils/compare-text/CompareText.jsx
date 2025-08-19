@@ -1,10 +1,25 @@
 import { useState } from "react";
+import { IoMdClose } from "react-icons/io";
+import { useTranslate } from "@tolgee/react";
 import Collections from "../../../collections/Collections";
-import SubCollections from "../../../sub-collections/SubCollections"
+import SubCollections from "../../../sub-collections/SubCollections";
+import PropTypes from "prop-types";
 
-const CompareText = () => {
-    const [renderer, setRenderer] = useState("collections")
-    const [requiredId, setRequiredId] = useState("")
+const CompareText = ({ setIsCompareTextView }) => {
+    const [renderer, setRenderer] = useState("collections");
+    const [requiredId, setRequiredId] = useState("");
+    const { t } = useTranslate();
+
+    const renderPanelHeader = () => (
+        <div className="headerthing">
+            <p className='mt-4 px-4 listtitle'>{t('connection_panel.compare_text')}</p>
+            <IoMdClose
+                size={24}
+                onClick={() => setIsCompareTextView("main")}
+                className="close-icon"
+            />
+        </div>
+    );
 
     const renderView = () => {
         switch (renderer){
@@ -32,7 +47,18 @@ const CompareText = () => {
         }
     }
     
-    return renderView();
+    return (
+        <div className="compare-text-container">
+            {renderPanelHeader()}
+            <div className="compare-text-content">
+                {renderView()}
+            </div>
+        </div>
+    );
 }
+
+CompareText.propTypes = {
+    setIsCompareTextView: PropTypes.func.isRequired
+};
 
 export default CompareText

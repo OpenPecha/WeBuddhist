@@ -21,7 +21,7 @@ export const fetchCollections = async () => {
   return data;
 }
 const Collections = (props) => {
-  const {requiredInfo = {}, setRequiredInfo} = props
+  const {requiredInfo = {}, setRequiredInfo, setRequiredId, setRenderer} = props
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
     ["collections"],
@@ -46,6 +46,20 @@ const Collections = (props) => {
 
   const renderCollections = () => {
     const renderCollectionNames = (collection) => {
+      if (requiredInfo.from === "compare-text" && collection.has_child) {
+        return (
+          <div 
+            className="listtitle collection-link" 
+            onClick={() => {
+              setRequiredId(collection.id);
+              setRenderer("sub-collections");
+            }}
+          >
+            {collection.title}
+          </div>
+        );
+      }
+      
       return collection.has_child ?
         <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
           {collection.title}
