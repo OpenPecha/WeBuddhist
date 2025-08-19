@@ -67,7 +67,7 @@ export const renderRootTexts = (rootTexts, t, getLanguageClass, {useButtons = fa
   );
 };
 
-export const renderCommentaryTexts = (commentaryTexts, t, getLanguageClass, {useButtons = false, setSelectedText = null}) => {
+export const renderCommentaryTexts = (commentaryTexts, t, getLanguageClass, {useButtons = false, setSelectedText = null, setActiveView = null}) => {
   const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>;
   return (
     <div className="commentary-section">
@@ -80,7 +80,7 @@ export const renderCommentaryTexts = (commentaryTexts, t, getLanguageClass, {use
             useButtons ? (
               <button key={text.id} type="button" onClick={() => {
                   setSelectedText(text);
-                  setActiveView("contents");
+                  setActiveView && setActiveView("contents");
               }}
                 className={`${getLanguageClass(text.language)} text-button`}>
                 {text.title}

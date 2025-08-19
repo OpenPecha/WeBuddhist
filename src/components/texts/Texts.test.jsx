@@ -7,7 +7,7 @@ import axiosInstance from "../../config/axios-config.js";
 import {render, screen, fireEvent} from "@testing-library/react";
 import {TolgeeProvider} from "@tolgee/react";
 import React from "react";
-import Texts, {fetchTableOfContents} from "./Texts.jsx";
+import Texts, {fetchTableOfContents, renderTabs} from "./Texts.jsx";
 
 mockAxios();
 mockUseAuth();
@@ -153,5 +153,70 @@ describe("Texts Component", () => {
     expect(buttons[0]).toHaveClass('active');
     expect(screen.getByTestId("table-of-content-component")).toBeInTheDocument();
     expect(screen.queryByTestId("versions-component")).not.toBeInTheDocument();
+  });
+
+  test("fetchTableOfContents uses languageFromContent when provided", async () => {
+    const result = await fetchTableOfContents("123", 0, 10, "en");
+
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      "/api/v1/texts/123/contents",
+      {
+        params: {
+          language: "en",
+          limit: 10,
+          skip: 0,
+        },
+      }
+    );
+
+    expect(result).toEqual(mockTextDetailData);
+  });
+
+  test("renderTabs calls onContentItemClick when provided", () => {
+    const mockOnContentItemClick = vi.fn();
+    const mockSetActiveTab = vi.fn();
+    const mockSetPagination = vi.fn();
+    const mockT = (key) => key;
+    const mockPagination = { currentPage: 1, limit: 10 };
+    
+    render(
+      <Router>
+        {renderTabs(
+          'contents',
+          mockSetActiveTab,
+          [{ id: 'item1', title: 'Item 1' }],
+          mockPagination,
+          mockSetPagination,
+          false,
+          false,
+          mockT,
+          '123',
+          mockOnContentItemClick
+        )}
+      </Router>
+    );
+
+    const tableOfContents = screen.getByTestId("table-of-content-component");
+    expect(tableOfContents).toBeInTheDocument();
+    expect(mockOnContentItemClick).toBeDefined();
+  });
+
+  test("fetchTableOfContents calculates skip from currentPage and limit", async () => {
+    vi.spyOn(axiosInstance, 'get').mockImplementationOnce((url, config) => {
+      fetchTableOfContents.lastCallParams = config.params;
+      return Promise.resolve({ data: mockTextDetailData });
+    });
+    
+    const currentPage = 2;
+    const limit = 10;
+    const skip = (currentPage - 1) * limit; 
+    
+    await fetchTableOfContents("123", skip, limit);
+    
+    expect(fetchTableOfContents.lastCallParams).toEqual({
+      language: "bo",
+      limit: 10,
+      skip: 10, 
+    });
   });
 });

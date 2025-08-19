@@ -5,7 +5,7 @@ import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router, useParams} from "react-router-dom";
-import Collections, {fetchCollections} from "./Collections.jsx";
+import Collections, {fetchCollections, renderCollections} from "./Collections.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -230,5 +230,153 @@ describe("Collections Component", () => {
     });
 
     expect(result).toEqual(mockCollectionsData);
+  });
+});
+
+describe("renderCollections function", () => {
+  const mockCollectionsData = {
+    collections: [
+      { id: "col1", title: "Collection 1", description: "Description 1", has_child: true },
+      { id: "col2", title: "Collection 2", description: "Description 2", has_child: false }
+    ]
+  };
+  
+  const t = (key) => key;
+  
+  test("renders collections with descriptions by default", () => {
+    const { container } = render(
+      <Router>
+        {renderCollections(mockCollectionsData, t, {})}
+      </Router>
+    );
+    
+    const collections = container.querySelectorAll(".collections");
+    expect(collections.length).toBe(2);
+    
+    const descriptions = container.querySelectorAll(".collections-description");
+    expect(descriptions.length).toBe(2);
+    expect(descriptions[0].textContent).toBe("Description 1");
+    expect(descriptions[1].textContent).toBe("Description 2");
+  });
+  
+  test("renders collections without descriptions when showDescriptions is false", () => {
+    const { container } = render(
+      <Router>
+        {renderCollections(mockCollectionsData, t, { showDescriptions: false })}
+      </Router>
+    );
+    
+    const collections = container.querySelectorAll(".collections");
+    expect(collections.length).toBe(2);
+    
+    const descriptions = container.querySelectorAll(".collections-description");
+    expect(descriptions.length).toBe(0);
+  });
+  
+  test("renders links for collections with has_child=true by default", () => {
+    const { container } = render(
+      <Router>
+        {renderCollections(mockCollectionsData, t, {})}
+      </Router>
+    );
+    
+    const links = container.querySelectorAll(".collection-link");
+    expect(links.length).toBe(1);
+    expect(links[0].getAttribute("href")).toBe("/collections/col1");
+    expect(links[0].textContent).toBe("Collection 1");
+  });
+  
+  test("renders plain text for collections with has_child=false by default", () => {
+    const { container } = render(
+      <Router>
+        {renderCollections(mockCollectionsData, t, {})}
+      </Router>
+    );
+    
+    const collections = container.querySelectorAll(".collections");
+    
+    const secondCollection = collections[1];
+    expect(secondCollection.textContent).toContain("Collection 2");
+    expect(secondCollection.querySelector(".collection-link")).toBeNull();
+  });
+  
+  test("renders buttons when useButtons is true", () => {
+    const { container } = render(
+      <Router>
+        {renderCollections(mockCollectionsData, t, { useButtons: true, setSelectedCollection: () => {} })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll("button");
+    expect(buttons.length).toBe(2);
+    expect(buttons[0].textContent).toBe("Collection 1");
+    expect(buttons[1].textContent).toBe("Collection 2");
+  });
+  
+  test("calls setSelectedCollection when button is clicked", () => {
+    const mockSetSelectedCollection = vi.fn();
+    
+    const { container } = render(
+      <Router>
+        {renderCollections(mockCollectionsData, t, { 
+          useButtons: true, 
+          setSelectedCollection: mockSetSelectedCollection 
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll("button");
+    fireEvent.click(buttons[0]);
+    
+    expect(mockSetSelectedCollection).toHaveBeenCalledWith(mockCollectionsData.collections[0]);
+  });
+  
+  test("handles null data gracefully", () => {
+    const { container } = render(
+      <Router>
+        {renderCollections(null, t, {})}
+      </Router>
+    );
+    
+    const collectionsContainer = container.querySelector(".collections-list-container");
+    expect(collectionsContainer).toBeInTheDocument();
+    expect(collectionsContainer.children.length).toBe(0);
+  });
+  
+  test("handles empty collections array gracefully", () => {
+    const emptyData = { collections: [] };
+    
+    const { container } = render(
+      <Router>
+        {renderCollections(emptyData, t, {})}
+      </Router>
+    );
+    
+    const collectionsContainer = container.querySelector(".collections-list-container");
+    expect(collectionsContainer).toBeInTheDocument();
+    expect(collectionsContainer.children.length).toBe(0);
+  });
+  
+  test("combines all options correctly", () => {
+    const mockSetSelectedCollection = vi.fn();
+    
+    const { container } = render(
+      <Router>
+        {renderCollections(mockCollectionsData, t, { 
+          showDescriptions: false,
+          useButtons: true, 
+          setSelectedCollection: mockSetSelectedCollection 
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll("button");
+    expect(buttons.length).toBe(2);
+    
+    const descriptions = container.querySelectorAll(".collections-description");
+    expect(descriptions.length).toBe(0);
+    
+    fireEvent.click(buttons[0]);
+    expect(mockSetSelectedCollection).toHaveBeenCalledWith(mockCollectionsData.collections[0]);
   });
 });

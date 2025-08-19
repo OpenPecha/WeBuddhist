@@ -134,7 +134,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
       .filter(item => 
         item.label !== 'sheet.add_to_sheet' && 
         item.label !== 'connection_panel.notes'
-      )
+      ) 
       .map((item) => (
         <button
           type="button"

@@ -5,7 +5,7 @@ import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
-import SubCollections, { fetchSubCollections } from "./SubCollections.jsx";
+import SubCollections, { fetchSubCollections, renderSubCollections } from "./SubCollections.jsx";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
@@ -182,5 +182,128 @@ describe("SubCollections Component", () => {
       }
     });
     expect(result).toEqual(mockTextChildData);
+  });
+});
+
+describe("renderSubCollections function", () => {
+  const mockSubCollectionsData = {
+    collections: [
+      { id: "term1", title: "Term 1" },
+      { id: "term2", title: "Term 2" },
+      { id: "term3", title: "Term 3" }
+    ]
+  };
+  
+  test("renders links by default when useButtons is false", () => {
+    const { container } = render(
+      <Router>
+        {renderSubCollections(mockSubCollectionsData, {})}
+      </Router>
+    );
+    
+    const links = container.querySelectorAll(".text-item");
+    expect(links.length).toBe(3);
+    
+    expect(links[0].tagName).toBe("A");
+    expect(links[0].getAttribute("href")).toBe("/works/term1");
+    expect(links[0].textContent).toContain("Term 1");
+    
+    const buttons = container.querySelectorAll("button");
+    expect(buttons.length).toBe(0);
+  });
+  
+  test("renders buttons when useButtons is true", () => {
+    const { container } = render(
+      <Router>
+        {renderSubCollections(mockSubCollectionsData, { useButtons: true })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll("button");
+    expect(buttons.length).toBe(3);
+    expect(buttons[0].textContent).toBe("Term 1");
+    expect(buttons[1].textContent).toBe("Term 2");
+    expect(buttons[2].textContent).toBe("Term 3");
+    
+    const links = container.querySelectorAll(".text-item");
+    expect(links.length).toBe(0);
+  });
+  
+  test("calls setSelectedTerm when button is clicked", () => {
+    const mockSetSelectedTerm = vi.fn();
+    
+    const { container } = render(
+      <Router>
+        {renderSubCollections(mockSubCollectionsData, { 
+          useButtons: true, 
+          setSelectedTerm: mockSetSelectedTerm 
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll("button");
+    fireEvent.click(buttons[0]);
+    
+    expect(mockSetSelectedTerm).toHaveBeenCalledWith(mockSubCollectionsData.collections[0]);
+  });
+  
+  test("does not call setSelectedTerm when it's not provided", () => {
+    const mockSetSelectedTerm = vi.fn();
+    
+    const { container } = render(
+      <Router>
+        {renderSubCollections(mockSubCollectionsData, { 
+          useButtons: true
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll("button");
+    fireEvent.click(buttons[0]);
+    
+    expect(mockSetSelectedTerm).not.toHaveBeenCalled();
+  });
+  
+  test("handles null data gracefully", () => {
+    const { container } = render(
+      <Router>
+        {renderSubCollections(null, {})}
+      </Router>
+    );
+    
+    expect(container.firstChild).toBeNull();
+  });
+  
+  test("handles empty collections array gracefully", () => {
+    const emptyData = { collections: [] };
+    
+    const { container } = render(
+      <Router>
+        {renderSubCollections(emptyData, {})}
+      </Router>
+    );
+    
+    const collectionsContainer = container.querySelector(".sub-collections-list-container");
+    expect(collectionsContainer).toBeInTheDocument();
+    expect(collectionsContainer.children.length).toBe(0);
+  });
+  
+  test("combines all options correctly", () => {
+    const mockSetSelectedTerm = vi.fn();
+    
+    const { container } = render(
+      <Router>
+        {renderSubCollections(mockSubCollectionsData, { 
+          useButtons: true, 
+          setSelectedTerm: mockSetSelectedTerm 
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll("button");
+    expect(buttons.length).toBe(3);
+    
+    fireEvent.click(buttons[1]);
+    expect(mockSetSelectedTerm).toHaveBeenCalledWith(mockSubCollectionsData.collections[1]);
   });
 });

@@ -395,3 +395,222 @@ describe("Works Component", () => {
     expect(screen.getByText("Root Text 1")).toBeInTheDocument();
   });
 });
+
+import { renderRootTexts, renderCommentaryTexts } from "./Works.jsx";
+import { fireEvent } from "@testing-library/react";
+
+describe("renderRootTexts function", () => {
+  const mockRootTexts = [
+    { id: "root1", title: "Root Text 1", language: "bo" },
+    { id: "root2", title: "Root Text 2", language: "en" }
+  ];
+  
+  const t = (key) => key;
+  const getLanguageClass = (lang) => `lang-${lang}`;
+  
+  test("renders links by default when useButtons is false", () => {
+    const { container } = render(
+      <Router>
+        {renderRootTexts(mockRootTexts, t, getLanguageClass, {})}
+      </Router>
+    );
+    
+    const links = container.querySelectorAll(".root-text");
+    expect(links.length).toBe(2);
+    
+    expect(links[0].tagName).toBe("A");
+    expect(links[0].getAttribute("href")).toBe("/texts/root1?type=root_text");
+    expect(links[0].textContent).toContain("Root Text 1");
+    
+    const buttons = container.querySelectorAll(".text-button");
+    expect(buttons.length).toBe(0);
+  });
+  
+  test("renders buttons when useButtons is true", () => {
+    const { container } = render(
+      <Router>
+        {renderRootTexts(mockRootTexts, t, getLanguageClass, { 
+          useButtons: true,
+          setSelectedText: () => {}
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll(".text-button");
+    expect(buttons.length).toBe(2);
+    expect(buttons[0].textContent).toBe("Root Text 1");
+    expect(buttons[1].textContent).toBe("Root Text 2");
+    
+    const links = container.querySelectorAll(".root-text");
+    expect(links.length).toBe(0);
+  });
+  
+  test("calls setSelectedText and setActiveView when button is clicked", () => {
+    const mockSetSelectedText = vi.fn();
+    const mockSetActiveView = vi.fn();
+    
+    const { container } = render(
+      <Router>
+        {renderRootTexts(mockRootTexts, t, getLanguageClass, { 
+          useButtons: true, 
+          setSelectedText: mockSetSelectedText,
+          setActiveView: mockSetActiveView
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll(".text-button");
+    fireEvent.click(buttons[0]);
+    
+    expect(mockSetSelectedText).toHaveBeenCalledWith(mockRootTexts[0]);
+    expect(mockSetActiveView).toHaveBeenCalledWith("contents");
+  });
+  
+  test("handles null setActiveView gracefully", () => {
+    const mockSetSelectedText = vi.fn();
+    
+    const { container } = render(
+      <Router>
+        {renderRootTexts(mockRootTexts, t, getLanguageClass, { 
+          useButtons: true, 
+          setSelectedText: mockSetSelectedText
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll(".text-button");
+    fireEvent.click(buttons[0]);
+    
+    expect(mockSetSelectedText).toHaveBeenCalledWith(mockRootTexts[0]);
+  });
+  
+  test("applies correct language class to elements", () => {
+    const { container } = render(
+      <Router>
+        {renderRootTexts(mockRootTexts, t, getLanguageClass, {})}
+      </Router>
+    );
+    
+    const links = container.querySelectorAll(".root-text");
+    expect(links[0].className).toContain("lang-bo");
+    expect(links[1].className).toContain("lang-en");
+  });
+  
+  test("handles empty array gracefully", () => {
+    const { container } = render(
+      <Router>
+        {renderRootTexts([], t, getLanguageClass, {})}
+      </Router>
+    );
+    
+    expect(container.querySelector(".no-content").textContent).toBe("text.root_text_not_found");
+  });
+});
+
+describe("renderCommentaryTexts function", () => {
+  const mockCommentaryTexts = [
+    { id: "comm1", title: "Commentary 1", language: "bo" },
+    { id: "comm2", title: "Commentary 2", language: "en" }
+  ];
+  
+  const t = (key) => key;
+  const getLanguageClass = (lang) => `lang-${lang}`;
+  
+  test("renders links by default when useButtons is false", () => {
+    const { container } = render(
+      <Router>
+        {renderCommentaryTexts(mockCommentaryTexts, t, getLanguageClass, {})}
+      </Router>
+    );
+    
+    const links = container.querySelectorAll(".commentary-text");
+    expect(links.length).toBe(2);
+    
+    expect(links[0].tagName).toBe("A");
+    expect(links[0].getAttribute("href")).toBe("/texts/comm1?type=commentary");
+    expect(links[0].textContent).toContain("Commentary 1");
+    
+    const buttons = container.querySelectorAll(".text-button");
+    expect(buttons.length).toBe(0);
+  });
+  
+  test("renders buttons when useButtons is true", () => {
+    const { container } = render(
+      <Router>
+        {renderCommentaryTexts(mockCommentaryTexts, t, getLanguageClass, { 
+          useButtons: true,
+          setSelectedText: () => {}
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll(".text-button");
+    expect(buttons.length).toBe(2);
+    expect(buttons[0].textContent).toBe("Commentary 1");
+    expect(buttons[1].textContent).toBe("Commentary 2");
+    
+    const links = container.querySelectorAll(".commentary-text");
+    expect(links.length).toBe(0);
+  });
+  
+  test("calls setSelectedText and setActiveView when button is clicked", () => {
+    const mockSetSelectedText = vi.fn();
+    const mockSetActiveView = vi.fn();
+    
+    const { container } = render(
+      <Router>
+        {renderCommentaryTexts(mockCommentaryTexts, t, getLanguageClass, { 
+          useButtons: true, 
+          setSelectedText: mockSetSelectedText,
+          setActiveView: mockSetActiveView
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll(".text-button");
+    fireEvent.click(buttons[0]);
+    
+    expect(mockSetSelectedText).toHaveBeenCalledWith(mockCommentaryTexts[0]);
+    expect(mockSetActiveView).toHaveBeenCalledWith("contents");
+  });
+  
+  test("applies correct language class to elements", () => {
+    const { container } = render(
+      <Router>
+        {renderCommentaryTexts(mockCommentaryTexts, t, getLanguageClass, {})}
+      </Router>
+    );
+    
+    const links = container.querySelectorAll(".commentary-text");
+    expect(links[0].className).toContain("lang-bo");
+    expect(links[1].className).toContain("lang-en");
+  });
+  
+  test("handles empty array gracefully", () => {
+    const { container } = render(
+      <Router>
+        {renderCommentaryTexts([], t, getLanguageClass, {})}
+      </Router>
+    );
+    
+    expect(container.querySelector(".no-content").textContent).toBe("text.commentary_text_not_found");
+  });
+
+  test("handles null setActiveView gracefully", () => {
+    const mockSetSelectedText = vi.fn();
+    
+    const { container } = render(
+      <Router>
+        {renderCommentaryTexts(mockCommentaryTexts, t, getLanguageClass, { 
+          useButtons: true, 
+          setSelectedText: mockSetSelectedText
+        })}
+      </Router>
+    );
+    
+    const buttons = container.querySelectorAll(".text-button");
+    fireEvent.click(buttons[0]);
+    
+    expect(mockSetSelectedText).toHaveBeenCalledWith(mockCommentaryTexts[0]);
+  });
+});
