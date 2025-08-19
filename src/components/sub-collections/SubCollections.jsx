@@ -57,8 +57,7 @@ const SubCollections = (props) => {
                 key={collection.id} 
                 className="text-item overalltext sub-collection"
                 onClick={() => {
-                  // Handle click for compare-text view
-                  // You can add additional logic here if needed
+                  console.log ("root and commentary here")
                 }}
               >
                 <div className="divider"></div>
