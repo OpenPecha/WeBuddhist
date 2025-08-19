@@ -65,6 +65,15 @@
     padding: 16px;
     padding-bottom: 80px;
     overflow-y: auto;
+
+    .search-results-header {
+      margin-bottom: 16px;
+
+      .search-results-header-title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
     
     .search-message {
       text-align: center;
