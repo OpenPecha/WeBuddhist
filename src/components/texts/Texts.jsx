@@ -25,20 +25,24 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
   return data;
 
 }
-const Texts = () => {
+
+const Texts = (props) => {
+  const {requiredInfo = {}, setRequiredInfo, setRequiredId, setRenderer, collection_id} = props;
   const { t } = useTranslate();
-  const { id } = useParams();
+  const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type') || "";
   const [activeTab, setActiveTab] = useState('contents');
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
+  
+  const textId = requiredInfo?.from === "compare-text" ? collection_id : urlId;
 
   const {data: tableOfContents, isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError} = useQuery(
     ["table-of-contents", skip],
-    () => fetchTableOfContents(id, skip, pagination.limit),
-    {refetchOnWindowFocus: false, enabled: !!id, retry: false}
+    () => fetchTableOfContents(textId, skip, pagination.limit),
+    {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
   );
 
   // -------------------------------------------- helpers ----------------------------------------------
@@ -105,7 +109,7 @@ const Texts = () => {
         )}
         {activeTab === 'versions' && (
           <div className="tab-panel">
-            <Versions />
+            <Versions textId={textId} />
           </div>
         )}
       </div>
@@ -162,8 +166,8 @@ const Texts = () => {
         canonical={canonicalUrl}
       />
       <div className="left-section">
-        {renderTextTitleAndType()}
-        {renderContinueReadingButton()}
+        {!requiredInfo.from && renderTextTitleAndType()}
+        {!requiredInfo.from && renderContinueReadingButton()}
         {renderTabs()}
       </div>
       <div className="right-section">

@@ -20,16 +20,19 @@ export const fetchVersions = async (textId, skip, limit) => {
   })
   return data
 }
-const Versions = () => {
-  const { id } = useParams();
+const Versions = ({ textId: propTextId }) => {
+  const { id: urlId } = useParams();
   const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
+  
+  // Use the ID from props if provided, otherwise use URL param
+  const textId = propTextId || urlId;
 
   const {data: versions, isLoading: versionsIsLoading, error: versionsIsError} = useQuery(
-    ["versions", skip],
-    () => fetchVersions(id, skip, pagination.limit),
-    {refetchOnWindowFocus: false, enabled: !!id}
+    ["versions", textId, skip],
+    () => fetchVersions(textId, skip, pagination.limit),
+    {refetchOnWindowFocus: false, enabled: !!textId}
   );
 
   // -------------------------------------------- helpers ----------------------------------------------

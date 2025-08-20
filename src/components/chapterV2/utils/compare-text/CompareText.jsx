@@ -4,6 +4,7 @@ import { useTranslate } from "@tolgee/react";
 import Collections from "../../../collections/Collections";
 import SubCollections from "../../../sub-collections/SubCollections";
 import Works from "../../../works/Works";
+import Texts from "../../../texts/Texts";
 import PropTypes from "prop-types";
 
 const CompareText = ({ setIsCompareTextView }) => {
@@ -41,6 +42,14 @@ const CompareText = ({ setIsCompareTextView }) => {
                 />;
             case "works":
                 return <Works
+                    requiredInfo={{ from: "compare-text" }} 
+                    setRequiredInfo={() => {}} 
+                    setRenderer={setRenderer} 
+                    setRequiredId={setRequiredId}
+                    collection_id={requiredId}
+                />;
+            case "texts":
+                return <Texts
                     requiredInfo={{ from: "compare-text" }} 
                     setRequiredInfo={() => {}} 
                     setRenderer={setRenderer} 

@@ -85,7 +85,8 @@ const Works = (props) => {
                   key={text.id} 
                   className={`${getLanguageClass(text.language)} text-item overalltext root-text`}
                   onClick={() => {
-                    console.log("Root text selected:", text.title);
+                    setRequiredId(text.id);
+                    setRenderer("texts");
                   }}
                 >
                 <div className="divider"></div>
@@ -132,7 +133,8 @@ const Works = (props) => {
                   key={text.id} 
                   className={`${getLanguageClass(text.language)} text-item overalltext commentary-text`}
                   onClick={() => {
-                    console.log("Commentary text selected:", text.title);
+                    setRequiredId(text.id);
+                    setRenderer("texts");
                   }}
                 >
                   <div className="divider"></div>
