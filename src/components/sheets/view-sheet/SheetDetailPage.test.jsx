@@ -1031,6 +1031,11 @@ describe("SheetDetailPage Component", () => {
   test("does not apply panel CSS classes when panel is closed", () => {
     setup();
     
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    expect(screen.getByTestId("resources-panel")).toBeInTheDocument();
+    const closeButton = screen.getByText("Close");
+    fireEvent.click(closeButton);
     const mainContainer = screen.getByRole("main");
     expect(mainContainer).not.toHaveClass("with-side-panel");
   });
