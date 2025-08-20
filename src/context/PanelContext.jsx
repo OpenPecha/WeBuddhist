@@ -1,13 +1,19 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const PanelContext = createContext();
 
 export const PanelProvider = ({ children }) => {
-  const [isResourcesPanelOpen, setIsResourcesPanelOpen] = useState(false);
+  const [isResourcesPanelOpen, setIsResourcesPanelOpen] = useState(() => {
+    const stored = sessionStorage.getItem('resourcesPanelOpen');
+    return stored === 'true';
+  });
   const [isTranslationSourceOpen, setIsTranslationSourceOpen] = useState(false);
   const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false);
   const [isViewSelectorOpen, setIsViewSelectorOpen] = useState(false);
 
+  useEffect(() => {
+    sessionStorage.setItem('resourcesPanelOpen', isResourcesPanelOpen.toString());
+  }, [isResourcesPanelOpen]);
  
   const openResourcesPanel = () => {
     setIsResourcesPanelOpen(true);
