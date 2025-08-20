@@ -36,9 +36,13 @@ const useGroupedTexts = (texts = []) => {
 };
 
 
-const Works = () => {
-  const {id} = useParams();
+const Works = (props) => {
+  const {id: paramId} = useParams();
   const {t} = useTranslate();
+  const {requiredInfo = {}, setRequiredInfo, setRequiredId, setRenderer} = props
+
+  // Use requiredId from props if in compare-text mode, otherwise use the URL param
+  const id = requiredInfo.from === "compare-text" ? props.collection_id : paramId;
 
   const {data: worksData, isLoading: worksDataIsLoading, error: worksDataIsError} = useQuery(
     ["works", id],
@@ -68,6 +72,31 @@ const Works = () => {
   }
   const renderRootTexts = () => {
     const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>;
+    if (requiredInfo.from === "compare-text") {
+      return (
+        <div className="root-text-section">
+          {renderTitle()}
+          {rootTexts.length === 0 ? (
+            <div className="no-content">{t("text.root_text_not_found")}</div>
+          ) : (
+            <div className={requiredInfo.from === "compare-text" ? "minified-root-text-list" : "root-text-list"}>
+              {rootTexts.map((text) => (
+                <div 
+                  key={text.id} 
+                  className={`${getLanguageClass(text.language)} text-item overalltext root-text`}
+                  onClick={() => {
+                    console.log("Root text selected:", text.title);
+                  }}
+                >
+                <div className="divider"></div>
+                  <p>{text.title}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    }
     return (
       <div className="root-text-section">
         {renderTitle()}
@@ -90,6 +119,31 @@ const Works = () => {
 
   const renderCommentaryTexts = () => {
     const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>;
+    if (requiredInfo.from === "compare-text") {
+      return (
+        <div className="commentary-section">
+          {renderTitle()}
+          {commentaryTexts.length === 0 ? (
+            <div className="no-content">{t("text.commentary_text_not_found")}</div>
+          ) : (
+            <div className={requiredInfo.from === "compare-text" ? "minified-commentary-list" : "commentary-list"}>
+              {commentaryTexts.map((text) => (
+                <div 
+                  key={text.id} 
+                  className={`${getLanguageClass(text.language)} text-item overalltext commentary-text`}
+                  onClick={() => {
+                    console.log("Commentary text selected:", text.title);
+                  }}
+                >
+                  <div className="divider"></div>
+                  <p>{text.title}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    }
     return (
       <div className="commentary-section">
         {renderTitle()}

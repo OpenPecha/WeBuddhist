@@ -3,6 +3,7 @@ import { IoMdClose } from "react-icons/io";
 import { useTranslate } from "@tolgee/react";
 import Collections from "../../../collections/Collections";
 import SubCollections from "../../../sub-collections/SubCollections";
+import Works from "../../../works/Works";
 import PropTypes from "prop-types";
 
 const CompareText = ({ setIsCompareTextView }) => {
@@ -38,12 +39,13 @@ const CompareText = ({ setIsCompareTextView }) => {
                     setRequiredId={setRequiredId} 
                     parent_id={requiredId}
                 />;
-            default:
-                return <Collections 
+            case "works":
+                return <Works
                     requiredInfo={{ from: "compare-text" }} 
                     setRequiredInfo={() => {}} 
                     setRenderer={setRenderer} 
-                    setRequiredId={setRequiredId} 
+                    setRequiredId={setRequiredId}
+                    collection_id={requiredId}
                 />;
         }
     }

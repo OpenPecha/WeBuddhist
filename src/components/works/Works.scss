@@ -55,8 +55,23 @@
             }
           }
         }
-        .no-content {
-          text-align: left;
+        .minified-root-text-list {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          padding-right: 20px;
+          
+          .bo-text {
+            width: 100%;
+            min-width: 200px;
+            font-size: 1rem;
+            text-align: left;
+            
+            p {
+              margin-left: -10px;
+              padding-right: 10px;
+            }
+          }
         }
       }
     }
@@ -102,8 +117,18 @@
             }
           }
         }
-        .no-content {
-          text-align: left;
+        
+        .minified-commentary-list {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          
+          .bo-text {
+            width: 100%;
+            min-width: 200px;
+            font-size: 1rem;
+            text-align: left;
+          }
         }
       }
     }

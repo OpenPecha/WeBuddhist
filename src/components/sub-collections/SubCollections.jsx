@@ -57,7 +57,8 @@ const SubCollections = (props) => {
                 key={collection.id} 
                 className="text-item overalltext sub-collection"
                 onClick={() => {
-                  console.log ("root and commentary here")
+                  setRequiredId(collection.id);
+                  setRenderer("works");
                 }}
               >
                 <div className="divider"></div>
