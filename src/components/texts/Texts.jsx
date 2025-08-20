@@ -1,4 +1,3 @@
-
 import React, {useMemo, useState} from 'react'
 import {useQuery} from "react-query";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
@@ -27,7 +26,7 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
 }
 
 const Texts = (props) => {
-  const {requiredInfo = {}, setRequiredInfo, setRequiredId, setRenderer, collection_id} = props;
+  const {requiredInfo = {}, setRequiredInfo, setRequiredId, setRenderer, collection_id, addChapter, currentChapter} = props;
   const { t } = useTranslate();
   const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();
@@ -104,7 +103,7 @@ const Texts = (props) => {
       <div className="tab-content">
         {activeTab === 'contents' && (
           <div className="tab-panel">
-            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={tableOfContents?.text_detail?.id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t}/>
+            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={tableOfContents?.text_detail?.id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t} addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}/>
           </div>
         )}
         {activeTab === 'versions' && (

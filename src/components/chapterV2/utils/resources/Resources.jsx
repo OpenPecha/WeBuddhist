@@ -203,7 +203,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           />
         );
       case "compare_text": 
-        return <CompareText setIsCompareTextView={setActiveView} />;
+        return <CompareText setIsCompareTextView={setActiveView} addChapter={addChapter} currentChapter={currentChapter} />;
       case "root_text":
         return (
           <RootTextView

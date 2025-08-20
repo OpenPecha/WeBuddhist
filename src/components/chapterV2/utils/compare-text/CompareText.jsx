@@ -7,7 +7,7 @@ import Works from "../../../works/Works";
 import Texts from "../../../texts/Texts";
 import PropTypes from "prop-types";
 
-const CompareText = ({ setIsCompareTextView }) => {
+const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
     const [renderer, setRenderer] = useState("collections");
     const [requiredId, setRequiredId] = useState("");
     const { t } = useTranslate();
@@ -55,6 +55,8 @@ const CompareText = ({ setIsCompareTextView }) => {
                     setRenderer={setRenderer} 
                     setRequiredId={setRequiredId}
                     collection_id={requiredId}
+                    addChapter={addChapter}
+                    currentChapter={currentChapter}
                 />;
         }
     }
@@ -70,7 +72,9 @@ const CompareText = ({ setIsCompareTextView }) => {
 }
 
 CompareText.propTypes = {
-    setIsCompareTextView: PropTypes.func.isRequired
+    setIsCompareTextView: PropTypes.func.isRequired,
+    addChapter: PropTypes.func,
+    currentChapter: PropTypes.number
 };
 
 export default CompareText
