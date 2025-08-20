@@ -83,8 +83,9 @@ const SheetShare = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <FaTwitter className="share-icon" />
-            <span>Share on X</span>
+              <FaFacebook className="share-icon" />
+              <span>Share on Facebook</span>
+           
           </a>
           
           <a 
@@ -93,8 +94,8 @@ const SheetShare = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <FaFacebook className="share-icon" />
-            <span>Share on Facebook</span>
+           <FaTwitter className="share-icon" />
+           <span>Share on X</span>
           </a>
           
         </div>
