@@ -26,7 +26,6 @@ const Versions = ({ textId: propTextId }) => {
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
   
-  // Use the ID from props if provided, otherwise use URL param
   const textId = propTextId || urlId;
 
   const {data: versions, isLoading: versionsIsLoading, error: versionsIsError} = useQuery(
