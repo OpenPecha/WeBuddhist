@@ -1,7 +1,6 @@
 import React, {useState} from 'react'
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import {FiChevronDown, FiChevronRight} from "react-icons/fi";
-import {GoLinkExternal} from "react-icons/go";
 import {getEarlyReturn, getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link} from "react-router-dom";
 import "./TableOfContents.scss"

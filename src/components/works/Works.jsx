@@ -41,7 +41,6 @@ const Works = (props) => {
   const {t} = useTranslate();
   const {requiredInfo = {}, setRequiredInfo, setRequiredId, setRenderer} = props
 
-  // Use requiredId from props if in compare-text mode, otherwise use the URL param
   const id = requiredInfo.from === "compare-text" ? props.collection_id : paramId;
 
   const {data: worksData, isLoading: worksDataIsLoading, error: worksDataIsError} = useQuery(
