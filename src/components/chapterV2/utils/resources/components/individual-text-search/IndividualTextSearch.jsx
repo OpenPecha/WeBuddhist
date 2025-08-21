@@ -148,9 +148,6 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
 
     return (
       <div className="search-results">
-        <div className="search-results-header">
-          <h4 className="search-results-header-title">{source.text.title}</h4>
-        </div>
         <div className="results-count">
           <p>{t("sheet.search.total")} : {searchResults.total}</p>
         </div>
