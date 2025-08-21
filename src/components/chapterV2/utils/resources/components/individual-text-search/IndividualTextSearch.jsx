@@ -30,7 +30,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
   const { t } = useTranslate();
-  const { closeResourcesPanel } = usePanelContext();
+  const { openResourcesPanel } = usePanelContext();
   
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
@@ -104,7 +104,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
             key={segment.segment_id} 
             onClick={() => {
               handleSegmentNavigate(segment.segment_id);
-              closeResourcesPanel();
+              openResourcesPanel();
             }}
             className={`segment-item ${getLanguageClass(source.text.language)}`}>
             <p dangerouslySetInnerHTML={{__html: highlightSearchMatch(segment.content, searchText, 'highlighted-text')}} />

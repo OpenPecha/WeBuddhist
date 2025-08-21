@@ -424,15 +424,14 @@ describe('IndividualTextSearch Component', () => {
     expect(searchInput).toHaveClass('search-input');
   });
 
-  it('should call handleSegmentNavigate and closeResourcesPanel when a segment is clicked', () => {
+  it('should call handleSegmentNavigate and openResourcesPanel when a segment is clicked', () => {
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set('text_id', 'text123');
     useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
     
-    const mockCloseResourcesPanel = vi.fn();
+    const mockOpenResourcesPanel = vi.fn();
     vi.mocked(usePanelContext).mockReturnValue({
-      closeResourcesPanel: mockCloseResourcesPanel,
-      openResourcesPanel: vi.fn(),
+      openResourcesPanel: mockOpenResourcesPanel,
       isResourcesPanelOpen: true,
     });
     
@@ -478,6 +477,6 @@ describe('IndividualTextSearch Component', () => {
     fireEvent.click(segmentButton);
     
     expect(mockHandleSegmentNavigate).toHaveBeenCalledWith('seg1');
-    expect(mockCloseResourcesPanel).toHaveBeenCalled();
+    expect(mockOpenResourcesPanel).toHaveBeenCalled();
   });
 });
