@@ -282,7 +282,7 @@ const UserProfile = () => {
   );
 
   const renderMainProfile = () => (
-    <div className="pecha-user-profile">
+    <div className="webuddhist-user-profile">
       {renderSection1()}
       {renderSection2()}
     </div>

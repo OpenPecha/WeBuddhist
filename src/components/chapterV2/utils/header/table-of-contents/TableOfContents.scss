@@ -100,10 +100,10 @@
 
 @media (max-width: 992px) {
   .table-of-contents {
-    position: fixed;
-    top: 100px;
+    position: sticky;
+    top: 60px;
     left: -300px;
-    height: calc(100vh - 100px);
+    height: calc(100vh - 60px);
     z-index: 10;
 
     &.show {
