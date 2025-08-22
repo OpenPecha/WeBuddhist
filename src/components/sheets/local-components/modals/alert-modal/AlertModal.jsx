@@ -10,7 +10,7 @@ const AlertModal = ({ type, message, onClose }) => {
     <dialog className="alert-modal-overlay">
       <div className="alert-modal">  
         <div className="alert-modal-header">
-          <img src={pechaIcon} alt="Pecha Icon" className="alert-modal-icon" />
+          <img src={pechaIcon} alt="Webuddhist Icon" className="alert-modal-icon" />
           <span id="alert-modal-title" className="alert-modal-title">
             {isSuccess ? 'Success' : 'Error'}
           </span>

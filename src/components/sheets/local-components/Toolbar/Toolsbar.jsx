@@ -61,7 +61,7 @@ const Toolsbar = (prop) => {
     );
   };
 
-  const renderPechaIconSection = () => {
+  const renderWebuddhistIconSection = () => {
     return (
       <div className="toolbar-group">
         <button 
@@ -127,7 +127,7 @@ const Toolsbar = (prop) => {
       <div className="toolbar">
         {renderMarkButtons()}
         <div className="toolbar-divider"/>
-        {renderPechaIconSection()}
+        {renderWebuddhistIconSection()}
         <div className="toolbar-divider"/>
         {renderListButtons()}
         <div className="toolbar-divider"/>

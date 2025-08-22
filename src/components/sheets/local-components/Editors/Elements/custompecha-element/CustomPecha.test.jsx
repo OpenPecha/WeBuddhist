@@ -5,7 +5,7 @@ import CustomPecha from "./CustomPecha";
 
 describe("CustomPecha Component", () => {
   const defaultProps = {
-    attributes: { "data-testid": "custom-pecha" },
+    attributes: { "data-testid": "custom-webuddhist" },
     children: null,
     element: {
       src: "https://example.com/image.jpg",
@@ -26,10 +26,10 @@ describe("CustomPecha Component", () => {
   test("renders with correct structure and attributes", () => {
     setup();
     
-    const container = screen.getByTestId("custom-pecha");
-    expect(container).toHaveClass("custom-pecha-container");
+    const container = screen.getByTestId("custom-webuddhist");
+    expect(container).toHaveClass("custom-webuddhist-container");
     
-    const wrapper = container.querySelector(".custom-pecha-wrapper");
+    const wrapper = container.querySelector(".custom-webuddhist-wrapper");
     expect(wrapper).toBeInTheDocument();
     expect(wrapper).toHaveAttribute("contentEditable", "false");
     
@@ -37,11 +37,11 @@ describe("CustomPecha Component", () => {
     expect(link).toHaveAttribute("href", "https://example.com/link");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
-    expect(link).toHaveClass("custom-pecha-link");
+    expect(link).toHaveClass("custom-webuddhist-link");
     
     const image = screen.getByRole("img");
     expect(image).toHaveAttribute("src", "https://example.com/image.jpg");
     expect(image).toHaveAttribute("alt", "segment-123");
-    expect(image).toHaveClass("custom-pecha-image");
+    expect(image).toHaveClass("custom-webuddhist-image");
   });
 });
