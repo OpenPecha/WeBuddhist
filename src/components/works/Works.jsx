@@ -80,7 +80,7 @@ const Works = (props) => {
           ) : (
             <div className={requiredInfo.from === "compare-text" ? "minified-root-text-list" : "root-text-list"}>
               {rootTexts.map((text) => (
-                <div 
+                <button 
                   key={text.id} 
                   className={`${getLanguageClass(text.language)} text-item root-text`}
                   onClick={() => {
@@ -90,7 +90,7 @@ const Works = (props) => {
                 >
                 <div className="divider"></div>
                   <p>{text.title}</p>
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -128,7 +128,7 @@ const Works = (props) => {
           ) : (
             <div className={requiredInfo.from === "compare-text" ? "minified-commentary-list" : "commentary-list"}>
               {commentaryTexts.map((text) => (
-                <div 
+                <button 
                   key={text.id} 
                   className={`${getLanguageClass(text.language)} text-item commentary-text`}
                   onClick={() => {
@@ -138,7 +138,7 @@ const Works = (props) => {
                 >
                   <div className="divider"></div>
                   <p>{text.title}</p>
-                </div>
+                </button>
               ))}
             </div>
           )}

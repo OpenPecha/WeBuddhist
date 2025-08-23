@@ -53,7 +53,7 @@ const SubCollections = (props) => {
         {subCollectionsData?.collections?.map((collection) => {
           if (from === "compare-text") {
             return (
-              <div 
+              <button 
                 key={collection.id} 
                 className="text-item overalltext sub-collection"
                 onClick={() => {
@@ -63,7 +63,7 @@ const SubCollections = (props) => {
               >
                 <div className="divider"></div>
                 <p>{collection.title}</p>
-              </div>
+              </button>
             );
           }
           

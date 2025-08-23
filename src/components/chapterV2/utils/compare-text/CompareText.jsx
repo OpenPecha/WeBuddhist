@@ -8,8 +8,15 @@ import Texts from "../../../texts/Texts";
 import PropTypes from "prop-types";
 
 const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
-    const [renderer, setRenderer] = useState("collections");
-    const [requiredId, setRequiredId] = useState("");
+    const [rendererInfo, setRendererInfo] = useState({renderer: "collections", requiredId: ""});
+    const setRenderer = (newRenderer) => {
+        setRendererInfo(prev => ({...prev, renderer: newRenderer}));
+    }
+
+    const setRequiredId = (newRequiredId) => {
+        setRendererInfo(prev => ({...prev, requiredId: newRequiredId}));
+    }
+
     const { t } = useTranslate();
 
     const renderPanelHeader = () => (
@@ -24,7 +31,7 @@ const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
     );
 
     const renderView = () => {
-        switch (renderer){
+        switch (rendererInfo.renderer){
             case "collections": 
                 return <Collections 
                     requiredInfo={{ from: "compare-text" }} 
@@ -38,7 +45,7 @@ const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
                     from={"compare-text"} 
                     setRenderer={setRenderer} 
                     setRequiredId={setRequiredId} 
-                    parent_id={requiredId}
+                    parent_id={rendererInfo.requiredId}
                 />;
             case "works":
                 return <Works
@@ -46,7 +53,7 @@ const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
                     setRequiredInfo={() => {}} 
                     setRenderer={setRenderer} 
                     setRequiredId={setRequiredId}
-                    collection_id={requiredId}
+                    collection_id={rendererInfo.requiredId}
                 />;
             case "texts":
                 return <Texts
@@ -54,7 +61,7 @@ const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
                     setRequiredInfo={() => {}} 
                     setRenderer={setRenderer} 
                     setRequiredId={setRequiredId}
-                    collection_id={requiredId}
+                    collection_id={rendererInfo.requiredId}
                     addChapter={addChapter}
                     currentChapter={currentChapter}
                 />;
