@@ -49,7 +49,7 @@ const Collections = (props) => {
     const renderCollectionNames = (collection) => {
       if (requiredInfo.from === "compare-text" && collection.has_child) {
         return (
-          <button 
+          <div 
             className="listtitle collection-link" 
             onClick={() => {
               setRequiredId(collection.id);
@@ -57,7 +57,7 @@ const Collections = (props) => {
             }}
           >
             {collection.title}
-          </button>
+          </div>
         );
       }
       

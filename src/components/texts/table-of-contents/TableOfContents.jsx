@@ -56,7 +56,9 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
                   textId: textId, 
                   segmentId: segmentId,
                 }, currentChapter);
+                setTimeout(() => {
                   closeResourcesPanel();
+                }, 100);
               }}
             >
               {section.title}
