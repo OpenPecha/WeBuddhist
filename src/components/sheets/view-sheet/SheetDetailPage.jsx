@@ -13,6 +13,8 @@ import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import Resources from "../../chapterV2/utils/resources/Resources.jsx";
 import { SheetDeleteModal } from '../local-components/modals/sheet-delete-modal/SheetDeleteModal';
 import SheetShare from '../local-components/sheet-share/sheetShare';
+import PropTypes from 'prop-types';
+import { fetchSegmentDetails } from '../local-components/Editors/Elements/pecha-element/PechaElement.jsx';
 
 export const getUserInfo=async()=>{
   const {data}=await axiosInstance.get(`/api/v1/users/info`,{
@@ -80,7 +82,7 @@ const getAudioSrc = (url) => {
 }
   
 
-const SheetDetailPage = () => {
+const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
   let i=0;
   const { sheetSlugAndId } = useParams();
   const sheetId = sheetSlugAndId.split('_').pop();
@@ -98,8 +100,8 @@ const SheetDetailPage = () => {
   })
   const [segmentId, setSegmentId] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } = usePanelContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } = usePanelContext();
 
   const { mutate: deleteSheetMutation } = useMutation({
     mutationFn: () => deleteSheet(sheetId),
@@ -122,13 +124,6 @@ const SheetDetailPage = () => {
     }
   });
 
-  const handleSidePanelToggle = (segmentId) => {
-    setSegmentId(segmentId);
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('segment_id', segmentId);
-    setSearchParams(newParams);
-    openResourcesPanel();
-  };
 
   const handleVisibilityToggle = () => {
     const newVisibility = !sheetData.is_published;
@@ -141,15 +136,23 @@ const SheetDetailPage = () => {
         return (
           <button
             key={segment.segment_id}
-            className={`segment segment-source ${isResourcesPanelOpen && segmentId === segment.segment_id ? 'selected' : ''}`}
-            onClick={() => handleSidePanelToggle(segment.segment_id)}
+            className="segment segment-source"
+            onClick={async () => {                         
+                const segmentData = await fetchSegmentDetails(segment.segment_id);
+                let textId = segmentData?.text?.text_id || segmentData?.text_id;
+                addChapter({ 
+                  textId: textId, 
+                  segmentId: segment.segment_id,
+                }, currentChapter);
+              }
+            }
           >
             <div className="source-content">
               <img src={pechaIcon} className='pecha-icon' alt="source icon" />
               <div className={getLanguageClass(segment.language || 'en')}>
                 <p className={`${getLanguageClass(segment.language || 'bo')}`} dangerouslySetInnerHTML={{__html:segment.content}}/>
               </div>
-              <p className="pecha-title">{segment.text_title}</p>
+              <p className="pecha-title">"{segment.text_title}"</p>
             </div>
           </button>
         );
@@ -275,12 +278,6 @@ const SheetDetailPage = () => {
           {renderSheetContent()}
         </article>
       </main>
-      {isResourcesPanelOpen && segmentId && (
-        <Resources
-          segmentId={segmentId}
-          handleClose={closeResourcesPanel}
-        />
-      )}
       <SheetDeleteModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -290,10 +287,20 @@ const SheetDetailPage = () => {
   );
 };
 
-const SheetDetailPageWithPanelContext = () => (
+const SheetDetailPageWithPanelContext = ({ addChapter, currentChapter } = {}) => (
   <PanelProvider>
-    <SheetDetailPage />
+    <SheetDetailPage addChapter={addChapter} currentChapter={currentChapter} />
   </PanelProvider>
 );
+
+SheetDetailPage.propTypes = {
+  addChapter: PropTypes.func,
+  currentChapter: PropTypes.object,
+};
+
+SheetDetailPageWithPanelContext.propTypes = {
+  addChapter: PropTypes.func,
+  currentChapter: PropTypes.object,
+};
 
 export default SheetDetailPageWithPanelContext; 
