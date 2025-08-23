@@ -18,8 +18,10 @@ const ForgotPassword = () => {
             alert("Email with reset password link is sent to your email address")
             navigate("/")
         },
-        onError : (error) =>{
-            setError(error.response.data.message);
+        onError: (error) => {
+            console.error("Forgot password failed", error);
+            const errorMsg = error?.response?.data?.message || error?.response?.data?.detail || "Request failed";
+            setError(errorMsg);
         }
     })
 
@@ -43,6 +45,9 @@ const ForgotPassword = () => {
     return (
         <div className="forgot-password-container">
             <form onSubmit={handleSubmit}>
+                <div className="subtitle header">
+                    <p>{t("user.forgot_password")}</p>
+                </div>
                 <div className="content">
                     <label className="form-label" htmlFor="email">{ t("common.email") }</label>
                     <input
