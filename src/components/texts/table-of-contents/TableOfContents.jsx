@@ -9,6 +9,7 @@ import {usePanelContext} from "../../../context/PanelContext.jsx";
 
 const TableOfContents = ({textId, pagination, setPagination, tableOfContents, error, loading, t, addChapter, currentChapter, requiredInfo }) => {
   const [expandedSections, setExpandedSections] = useState({});
+  const {closeResourcesPanel} = usePanelContext();
 
   // -------------------------------------------- helpers ----------------------------------------------
   const earlyReturn = getEarlyReturn({loading: loading,error: error, t});
@@ -46,7 +47,6 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
       const segmentId=hasChildren?section.sections[0].segments[0].segment_id:section.segments[0].segment_id
       
       if (addChapter) {
-        const {closeResourcesPanel} = usePanelContext();
         return (
           <div className="toc-compare-text-item">
             <button
