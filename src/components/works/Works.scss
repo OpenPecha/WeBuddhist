@@ -48,6 +48,9 @@
             color: #333;
             padding-top: 1rem;
             font-weight: 400;
+            background: none;
+            border: none;
+            font-family: var(--listtitle-font-family);
             &:hover {
               text-decoration: underline;
             }
@@ -58,6 +61,9 @@
               width: 100%
             }
           }
+        }
+        .no-content {
+          text-align: left;
         }
         .minified-root-text-list {
           display: grid;
@@ -110,6 +116,9 @@
             color: #333;
             padding-top: 1rem;
             font-weight: 400;
+            background: none;
+            border: none;
+            font-family: var(--listtitle-font-family);
             &:hover {
               text-decoration: underline;
             }
@@ -120,6 +129,10 @@
               width: 100%
             }
           }
+        }
+
+        .no-content {
+          text-align: left;
         }
         
         .minified-commentary-list {
@@ -159,6 +172,7 @@
     
       .no-content {
         text-align: center;
+        color: #666;
       }
     
       .root-text,
@@ -166,6 +180,21 @@
         cursor: pointer;
         text-align: center;
         font-weight: 300;
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: inherit;
+        
+        p {
+          font-size: 1.1rem;
+          color: #666;
+          transition: color 0.2s ease;
+          
+          &:hover {
+            color: #333;
+            text-decoration: underline;
+          }
+        }
       }
   }
 
