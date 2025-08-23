@@ -103,12 +103,12 @@ const Texts = (props) => {
       <div className="tab-content">
         {activeTab === 'contents' && (
           <div className="tab-panel">
-            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={tableOfContents?.text_detail?.id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t} addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}/>
+            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={tableOfContents?.text_detail?.id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t} requiredInfo={requiredInfo} addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}/>
           </div>
         )}
         {activeTab === 'versions' && (
           <div className="tab-panel">
-            <Versions textId={textId} />
+            <Versions textId={textId} requiredInfo={requiredInfo} addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined} />
           </div>
         )}
       </div>
@@ -158,7 +158,7 @@ const Texts = (props) => {
 
 
   return (
-    <div className="texts-container">
+    <div className={`${!requiredInfo.from ? "texts-container" : "minified-texts-container"}`}>
       <Seo
         title={dynamicTitle}
         description={description}

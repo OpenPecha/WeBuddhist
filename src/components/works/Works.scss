@@ -3,6 +3,10 @@
   justify-content: space-around;
   gap: 1rem;
 
+  &.no-margin {
+    margin: 0;
+  }
+
   .left-section {
     width: 60%;
     display: flex;
@@ -132,6 +136,37 @@
         }
       }
     }
+  }
+
+  .minified-left-section {
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+
+    .root-text-container,
+      .commentary-text-container {
+        h2 {
+          border-bottom: 1px solid #e0e0e0;
+          padding-bottom: 0.5rem;
+          margin-bottom: 1rem;
+          text-align: center;
+          font-weight: 400;
+        }
+      }
+    
+      .no-content {
+        text-align: center;
+      }
+    
+      .root-text,
+      .commentary-text {
+        cursor: pointer;
+        text-align: center;
+        font-weight: 300;
+      }
   }
 
   .right-section {

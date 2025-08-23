@@ -20,7 +20,7 @@ export const fetchVersions = async (textId, skip, limit) => {
   })
   return data
 }
-const Versions = ({ textId: propTextId }) => {
+const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter }) => {
   const { id: urlId } = useParams();
   const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
@@ -59,6 +59,23 @@ const Versions = ({ textId: propTextId }) => {
 
   const renderVersions = () => {
     const renderTitle = (version) => {
+      if (addChapter) {
+        return (
+          <button className="version-title-button" onClick={() => {
+            const contentId = version.table_of_contents[0];
+            if (contentId) {
+              addChapter({
+                textId: version.id,
+                contentId: contentId,
+              }, currentChapter);
+            }
+          }}>
+            <div className={`${getLanguageClass(version.language)}`}>
+              {version.title}
+            </div>
+          </button>
+        )
+      }
       return <Link
         to={`/chapter?text_id=${version.id}&content_id=${version.table_of_contents[0]}`}
         className="version-title"

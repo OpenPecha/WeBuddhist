@@ -82,7 +82,7 @@ const Works = (props) => {
               {rootTexts.map((text) => (
                 <div 
                   key={text.id} 
-                  className={`${getLanguageClass(text.language)} text-item overalltext root-text`}
+                  className={`${getLanguageClass(text.language)} text-item root-text`}
                   onClick={() => {
                     setRequiredId(text.id);
                     setRenderer("texts");
@@ -130,7 +130,7 @@ const Works = (props) => {
               {commentaryTexts.map((text) => (
                 <div 
                   key={text.id} 
-                  className={`${getLanguageClass(text.language)} text-item overalltext commentary-text`}
+                  className={`${getLanguageClass(text.language)} text-item commentary-text`}
                   onClick={() => {
                     setRequiredId(text.id);
                     setRenderer("texts");
@@ -166,20 +166,22 @@ const Works = (props) => {
   }
 
   return (
-    <div className="works-container">
+    <div className={`${!requiredInfo.from ? "works-container" : "works-container no-margin"}`}>
       <Seo
         title={pageTitle}
         description="Browse texts grouped by type within this collection."
         canonical={canonicalUrl}
       />
-      <div className="left-section">
+      <div className={`${!requiredInfo.from ? "left-section" : "minified-left-section"}`}>
         <div className="works-title-container">{renderWorksTitle()}</div>
         <div className="root-text-container">{renderRootTexts()}</div>
         <div className="commentary-text-container">{renderCommentaryTexts()}</div>
       </div>
+      {!requiredInfo.from && (
       <div className="right-section">
         <div className="sidebar" />
       </div>
+      )}
     </div>
   )
 

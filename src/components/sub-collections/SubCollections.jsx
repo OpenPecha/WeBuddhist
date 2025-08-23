@@ -92,13 +92,13 @@ const SubCollections = (props) => {
   }
 
   return (
-    <div className={`sub-collections-container ${from === "compare-text" ? "compare-text-view" : ""}`}>
+    <div className={`${!from ? "sub-collections-container" : "sub-collections-container no-margin"}`}>
       <Seo
         title={pageTitle}
         description="Explore sub-collections and navigate to works."
         canonical={canonicalUrl}
       />
-      <div className={`sub-collection-details ${from === "compare-text" ? "full-width" : ""}`}>
+      <div className={`${!from ? "sub-collection-details" : "minified-sub-collection-details"}`}>
         {!from && renderTitle()}
         {renderSubCollections()}
       </div>

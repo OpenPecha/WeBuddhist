@@ -7,7 +7,7 @@ import "./TableOfContents.scss"
 import PropTypes from "prop-types";
 import {usePanelContext} from "../../../context/PanelContext.jsx";
 
-const TableOfContents = ({textId, pagination, setPagination, tableOfContents, error, loading, t, addChapter, currentChapter }) => {
+const TableOfContents = ({textId, pagination, setPagination, tableOfContents, error, loading, t, addChapter, currentChapter, requiredInfo }) => {
   const [expandedSections, setExpandedSections] = useState({});
 
   // -------------------------------------------- helpers ----------------------------------------------
@@ -56,7 +56,9 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
                   textId: textId, 
                   segmentId: segmentId,
                 }, currentChapter);
-                closeResourcesPanel();
+                setTimeout(() => {
+                  closeResourcesPanel();
+                }, 100);
               }}
             >
               {section.title}
@@ -126,7 +128,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
   };
 
   return (
-    <div className="toc-container">
+    <div className={`${!requiredInfo?.from ? "toc-container" : "minified-toc-container"}`}>
       {renderContents()}
       {renderPagination()}
     </div>
