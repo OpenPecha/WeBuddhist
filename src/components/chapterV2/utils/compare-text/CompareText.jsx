@@ -70,7 +70,7 @@ const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
 CompareText.propTypes = {
     setIsCompareTextView: PropTypes.func.isRequired,
     addChapter: PropTypes.func,
-    currentChapter: PropTypes.number
+    currentChapter: PropTypes.object
 };
 
 export default CompareText
