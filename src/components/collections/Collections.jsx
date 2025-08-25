@@ -22,7 +22,7 @@ export const fetchCollections = async () => {
 }
 const Collections = (props) => {
   const {showDescription = true} = props;  
-  const {requiredInfo = {}, setRequiredInfo, setRequiredId, setRenderer} = props
+  const {requiredInfo = {}, setRequiredInfo, setRendererInfo} = props
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
     ["collections"],
@@ -52,8 +52,11 @@ const Collections = (props) => {
           <button 
             className="listtitle collection-link" 
             onClick={() => {
-              setRequiredId(collection.id);
-              setRenderer("sub-collections");
+              setRendererInfo(prev => ({
+                ...prev, 
+                requiredId: collection.id,
+                renderer: "sub-collections"
+              }));
             }}
           >
             {collection.title}

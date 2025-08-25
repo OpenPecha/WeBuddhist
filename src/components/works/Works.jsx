@@ -39,7 +39,7 @@ const useGroupedTexts = (texts = []) => {
 const Works = (props) => {
   const {id: paramId} = useParams();
   const {t} = useTranslate();
-  const {requiredInfo = {}, setRequiredInfo, setRequiredId, setRenderer} = props
+  const {requiredInfo = {}, setRequiredInfo, setRendererInfo} = props
 
   const id = requiredInfo.from === "compare-text" ? props.collection_id : paramId;
 
@@ -84,8 +84,11 @@ const Works = (props) => {
                   key={text.id} 
                   className={`${getLanguageClass(text.language)} text-item root-text`}
                   onClick={() => {
-                    setRequiredId(text.id);
-                    setRenderer("texts");
+                    setRendererInfo(prev => ({
+                      ...prev,
+                      requiredId: text.id,
+                      renderer: "texts"
+                    }));
                   }}
                 >
                 <div className="divider"></div>
@@ -132,8 +135,11 @@ const Works = (props) => {
                   key={text.id} 
                   className={`${getLanguageClass(text.language)} text-item commentary-text`}
                   onClick={() => {
-                    setRequiredId(text.id);
-                    setRenderer("texts");
+                    setRendererInfo(prev => ({
+                      ...prev,
+                      requiredId: text.id,
+                      renderer: "texts"
+                    }));
                   }}
                 >
                   <div className="divider"></div>

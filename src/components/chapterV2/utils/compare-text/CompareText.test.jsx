@@ -16,14 +16,17 @@ vi.mock('@tolgee/react', async () => {
 });
 
 vi.mock('../../../collections/Collections', () => ({
-  default: ({ requiredInfo, setRenderer, setRequiredId, showDescription }) => (
+  default: ({ requiredInfo, setRendererInfo, showDescription }) => (
     <div data-testid="collections-component">
       <div>Collections View</div>
       <div>From: {requiredInfo.from}</div>
       <div>Show Description: {showDescription ? 'true' : 'false'}</div>
       <button onClick={() => {
-        setRequiredId('collection-123');
-        setRenderer('sub-collections');
+        setRendererInfo(prev => ({
+          ...prev,
+          requiredId: 'collection-123',
+          renderer: 'sub-collections'
+        }));
       }}>
         Navigate to SubCollections
       </button>
@@ -32,18 +35,21 @@ vi.mock('../../../collections/Collections', () => ({
 }));
 
 vi.mock('../../../sub-collections/SubCollections', () => ({
-  default: ({ from, setRenderer, setRequiredId, parent_id }) => (
+  default: ({ from, setRendererInfo, parent_id }) => (
     <div data-testid="sub-collections-component">
       <div>SubCollections View</div>
       <div>From: {from}</div>
       <div>Parent ID: {parent_id}</div>
       <button onClick={() => {
-        setRequiredId('subcollection-456');
-        setRenderer('works');
+        setRendererInfo(prev => ({
+          ...prev,
+          requiredId: 'subcollection-456',
+          renderer: 'works'
+        }));
       }}>
         Navigate to Works
       </button>
-      <button onClick={() => setRenderer('collections')}>
+      <button onClick={() => setRendererInfo(prev => ({ ...prev, renderer: 'collections' }))}>
         Back to Collections
       </button>
     </div>
@@ -51,18 +57,21 @@ vi.mock('../../../sub-collections/SubCollections', () => ({
 }));
 
 vi.mock('../../../works/Works', () => ({
-  default: ({ requiredInfo, setRenderer, setRequiredId, collection_id }) => (
+  default: ({ requiredInfo, setRendererInfo, collection_id }) => (
     <div data-testid="works-component">
       <div>Works View</div>
       <div>From: {requiredInfo.from}</div>
       <div>Collection ID: {collection_id}</div>
       <button onClick={() => {
-        setRequiredId('work-789');
-        setRenderer('texts');
+        setRendererInfo(prev => ({
+          ...prev,
+          requiredId: 'work-789',
+          renderer: 'texts'
+        }));
       }}>
         Navigate to Texts
       </button>
-      <button onClick={() => setRenderer('sub-collections')}>
+      <button onClick={() => setRendererInfo(prev => ({ ...prev, renderer: 'sub-collections' }))}>
         Back to SubCollections
       </button>
     </div>
@@ -70,14 +79,14 @@ vi.mock('../../../works/Works', () => ({
 }));
 
 vi.mock('../../../texts/Texts', () => ({
-  default: ({ requiredInfo, setRenderer, collection_id, addChapter, currentChapter }) => (
+  default: ({ requiredInfo, setRendererInfo, collection_id, addChapter, currentChapter }) => (
     <div data-testid="texts-component">
       <div>Texts View</div>
       <div>From: {requiredInfo.from}</div>
       <div>Collection ID: {collection_id}</div>
       <div>Has addChapter: {addChapter ? 'true' : 'false'}</div>
       <div>Current Chapter: {currentChapter || 'none'}</div>
-      <button onClick={() => setRenderer('works')}>
+      <button onClick={() => setRendererInfo(prev => ({ ...prev, renderer: 'works' }))}>
         Back to Works
       </button>
       {addChapter && (

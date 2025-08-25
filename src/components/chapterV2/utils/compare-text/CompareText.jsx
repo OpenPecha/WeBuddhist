@@ -9,13 +9,6 @@ import PropTypes from "prop-types";
 
 const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
     const [rendererInfo, setRendererInfo] = useState({renderer: "collections", requiredId: ""});
-    const setRenderer = (newRenderer) => {
-        setRendererInfo(prev => ({...prev, renderer: newRenderer}));
-    }
-
-    const setRequiredId = (newRequiredId) => {
-        setRendererInfo(prev => ({...prev, requiredId: newRequiredId}));
-    }
 
     const { t } = useTranslate();
 
@@ -36,31 +29,27 @@ const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
                 return <Collections 
                     requiredInfo={{ from: "compare-text" }} 
                     setRequiredInfo={() => {}} 
-                    setRenderer={setRenderer} 
-                    setRequiredId={setRequiredId} 
+                    setRendererInfo={setRendererInfo} 
                     showDescription={false}
                 />;
             case "sub-collections": 
                 return <SubCollections 
                     from={"compare-text"} 
-                    setRenderer={setRenderer} 
-                    setRequiredId={setRequiredId} 
+                    setRendererInfo={setRendererInfo} 
                     parent_id={rendererInfo.requiredId}
                 />;
             case "works":
                 return <Works
                     requiredInfo={{ from: "compare-text" }} 
                     setRequiredInfo={() => {}} 
-                    setRenderer={setRenderer} 
-                    setRequiredId={setRequiredId}
+                    setRendererInfo={setRendererInfo}
                     collection_id={rendererInfo.requiredId}
                 />;
             case "texts":
                 return <Texts
                     requiredInfo={{ from: "compare-text" }} 
                     setRequiredInfo={() => {}} 
-                    setRenderer={setRenderer} 
-                    setRequiredId={setRequiredId}
+                    setRendererInfo={setRendererInfo}
                     collection_id={rendererInfo.requiredId}
                     addChapter={addChapter}
                     currentChapter={currentChapter}

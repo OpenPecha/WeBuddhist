@@ -23,7 +23,7 @@ export const fetchSubCollections = async (parentId) => {
 };
 
 const SubCollections = (props) => {
-  const { from, parent_id, setRenderer, setRequiredId } = props;
+  const { from, parent_id, setRendererInfo } = props;
   const {id} = useParams();
   const {t} = useTranslate();
   
@@ -57,8 +57,11 @@ const SubCollections = (props) => {
                 key={collection.id} 
                 className="text-item overalltext sub-collection"
                 onClick={() => {
-                  setRequiredId(collection.id);
-                  setRenderer("works");
+                  setRendererInfo(prev => ({
+                    ...prev,
+                    requiredId: collection.id,
+                    renderer: "works"
+                  }));
                 }}
               >
                 <div className="divider"></div>
