@@ -16,7 +16,7 @@ const Chapters = () => {
       const parsedChapters = JSON.parse(savedChapters);
       return parsedChapters.map(chapter => ({
         ...chapter,
-        id: chapter.id || `${chapter.textId}-${chapter.contentId || 'no-content'}-${chapter.segmentId || 'no-segment'}-${Date.now()}-${Math.random()}`
+        id: chapter.id || `${chapter.textId}-${chapter.contentId || 'no-content'}-${chapter.segmentId || 'no-segment'}-${Date.now()}`
       }));
     }
     const textId = searchParams.get("text_id");
@@ -25,7 +25,7 @@ const Chapters = () => {
 
     if (textId) {
       return [{
-        id: `${textId}-${contentId || 'no-content'}-${segmentId || 'no-segment'}-${Date.now()}-${Math.random()}`,
+        id: `${textId}-${contentId || 'no-content'}-${segmentId || 'no-segment'}-${Date.now()}`,
         textId: textId,
         contentId: contentId,
         segmentId: segmentId 
@@ -48,7 +48,7 @@ const Chapters = () => {
       
       const ChapterWithUniqueId = {
         ...chapterInformation,
-        id: `${chapterInformation.textId}-${chapterInformation.contentId || 'no-content'}-${chapterInformation.segmentId || 'no-segment'}-${Date.now()}-${Math.random()}`
+        id: `${chapterInformation.textId}-${chapterInformation.contentId || 'no-content'}-${chapterInformation.segmentId || 'no-segment'}-${Date.now()}`
       };
       
       const currentIndex = prev.findIndex(chap => chap.id === currentChapter.id);
