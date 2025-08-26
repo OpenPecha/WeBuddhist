@@ -1,14 +1,16 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import {FiChevronDown, FiChevronRight} from "react-icons/fi";
 import {getEarlyReturn, getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link} from "react-router-dom";
 import "./TableOfContents.scss"
 import PropTypes from "prop-types";
-import {usePanelContext} from "../../../context/PanelContext.jsx";
+import PanelContext from "../../../context/PanelContext.jsx";
 
 const TableOfContents = ({textId, pagination, setPagination, tableOfContents, error, loading, t, addChapter, currentChapter, requiredInfo }) => {
   const [expandedSections, setExpandedSections] = useState({});
+  const panelContext = useContext(PanelContext);
+  const closeResourcesPanel = panelContext?.closeResourcesPanel;
 
   // -------------------------------------------- helpers ----------------------------------------------
   const earlyReturn = getEarlyReturn({loading: loading,error: error, t});
@@ -46,7 +48,6 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
       const segmentId=hasChildren?section.sections[0].segments[0].segment_id:section.segments[0].segment_id
       
       if (addChapter) {
-        const {closeResourcesPanel} = usePanelContext();
         return (
           <div className="toc-compare-text-item">
             <button
@@ -56,7 +57,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
                   textId: textId, 
                   segmentId: segmentId,
                 }, currentChapter);
-                  closeResourcesPanel();
+                  closeResourcesPanel?.();
               }}
             >
               {section.title}

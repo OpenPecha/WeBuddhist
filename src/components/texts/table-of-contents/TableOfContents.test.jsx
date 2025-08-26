@@ -35,7 +35,7 @@ vi.mock("../../../utils/constants.js", () => ({
 }));
 
 vi.mock("../../../context/PanelContext.jsx", () => ({
-  usePanelContext: () => ({
+  default: React.createContext({
     closeResourcesPanel: vi.fn()
   })
 }));
