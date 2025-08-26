@@ -148,7 +148,7 @@ TableOfContents.propTypes = {
   loading: PropTypes.bool,
   t: PropTypes.func.isRequired,
   addChapter: PropTypes.func,
-  currentChapter: PropTypes.number,
+  currentChapter: PropTypes.object,
   requiredInfo: PropTypes.shape({
     from: PropTypes.string
   })
