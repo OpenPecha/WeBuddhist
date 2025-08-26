@@ -22,7 +22,7 @@ export const fetchCollections = async () => {
 }
 const Collections = (props) => {
   const {showDescription = true} = props;  
-  const {requiredInfo = {}, setRequiredInfo, setRendererInfo} = props
+  const {requiredInfo = {}, setRendererInfo} = props
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
     ["collections"],

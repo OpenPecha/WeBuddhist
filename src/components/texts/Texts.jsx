@@ -26,7 +26,7 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
 }
 
 const Texts = (props) => {
-  const {requiredInfo = {}, setRequiredInfo, setRequiredId, setRenderer, collection_id, addChapter, currentChapter} = props;
+  const {requiredInfo = {}, setRequiredId, setRenderer, collection_id, addChapter, currentChapter} = props;
   const { t } = useTranslate();
   const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();

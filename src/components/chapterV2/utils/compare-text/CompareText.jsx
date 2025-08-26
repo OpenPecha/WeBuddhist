@@ -28,7 +28,6 @@ const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
             case "collections": 
                 return <Collections 
                     requiredInfo={{ from: "compare-text" }} 
-                    setRequiredInfo={() => {}} 
                     setRendererInfo={setRendererInfo} 
                     showDescription={false}
                 />;
@@ -41,14 +40,12 @@ const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
             case "works":
                 return <Works
                     requiredInfo={{ from: "compare-text" }} 
-                    setRequiredInfo={() => {}} 
                     setRendererInfo={setRendererInfo}
                     collection_id={rendererInfo.requiredId}
                 />;
             case "texts":
                 return <Texts
                     requiredInfo={{ from: "compare-text" }} 
-                    setRequiredInfo={() => {}} 
                     setRendererInfo={setRendererInfo}
                     collection_id={rendererInfo.requiredId}
                     addChapter={addChapter}

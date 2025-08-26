@@ -39,7 +39,7 @@ const useGroupedTexts = (texts = []) => {
 const Works = (props) => {
   const {id: paramId} = useParams();
   const {t} = useTranslate();
-  const {requiredInfo = {}, setRequiredInfo, setRendererInfo} = props
+  const {requiredInfo = {}, setRendererInfo} = props
 
   const id = requiredInfo.from === "compare-text" ? props.collection_id : paramId;
 
