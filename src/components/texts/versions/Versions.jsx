@@ -7,6 +7,7 @@ import {useQuery} from "react-query";
 import {useTranslate} from "@tolgee/react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import "./Versions.scss"
+import PropTypes from "prop-types";
 
 export const fetchVersions = async (textId, skip, limit) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -128,3 +129,11 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
 }
 
 export default React.memo(Versions)
+Versions.propTypes = {
+  textId: PropTypes.string,
+  requiredInfo: PropTypes.shape({
+    from: PropTypes.string
+  }),
+  addChapter: PropTypes.func,
+  currentChapter: PropTypes.object
+};

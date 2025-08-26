@@ -7,6 +7,7 @@ import {useQuery} from "react-query";
 import {Link} from "react-router-dom";
 import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
 import Seo from "../commons/seo/Seo.jsx";
+import PropTypes from "prop-types";
 
 export const fetchCollections = async () => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -45,31 +46,32 @@ const Collections = (props) => {
     );
   };
 
-  const renderCollections = () => {
-    const renderCollectionNames = (collection) => {
-      if (requiredInfo.from === "compare-text" && collection.has_child) {
-        return (
-          <button 
-            className="listtitle collection-link" 
-            onClick={() => {
-              setRendererInfo(prev => ({
-                ...prev, 
-                requiredId: collection.id,
-                renderer: "sub-collections"
-              }));
-            }}
-          >
-            {collection.title}
-          </button>
-        );
-      }
-      
-      return collection.has_child ?
-        <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
+  const renderCollectionNames = (collection) => {
+    if (requiredInfo.from === "compare-text" && collection.has_child) {
+      return (
+        <button 
+          className="listtitle collection-link" 
+          onClick={() => {
+            setRendererInfo(prev => ({
+              ...prev, 
+              requiredId: collection.id,
+              renderer: "sub-collections"
+            }));
+          }}
+        >
           {collection.title}
-        </Link> :
-        collection.title
+        </button>
+      );
     }
+
+    return collection.has_child ?
+      <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
+        {collection.title}
+      </Link> :
+      collection.title
+  }
+
+  const renderCollections = () => {
     return (
       <div className="collections-list-container">
         {collectionsData?.collections.map((collection, index) => (
@@ -115,3 +117,10 @@ const Collections = (props) => {
 };
 
 export default Collections;
+Collections.propTypes = {
+  showDescription: PropTypes.bool,
+  requiredInfo: PropTypes.shape({
+    from: PropTypes.string
+  }),
+  setRendererInfo: PropTypes.func
+};

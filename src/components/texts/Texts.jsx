@@ -10,6 +10,8 @@ import {Link, useParams, useSearchParams} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
+import PropTypes from "prop-types";
+
 export const fetchTableOfContents = async (textId, skip, limit, languageFromContent = null) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const fallbackLanguage = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -26,7 +28,7 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
 }
 
 const Texts = (props) => {
-  const {requiredInfo = {}, setRequiredId, setRenderer, collection_id, addChapter, currentChapter} = props;
+  const {requiredInfo = {}, setRendererInfo, collection_id, addChapter, currentChapter} = props;
   const { t } = useTranslate();
   const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();
@@ -177,3 +179,13 @@ const Texts = (props) => {
 }
 
 export default Texts
+Texts.propTypes = {
+  requiredInfo: PropTypes.shape({
+    from: PropTypes.string
+  }),
+  setRendererInfo: PropTypes.func,
+  collection_id: PropTypes.string,
+  addChapter: PropTypes.func,
+  currentChapter: PropTypes.object
+};
+  

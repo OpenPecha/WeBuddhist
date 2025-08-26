@@ -7,6 +7,7 @@ import { useQuery } from 'react-query';
 import { useParams,Link } from 'react-router-dom';
 import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 import Seo from "../commons/seo/Seo.jsx";
+import PropTypes from "prop-types";
 
 const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -70,6 +71,30 @@ const Works = (props) => {
 
     return <h1 className="overalltext">{worksData.term?.title}</h1>
   }
+
+  const renderRootTextItem = (text) => isCompareText ? (
+    <button 
+      key={text.id} 
+      className={`${getLanguageClass(text.language)} text-item root-text`}
+      onClick={() => {
+        setRendererInfo(prev => ({
+          ...prev,
+          requiredId: text.id,
+          renderer: "texts"
+        }));
+      }}
+    >
+      <div className="divider"></div>
+      <p>{text.title}</p>
+    </button>
+  ) : (
+    <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
+          className={`${getLanguageClass(text.language)} root-text`}>
+      <div className="divider"></div>
+      <p>{text.title}</p>
+    </Link>
+  )
+
   const renderRootTexts = () => {
     const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>;
   
@@ -81,34 +106,36 @@ const Works = (props) => {
         ) : (
           <div className={isCompareText ? "minified-root-text-list" : "root-text-list"}>
             {rootTexts.map((text) => 
-              isCompareText ? (
-                <button 
-                  key={text.id} 
-                  className={`${getLanguageClass(text.language)} text-item root-text`}
-                  onClick={() => {
-                    setRendererInfo(prev => ({
-                      ...prev,
-                      requiredId: text.id,
-                      renderer: "texts"
-                    }));
-                  }}
-                >
-                  <div className="divider"></div>
-                  <p>{text.title}</p>
-                </button>
-              ) : (
-                <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
-                      className={`${getLanguageClass(text.language)} root-text`}>
-                  <div className="divider"></div>
-                  <p>{text.title}</p>
-                </Link>
-              )
+              renderRootTextItem(text)
             )}
           </div>
         )}
       </div>
     );
   }
+
+  const renderCommentaryTextItem = (text) => isCompareText ? (
+    <button 
+      key={text.id} 
+      className={`${getLanguageClass(text.language)} text-item commentary-text`}
+      onClick={() => {
+        setRendererInfo(prev => ({
+          ...prev,
+          requiredId: text.id,
+          renderer: "texts"
+        }));
+      }}
+    >
+      <div className="divider"></div>
+      <p>{text.title}</p>
+    </button>
+  ) : (
+    <Link key={text.id} to={`/texts/${text.id}?type=commentary`}
+          className={`${getLanguageClass(text.language)} commentary-text`}>
+      <div className="divider"></div>
+      <p>{text.title}</p>
+    </Link>
+  )
 
   const renderCommentaryTexts = () => {
     const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>;
@@ -121,28 +148,7 @@ const Works = (props) => {
         ) : (
           <div className={isCompareText ? "minified-commentary-list" : "commentary-list"}>
             {commentaryTexts.map((text) => 
-              isCompareText ? (
-                <button 
-                  key={text.id} 
-                  className={`${getLanguageClass(text.language)} text-item commentary-text`}
-                  onClick={() => {
-                    setRendererInfo(prev => ({
-                      ...prev,
-                      requiredId: text.id,
-                      renderer: "texts"
-                    }));
-                  }}
-                >
-                  <div className="divider"></div>
-                  <p>{text.title}</p>
-                </button>
-              ) : (
-                <Link key={text.id} to={`/texts/${text.id}?type=commentary`}
-                      className={`${getLanguageClass(text.language)} commentary-text`}>
-                  <div className="divider"></div>
-                  <p>{text.title}</p>
-                </Link>
-              )
+              renderCommentaryTextItem(text)
             )}
           </div>
         )}
@@ -173,3 +179,10 @@ const Works = (props) => {
 };
 
 export default Works;
+Works.propTypes = {
+  collection_id: PropTypes.string,
+  requiredInfo: PropTypes.shape({
+    from: PropTypes.string
+  }),
+  setRendererInfo: PropTypes.func
+};

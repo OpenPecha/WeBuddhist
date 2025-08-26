@@ -7,6 +7,7 @@ import './SubCollections.scss';
 import { useTranslate } from '@tolgee/react';
 import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
 import Seo from "../commons/seo/Seo.jsx";
+import PropTypes from "prop-types";
 
 export const fetchSubCollections = async (parentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -45,38 +46,41 @@ const SubCollections = (props) => {
   // ----------------------------------- renderers ---------------------------------------
   const renderTitle = () =>  <h1 className="listtitle">{subCollectionsData?.parent?.title?.toUpperCase()}</h1>
 
+  const renderSubCollectionItem = (collection) => {
+    if (from === "compare-text") {
+      return (
+        <button 
+          key={collection.id} 
+          className="text-item overalltext sub-collection"
+          onClick={() => {
+            setRendererInfo(prev => ({
+              ...prev,
+              requiredId: collection.id,
+              renderer: "works"
+            }));
+          }}
+        >
+          <div className="divider"></div>
+          <p>{collection.title}</p>
+        </button>
+      );
+    }
+    
+    return (
+      <Link key={collection.id} to={`/works/${collection.id}`} className="text-item overalltext sub-collection">
+        <div className="divider"></div>
+        <p>{collection.title}</p>
+      </Link>
+    );
+  }
+    
   const renderSubCollections = () => {
     const containerClass = from === "compare-text" ? "minified-left-section" : "sub-collections-list-container";
     
     return (
       <div className={containerClass}>
-        {subCollectionsData?.collections?.map((collection) => {
-          if (from === "compare-text") {
-            return (
-              <button 
-                key={collection.id} 
-                className="text-item overalltext sub-collection"
-                onClick={() => {
-                  setRendererInfo(prev => ({
-                    ...prev,
-                    requiredId: collection.id,
-                    renderer: "works"
-                  }));
-                }}
-              >
-                <div className="divider"></div>
-                <p>{collection.title}</p>
-              </button>
-            );
-          }
-          
-          return (
-            <Link key={collection.id} to={`/works/${collection.id}`} className="text-item overalltext sub-collection">
-              <div className="divider"></div>
-              <p>{collection.title}</p>
-            </Link>
-          );
-        })}
+        {subCollectionsData?.collections?.map((collection) => 
+          renderSubCollectionItem(collection))}
       </div>
     );
   }
@@ -115,3 +119,8 @@ const SubCollections = (props) => {
 };
 
 export default SubCollections;
+SubCollections.propTypes = {
+  from: PropTypes.string,
+  parent_id: PropTypes.string,
+  setRendererInfo: PropTypes.func
+};
