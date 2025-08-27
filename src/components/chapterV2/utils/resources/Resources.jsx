@@ -15,6 +15,7 @@ import {MENU_ITEMS} from "../../../../utils/constants.js";
 import PropTypes from "prop-types";
 import IndividualTextSearch from "./components/individual-text-search/IndividualTextSearch.jsx";
 import "./Resources.scss"
+import CompareText from "../../../chapterV2/utils/compare-text/CompareText.jsx";
 
 export const fetchSidePanelData = async (segmentId) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segmentId}/info`);
@@ -122,6 +123,8 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
   const handleMenuItemClick = (item) => {
     if (item.label === 'common.share') {
       setActiveView("share");
+    }else if (item.label === 'connection_panel.compare_text') {
+      setActiveView("compare_text");
     }
   };
 
@@ -199,6 +202,8 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
             currentChapter={currentChapter}
           />
         );
+      case "compare_text": 
+        return <CompareText setIsCompareTextView={setActiveView} addChapter={addChapter} currentChapter={currentChapter} />;
       case "root_text":
         return (
           <RootTextView

@@ -7,6 +7,7 @@ import {useQuery} from "react-query";
 import {Link} from "react-router-dom";
 import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
 import Seo from "../commons/seo/Seo.jsx";
+import PropTypes from "prop-types";
 
 export const fetchCollections = async () => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -20,7 +21,8 @@ export const fetchCollections = async () => {
   });
   return data;
 }
-const Collections = () => {
+const Collections = (props) => {
+  const {showDescription = true,requiredInfo = {}, setRendererInfo} = props
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
     ["collections"],
@@ -43,21 +45,39 @@ const Collections = () => {
     );
   };
 
-  const renderCollections = () => {
-    const renderCollectionNames = (collection) => {
-      return collection.has_child ?
-        <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
+  const renderCollectionNames = (collection) => {
+    if (requiredInfo.from === "compare-text" && collection.has_child) {
+      return (
+        <button 
+          className="listtitle collection-link" 
+          onClick={() => {
+            setRendererInfo(prev => ({
+              ...prev, 
+              requiredId: collection.id,
+              renderer: "sub-collections"
+            }));
+          }}
+        >
           {collection.title}
-        </Link> :
-        collection.title
+        </button>
+      );
     }
+
+    return collection.has_child ?
+      <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
+        {collection.title}
+      </Link> :
+      collection.title
+  }
+
+  const renderCollections = () => {
     return (
       <div className="collections-list-container">
         {collectionsData?.collections.map((collection, index) => (
           <div className="collections" key={collection.id}>
             <div className={"red-line"}></div>
               {renderCollectionNames(collection)}
-              <p className="content collections-description">{collection.description}</p>
+              {showDescription && <p className="content collections-description">{collection.description}</p>}
           </div>
         ))}
       </div>
@@ -78,21 +98,28 @@ const Collections = () => {
 
 
   return (
-    <div className="collections-container">
+    <div className={`${!requiredInfo.from ? "collections-container" : "collections-container no-margin"}`}>
       <Seo
         title={`${siteName} - Tibetan Buddhism in your own words`}
         description="Explore Tibetan Buddhist texts, collections, and community discussions. Create notes, track your studies, and share insights."
         canonical={canonicalUrl}
       />
-      <div className="left-section">
-        {renderBrowseLibrary()}
+      <div className={`${!requiredInfo.from ? "left-section" : "minified-left-section"}`}>
+        {!requiredInfo.from && renderBrowseLibrary()}
         {renderCollections()}
       </div>
-      <div className="right-section">
+      {!requiredInfo.from && <div className="right-section">
         {renderAboutSection()}
-      </div>
+      </div>}
     </div>
   );
 };
 
 export default Collections;
+Collections.propTypes = {
+  showDescription: PropTypes.bool,
+  requiredInfo: PropTypes.shape({
+    from: PropTypes.string
+  }),
+  setRendererInfo: PropTypes.func
+};

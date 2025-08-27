@@ -3,6 +3,10 @@
   display: flex;
   justify-content: space-around;
 
+  &.no-margin {
+    margin: 0;
+  }
+
   .sub-collection-details {
     margin: 5rem 5rem 0 5rem;
     display: flex;
@@ -36,6 +40,10 @@
         width: 100%;
         text-align: left;
         text-decoration: none;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
 
         .divider {
           height: 1px;
@@ -52,6 +60,7 @@
           color: #333;
           padding-top: 1rem;
           font-weight: 400;
+          margin: 0;
 
           &:hover {
             color: #666666;
@@ -61,6 +70,49 @@
       }
     }
   }
+
+    .minified-sub-collection-details {
+      margin: 0;
+      width: 100%;
+  
+      .minified-left-section {
+        display: grid;
+        gap: 1rem;
+        text-align: center;
+        margin-top: 3rem;
+  
+        .sub-collection {
+          width: 100%;
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+
+          .divider {
+            width: 90%;
+            height: 1px;
+            background-color: #e0e0e0;
+            margin-bottom: 1rem;
+            margin-left: auto;
+            margin-right: auto;
+          }
+  
+          p {
+            font-size: 20px;
+            text-align: center;
+            cursor: pointer;
+            color: #333;
+            transition: color 0.2s ease;
+            margin: 0;
+
+            &:hover {
+              color: #666666;
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
 
   .about-section {
     width: 40%;
