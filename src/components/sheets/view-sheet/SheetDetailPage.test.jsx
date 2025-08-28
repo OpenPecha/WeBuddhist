@@ -397,6 +397,151 @@ describe("SheetDetailPage Component", () => {
   });
 
 
+  test("handles fetchSegmentDetails returning data without text property", async () => {
+    mockFetchSegmentDetails.mockResolvedValueOnce({
+      text_id: "fallback-text-id-456",
+      content: "Mock segment content"
+    });
+    
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    await waitFor(() => {
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: "fallback-text-id-456",
+          segmentId: "segment1"
+        },
+        mockCurrentChapter
+      );
+    });
+  });
+
+  test("handles fetchSegmentDetails returning data with both text.text_id and text_id undefined", async () => {
+    mockFetchSegmentDetails.mockResolvedValueOnce({
+      content: "Mock segment content"
+    });
+    
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    await waitFor(() => {
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: undefined,
+          segmentId: "segment1"
+        },
+        mockCurrentChapter
+      );
+    });
+  });
+
+  test("calls fetchSegmentDetails with correct segment_id", async () => {
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    await waitFor(() => {
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment1");
+    });
+  });
+
+  test("source button click is async and waits for fetchSegmentDetails", async () => {
+    let resolvePromise;
+    const pendingPromise = new Promise((resolve) => {
+      resolvePromise = resolve;
+    });
+    
+    mockFetchSegmentDetails.mockReturnValueOnce(pendingPromise);
+    
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    expect(mockAddChapter).not.toHaveBeenCalled();
+    
+    resolvePromise({
+      text: {
+        text_id: "async-text-id",
+        title: "Async Text Title",
+        language: "en"
+      }
+    });
+    
+    await waitFor(() => {
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: "async-text-id",
+          segmentId: "segment1"
+        },
+        mockCurrentChapter
+      );
+    });
+  });
+
+  test("multiple source segment clicks call fetchSegmentDetails multiple times", async () => {
+    const sheetWithMultipleSources = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "source",
+            content: "Source content 1",
+            language: "bo",
+            text_title: "Source Title 1",
+          },
+          {
+            segment_id: "segment2",
+            type: "source",
+            content: "Source content 2",
+            language: "bo",
+            text_title: "Source Title 2",
+          }
+        ]
+      }
+    };
+    
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((config) => {
+      if (config.queryKey?.[0] === 'sheetData') {
+        return {
+          data: sheetWithMultipleSources,
+          isLoading: false
+        };
+      }
+      return {
+        data: mockUserInfoData,
+        isLoading: false
+      };
+    });
+    
+    const { container } = setup();
+    
+    const sourceSegmentButtons = container.querySelectorAll('.segment-source');
+    expect(sourceSegmentButtons).toHaveLength(2);
+    
+    fireEvent.click(sourceSegmentButtons[0]);
+    
+    await waitFor(() => {
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment1");
+    });
+    
+    fireEvent.click(sourceSegmentButtons[1]);
+    
+    await waitFor(() => {
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment2");
+    });
+    
+    expect(mockFetchSegmentDetails).toHaveBeenCalledTimes(2);
+  });
+
+
 
   test("opens delete modal when trash icon is clicked", () => {
   setup();
