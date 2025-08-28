@@ -10,7 +10,6 @@ import axiosInstance from '../../../config/axios-config';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useTranslate } from '@tolgee/react';
 import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
-import Resources from "../../chapterV2/utils/resources/Resources.jsx";
 import { SheetDeleteModal } from '../local-components/modals/sheet-delete-modal/SheetDeleteModal';
 import SheetShare from '../local-components/sheet-share/sheetShare';
 import PropTypes from 'prop-types';
@@ -98,8 +97,6 @@ const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
     queryKey:['sheetData',sheetId],
     queryFn:()=>fetchSheetData(sheetId)
   })
-  const [segmentId, setSegmentId] = useState(null);
-  const [searchParams, setSearchParams] = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } = usePanelContext();
 
@@ -152,7 +149,7 @@ const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
               <div className={getLanguageClass(segment.language || 'en')}>
                 <p className={`${getLanguageClass(segment.language || 'bo')}`} dangerouslySetInnerHTML={{__html:segment.content}}/>
               </div>
-              <p className="pecha-title">"{segment.text_title}"</p>
+              <p className="pecha-title">{segment.text_title}</p>
             </div>
           </button>
         );
