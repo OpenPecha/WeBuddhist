@@ -312,5 +312,28 @@ describe("Versions Component", () => {
     test("component is memoized", () => {
       expect(Versions.$$typeof).toBeDefined();
     });
+
+    test("fetchVersions function fetches versions data correctly", async () => {
+      const textId = "test123";
+      const skip = 0;
+      const limit = 10;
+
+      mockLocalStorage.getItem.mockReturnValue("bo-IN");
+      axiosInstance.get.mockResolvedValue({ data: mockVersionsData });
+
+      const result = await fetchVersions(textId, skip, limit);
+
+      expect(axiosInstance.get).toHaveBeenCalledWith(
+        `/api/v1/texts/${textId}/versions`,
+        {
+          params: {
+            language: "bo",
+            limit: 10,
+            skip: 0
+          },
+        }
+      );
+      expect(result).toEqual(mockVersionsData);
+    });
   });
 });

@@ -32,14 +32,14 @@ const PechaElement = props => {
 
   return (
     <div {...attributes}>
-      <div contentEditable={false} className="pecha-content">
+      <div contentEditable={false} className="webuddhist-content">
         {isLoading ? (
           <div>Loading...</div>
         ) : (
           <div className={`${getLanguageClass(segmentData.text.language)}`}>
-            <img src={pechaIcon} className='pecha-icon' alt="source icon" />
+            <img src={pechaIcon} className='webuddhist-icon' alt="source icon" />
             <div dangerouslySetInnerHTML={{ __html: cleanContent }} />
-            <p className={`pecha-title`}>{segmentData.text.title}</p>
+            <p className={`webuddhist-title`}>{segmentData.text.title}</p>
           </div>
         )}
      

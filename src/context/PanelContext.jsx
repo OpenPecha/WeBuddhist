@@ -101,3 +101,5 @@ export const usePanelContext = () => {
   }
   return context;
 };
+
+export default PanelContext;

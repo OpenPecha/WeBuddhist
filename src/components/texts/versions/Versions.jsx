@@ -7,6 +7,7 @@ import {useQuery} from "react-query";
 import {useTranslate} from "@tolgee/react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import "./Versions.scss"
+import PropTypes from "prop-types";
 
 export const fetchVersions = async (textId, skip, limit) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -20,16 +21,18 @@ export const fetchVersions = async (textId, skip, limit) => {
   })
   return data
 }
-const Versions = () => {
-  const { id } = useParams();
+const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter }) => {
+  const { id: urlId } = useParams();
   const { t } = useTranslate();
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
+  
+  const textId = propTextId || urlId;
 
   const {data: versions, isLoading: versionsIsLoading, error: versionsIsError} = useQuery(
-    ["versions", skip],
-    () => fetchVersions(id, skip, pagination.limit),
-    {refetchOnWindowFocus: false, enabled: !!id}
+    ["versions", textId, skip],
+    () => fetchVersions(textId, skip, pagination.limit),
+    {refetchOnWindowFocus: false, enabled: !!textId}
   );
 
   // -------------------------------------------- helpers ----------------------------------------------
@@ -57,6 +60,23 @@ const Versions = () => {
 
   const renderVersions = () => {
     const renderTitle = (version) => {
+      if (addChapter) {
+        return (
+          <button className="version-title-button" onClick={() => {
+            const contentId = version.table_of_contents[0];
+            if (contentId) {
+              addChapter({
+                textId: version.id,
+                contentId: contentId,
+              }, currentChapter);
+            }
+          }}>
+            <div className={`${getLanguageClass(version.language)}`}>
+              {version.title}
+            </div>
+          </button>
+        )
+      }
       return <Link
         to={`/chapter?text_id=${version.id}&content_id=${version.table_of_contents[0]}`}
         className="version-title"
@@ -109,3 +129,11 @@ const Versions = () => {
 }
 
 export default React.memo(Versions)
+Versions.propTypes = {
+  textId: PropTypes.string,
+  requiredInfo: PropTypes.shape({
+    from: PropTypes.string
+  }),
+  addChapter: PropTypes.func,
+  currentChapter: PropTypes.object
+};

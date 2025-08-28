@@ -1,13 +1,16 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import {FiChevronDown, FiChevronRight} from "react-icons/fi";
 import {getEarlyReturn, getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link} from "react-router-dom";
 import "./TableOfContents.scss"
 import PropTypes from "prop-types";
+import PanelContext from "../../../context/PanelContext.jsx";
 
-const TableOfContents = ({textId, pagination, setPagination, tableOfContents, error, loading, t }) => {
+const TableOfContents = ({textId, pagination, setPagination, tableOfContents, error, loading, t, addChapter, currentChapter, requiredInfo }) => {
   const [expandedSections, setExpandedSections] = useState({});
+  const panelContext = useContext(PanelContext);
+  const closeResourcesPanel = panelContext?.closeResourcesPanel;
 
   // -------------------------------------------- helpers ----------------------------------------------
   const earlyReturn = getEarlyReturn({loading: loading,error: error, t});
@@ -43,6 +46,26 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
     const hasChildren = section.sections && section.sections.length > 0;
     const renderContentTitle = () => {
       const segmentId=hasChildren?section.sections[0].segments[0].segment_id:section.segments[0].segment_id
+      
+      if (addChapter) {
+        return (
+          <div className="toc-compare-text-item">
+            <button
+              className={`toc-title-button ${getLanguageClass(tableOfContents.text_detail?.language)}`}
+              onClick={() => {
+                addChapter({ 
+                  textId: textId, 
+                  segmentId: segmentId,
+                }, currentChapter);
+                  closeResourcesPanel?.();
+              }}
+            >
+              {section.title}
+            </button>
+          </div>
+        );
+      }
+      
       return <Link
         to={`/chapter?text_id=${textId}&content_id=${tocId}&segment_id=${segmentId}`}
         className={`toc-title ${getLanguageClass(tableOfContents.text_detail?.language)}`}>
@@ -104,7 +127,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
   };
 
   return (
-    <div className="toc-container">
+    <div className={`${!requiredInfo?.from ? "toc-container" : "minified-toc-container"}`}>
       {renderContents()}
       {renderPagination()}
     </div>
@@ -123,5 +146,10 @@ TableOfContents.propTypes = {
   tableOfContents : PropTypes.object,
   error: PropTypes.object,
   loading: PropTypes.bool,
-  t: PropTypes.func.isRequired
-}
+  t: PropTypes.func.isRequired,
+  addChapter: PropTypes.func,
+  currentChapter: PropTypes.object,
+  requiredInfo: PropTypes.shape({
+    from: PropTypes.string
+  })
+};

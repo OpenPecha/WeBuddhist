@@ -1,4 +1,3 @@
-
 import React, {useMemo, useState} from 'react'
 import {useQuery} from "react-query";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
@@ -11,6 +10,8 @@ import {Link, useParams, useSearchParams} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
+import PropTypes from "prop-types";
+
 export const fetchTableOfContents = async (textId, skip, limit, languageFromContent = null) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const fallbackLanguage = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
@@ -25,20 +26,24 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
   return data;
 
 }
-const Texts = () => {
+
+const Texts = (props) => {
+  const {requiredInfo = {}, setRendererInfo, collection_id, addChapter, currentChapter} = props;
   const { t } = useTranslate();
-  const { id } = useParams();
+  const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type') || "";
   const [activeTab, setActiveTab] = useState('contents');
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
+  
+  const textId = requiredInfo?.from === "compare-text" ? collection_id : urlId;
 
   const {data: tableOfContents, isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError} = useQuery(
     ["table-of-contents", skip],
-    () => fetchTableOfContents(id, skip, pagination.limit),
-    {refetchOnWindowFocus: false, enabled: !!id, retry: false}
+    () => fetchTableOfContents(textId, skip, pagination.limit),
+    {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
   );
 
   // -------------------------------------------- helpers ----------------------------------------------
@@ -100,12 +105,12 @@ const Texts = () => {
       <div className="tab-content">
         {activeTab === 'contents' && (
           <div className="tab-panel">
-            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={tableOfContents?.text_detail?.id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t}/>
+            <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={tableOfContents?.text_detail?.id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t} requiredInfo={requiredInfo} addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}/>
           </div>
         )}
         {activeTab === 'versions' && (
           <div className="tab-panel">
-            <Versions />
+            <Versions textId={textId} requiredInfo={requiredInfo} addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined} />
           </div>
         )}
       </div>
@@ -155,15 +160,15 @@ const Texts = () => {
 
 
   return (
-    <div className="texts-container">
+    <div className={`${!requiredInfo.from ? "texts-container" : "minified-texts-container"}`}>
       <Seo
         title={dynamicTitle}
         description={description}
         canonical={canonicalUrl}
       />
       <div className="left-section">
-        {renderTextTitleAndType()}
-        {renderContinueReadingButton()}
+        {!requiredInfo.from && renderTextTitleAndType()}
+        {!requiredInfo.from && renderContinueReadingButton()}
         {renderTabs()}
       </div>
       <div className="right-section">
@@ -174,3 +179,13 @@ const Texts = () => {
 }
 
 export default Texts
+Texts.propTypes = {
+  requiredInfo: PropTypes.shape({
+    from: PropTypes.string
+  }),
+  setRendererInfo: PropTypes.func,
+  collection_id: PropTypes.string,
+  addChapter: PropTypes.func,
+  currentChapter: PropTypes.object
+};
+  

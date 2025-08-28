@@ -145,11 +145,11 @@ const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
             }
           >
             <div className="source-content">
-              <img src={pechaIcon} className='pecha-icon' alt="source icon" />
+              <img src={pechaIcon} className='webuddhist-icon' alt="source icon" />
               <div className={getLanguageClass(segment.language || 'en')}>
                 <p className={`${getLanguageClass(segment.language || 'bo')}`} dangerouslySetInnerHTML={{__html:segment.content}}/>
               </div>
-              <p className="pecha-title">{segment.text_title}</p>
+              <p className="webuddhist-title">{segment.text_title}</p>
             </div>
           </button>
         );

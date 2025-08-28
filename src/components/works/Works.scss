@@ -3,6 +3,10 @@
   justify-content: space-around;
   gap: 1rem;
 
+  &.no-margin {
+    margin: 0;
+  }
+
   .left-section {
     width: 60%;
     display: flex;
@@ -44,6 +48,9 @@
             color: #333;
             padding-top: 1rem;
             font-weight: 400;
+            background: none;
+            border: none;
+            font-family: var(--listtitle-font-family);
             &:hover {
               text-decoration: underline;
             }
@@ -57,6 +64,24 @@
         }
         .no-content {
           text-align: left;
+        }
+        .minified-root-text-list {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          padding-right: 20px;
+          
+          .bo-text {
+            width: 100%;
+            min-width: 200px;
+            font-size: 1rem;
+            text-align: left;
+            
+            p {
+              margin-left: -10px;
+              padding-right: 10px;
+            }
+          }
         }
       }
     }
@@ -91,6 +116,9 @@
             color: #333;
             padding-top: 1rem;
             font-weight: 400;
+            background: none;
+            border: none;
+            font-family: var(--listtitle-font-family);
             &:hover {
               text-decoration: underline;
             }
@@ -102,11 +130,72 @@
             }
           }
         }
+
         .no-content {
           text-align: left;
         }
+        
+        .minified-commentary-list {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          
+          .bo-text {
+            width: 100%;
+            min-width: 200px;
+            font-size: 1rem;
+            text-align: left;
+          }
+        }
       }
     }
+  }
+
+  .minified-left-section {
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+
+    .root-text-container,
+      .commentary-text-container {
+        h2 {
+          border-bottom: 1px solid #e0e0e0;
+          padding-bottom: 0.5rem;
+          margin-bottom: 1rem;
+          text-align: center;
+          font-weight: 400;
+        }
+      }
+    
+      .no-content {
+        text-align: center;
+        color: #666;
+      }
+    
+      .root-text,
+      .commentary-text {
+        cursor: pointer;
+        text-align: center;
+        font-weight: 300;
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: inherit;
+        
+        p {
+          font-size: 1.1rem;
+          color: #666;
+          transition: color 0.2s ease;
+          
+          &:hover {
+            color: #333;
+            text-decoration: underline;
+          }
+        }
+      }
   }
 
   .right-section {
