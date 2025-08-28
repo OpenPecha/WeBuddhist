@@ -4,6 +4,7 @@ import { useMutation } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useNavigate } from "react-router-dom";
 import { useTranslate } from "@tolgee/react";
+import pechaIcon from "../../assets/icons/pecha_icon.png";
 
 const ForgotPassword = () => {
     const { t } = useTranslate();
@@ -46,6 +47,7 @@ const ForgotPassword = () => {
         <div className="forgot-password-container">
             <form onSubmit={handleSubmit}>
                 <div className="header">
+                    <img src={pechaIcon}  className="logo" alt="Webuddhist"/>
                     <h4>Reset Your Password</h4>
                 </div>
                 <div className="text-content">
