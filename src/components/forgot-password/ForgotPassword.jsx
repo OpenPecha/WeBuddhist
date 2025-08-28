@@ -47,8 +47,7 @@ const ForgotPassword = () => {
         <div className="forgot-password-container">
             <form onSubmit={handleSubmit}>
                 <div className="header">
-                    <img src={pechaIcon}  className="logo" alt="Webuddhist"/>
-                    <h4>Reset Your Password</h4>
+                    <h4>{t("common.forgot_password.reset.title")}</h4>
                 </div>
                 <div className="text-content">
                     <p>{t("user.forgot_password")}</p>
