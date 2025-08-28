@@ -45,7 +45,10 @@ const ForgotPassword = () => {
     return (
         <div className="forgot-password-container">
             <form onSubmit={handleSubmit}>
-                <div className="subtitle header">
+                <div className="header">
+                    <h4>Reset Your Password</h4>
+                </div>
+                <div className="text-content">
                     <p>{t("user.forgot_password")}</p>
                 </div>
                 <div className="content">
