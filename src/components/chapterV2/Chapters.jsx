@@ -18,7 +18,8 @@ const Chapters = ({
     if (savedChapters) {
       const parsedChapters = JSON.parse(savedChapters);
       return parsedChapters.map(chapter => ({
-        ...chapter
+        ...chapter,
+        id: chapter.id || `${chapter.textId}-${chapter.contentId || 'no-content'}-${chapter.segmentId || 'no-segment'}-${Date.now()}`
       }));
     }
     
@@ -32,6 +33,7 @@ const Chapters = ({
 
     if (textId) {
       return [{
+        id: `${textId}-${contentId || 'no-content'}-${segmentId || 'no-segment'}-${Date.now()}`,
         textId: textId,
         contentId: contentId,
         segmentId: segmentId 
@@ -51,18 +53,24 @@ const Chapters = ({
   const addChapter = useCallback((chapterInformation, currentChapter) => {
     setChapters(prev => {
       if (prev.length >= maxChapters) return prev;
-      const currentIndex = prev.findIndex(chap => chap.segmentId === currentChapter?.segmentId);
+      
+      const ChapterWithUniqueId = {
+        ...chapterInformation,
+        id: `${chapterInformation.textId}-${chapterInformation.contentId || 'no-content'}-${chapterInformation.segmentId || 'no-segment'}-${Date.now()}-${Math.random()}`
+      };
+      
+      const currentIndex = prev.findIndex(chap => chap.id === currentChapter?.id);
       if (currentIndex === -1) {
-        return [...prev, chapterInformation];
+        return [...prev, ChapterWithUniqueId];
       }
       const updatedChapters = [...prev];
-      updatedChapters.splice(currentIndex + 1, 0, chapterInformation);
+      updatedChapters.splice(currentIndex + 1, 0, ChapterWithUniqueId);
       return updatedChapters;
     });
   }, [maxChapters]);
 
   const removeChapter = useCallback((chapterToRemove) => {
-    setChapters(prev => prev.filter(chap => chap.segmentId !== chapterToRemove.segmentId));
+    setChapters(prev => prev.filter(chap => chap.id !== chapterToRemove.id));
   }, []);
 
   const defaultRenderChapter = (chapter, index) => (
@@ -83,10 +91,7 @@ const Chapters = ({
     <div className="chapters-container">
       {chapters.map((chapter, index) => (
         <div
-          key={chapter.type === 'sheet' 
-            ? `sheet-${chapter.sheetSlugAndId}` 
-            : `${chapter.textId}-${chapter.contentId || 'no-content'}-${chapter.segmentId || 'no-segment'}`
-          }
+          key={chapter.id}
           className="chapter-container"
           style={{ width: `${100 / chapters.length}%` }}
         >

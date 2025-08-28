@@ -34,6 +34,12 @@ vi.mock("../../../utils/constants.js", () => ({
   LANGUAGE: "language",
 }));
 
+vi.mock("../../../context/PanelContext.jsx", () => ({
+  default: React.createContext({
+    closeResourcesPanel: vi.fn()
+  })
+}));
+
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {

@@ -12,7 +12,6 @@ vi.mock("../../../../utils/helperFunctions.jsx", () => ({
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
 }));
 
-
 const mockContext = {
   isResourcesPanelOpen: true,
   isTranslationSourceOpen: false,
@@ -28,8 +27,6 @@ vi.mock("../../../../context/PanelContext.jsx", () => ({
   usePanelContext: () => mockContext,
 }));
 
-
-
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
   return {
@@ -44,7 +41,8 @@ vi.mock("../../../../utils/constants.js", () => ({
   LANGUAGE: "LANGUAGE",
   MENU_ITEMS: [
     { label: "common.share", icon: vi.fn() },
-    { label: "menu.item2", icon: vi.fn(), isHeader: true }
+    { label: "menu.item2", icon: vi.fn(), isHeader: true },
+    { label: "connection_panel.compare_text", icon: vi.fn() }
   ],
 }));
 
@@ -56,6 +54,17 @@ vi.mock("./components/root-texts/RootText.jsx", () => ({
     </div>
   )
 }));
+
+vi.mock("../../../chapterV2/utils/compare-text/CompareText.jsx", () => {
+  return {
+    default: ({ setIsCompareTextView, addChapter, currentChapter }) => (
+      <div data-testid="compare-text-view">
+        <div>Compare Text Component</div>
+        <button onClick={() => setIsCompareTextView("main")}>Close</button>
+      </div>
+    )
+  };
+});
 
 describe("Resources Side Panel", () => {
   const queryClient = new QueryClient();
@@ -242,5 +251,28 @@ describe("Resources Side Panel", () => {
 
     fireEvent.click(backdrop);
     expect(mockContext.closeResourcesPanel).toHaveBeenCalled();
+  });
+
+  test("shows compare text view when clicking on compare text option", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
+      if (queryKey[0] === "sidePanel") {
+        return {
+          data: {
+            segment_info: {
+              related_text: {
+                compare_text: 2,
+              },
+            },
+          },
+        };
+      }
+      return { data: null, isLoading: false };
+    });
+
+    setup();
+    const compareTextElement = screen.getByText(/connection_panel\.compare_text/);
+    fireEvent.click(compareTextElement);
+
+    expect(screen.getByTestId("compare-text-view")).toBeInTheDocument();
   });
 })

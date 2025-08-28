@@ -31,7 +31,7 @@ describe("AlertModal Component", () => {
     expect(screen.getByText("Success")).toBeInTheDocument();
     expect(screen.getByText(defaultMessage)).toBeInTheDocument();
     expect(screen.getByText("Redirecting soon...")).toBeInTheDocument();
-    expect(screen.getByAltText("Pecha Icon")).toBeInTheDocument();
+    expect(screen.getByAltText("Webuddhist Icon")).toBeInTheDocument();
     expect(screen.getByRole("button", { hidden: true })).toBeInTheDocument();
   });
 
@@ -42,7 +42,7 @@ describe("AlertModal Component", () => {
     expect(screen.getByText("Error")).toBeInTheDocument();
     expect(screen.getByText(defaultMessage)).toBeInTheDocument();
     expect(screen.queryByText("Redirecting soon...")).not.toBeInTheDocument();
-    expect(screen.getByAltText("Pecha Icon")).toBeInTheDocument();
+    expect(screen.getByAltText("Webuddhist Icon")).toBeInTheDocument();
     expect(screen.getByRole("button", { hidden: true })).toBeInTheDocument();
   });
 
@@ -59,7 +59,7 @@ describe("AlertModal Component", () => {
     
     const dialog = screen.getByRole("dialog", { hidden: true });
     expect(dialog).toHaveClass("alert-modal-overlay");
-    expect(screen.getByAltText("Pecha Icon")).toBeInTheDocument();
+    expect(screen.getByAltText("Webuddhist Icon")).toBeInTheDocument();
     expect(screen.getByText("Success")).toHaveClass("alert-modal-title");
   });
 

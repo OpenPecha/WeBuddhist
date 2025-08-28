@@ -80,15 +80,15 @@ describe("PechaElement Component", () => {
     });
 
     const container = screen.getByTestId("pecha-element");
-    const contentWrapper = container.querySelector(".pecha-content");
+    const contentWrapper = container.querySelector(".webuddhist-content");
     expect(contentWrapper).toBeInTheDocument();
 
     const pechaIcon = screen.getByAltText("source icon");
     expect(pechaIcon).toHaveAttribute("src", "mocked-pecha-icon.png");
-    expect(pechaIcon).toHaveClass("pecha-icon");
+    expect(pechaIcon).toHaveClass("webuddhist-icon");
 
     const titleElement = screen.getByText('Sample Text Title');
-    expect(titleElement).toHaveClass("pecha-title");
+    expect(titleElement).toHaveClass("webuddhist-title");
   });
 
   test("disables query when segmentId is falsy", () => {

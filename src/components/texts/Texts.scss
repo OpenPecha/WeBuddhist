@@ -168,6 +168,43 @@ $primary-color: hsl(42, 49%, 46%);
   }
 }
 
+.minified-texts-container {
+  margin: 0;
+  padding: 1rem;
+  
+  .left-section {
+    margin-top: 0;
+    width: 100%;
+    gap: 1rem;
+    
+    .tab-container {
+      .tab-nav {
+        justify-content: center;
+        border-bottom: 1px solid #e9ecef;
+        
+        .tab-button {
+          padding: 8px 16px;
+          font-size: 16px;
+          border: none;
+          background-color: transparent;
+          cursor: pointer;
+          outline: none;
+          border-bottom: 2px solid transparent;
+
+          &.active {
+            color: hsl(42, 49%, 46%);
+            border-bottom-color: hsl(42, 49%, 46%);
+            border-bottom-width: 3px;
+          }
+        }
+      }
+      
+      .tab-content {
+        padding: 10px;
+      }
+    }
+  }
+}
 @media (max-width: $tablet-breakpoint) {
 
   .texts-container{
