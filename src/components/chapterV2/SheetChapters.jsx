@@ -36,6 +36,7 @@ const SheetChapters = () => {
           currentChapter={chapter}
           totalChapters={2} 
           setVersionId={setVersionId}
+          isFromSheet={true}
         />
       );
     }
