@@ -56,7 +56,7 @@ const Chapters = ({
       
       const ChapterWithUniqueId = {
         ...chapterInformation,
-        id: `${chapterInformation.textId}-${chapterInformation.contentId || 'no-content'}-${chapterInformation.segmentId || 'no-segment'}-${Date.now()}-${Math.random()}`
+        id: `${chapterInformation.textId}-${chapterInformation.contentId || 'no-content'}-${chapterInformation.segmentId || 'no-segment'}-${Date.now()}}`
       };
       
       const currentIndex = prev.findIndex(chap => chap.id === currentChapter?.id);
