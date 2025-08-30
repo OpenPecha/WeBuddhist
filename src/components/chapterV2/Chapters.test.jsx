@@ -134,4 +134,47 @@ describe("Chapters Component", () => {
     expect(removeItemSpy).toHaveBeenCalledWith("chapters");
     expect(removeItemSpy).toHaveBeenCalledWith("versionId");
   });
+
+  test("renders with initialChapters prop", () => {
+    const initialChapters = [
+      { textId: "init1", contentId: "c1", segmentId: "s1" },
+      { textId: "init2", contentId: "c2", segmentId: "s2" }
+    ];
+    setupSessionStorage({});
+    mockSearchParams.mockReturnValue({ get: () => null });
+    render(<Chapters initialChapters={initialChapters} />);
+    const containers = screen.getAllByTestId("contents-chapter-mock");
+    expect(containers.length).toBe(2);
+    expect(containers[0]).toHaveAttribute("data-textid", "init1");
+    expect(containers[1]).toHaveAttribute("data-textid", "init2");
+  });
+
+  test("respects maxChapters prop", () => {
+    const chapters = [{ textId: "t1", contentId: "c1", segmentId: "s1" }];
+    setupSessionStorage({ chapters });
+    mockSearchParams.mockReturnValue({ get: () => null });
+    render(<Chapters maxChapters={1} />);
+    const container = screen.getByTestId("contents-chapter-mock");
+    act(() => {
+      container.click(); 
+    });
+    expect(screen.getAllByTestId("contents-chapter-mock").length).toBe(2); 
+  });
+
+  test("uses custom renderChapter function", () => {
+    const chapters = [{ textId: "t1", contentId: "c1", segmentId: "s1" }];
+    const customRender = vi.fn((chapter, index, helpers) => (
+      <div data-testid="custom-chapter" data-textid={chapter.textId}>Custom: {chapter.textId}</div>
+    ));
+    setupSessionStorage({ chapters });
+    mockSearchParams.mockReturnValue({ get: () => null });
+    render(<Chapters renderChapter={customRender} />);
+    expect(screen.getByTestId("custom-chapter")).toBeInTheDocument();
+    expect(screen.getByTestId("custom-chapter")).toHaveAttribute("data-textid", "t1");
+    expect(customRender).toHaveBeenCalledWith(
+      expect.objectContaining({ textId: "t1" }),
+      0,
+      expect.objectContaining({ versionId: expect.any(String), addChapter: expect.any(Function), removeChapter: expect.any(Function) })
+    );
+  });
 });

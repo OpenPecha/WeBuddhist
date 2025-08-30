@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
 export const fetchCollections = async () => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
-  const {data} = await axiosInstance.get("api/v1/collections", {
+  const {data} = await axiosInstance.get("/api/v1/collections", {
     params: {
       language,
       limit: 10,

@@ -73,6 +73,13 @@ vi.mock("react-router-dom", async () => {
 
 const mockNavigate = vi.fn();
 
+vi.mock("../local-components/Editors/Elements/pecha-element/PechaElement.jsx", () => ({
+  fetchSegmentDetails: vi.fn()
+}));
+
+import { fetchSegmentDetails } from "../local-components/Editors/Elements/pecha-element/PechaElement.jsx";
+const mockFetchSegmentDetails = vi.mocked(fetchSegmentDetails);
+
 describe("SheetDetailPage Component", () => {
   const queryClient = new QueryClient();
   const mockSheetData = {
@@ -166,18 +173,37 @@ describe("SheetDetailPage Component", () => {
     }));
 
     extractSpotifyInfoSpy = vi.spyOn(Constants, "extractSpotifyInfo").mockImplementation(() => null);
+    
+    mockFetchSegmentDetails.mockResolvedValue({
+      text: {
+        text_id: "mock-text-id-123",
+        title: "Mock Text Title",
+        language: "en"
+      },
+      content: "Mock segment content"
+    });
   });
+
+  const mockAddChapter = vi.fn();
+  const mockCurrentChapter = { id: 'test-chapter', textId: 'test-text-id' };
 
   afterEach(() => {
     vi.clearAllMocks();
+    mockAddChapter.mockClear();
   });
 
-  const setup = () => {
+  const setup = (props = {}) => {
+    const defaultProps = {
+      addChapter: mockAddChapter,
+      currentChapter: mockCurrentChapter,
+      ...props
+    };
+    
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
           <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <SheetDetailPageWithPanelContext />
+            <SheetDetailPageWithPanelContext {...defaultProps} />
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>
@@ -335,38 +361,192 @@ describe("SheetDetailPage Component", () => {
     expect(screen.getByText("0")).toBeInTheDocument();
   });
 
-  test("opens resources panel when clicking on source segment", () => {
+  test("calls addChapter with correct parameters when source segment is clicked", async () => {
     setup();
     
     const sourceButton = screen.getByRole("button", { name: /source title/i });
     fireEvent.click(sourceButton);
     
-    expect(screen.getByTestId("resources-panel")).toBeInTheDocument();
-    expect(screen.getByText("Resources for segment: segment1")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: "mock-text-id-123",
+          segmentId: "segment1"
+        },
+        mockCurrentChapter,
+        true
+      );
+    });
   });
 
-  test("closes resources panel when close button is clicked", () => {
-    setup();
+  test("calls addChapter when provided as prop", async () => {
+    const mockAddChapterLocal = vi.fn();
+    setup({ addChapter: mockAddChapterLocal });
     
     const sourceButton = screen.getByRole("button", { name: /source title/i });
     fireEvent.click(sourceButton);
     
-    expect(screen.getByTestId("resources-panel")).toBeInTheDocument();
-    
-    const closeButton = screen.getByText("Close");
-    fireEvent.click(closeButton);
-    
-    expect(screen.queryByTestId("resources-panel")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockAddChapterLocal).toHaveBeenCalledWith(
+        {
+          textId: "mock-text-id-123",
+          segmentId: "segment1"
+        },
+        mockCurrentChapter,
+        true
+      );
+    });
   });
 
-  test("applies selected class to source segment when panel is open", () => {
+
+  test("handles fetchSegmentDetails returning data without text property", async () => {
+    mockFetchSegmentDetails.mockResolvedValueOnce({
+      text_id: "fallback-text-id-456",
+      content: "Mock segment content"
+    });
+    
     setup();
     
     const sourceButton = screen.getByRole("button", { name: /source title/i });
     fireEvent.click(sourceButton);
     
-    expect(sourceButton).toHaveClass("selected");
+    await waitFor(() => {
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: "fallback-text-id-456",
+          segmentId: "segment1"
+        },
+        mockCurrentChapter,
+        true
+      );
+    });
   });
+
+  test("handles fetchSegmentDetails returning data with both text.text_id and text_id undefined", async () => {
+    mockFetchSegmentDetails.mockResolvedValueOnce({
+      content: "Mock segment content"
+    });
+    
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    await waitFor(() => {
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: undefined,
+          segmentId: "segment1"
+        },
+        mockCurrentChapter,
+        true
+      );
+    });
+  });
+
+  test("calls fetchSegmentDetails with correct segment_id", async () => {
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    await waitFor(() => {
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment1");
+    });
+  });
+
+  test("source button click is async and waits for fetchSegmentDetails", async () => {
+    let resolvePromise;
+    const pendingPromise = new Promise((resolve) => {
+      resolvePromise = resolve;
+    });
+    
+    mockFetchSegmentDetails.mockReturnValueOnce(pendingPromise);
+    
+    setup();
+    
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+    
+    expect(mockAddChapter).not.toHaveBeenCalled();
+    
+    resolvePromise({
+      text: {
+        text_id: "async-text-id",
+        title: "Async Text Title",
+        language: "en"
+      }
+    });
+    
+    await waitFor(() => {
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: "async-text-id",
+          segmentId: "segment1"
+        },
+        mockCurrentChapter,
+        true
+      );
+    });
+  });
+
+  test("multiple source segment clicks call fetchSegmentDetails multiple times", async () => {
+    const sheetWithMultipleSources = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "source",
+            content: "Source content 1",
+            language: "bo",
+            text_title: "Source Title 1",
+          },
+          {
+            segment_id: "segment2",
+            type: "source",
+            content: "Source content 2",
+            language: "bo",
+            text_title: "Source Title 2",
+          }
+        ]
+      }
+    };
+    
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((config) => {
+      if (config.queryKey?.[0] === 'sheetData') {
+        return {
+          data: sheetWithMultipleSources,
+          isLoading: false
+        };
+      }
+      return {
+        data: mockUserInfoData,
+        isLoading: false
+      };
+    });
+    
+    const { container } = setup();
+    
+    const sourceSegmentButtons = container.querySelectorAll('.segment-source');
+    expect(sourceSegmentButtons).toHaveLength(2);
+    
+    fireEvent.click(sourceSegmentButtons[0]);
+    
+    await waitFor(() => {
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment1");
+    });
+    
+    fireEvent.click(sourceSegmentButtons[1]);
+    
+    await waitFor(() => {
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment2");
+    });
+    
+    expect(mockFetchSegmentDetails).toHaveBeenCalledTimes(2);
+  });
+
+
 
   test("opens delete modal when trash icon is clicked", () => {
   setup();
@@ -1018,26 +1198,22 @@ describe("SheetDetailPage Component", () => {
     expect(screen.getByText("Test Sheet")).toBeInTheDocument();
   });
 
-  test("applies correct CSS classes when panel is open", () => {
+  test("renders main container with correct CSS classes", () => {
     setup();
     
-    const sourceButton = screen.getByRole("button", { name: /source title/i });
-    fireEvent.click(sourceButton);
-    
     const mainContainer = screen.getByRole("main");
-    expect(mainContainer).toHaveClass("with-side-panel");
+    expect(mainContainer).toHaveClass("sheet-detail-container");
   });
 
-  test("does not apply panel CSS classes when panel is closed", () => {
-    setup();
+  test("renders correctly with minimal props", () => {
+    const mockAddChapterLocal = vi.fn();
+    setup({ addChapter: mockAddChapterLocal, currentChapter: undefined });
     
     const sourceButton = screen.getByRole("button", { name: /source title/i });
-    fireEvent.click(sourceButton);
-    expect(screen.getByTestId("resources-panel")).toBeInTheDocument();
-    const closeButton = screen.getByText("Close");
-    fireEvent.click(closeButton);
+    expect(sourceButton).toBeInTheDocument();
+    
     const mainContainer = screen.getByRole("main");
-    expect(mainContainer).not.toHaveClass("with-side-panel");
+    expect(mainContainer).toHaveClass("sheet-detail-container");
   });
 
   test("renders multiple segments of different types", () => {

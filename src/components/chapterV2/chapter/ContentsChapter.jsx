@@ -25,7 +25,7 @@ const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
   return data;
 };
 
-const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => {
+const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
   const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
@@ -49,12 +49,12 @@ const ContentsChapter = ({ textId, contentId, segmentId, versionId, addChapter, 
     ["content", textId, contentId, versionId, size, currentSegmentId],
     fetchContentDetails,
     {
-      getNextPageParam: (lastPage) => {
+      getNextPageParam: isFromSheet ? undefined : (lastPage) => {
         if (lastPage?.current_segment_position === lastPage?.total_segments) return null;
         const lastSegmentId = getLastSegmentId(lastPage.content.sections);
         return { segmentId: lastSegmentId, direction: "next" };
       },
-      getPreviousPageParam: (firstPage) => {
+      getPreviousPageParam: isFromSheet ? undefined : (firstPage) => {
         if (firstPage?.current_segment_position === 1) return null;
         const firstSegmentId = getFirstSegmentId(firstPage.content.sections);
         return { segmentId: firstSegmentId, direction: "previous" };
