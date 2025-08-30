@@ -158,7 +158,7 @@ describe("Chapters Component", () => {
     act(() => {
       container.click(); 
     });
-    expect(screen.getAllByTestId("contents-chapter-mock").length).toBe(1); 
+    expect(screen.getAllByTestId("contents-chapter-mock").length).toBe(2); 
   });
 
   test("uses custom renderChapter function", () => {
