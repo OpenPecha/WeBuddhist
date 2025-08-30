@@ -100,8 +100,8 @@ describe("SheetChapters Component", () => {
       expect(chaptersContainer).toBeInTheDocument();
       
       const maxChaptersElement = screen.getByTestId("max-chapters");
-      expect(maxChaptersElement).toHaveAttribute("data-max", "2");
-      expect(maxChaptersElement).toHaveTextContent("Max Chapters: 2");
+      expect(maxChaptersElement).toHaveAttribute("data-max", "3");
+      expect(maxChaptersElement).toHaveTextContent("Max Chapters: 3");
       
       const renderFunctionElement = screen.getByTestId("render-function");
       expect(renderFunctionElement).toHaveAttribute("data-has-render", "true");
@@ -173,11 +173,11 @@ describe("SheetChapters Component", () => {
   });
 
   describe("Chapter Configuration", () => {
-    test("sets maxChapters to 2", () => {
+    test("sets maxChapters to 3", () => {
       renderWithRouter(<SheetChapters />);
       
       const maxChaptersElement = screen.getByTestId("max-chapters");
-      expect(maxChaptersElement).toHaveTextContent("Max Chapters: 2");
+      expect(maxChaptersElement).toHaveTextContent("Max Chapters: 3");
     });
 
     test("creates initial chapter with correct type", () => {
@@ -207,7 +207,7 @@ describe("SheetChapters Component", () => {
       expect(initialChaptersElement).toHaveTextContent("Initial Chapters: 1");
       
       const maxChaptersElement = screen.getByTestId("max-chapters");
-      expect(maxChaptersElement).toHaveAttribute("data-max", "2");
+      expect(maxChaptersElement).toHaveAttribute("data-max", "3");
       
       const renderFunctionElement = screen.getByTestId("render-function");
       expect(renderFunctionElement).toHaveAttribute("data-has-render", "true");
