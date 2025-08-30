@@ -213,7 +213,7 @@ describe("Collections Component", () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockCollectionsData });
 
     const result = await fetchCollections();
-    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/collections", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections", {
       params: {
         language: "en",
         limit: 10,
