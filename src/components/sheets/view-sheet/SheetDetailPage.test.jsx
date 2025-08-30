@@ -373,7 +373,8 @@ describe("SheetDetailPage Component", () => {
           textId: "mock-text-id-123",
           segmentId: "segment1"
         },
-        mockCurrentChapter
+        mockCurrentChapter,
+        true
       );
     });
   });
@@ -391,7 +392,8 @@ describe("SheetDetailPage Component", () => {
           textId: "mock-text-id-123",
           segmentId: "segment1"
         },
-        mockCurrentChapter
+        mockCurrentChapter,
+        true
       );
     });
   });
@@ -414,7 +416,8 @@ describe("SheetDetailPage Component", () => {
           textId: "fallback-text-id-456",
           segmentId: "segment1"
         },
-        mockCurrentChapter
+        mockCurrentChapter,
+        true
       );
     });
   });
@@ -435,7 +438,8 @@ describe("SheetDetailPage Component", () => {
           textId: undefined,
           segmentId: "segment1"
         },
-        mockCurrentChapter
+        mockCurrentChapter,
+        true
       );
     });
   });
@@ -480,7 +484,8 @@ describe("SheetDetailPage Component", () => {
           textId: "async-text-id",
           segmentId: "segment1"
         },
-        mockCurrentChapter
+        mockCurrentChapter,
+        true
       );
     });
   });
