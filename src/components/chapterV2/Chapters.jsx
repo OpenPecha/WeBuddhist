@@ -50,7 +50,8 @@ const Chapters = ({
     };
   }, [chapters, versionId]);
 
-  const addChapter = useCallback((chapterInformation, currentChapter) => {
+  const addChapter = useCallback((chapterInformation, currentChapter, isFromSheet = false) => {
+    const maxChapters = isFromSheet ? 2 : 3;
     setChapters(prev => {
       if (prev.length >= maxChapters) return prev;
       

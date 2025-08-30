@@ -34,7 +34,7 @@ const SheetChapters = () => {
           addChapter={addChapter}
           removeChapter={removeChapter}
           currentChapter={chapter}
-          totalChapters={2} 
+          totalChapters={3} 
           setVersionId={setVersionId}
           isFromSheet={true}
         />
@@ -45,7 +45,7 @@ const SheetChapters = () => {
   return (
     <Chapters 
       initialChapters={initialChapters}
-      maxChapters={2}
+      maxChapters={3}
       renderChapter={renderChapter}
     />
   );

@@ -140,7 +140,7 @@ const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
                 addChapter({ 
                   textId: textId, 
                   segmentId: segment.segment_id,
-                }, currentChapter);
+                }, currentChapter, true); 
               }
             }
           >
