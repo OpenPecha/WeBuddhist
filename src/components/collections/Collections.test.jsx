@@ -40,7 +40,7 @@ vi.mock("../../utils/helperFunctions.jsx", () => ({
 
 vi.mock("../../utils/constants.js", () => ({
   LANGUAGE: "LANGUAGE",
-  siteName: "Webuddhist",
+  siteName: "WeBuddhist",
 }));
 
 describe("Collections Component", () => {
