@@ -49,6 +49,7 @@ const mainUser= user || userInfo // because we are using two ways to login.
   }, [scriptLoaded, show]);
 
   const toggleFeedBucket = () => {
+    
     const feedbucket = document.querySelector("feedbucket-app");
     
     if (!show) {
