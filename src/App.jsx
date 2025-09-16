@@ -12,8 +12,8 @@ import UserProfile from "./components/user-profile/UserProfile.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
 import Sheets from "./components/sheets/Sheets.jsx";
-import SheetDetailPage from "./components/sheets/view-sheet/SheetDetailPage.jsx";
 import SheetChapters from "./components/chapterV2/SheetChapters.jsx";
+import FeedBucket from "./components/feedbucket/FeedBucket.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 const Collections = lazy(() => import("./components/collections/Collections.jsx"));
@@ -135,6 +135,7 @@ function App() {
               <Route path="/sheets/:id" element={<Sheets/>}/>
               <Route path="/:username/:sheetSlugAndId" element={<SheetChapters/>}/>
           </Routes>
+          <FeedBucket/>
       </Suspense>
     );
 }
