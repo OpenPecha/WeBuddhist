@@ -186,7 +186,7 @@ const UseChapterHook = (props) => {
 
   const renderResources = () => {
     if (isResourcesPanelOpen && selectedSegmentId) {
-      return <Resources segmentId={selectedSegmentId} addChapter={addChapter} currentChapter={currentChapter} setVersionId={setVersionId} handleSegmentNavigate={handleSegmentNavigate} />
+      return <Resources textId={textId} segmentId={selectedSegmentId} addChapter={addChapter} currentChapter={currentChapter} setVersionId={setVersionId} handleSegmentNavigate={handleSegmentNavigate} />
     }
     return null;
   }

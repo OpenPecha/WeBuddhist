@@ -22,7 +22,7 @@ export const fetchSidePanelData = async (segmentId) => {
   return data;
 };
 
-const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersionId, handleSegmentNavigate}) => {
+const Resources = ({textId, segmentId, addChapter, handleClose, currentChapter, setVersionId, handleSegmentNavigate}) => {
   const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
   const showPanel = isResourcesPanelOpen;
   const [expandedCommentaries, setExpandedCommentaries] = useState({});
@@ -167,6 +167,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
       case "share":
         return (
           <ShareView
+            textId={textId}
             segmentId={segmentId}
             setIsShareView={setActiveView}
           />

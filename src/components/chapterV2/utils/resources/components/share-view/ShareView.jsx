@@ -8,12 +8,13 @@ import { useQuery } from "react-query";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import PropTypes from "prop-types";
 
-export const fetchShortUrl = async (url,segmentId) => {
+export const fetchShortUrl = async (url,segmentId, textId) => {
   const { data } = await axiosInstance.post('/api/v1/share', 
     { 
       segment_id: segmentId,
       language: "bo",
       url,
+      text_id: textId,
     });
   return data;
 }
@@ -22,14 +23,14 @@ const getURLwithUpdatedSegmentId = (segmentId) => {
   urlObj.searchParams.set("segment_id", segmentId);
   return urlObj.toString();
 }
-const ShareView = ({ setIsShareView, segmentId }) => {
+const ShareView = ({ setIsShareView, segmentId, textId }) => {
   const [copied, setCopied] = useState(false);
   const { t } = useTranslate();
   const url= getURLwithUpdatedSegmentId(segmentId)
 
   const { data: shorturldata, isLoading} = useQuery(
-    ["toc", url, segmentId],
-    () => fetchShortUrl(url, segmentId),
+    ["toc", url, segmentId, textId],
+    () => fetchShortUrl(url, segmentId, textId),
     { 
       refetchOnWindowFocus: false,
     }
