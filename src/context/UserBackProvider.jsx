@@ -5,13 +5,14 @@ import { useAuth0 } from '@auth0/auth0-react';
 import {useAuth} from '../config/AuthContext';
 import { useQuery } from 'react-query';
 import axiosInstance from '../config/axios-config';
+import { USERBACK_ID } from '../utils/constants';
 export const fetchUserInfo = async () => {
     const { data } = await axiosInstance.get("/api/v1/users/info");
     return data;
   };
 
 const UserbackContext = createContext({ userback: null });
-const usebackId = import.meta.env.VITE_USERBACK_ID;
+const usebackId = import.meta.env.VITE_USERBACK_ID || USERBACK_ID;
 export const UserbackProvider = ({ children }) => {
   const [userback, setUserback] = useState(null);
   const { user } = useAuth0();
