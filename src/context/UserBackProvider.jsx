@@ -28,7 +28,6 @@ export const UserbackProvider = ({ children }) => {
         const id = user?.id || user?.email || 'anonymous';
         const name = user?.name || user?.firstname || 'Anonymous User';
         const email = user?.email || 'anonymous@pecha.io';
-        console.log(id,name,email,"hi")
       try {
         const options = {
           user_data: {
