@@ -23,12 +23,12 @@ export const UserbackProvider = ({ children }) => {
     const mainUser= user || userInfo 
   useEffect(() => {
     if(!mainUser) return;
-    const usebackId = import.meta.env.VITE_USERBACK_ID||"";
+    const usebackId = import.meta.env.VITE_USERBACK_ID;
+    console.log(usebackId,"usebackId")
     const init = async (user) => {
         const id = user?.id || user?.email || 'anonymous';
         const name = user?.name || user?.firstname || 'Anonymous User';
         const email = user?.email || 'anonymous@pecha.io';
-        console.log(id,name,email,"hi")
       try {
         const options = {
           user_data: {
