@@ -5,13 +5,14 @@ import { useAuth0 } from '@auth0/auth0-react';
 import {useAuth} from '../config/AuthContext';
 import { useQuery } from 'react-query';
 import axiosInstance from '../config/axios-config';
+import { USERBACK_ID } from '../utils/constants';
 export const fetchUserInfo = async () => {
     const { data } = await axiosInstance.get("/api/v1/users/info");
     return data;
   };
 
 const UserbackContext = createContext({ userback: null });
-
+const usebackId = import.meta.env.VITE_USERBACK_ID || USERBACK_ID;
 export const UserbackProvider = ({ children }) => {
   const [userback, setUserback] = useState(null);
   const { user } = useAuth0();
@@ -23,12 +24,10 @@ export const UserbackProvider = ({ children }) => {
     const mainUser= user || userInfo 
   useEffect(() => {
     if(!mainUser) return;
-    const usebackId = import.meta.env.VITE_USERBACK_ID||"";
     const init = async (user) => {
         const id = user?.id || user?.email || 'anonymous';
         const name = user?.name || user?.firstname || 'Anonymous User';
         const email = user?.email || 'anonymous@pecha.io';
-        console.log(id,name,email,"hi")
       try {
         const options = {
           user_data: {
