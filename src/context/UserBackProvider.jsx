@@ -11,7 +11,7 @@ export const fetchUserInfo = async () => {
   };
 
 const UserbackContext = createContext({ userback: null });
-
+const usebackId = import.meta.env.VITE_USERBACK_ID;
 export const UserbackProvider = ({ children }) => {
   const [userback, setUserback] = useState(null);
   const { user } = useAuth0();
@@ -23,7 +23,6 @@ export const UserbackProvider = ({ children }) => {
     const mainUser= user || userInfo 
   useEffect(() => {
     if(!mainUser) return;
-    const usebackId = import.meta.env.VITE_USERBACK_ID;
     console.log(usebackId,"usebackId")
     const init = async (user) => {
         const id = user?.id || user?.email || 'anonymous';
