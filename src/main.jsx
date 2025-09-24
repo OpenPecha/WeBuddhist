@@ -11,7 +11,7 @@ import localeEn from "./i18n/en.json";
 import localeBoIn from "./i18n/bo-IN.json";
 import { LANGUAGE } from "./utils/constants.js";
 import { HelmetProvider } from "react-helmet-async";
-
+import { UserbackProvider } from "./context/UserBackProvider.jsx";
 const queryClient = new QueryClient();
 const defaultLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE || "bo-IN";
 const tolgee = Tolgee()
@@ -32,14 +32,18 @@ const tolgee = Tolgee()
   });
 createRoot(document.getElementById('root')).render(
   <Router>
+
     <QueryClientProvider client={ queryClient }>
       <TolgeeProvider tolgee={ tolgee }>
         <Auth0ProviderWithNavigate>
           <PechaAuthProvider>
             <HelmetProvider>
+              <UserbackProvider>
               <App />
+              </UserbackProvider>
             </HelmetProvider>
           </PechaAuthProvider>
+    
         </Auth0ProviderWithNavigate>
       </TolgeeProvider>
     </QueryClientProvider>
