@@ -24,6 +24,8 @@ export const UserbackProvider = ({ children }) => {
   useEffect(() => {
     if(!mainUser) return;
     const usebackId = import.meta.env.VITE_USERBACK_ID||"";
+    console.log(usebackId,"usebackId")
+
     const init = async (user) => {
         const id = user?.id || user?.email || 'anonymous';
         const name = user?.name || user?.firstname || 'Anonymous User';
