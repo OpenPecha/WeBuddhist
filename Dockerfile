@@ -10,7 +10,9 @@ RUN npm install
 
 COPY . .
 
+ARG USERBACK_ID=""
 ENV NODE_ENV=production
+ENV VITE_USERBACK_ID=$USERBACK_ID
 
 RUN npm run build
 
