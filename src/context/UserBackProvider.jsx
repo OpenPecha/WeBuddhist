@@ -24,7 +24,6 @@ export const UserbackProvider = ({ children }) => {
     const mainUser= user || userInfo 
   useEffect(() => {
     if(!mainUser) return;
-    console.log(usebackId,"usebackId")
     const init = async (user) => {
         const id = user?.id || user?.email || 'anonymous';
         const name = user?.name || user?.firstname || 'Anonymous User';
