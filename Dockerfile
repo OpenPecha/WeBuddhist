@@ -10,9 +10,9 @@ RUN npm install
 
 COPY . .
 
-ARG USERBACK_ID=""
+ARG VITE_USERBACK_ID=""
 ENV NODE_ENV=production
-ENV VITE_USERBACK_ID=$USERBACK_ID
+ENV VITE_USERBACK_ID=$VITE_USERBACK_ID
 
 RUN npm run build
 
@@ -38,5 +38,5 @@ EXPOSE 4173
 
 CMD ["sh", "-c", "envsubst '${VITE_BACKEND_BASE_URL}' < /etc/nginx/conf.d/pecha.conf.template > /etc/nginx/conf.d/default.conf && cat /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
 
-# docker build -f Dockerfile -t pecha-ui-app .
+# docker build --build-arg VITE_USERBACK_ID=$VITE_USERBACK_ID -f Dockerfile -t pecha-ui-app .
 # docker run -e VITE_BACKEND_BASE_URL=http://host.docker.internal:8000 -p 4173:4173 --rm pecha-ui-app
