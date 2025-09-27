@@ -1,6 +1,6 @@
 import ChapterHeader from "../utils/header/ChapterHeader.jsx";
 import React, { useState, useMemo, useEffect } from "react";
-import { VIEW_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
+import { VIEW_MODES, LAYOUT_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import { useInfiniteQuery } from "react-query";
@@ -27,6 +27,7 @@ const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
 
 const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE);
+  const [layoutMode, setLayoutMode] = useState(LAYOUT_MODES.SEGMENTED);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
   const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
   const [currentSectionId, setCurrentSectionId] = useState(null);
@@ -94,7 +95,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
   
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
-    const propsForChapterHeader = { viewMode, setViewMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!versionId };
+    const propsForChapterHeader = { viewMode, setViewMode, layoutMode, setLayoutMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!versionId };
     return <ChapterHeader {...propsForChapterHeader} />;
   };
 
@@ -105,6 +106,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
       content: allContent?.content,
       language: allContent?.text_detail?.language,
       viewMode,
+      layoutMode,
       addChapter,
       currentChapter,
       setVersionId,

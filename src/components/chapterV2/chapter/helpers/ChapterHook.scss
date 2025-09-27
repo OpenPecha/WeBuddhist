@@ -90,3 +90,62 @@
     }
   }
 }
+.segmented-layout {
+  .segment-container {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 10px;
+    width: 100%;
+    
+    .segment-number {
+      margin-right: 2rem;
+      display: block;
+    }
+    
+    .segment-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+  }
+}
+
+.prose-layout {
+  border: 1px solid red;  // for test
+  .segment-container {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: none; 
+    background: transparent;
+    
+    .segment-number {
+      display: none;
+    }
+    
+    .segment-content {
+      display: inline;
+        margin: 0;
+      
+      p {
+        display: inline;
+        margin: 0;
+        padding: 0;
+      }
+    }
+  }
+  
+  .outer-container {
+    display: block;
+    > div {
+      display: inline !important;
+    }
+    
+    .segment-container + .segment-container {
+      &::before {
+        content: " ";
+      }
+    }
+  }
+}

@@ -2,14 +2,14 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.jsx";
 import "./ChapterHook.scss"
-import { VIEW_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
+import { VIEW_MODES, LAYOUT_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
 import { getLanguageClass, getCurrentSectionFromScroll } from "../../../../utils/helperFunctions.jsx";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
 import PropTypes from "prop-types";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, viewMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId} = props;
+  const { showTableOfContents, content, language, viewMode, layoutMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId} = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -133,7 +133,7 @@ const UseChapterHook = (props) => {
   const renderSectionRecursive = (section) => {
     if (!section) return null;
     return (
-      <div className="contents-container" key={section.title || 'root'}
+      <div className={`contents-container ${layoutMode === LAYOUT_MODES.SEGMENTED ? "segmented-layout" : "prose-layout"}`} key={section.title || 'root'}
         ref={(sectionRef) => {sectionRef && section.id && sectionRefs.current.set(section.id, sectionRef)}}>
         {section.title && (<h2>{section.title}</h2> )}
         
@@ -230,6 +230,7 @@ UseChapterHook.propTypes = {
   }).isRequired,
   language: PropTypes.string.isRequired,
   viewMode: PropTypes.string.isRequired,
+  layoutMode: PropTypes.string.isRequired,
   addChapter: PropTypes.func.isRequired,
   currentChapter: PropTypes.shape({
     segmentId: PropTypes.string,

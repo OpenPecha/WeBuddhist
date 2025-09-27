@@ -10,7 +10,7 @@ import { usePanelContext } from "../../../../context/PanelContext.jsx";
 
 const ChapterHeader = (props) => {
 
-  const {viewMode, setViewMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, versionSelected} = props
+  const {viewMode, setViewMode, layoutMode, setLayoutMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, versionSelected} = props
   const { isResourcesPanelOpen, isViewSelectorOpen, setIsViewSelectorOpen, closeResourcesPanel } = usePanelContext()
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const ChapterHeader = (props) => {
   }
 
   const renderViewSelector = () => {
-    const propsForViewSelectorComponent = { setShowViewSelector: () => setIsViewSelectorOpen(false), viewMode, setViewMode, versionSelected }
+    const propsForViewSelectorComponent = { setShowViewSelector: () => setIsViewSelectorOpen(false), viewMode, setViewMode, layoutMode, setLayoutMode, versionSelected }
     return <div className="view-selector-icon-container">
       <MdOutlineVerticalSplit size={20} onClick={handleViewSelectorClick}/>
       {isViewSelectorOpen && <ViewSelector {...propsForViewSelectorComponent}/>}
@@ -72,6 +72,8 @@ export default React.memo(ChapterHeader)
 ChapterHeader.propTypes = {
   viewMode: PropTypes.string.isRequired,
   setViewMode: PropTypes.func.isRequired,
+  layoutMode: PropTypes.string.isRequired,
+  setLayoutMode: PropTypes.func.isRequired,
   textdetail: PropTypes.shape({
     language: PropTypes.string,
     title: PropTypes.string,

@@ -37,4 +37,62 @@
       }
     }
   }
+  .layout-mode-options {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+    
+    .layout-icons-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; 
+      
+      .layout-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+        flex-shrink: 0; 
+      }
+      
+      .icons-group {
+        display: flex;
+        gap: 1rem; 
+      }
+      
+      .icon-option {
+        cursor: pointer;
+        
+        input[type="radio"] {
+          display: none;
+        }
+        
+        .layout-icon {
+          width: 24px;
+          height: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: none;
+          background: transparent;
+          
+          svg {
+            font-size: 20px;
+            color: #999;
+          }
+        }
+        
+        input[type="radio"]:checked + .layout-icon {
+          svg {
+            color: #333;
+          }
+        }
+        
+        &:hover .layout-icon {
+          svg {
+            color: #333;
+          }
+        }
+      }
+    }
+  }
 }
