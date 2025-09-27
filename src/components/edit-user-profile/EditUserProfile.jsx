@@ -14,7 +14,6 @@ const EditUserProfile = () => {
 
   const userInfo = location.state?.userInfo || {};
 
-//---------------------- helper function ------------------------------
 
   const getSocialProfileUrl = (account) => {
     if (!userInfo.social_profiles) return "";

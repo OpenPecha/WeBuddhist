@@ -190,15 +190,13 @@ const UserProfile = () => {
   };
 
   const renderProfileLeftSection = () => {
-    const hasValidSocialProfiles = userInfo?.social_profiles?.some(profile => profile.url && profile.url.trim() !== '');
-    
     return (
       <div className="profile-left">
         {renderBasicInfo()}
         {renderProfileDetails()}
         {renderActionButtons()}
         {renderFollowersInfo()}
-        {hasValidSocialProfiles && renderSocialLinks(userInfo?.social_profiles)}
+        {renderSocialLinks(userInfo?.social_profiles)}
       </div>
     );
   };
