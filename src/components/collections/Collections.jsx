@@ -67,7 +67,9 @@ const Collections = (props) => {
       <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
         {collection.title}
       </Link> :
-      collection.title
+      <Link to={`/works/${collection.id}`} className="listtitle collection-link">
+        {collection.title}
+      </Link>
   }
 
   const renderCollections = () => {
