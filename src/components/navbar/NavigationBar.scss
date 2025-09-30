@@ -57,16 +57,24 @@
               color: #2f2f2f;
           }
           .auth-button-login{
-              border: 1px solid #767676;
+              border: 1px solid #a2a2a2;
               color: #2b2b2b;
               padding: 5px 10px;
               border-radius: 5px;
+              transition: all 0.3s ease;
+              &:hover{
+                background-color: #f0f0f0;
+              }
           }
           .auth-button-register{
-              background-color: #2b2b2b;
+              background-color: #871C1C;
               color: #ffffff;
               padding: 5px 10px;
               border-radius: 5px;
+              transition: all 0.3s ease;
+              &:hover{
+                background-color: #741116;
+              }
           }
       }
       .logout-button{

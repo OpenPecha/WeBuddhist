@@ -62,12 +62,15 @@ const CommunityPage = () => {
   );
   const totalPages = Math.ceil((sheetsData?.total || 0) / pagination.limit);
   const userIsLoggedIn = isLoggedIn || isAuthenticated;
+
   return (
     <div className='container-community'>
       <div className='sheet-community'>
         <div className='community-header'>
         <h2 className='section-title listtitle'> {t("community.sheets.recently_published")}</h2>
-          <select
+        {
+          sheetsData?.sheets?.length > 0 && (
+            <select
             className="community-dropdown navbaritems"
             value={sortOrder}
             onChange={handleSortChange}
@@ -75,12 +78,19 @@ const CommunityPage = () => {
             <option value="asc">{t("community.sheets.ascending")}</option>
             <option value="desc">{t("community.sheets.descending")}</option>
           </select>
+        )
+        }
+
         </div>
        
         <div className='published-list'>
         <div className="sheets-list">
                     {sheetsIsLoading ? (
                       <p>Loading sheets...</p>
+                    ) : sheetsData?.sheets?.length === 0 ? (
+                      <div className="no-stories-message">
+                        <p className="navbaritems">{t("community_empty_story")}</p>
+                      </div>
                     ) : (
                       sheetsData?.sheets.map((sheet) => (
                         <div key={sheet.id} className="sheet-item">
@@ -125,8 +135,8 @@ const CommunityPage = () => {
             <p>{t("side_nav.join_conversation.descriptions")}</p>
             <button className='make-sheet-btn navbaritems' onClick={() => 
               userIsLoggedIn ?(sessionStorage.removeItem('sheets-content'),sessionStorage.removeItem('sheet-title'), navigate("/sheets/new")) : navigate("/login")}>
-              <span className='btn-icon'></span>
-              {t("side_nav.make_a_story")}
+              {t("side_nav.join_conversation.button.make_sheet")}
+
             </button>
           </div>
         </div>
