@@ -39,7 +39,9 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
 
   const earlyReturn = getEarlyReturn({isLoading: versionsIsLoading, error: versionsIsError, t});
   if (earlyReturn) return earlyReturn;
-
+  if(versions.versions.length === 0) return <div className="listtitle">
+    <p>{t("text.version.notfound")}</p>
+  </div>
   const languageMap = {
     "sa":"language.sanskrit",
     "bo":"language.tibetan",
