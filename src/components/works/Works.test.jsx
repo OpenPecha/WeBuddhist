@@ -287,7 +287,7 @@ describe("Works Component", () => {
       expect.objectContaining({
         params: expect.objectContaining({
           collection_id: "works-id",
-          language: undefined,
+          language: "en",
           limit: 10,
           skip: 0,
         }),
@@ -297,7 +297,7 @@ describe("Works Component", () => {
     vi.clearAllMocks();
   });
 
-  test("defaults to 'bo' language when localStorage is empty", () => {
+  test("defaults to 'en' language when localStorage is empty", () => {
     vi.spyOn(Storage.prototype, "getItem").mockReturnValue(null);
     const axiosSpy = vi.spyOn(axiosInstance, "get").mockResolvedValueOnce({
       data: mockTextCategoryData,
@@ -317,7 +317,7 @@ describe("Works Component", () => {
       "/api/v1/texts",
       expect.objectContaining({
         params: expect.objectContaining({
-          language: "bo",
+          language: "en",
         }),
       })
     );

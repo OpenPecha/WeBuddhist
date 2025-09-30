@@ -62,7 +62,7 @@ describe("SubCollections Component", () => {
       data: mockTextChildData,
       isLoading: false,
     }));
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
+    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-en");
   });
 
   const setup = () => {
@@ -176,7 +176,7 @@ describe("SubCollections Component", () => {
 
     expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections", {
       params: {
-        language: "bo",
+        language: "en",
         parent_id: parentId,
         limit: 10,
         skip: 0

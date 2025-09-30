@@ -122,7 +122,7 @@ describe("Topics Component", () => {
 
     expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/topics", {
       params: {
-        language: undefined,
+        language: "en",
         parent_id: "123",
         search: "Kind",
         limit: 10,
