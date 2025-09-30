@@ -108,7 +108,7 @@ function App() {
             }
         }
 
-        setFontVariables(localStorage.getItem(LANGUAGE) || "bo-IN");
+        setFontVariables(localStorage.getItem(LANGUAGE) || "en");
     }, []);
 
     return (

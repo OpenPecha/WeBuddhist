@@ -11,7 +11,7 @@ import PropTypes from "prop-types";
 
 export const fetchSubCollections = async (parentId) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
+  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "en");
   const { data } = await axiosInstance.get("/api/v1/collections", {
     params: {
       language,

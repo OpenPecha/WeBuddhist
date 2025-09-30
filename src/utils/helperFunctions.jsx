@@ -36,6 +36,7 @@ export const getEarlyReturn = ({ isLoading, error, t }) => {
 };
 export const mapLanguageCode = (languageCode) => {
   const languageMap={
+    "en": "en",
     "zh-Hans-CN": "zh",
     "bo-IN": "bo",
   }
