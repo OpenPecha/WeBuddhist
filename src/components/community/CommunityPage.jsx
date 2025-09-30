@@ -136,6 +136,7 @@ const CommunityPage = () => {
             <button className='make-sheet-btn navbaritems' onClick={() => 
               userIsLoggedIn ?(sessionStorage.removeItem('sheets-content'),sessionStorage.removeItem('sheet-title'), navigate("/sheets/new")) : navigate("/login")}>
               {t("side_nav.join_conversation.button.make_sheet")}
+
             </button>
           </div>
         </div>

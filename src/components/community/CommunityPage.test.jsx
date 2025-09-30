@@ -86,7 +86,7 @@ describe("CommunityPage Component", () => {
     // expect(screen.getByText(/Organizations, communities and individuals/)).toBeInTheDocument();
     // expect(screen.getByText("Explore Collections")).toBeInTheDocument();
     expect(screen.getByText(/Combine sources from our library/)).toBeInTheDocument();
-    expect(screen.getByText("Make a Sheet")).toBeInTheDocument();
+    expect(screen.getByText("side_nav.make_a_story")).toBeInTheDocument();
   });
 
   test("renders sheet items correctly", () => {
@@ -154,8 +154,8 @@ describe("CommunityPage Component", () => {
   });
 
   test("handles Make a Sheet button interaction", () => {
-    setup();
-    const makeSheetButton = screen.getByText("Make a Sheet");
+    setup();  
+    const makeSheetButton = screen.getByText("side_nav.make_a_story");
     expect(makeSheetButton).toBeInTheDocument();
     expect(makeSheetButton).not.toBeDisabled();
     fireEvent.click(makeSheetButton);
