@@ -13,7 +13,12 @@ import { LANGUAGE } from "./utils/constants.js";
 import { HelmetProvider } from "react-helmet-async";
 import { UserbackProvider } from "./context/UserBackProvider.jsx";
 const queryClient = new QueryClient();
-const defaultLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE || "bo-IN";
+const defaultLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE || "en";
+
+if (!localStorage.getItem(LANGUAGE)) {
+  localStorage.setItem(LANGUAGE, defaultLanguage);
+}
+
 const tolgee = Tolgee()
   .use(DevTools())
   .use(FormatSimple())

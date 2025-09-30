@@ -11,7 +11,7 @@ import PropTypes from "prop-types";
 
 const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
 
   const {data} = await axiosInstance.get("/api/v1/texts", {
     params: {

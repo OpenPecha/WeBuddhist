@@ -11,7 +11,7 @@ import {mapLanguageCode} from "../../utils/helperFunctions.jsx";
 
 export const fetchTopics = async (parentId, searchFilter, limit, skip, hierarchy) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
 
   const { data } = await axiosInstance.get("api/v1/topics", {
     params: {
