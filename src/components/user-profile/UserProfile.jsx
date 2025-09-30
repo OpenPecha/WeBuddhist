@@ -74,7 +74,7 @@ const UserProfile = () => {
   };
   const renderTabContent = () => {
     switch (activeTab) {
-      case "sheets":
+      case "stories":
         return <SheetListing userInfo={userInfo} />;
       case "collections":
         return <CollectionsTab />;
@@ -246,9 +246,9 @@ const UserProfile = () => {
   const renderNavTabs = () => {
     const tabsConfig = [
       {
-        key: "sheets",
+        key: "stories",
         icon: <BsFileEarmark />,
-        labelKey: "profile.tab.sheets",
+        labelKey: "profile.tab.stories",
       },
       {
         key: "collections",
