@@ -13,6 +13,14 @@ const EditUserProfile = () => {
   const [activeTab, setActiveTab] = useState("personalDetails");
 
   const userInfo = location.state?.userInfo || {};
+
+
+  const getSocialProfileUrl = (account) => {
+    if (!userInfo.social_profiles) return "";
+    const profile = userInfo.social_profiles.find(p => p.account === account);
+    return profile ? profile.url : "";
+  };
+
   const updateProfileMutation = useMutation(async (updateProfileData) => {
       const response = await axiosInstance.post("/api/v1/users/info", updateProfileData)
       return response.data;
@@ -35,11 +43,11 @@ const EditUserProfile = () => {
     about_me: userInfo.about_me || "",
     avatar_url: userInfo.avatar_url || "",
     social_profiles: [
-      { account: "email", url: userInfo.email || "" },
-      { account: "x.com", url: userInfo["x.com"] || "" },
-      { account: "linkedin", url: userInfo.linkedIn || "" },
-      { account: "facebook", url: userInfo.facebook || "" },
-      { account: "youtube", url: userInfo.youtube || "" },
+      { account: "email", url: getSocialProfileUrl("email") || userInfo.email || "" },
+      { account: "x.com", url: getSocialProfileUrl("x.com") },
+      { account: "linkedin", url: getSocialProfileUrl("linkedin") },
+      { account: "facebook", url: getSocialProfileUrl("facebook") },
+      { account: "youtube", url: getSocialProfileUrl("youtube") },
     ],
   });
 
