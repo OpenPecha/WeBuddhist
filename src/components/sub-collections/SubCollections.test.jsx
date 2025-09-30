@@ -62,7 +62,7 @@ describe("SubCollections Component", () => {
       data: mockTextChildData,
       isLoading: false,
     }));
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-en");
+    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
   });
 
   const setup = () => {
