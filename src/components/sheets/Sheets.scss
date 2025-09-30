@@ -5,14 +5,22 @@
     margin: auto;
     display: flex;
     flex-direction: column;
+    .title-input-wrapper {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
     .title-input {
         font-size: 2rem;
         width: 100%;
         padding: 10px 0;
         border: none;
+        border-bottom: 2px solid transparent;
         outline: none;
         background-color: transparent;
         color: #333;
+        transition: border-color 0.3s ease;
+        
         &::placeholder {
             color: #aaa;
             opacity: 0.7;
@@ -23,6 +31,22 @@
             outline: none;
             box-shadow: none;
         }
+
+        &--error {
+            border-bottom: 2px solid #dc3545;
+            
+            &:focus {
+                border-bottom: 2px solid #dc3545;
+            }
+        }
+    }
+    .title-error-message {
+        text-align: left;
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+        padding-left: 0;
+        font-weight: 500;
     }
 }
 
