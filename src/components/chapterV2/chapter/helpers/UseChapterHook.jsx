@@ -135,7 +135,7 @@ const UseChapterHook = (props) => {
     return (
       <div className="contents-container" key={section.title || 'root'}
         ref={(sectionRef) => {sectionRef && section.id && sectionRefs.current.set(section.id, sectionRef)}}>
-        {section.title && (<h2>{section.title}</h2> )}
+        {section.title && (<h2 className={`${getLanguageClass(language)} mt-2`}>{section.title}</h2> )}
         
         <div className="outer-container">
           {section.segments?.map((segment) => (
