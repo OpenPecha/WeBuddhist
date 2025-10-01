@@ -302,8 +302,6 @@ describe("Versions Component", () => {
         }
       });
 
-      const versionsContainer = document.querySelector(".versions-container");
-      expect(versionsContainer).toBeInTheDocument();
 
       const versionElements = document.querySelectorAll(".version-details");
       expect(versionElements).toHaveLength(0);

@@ -160,12 +160,14 @@
   }
   
   .right-panel {
-    position: sticky;
-    top: 60px;
+    position: fixed;
+    top: 0;
     right: -400px;
-    height: calc(100vh - 60px);
+    height: 100vh;
     z-index: 151;
     transition: right 0.3s ease-in-out;
+    overflow-y: auto;
+    overflow-x: hidden;
     
     &.show {
       right: 0;

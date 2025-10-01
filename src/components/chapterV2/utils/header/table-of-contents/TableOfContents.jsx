@@ -8,7 +8,7 @@ import { fetchTableOfContents } from "../../../../texts/Texts.jsx";
 import "./TableOfContents.scss";
 
 const TableOfContents = (props) => {
-  const { textId, showTableOfContents, currentSectionId, onSegmentSelect, language } = props;
+  const { textId, showTableOfContents, currentSectionId, onSegmentSelect, language, onClose } = props;
   const { t } = useTranslate();
   const [expandedSections, setExpandedSections] = useState({});
   const tocContainerRef = useRef(null);
@@ -107,16 +107,19 @@ const TableOfContents = (props) => {
   };
 
   return (
-    <div className={`table-of-contents ${showTableOfContents ? 'show' : ''}`}>
-      <div className="header-thing">
-        <p className="listtitle">{t("text.table_of_contents")}</p>
-      </div>
-      <div className="toc-content" ref={tocContainerRef}>
-        <div className="toc-container">
-          {renderTocContent()}
+    <>
+      {showTableOfContents && <button className="toc-backdrop" onClick={onClose}></button>}
+      <div className={`table-of-contents ${showTableOfContents ? 'show' : ''}`}>
+        <div className="header-thing">
+          <p className="listtitle">{t("text.table_of_contents")}</p>
+        </div>
+        <div className="toc-content" ref={tocContainerRef}>
+          <div className="toc-container">
+            {renderTocContent()}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -128,4 +131,5 @@ TableOfContents.propTypes = {
   currentSectionId: PropTypes.string,
   onSegmentSelect: PropTypes.func.isRequired,
   language: PropTypes.string.isRequired,
+  onClose: PropTypes.func,
 };

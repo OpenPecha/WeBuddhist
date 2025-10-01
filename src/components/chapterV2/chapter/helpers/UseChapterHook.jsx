@@ -9,7 +9,7 @@ import Resources from "../../utils/resources/Resources.jsx";
 import PropTypes from "prop-types";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, content, language, viewMode, layoutMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId} = props;
+  const { showTableOfContents, setShowTableOfContents, content, language, viewMode, layoutMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId} = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -100,7 +100,7 @@ const UseChapterHook = (props) => {
 
   // -------------------------- renderers --------------------------
   const renderTableOfContents = () => {
-    const propsForTableOfContents={textId, showTableOfContents, currentSectionId, onSegmentSelect: handleSegmentNavigate, language}
+    const propsForTableOfContents={textId, showTableOfContents, currentSectionId, onSegmentSelect: handleSegmentNavigate, language, onClose: () => setShowTableOfContents(false)}
     return <TableOfContents {...propsForTableOfContents} />
   }
 
@@ -135,7 +135,7 @@ const UseChapterHook = (props) => {
     return (
       <div className={`contents-container ${layoutMode === LAYOUT_MODES.SEGMENTED ? "segmented-layout" : "prose-layout"}`} key={section.title || 'root'}
         ref={(sectionRef) => {sectionRef && section.id && sectionRefs.current.set(section.id, sectionRef)}}>
-        {section.title && (<h2>{section.title}</h2> )}
+        {section.title && (<h2 className={`${getLanguageClass(language)} mt-2`}>{section.title}</h2> )}
         
         <div className="outer-container">
           {section.segments?.map((segment) => (
@@ -208,6 +208,7 @@ export default React.memo(UseChapterHook)
 
 UseChapterHook.propTypes = {
   showTableOfContents: PropTypes.bool.isRequired,
+  setShowTableOfContents: PropTypes.func.isRequired,
   content: PropTypes.shape({
     sections: PropTypes.arrayOf(
       PropTypes.shape({

@@ -103,6 +103,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
     const propsForUseChapterHookComponent = {
       textId,
       showTableOfContents,
+      setShowTableOfContents,
       content: allContent?.content,
       language: allContent?.text_detail?.language,
       viewMode,
