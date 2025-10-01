@@ -99,35 +99,14 @@
     }
   }
 }
-.segmented-layout {
-  .segment-container {
-    display: flex;
-    align-items: flex-start;
-    margin-top: 10px;
-    width: 100%;
-    
-    .segment-number {
-      margin-right: 2rem;
-      display: block;
-    }
-    
-    .segment-content {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      width: 100%;
-    }
-  }
-}
-
 .prose-layout {
-  border: 1px solid red;  // for test
   .segment-container {
-    display: inline;
+    display: inline-block;
     margin: 0;
     padding: 0;
     border: none; 
     background: transparent;
+    width: auto;
     
     .segment-number {
       display: none;
@@ -136,6 +115,7 @@
     .segment-content {
       display: inline;
         margin: 0;
+        width: auto;
       
       p {
         display: inline;
@@ -147,8 +127,13 @@
   
   .outer-container {
     display: block;
+    width: 100%;
+    max-width: 800px;
+    text-align: justify;
+    line-height: 1.6;
+    padding: 0 30px;
     > div {
-      display: inline !important;
+      display: inline;
     }
     
     .segment-container + .segment-container {

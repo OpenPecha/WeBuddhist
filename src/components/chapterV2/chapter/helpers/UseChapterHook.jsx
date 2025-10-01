@@ -133,7 +133,7 @@ const UseChapterHook = (props) => {
   const renderSectionRecursive = (section) => {
     if (!section) return null;
     return (
-      <div className={`contents-container ${layoutMode === LAYOUT_MODES.SEGMENTED ? "segmented-layout" : "prose-layout"}`} key={section.title || 'root'}
+      <div className={`contents-container ${layoutMode === LAYOUT_MODES.PROSE ? "prose-layout" : ""}`} key={section.title || 'root'}
         ref={(sectionRef) => {sectionRef && section.id && sectionRefs.current.set(section.id, sectionRef)}}>
         {section.title && (<h2 className={`${getLanguageClass(language)} mt-2`}>{section.title}</h2> )}
         

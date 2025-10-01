@@ -43,7 +43,7 @@ describe("ViewSelector Component", () => {
   test("renders all radio options with correct checked state", () => {
     setup(VIEW_MODES.TRANSLATIONS);
     const radios = screen.getAllByRole("radio");
-    expect(radios).toHaveLength(3);
+    expect(radios).toHaveLength(5);
     expect(radios[1]).toBeChecked();
     expect(radios[0]).not.toBeChecked();
     expect(radios[2]).not.toBeChecked();
@@ -68,7 +68,8 @@ describe("ViewSelector Component", () => {
   test("radio options are accessible", () => {
     setup();
     const radios = screen.getAllByRole("radio");
-    radios.forEach((radio) => {
+    const viewModeRadios = radios.slice(0, 3);
+    viewModeRadios.forEach((radio) => {
       expect(radio).toHaveAttribute("type", "radio");
       expect(radio).toHaveAttribute("name", "view-mode");
     });
