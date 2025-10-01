@@ -34,7 +34,7 @@ export const updateSheet = async (sheet_id, payload) => {
   );
   return data;
 };
-const Editor = ({ initialValue, children,title }) => {
+const Editor = ({ initialValue, children, title, onTitleError }) => {
   const [editor] = useState(() => withHistory(withEmbeds(withReact(createEditor()))));
   const [value, setValue] = useState(initialValue);
   const [debouncedValue] = useDebounce(value, 1000);
@@ -75,13 +75,24 @@ const Editor = ({ initialValue, children,title }) => {
           handleNavigation(newSheetId);
           hasCreatedSheet.current=true
           setSaveStatus('saved');
+          if (onTitleError) {
+            onTitleError(null);
+          }
           return;
         }
         await updateSheet(sheetId, payload);
         setSaveStatus('saved');
+        if (onTitleError) {
+          onTitleError(null);
+        }
       } catch (error) {
         setSaveStatus('idle');
         console.error('Error saving sheet:', error);
+        if (error.response?.status === 400) {
+          if (onTitleError) {
+            onTitleError(error.response?.data?.detail);
+          }
+        }
       }
     },
     [sheetId, handleNavigation, title]
@@ -117,5 +128,6 @@ export default Editor;
 Editor.propTypes = {
   initialValue: PropTypes.array, 
   children: PropTypes.node, 
-  title: PropTypes.string
+  title: PropTypes.string,
+  onTitleError: PropTypes.func
 }

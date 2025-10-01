@@ -29,11 +29,24 @@ const Sheets = () => {
 
   const [title,setTitle]=useState("")
   const [debouncedTitle] = useDebounce(title, 1000);
+  const [titleError, setTitleError] = useState(null);
   useEffect(() => {
     if (sheetData && !title) {
       setTitle(sheetData.sheet_title || "");
     }
   }, [sheetData]);
+
+  const handleTitleError = (error) => {
+    setTitleError(error);
+  };
+
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+    sessionStorage.setItem("sheet-title", e.target.value);
+    if (titleError) {
+      setTitleError(null);
+    }
+  };
   const initialValue = useMemo(
     () =>
      sheetData && convertSegmentsToSlate(sheetData?.content?.segments) || defaultValue,
@@ -41,13 +54,23 @@ const Sheets = () => {
   )
   return (
     <div className="sheets-wrapper">
-      <input type="text" 
-      style={{fontFamily:"serif"}} 
-      value={title} 
-      onChange={(e)=>{setTitle(e.target.value); sessionStorage.setItem("sheet-title", e.target.value)}} 
-      className=" title-input" placeholder={t("sheet.title.placeholder")}/>
+      <div className="title-input-wrapper">
+        <input 
+          type="text" 
+          style={{fontFamily:"serif"}} 
+          value={title} 
+          onChange={handleTitleChange}
+          className={`title-input ${titleError ? 'title-input--error' : ''}`} 
+          placeholder={t("sheet.title.placeholder")}
+        />
+        {titleError && <div className="title-error-message">{titleError}</div>}
+      </div>
       <ProfileCard />
-      <Editor title={debouncedTitle || sheetData?.sheet_title} initialValue={initialValue}>
+      <Editor 
+        title={debouncedTitle || sheetData?.sheet_title} 
+        initialValue={initialValue}
+        onTitleError={handleTitleError}
+      >
         <Editor.Input />
       </Editor>
     </div>

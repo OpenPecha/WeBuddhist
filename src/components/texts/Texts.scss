@@ -1,5 +1,5 @@
 $tablet-breakpoint: 768px;
-$primary-color: hsl(42, 49%, 46%);
+$primary-color: #871C1C;
 
 .texts-container{
   display: flex;
@@ -153,7 +153,7 @@ $primary-color: hsl(42, 49%, 46%);
       .download-button {
         width: 100%;
         padding: 0.75rem;
-        background-color: $primary-color;
+        background-color: #871C1C;
         color: white;
         border: none;
         border-radius: 4px;
@@ -192,8 +192,8 @@ $primary-color: hsl(42, 49%, 46%);
           border-bottom: 2px solid transparent;
 
           &.active {
-            color: hsl(42, 49%, 46%);
-            border-bottom-color: hsl(42, 49%, 46%);
+            color: #871C1C;
+            border-bottom-color: #871C1C;
             border-bottom-width: 3px;
           }
         }

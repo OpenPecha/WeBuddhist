@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 
 export const fetchTableOfContents = async (textId, skip, limit, languageFromContent = null) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const fallbackLanguage = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
+  const fallbackLanguage = (storedLanguage ? mapLanguageCode(storedLanguage) : "en");
   const language = languageFromContent || fallbackLanguage;
   const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/contents`, {
     params: {

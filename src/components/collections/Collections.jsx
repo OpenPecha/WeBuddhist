@@ -11,7 +11,7 @@ import PropTypes from "prop-types";
 
 export const fetchCollections = async () => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "bo");
+  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "en");
   const {data} = await axiosInstance.get("/api/v1/collections", {
     params: {
       language,
@@ -67,7 +67,9 @@ const Collections = (props) => {
       <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
         {collection.title}
       </Link> :
-      collection.title
+      <Link to={`/works/${collection.id}`} className="listtitle collection-link">
+        {collection.title}
+      </Link>
   }
 
   const renderCollections = () => {

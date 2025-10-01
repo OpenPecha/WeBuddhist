@@ -12,9 +12,10 @@
   .main-content {
     overflow-y: auto;
     width: 100%;
+    display: flex;
     .outmost-container{
-      width: 70%;
-      margin: 0 auto;
+      width: 100%;
+      
       .scroll-sentinel {
         height: 20px;
         width: 100%;
@@ -37,9 +38,50 @@
       .outer-container{
         display: flex;
         flex-direction: column;
-        align-items: start;
         width: 80%;
+        padding: 0 10px;
+        align-items: center;
         margin: 0 auto;
+        .segment-container{
+            display: flex;
+            align-items: flex-start;
+            margin-top: 10px;
+            width: 400px;
+            @media (max-width: 768px) {
+              width: 100%;
+            }
+            &.highlighted-segment {
+              background-color: #f0f7ff;
+            }
+            .segment-number{
+              margin-right: 2rem;
+            }
+            .segment-content{
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+              width: 100%;
+            }
+            .footnote-marker {
+              cursor: pointer;
+              color: #007bff;
+              font-weight: bold;
+              z-index: 2;
+              padding: 0 2px;
+            }
+            .footnote {
+              display: none;
+              color: #484848;
+              margin: 4px;
+              font-size: 0.9rem;
+              background-color: #f7f7f7;
+              padding: 2px 5px;
+              border-radius: 3px;
+              &.active {
+                display: inline;
+              }
+            }
+          }
       }
       h2{
         margin-bottom: 10px;
@@ -49,43 +91,7 @@
         border: none;   
         text-align: start;
       }
-      .segment-container{
-          display: flex;
-          align-items: flex-start;
-          margin-top: 10px;
-          width: 100%;
-          &.highlighted-segment {
-            background-color: #f0f7ff;
-          }
-          .segment-number{
-            margin-right: 2rem;
-          }
-          .segment-content{
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            width: 100%;
-          }
-          .footnote-marker {
-            cursor: pointer;
-            color: #007bff;
-            font-weight: bold;
-            z-index: 2;
-            padding: 0 2px;
-          }
-          .footnote {
-            display: none;
-            color: #484848;
-            margin: 4px;
-            font-size: 0.9rem;
-            background-color: #f7f7f7;
-            padding: 2px 5px;
-            border-radius: 3px;
-            &.active {
-              display: inline;
-            }
-          }
-        }
+
       }
     }
   }

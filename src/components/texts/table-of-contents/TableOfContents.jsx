@@ -13,7 +13,7 @@ const TableOfContents = ({textId, pagination, setPagination, tableOfContents, er
   const closeResourcesPanel = panelContext?.closeResourcesPanel;
 
   // -------------------------------------------- helpers ----------------------------------------------
-  const earlyReturn = getEarlyReturn({loading: loading,error: error, t});
+  const earlyReturn = getEarlyReturn({isLoading: loading, error: error, t});
   if (earlyReturn) return earlyReturn;
 
   const getSectionsData = () => {

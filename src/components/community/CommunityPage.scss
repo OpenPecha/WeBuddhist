@@ -50,7 +50,7 @@
     .community-dropdown {
       background-color: #fff;
       color: #0b0b0b ;
-      border: 1px solid #C39F48 ;
+      border: 1px solid #A8262B ;
       box-shadow: none ;
       border-radius: 4px ;
       padding: 8px 16px ;
@@ -200,7 +200,7 @@
   width: 100%;
   padding: 10px;
   margin-top: 15px;
-  background-color: #C39F48;
+  background-color: #871C1C;
   color: white;
   border: none;
   border-radius: 4px;
@@ -265,6 +265,11 @@
 }
 
 .sheets-list {
+  .no-stories-message {
+    text-align: center;
+    padding: 15px 0;
+    color: #666;
+  }
   .sheet-item {
     text-align: start;
     border-bottom: 1px solid #f0f0f0;

@@ -13,7 +13,7 @@ import { PropTypes } from "prop-types";
 
 export const fetchsheet = async (email, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "bo";
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
   const accessToken = sessionStorage.getItem('accessToken');
   const { data } = await axiosInstance.get("api/v1/sheets", {
     headers: {

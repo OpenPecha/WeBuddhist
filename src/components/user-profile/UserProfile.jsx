@@ -74,7 +74,7 @@ const UserProfile = () => {
   };
   const renderTabContent = () => {
     switch (activeTab) {
-      case "sheets":
+      case "stories":
         return <SheetListing userInfo={userInfo} />;
       case "collections":
         return <CollectionsTab />;
@@ -163,9 +163,11 @@ const UserProfile = () => {
       email: { icon: BsEnvelope, color: "#FF0000" },
     };
 
+    const profilesWithUrls = socialProfiles.filter(profile => profile.url && profile.url.trim() !== '');
+
     return (
       <div className="social-links">
-        {socialProfiles.map((profile) => {
+        {profilesWithUrls.map((profile) => {
           const { icon: Icon, color } = socialIcons[profile.account] || {};
           return Icon ? (
             <a
@@ -187,16 +189,17 @@ const UserProfile = () => {
     );
   };
 
-  const renderProfileLeftSection = () => (
-    <div className="profile-left">
-      {renderBasicInfo()}
-      {renderProfileDetails()}
-      {renderActionButtons()}
-      {renderFollowersInfo()}
-      {userInfo?.social_profiles?.length > 0 &&
-        renderSocialLinks(userInfo?.social_profiles)}
-    </div>
-  );
+  const renderProfileLeftSection = () => {
+    return (
+      <div className="profile-left">
+        {renderBasicInfo()}
+        {renderProfileDetails()}
+        {renderActionButtons()}
+        {renderFollowersInfo()}
+        {renderSocialLinks(userInfo?.social_profiles)}
+      </div>
+    );
+  };
 
   const renderProfileImage = () => (
     <div className="profile-image-container">
@@ -243,9 +246,9 @@ const UserProfile = () => {
   const renderNavTabs = () => {
     const tabsConfig = [
       {
-        key: "sheets",
+        key: "stories",
         icon: <BsFileEarmark />,
-        labelKey: "profile.tab.sheets",
+        labelKey: "profile.tab.stories",
       },
       {
         key: "collections",
