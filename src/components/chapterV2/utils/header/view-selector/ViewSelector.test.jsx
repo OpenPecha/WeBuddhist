@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
-import ViewSelector, { VIEW_MODES } from "./ViewSelector.jsx";
+import ViewSelector, { VIEW_MODES, LAYOUT_MODES } from "./ViewSelector.jsx";
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -17,12 +17,15 @@ describe("ViewSelector Component", () => {
   const setShowViewSelector = vi.fn();
   const setViewMode = vi.fn();
 
-  const setup = (viewMode = VIEW_MODES.SOURCE) => {
+  const setup = (viewMode = VIEW_MODES.SOURCE, layoutMode = LAYOUT_MODES.SEGMENTED) => {
     return render(
       <ViewSelector
         setShowViewSelector={setShowViewSelector}
         setViewMode={setViewMode}
         viewMode={viewMode}
+        versionSelected={true}
+        layoutMode={layoutMode}
+        setLayoutMode={vi.fn()}
       />
     );
   };
@@ -73,5 +76,24 @@ describe("ViewSelector Component", () => {
       expect(radio).toHaveAttribute("type", "radio");
       expect(radio).toHaveAttribute("name", "view-mode");
     });
+  });
+
+  test("calls setLayoutMode when layout option is selected", () => {
+    const setLayoutMode = vi.fn();
+    
+    render(
+      <ViewSelector
+        setShowViewSelector={vi.fn()}
+        setViewMode={vi.fn()}
+        viewMode={VIEW_MODES.SOURCE}
+        versionSelected={true}
+        layoutMode={LAYOUT_MODES.SEGMENTED}
+        setLayoutMode={setLayoutMode}
+      />
+    );
+    
+    const radios = screen.getAllByRole("radio");
+    fireEvent.click(radios[3]);
+    expect(setLayoutMode).toHaveBeenCalledWith(LAYOUT_MODES.PROSE);
   });
 });

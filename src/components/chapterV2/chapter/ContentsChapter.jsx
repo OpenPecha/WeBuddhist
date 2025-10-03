@@ -1,6 +1,7 @@
 import ChapterHeader from "../utils/header/ChapterHeader.jsx";
 import React, { useState, useMemo, useEffect } from "react";
 import { VIEW_MODES, LAYOUT_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
+import { LAYOUT_MODE } from "../../../utils/constants.js";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import { useInfiniteQuery } from "react-query";
@@ -27,7 +28,13 @@ const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
 
 const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE);
-  const [layoutMode, setLayoutMode] = useState(LAYOUT_MODES.SEGMENTED);
+  const [layoutMode, setLayoutMode] = useState(() => {
+    const stored = localStorage.getItem(LAYOUT_MODE);
+    if (stored === LAYOUT_MODES.PROSE || stored === LAYOUT_MODES.SEGMENTED) {
+      return stored;
+    }
+    return LAYOUT_MODES.SEGMENTED;
+  });
   const [showTableOfContents, setShowTableOfContents] = useState(false);
   const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
   const [currentSectionId, setCurrentSectionId] = useState(null);
@@ -45,6 +52,10 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
     setCurrentSegmentId(segmentId);
   }, [segmentId]);
   const { t } = useTranslate();
+
+  useEffect(() => {
+      localStorage.setItem(LAYOUT_MODE, layoutMode);
+  }, [layoutMode]);
 
   const infiniteQuery = useInfiniteQuery(
     ["content", textId, contentId, versionId, size, currentSegmentId],

@@ -100,45 +100,35 @@
   }
 }
 .prose-layout {
-  .segment-container {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
-    border: none; 
-    background: transparent;
-    width: auto;
-    
-    .segment-number {
-      display: none;
-    }
-    
-    .segment-content {
-      display: inline;
-        margin: 0;
-        width: auto;
-      
-      p {
-        display: inline;
-        margin: 0;
-        padding: 0;
-      }
-    }
-  }
-  
   .outer-container {
     display: block;
-    width: 100%;
     max-width: 800px;
+  }
+  
+  .prose-paragraph {
     text-align: justify;
-    line-height: 1.6;
-    padding: 0 30px;
-    > div {
-      display: inline;
-    }
+    line-height: 1.8;
+    margin: 0;
     
-    .segment-container + .segment-container {
-      &::before {
-        content: " ";
+    span.segment-container {
+      display: inline !important;
+      cursor: pointer;
+      
+      &.highlighted-segment {
+        background-color: #f0f7ff;
+      }
+      
+      .segment-number {
+        display: inline;
+        margin-right: 0.5rem;
+      }
+      
+      .segment-content {
+        display: inline !important;
+        
+        span {
+          display: inline !important;
+        }
       }
     }
   }
