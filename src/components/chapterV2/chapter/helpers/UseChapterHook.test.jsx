@@ -3,7 +3,7 @@ import { render, fireEvent, screen } from "@testing-library/react";
 import { vi } from "vitest";
 import UseChapterHook from "./UseChapterHook.jsx";
 import "@testing-library/jest-dom";
-import { VIEW_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
+import { VIEW_MODES, LAYOUT_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
 
 const mockState = {
   panelContext: {
@@ -215,5 +215,15 @@ describe("UseChapterHook", () => {
     fireEvent.click(segmentButton);
     
     expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
+  });
+  
+  test("renders prose layout when layoutMode is PROSE", () => {
+    const { container } = setup({
+      viewMode: VIEW_MODES.SOURCE,
+      layoutMode: LAYOUT_MODES.PROSE,
+    });
+    expect(container.querySelector(".prose-paragraph")).toBeInTheDocument();
+    expect(container.querySelector(".segment-text")).toBeInTheDocument();
+    expect(screen.queryByText("1")).not.toBeInTheDocument();
   });
 });
