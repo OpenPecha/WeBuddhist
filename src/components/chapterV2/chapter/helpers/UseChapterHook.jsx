@@ -156,7 +156,7 @@ const UseChapterHook = (props) => {
               {section.segments?.map((segment) => (
                 <span
                   key={segment.segment_id}
-                  className={`segment-container ${
+                  className={`segment-text ${
                     selectedSegmentId === segment.segment_id
                       ? "highlighted-segment"
                       : ""
@@ -170,30 +170,25 @@ const UseChapterHook = (props) => {
                   }}
                   tabIndex={0}
                 >
-                  <span className="segment-number">
-                    {segment.segment_number}
-                  </span>
-                  <span className="segment-content">
-                    {(viewMode === VIEW_MODES.SOURCE ||
+                  {(viewMode === VIEW_MODES.SOURCE ||
+                    viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                    <span
+                      className={languageClass}
+                      dangerouslySetInnerHTML={{ __html: segment.content }}
+                    />
+                  )}
+                  {segment.translation &&
+                    (viewMode === VIEW_MODES.TRANSLATIONS ||
                       viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
                       <span
-                        className={languageClass}
-                        dangerouslySetInnerHTML={{ __html: segment.content }}
+                        className={getLanguageClass(
+                          segment.translation.language
+                        )}
+                        dangerouslySetInnerHTML={{
+                          __html: segment.translation.content,
+                        }}
                       />
                     )}
-                    {segment.translation &&
-                      (viewMode === VIEW_MODES.TRANSLATIONS ||
-                        viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
-                        <span
-                          className={getLanguageClass(
-                            segment.translation.language
-                          )}
-                          dangerouslySetInnerHTML={{
-                            __html: segment.translation.content,
-                          }}
-                        />
-                      )}
-                  </span>
                 </span>
               ))}
             </p>

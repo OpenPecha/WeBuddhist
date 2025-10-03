@@ -112,33 +112,21 @@
     text-align: justify;
     line-height: 1.8;
     margin: 0;
-    
-    span.segment-container {
+
+    .segment-text {
       display: inline !important;
       cursor: pointer;
-      
-      &.highlighted-segment {
-        .segment-content > span {
-          background-color: #f0f7ff;
-        }
+
+      &.highlighted-segment span {
+        background-color: #f0f7ff;
       }
 
-      &:hover {
-        .segment-content > span {
-          background-color: #f0f7ff;
-        }
+      &:hover span {
+        background-color: #f0f7ff;
       }
-      
-      .segment-number {
-        display: none;
-      }
-      
-      .segment-content {
+
+      span {
         display: inline !important;
-        
-        span {
-          display: inline !important;
-        }
       }
     }
   }
