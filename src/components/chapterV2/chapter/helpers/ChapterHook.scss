@@ -53,6 +53,9 @@
             &.highlighted-segment {
               background-color: #f0f7ff;
             }
+            &:hover {
+              background-color: #f0f7ff;
+            }
             .segment-number{
               margin-right: 2rem;
             }
@@ -115,7 +118,15 @@
       cursor: pointer;
       
       &.highlighted-segment {
-        background-color: #f0f7ff;
+        .segment-content > span {
+          background-color: #f0f7ff;
+        }
+      }
+
+      &:hover {
+        .segment-content > span {
+          background-color: #f0f7ff;
+        }
       }
       
       .segment-number {
