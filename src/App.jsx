@@ -12,7 +12,6 @@ import UserProfile from "./components/user-profile/UserProfile.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
 import Sheets from "./components/sheets/Sheets.jsx";
-import SheetDetailPage from "./components/sheets/view-sheet/SheetDetailPage.jsx";
 import SheetChapters from "./components/chapterV2/SheetChapters.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
