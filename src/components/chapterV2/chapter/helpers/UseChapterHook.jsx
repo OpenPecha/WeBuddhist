@@ -162,6 +162,13 @@ const UseChapterHook = (props) => {
                       : ""
                   }`}
                   onClick={() => handleSegmentClick(segment.segment_id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleSegmentClick(segment.segment_id);
+                    }
+                  }}
+                  tabIndex={0}
                 >
                   <span className="segment-number">
                     {segment.segment_number}
