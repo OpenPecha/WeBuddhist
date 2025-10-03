@@ -1,8 +1,8 @@
-import "./AuthorProfile.scss";
+import "../user-profile/UserProfile.scss";
 import { useQuery } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import { useTranslate } from "@tolgee/react";
-import SheetListing from "./tabs/sheet-listing/SheetListing.jsx";
+import SheetListing from "../user-profile/tabs/sheet-listing/SheetListing.jsx";
 import { BsFileEarmark, BsLinkedin, BsTwitter, BsFacebook, BsYoutube, BsEnvelope } from "react-icons/bs";
 
 
@@ -131,10 +131,11 @@ const AuthorProfile = () => {
   const renderTabsContainer = () => (
     <div className="tabs-container">
       <div>
-      <button className={`nav-link`}>
+      <button className="nav-link">
       <BsFileEarmark />
       {t("profile.tab.stories")}
     </button>
+      <hr />
       </div>
       <div className="tab-content">
         <SheetListing userInfo={userInfo} />
