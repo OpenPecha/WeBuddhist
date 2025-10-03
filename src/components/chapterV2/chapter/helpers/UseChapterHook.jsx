@@ -169,6 +169,7 @@ const UseChapterHook = (props) => {
                     }
                   }}
                   tabIndex={0}
+                  role="button"
                 >
                   {(viewMode === VIEW_MODES.SOURCE ||
                     viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (

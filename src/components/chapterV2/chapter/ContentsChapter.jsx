@@ -1,7 +1,7 @@
 import ChapterHeader from "../utils/header/ChapterHeader.jsx";
 import React, { useState, useMemo, useEffect } from "react";
 import { VIEW_MODES, LAYOUT_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
-import { LAYOUT_MODE } from "../../../utils/constants.js";
+import { LAYOUT_MODE, siteName } from "../../../utils/constants.js";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import { useInfiniteQuery } from "react-query";
@@ -10,7 +10,6 @@ import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } fr
 import Seo from "../../commons/seo/Seo.jsx";
 import { useTranslate } from "@tolgee/react";
 import PropTypes from "prop-types";
-import { siteName } from "../../../utils/constants.js";
 
 const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
   const [_, textId, contentId, versionId, size, initialSegmentId] = queryKey;
