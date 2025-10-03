@@ -116,6 +116,7 @@
     .segment-text {
       display: inline !important;
       cursor: pointer;
+      margin-right: 2px;
 
       &.highlighted-segment span {
         background-color: #f0f7ff;
