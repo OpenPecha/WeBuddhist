@@ -2,14 +2,14 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.jsx";
 import "./ChapterHook.scss"
-import { VIEW_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
+import { VIEW_MODES, LAYOUT_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
 import { getLanguageClass, getCurrentSectionFromScroll } from "../../../../utils/helperFunctions.jsx";
 import { usePanelContext } from "../../../../context/PanelContext.jsx";
 import Resources from "../../utils/resources/Resources.jsx";
 import PropTypes from "prop-types";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, setShowTableOfContents, content, language, viewMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId} = props;
+  const { showTableOfContents, setShowTableOfContents, content, language, viewMode, layoutMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId} = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -132,35 +132,105 @@ const UseChapterHook = (props) => {
 
   const renderSectionRecursive = (section) => {
     if (!section) return null;
+    const isProse = layoutMode === LAYOUT_MODES.PROSE;
+    const languageClass = getLanguageClass(language);
     return (
-      <div className="contents-container" key={section.title || 'root'}
-        ref={(sectionRef) => {sectionRef && section.id && sectionRefs.current.set(section.id, sectionRef)}}>
-        {section.title && (<h2 className={`${getLanguageClass(language)} mt-2`}>{section.title}</h2> )}
-        
+      <div
+        className={`contents-container ${isProse ? "prose-layout" : ""}`}
+        key={section.title || "root"}
+        ref={(sectionRef) => {
+          sectionRef &&
+            section.id &&
+            sectionRefs.current.set(section.id, sectionRef);
+        }}
+      >
+        {section.title && (
+          <h2 className={`${languageClass} mt-2`}>
+            {section.title}
+          </h2>
+        )}
+
         <div className="outer-container">
-          {section.segments?.map((segment) => (
-            <div key={segment.segment_id}>
-            <button
-            className={`segment-container ${
-              selectedSegmentId === segment.segment_id 
-                ? "highlighted-segment" 
-                : ""
-            }`}
-            onClick={() => handleSegmentClick(segment.segment_id)}>
-              <p className="segment-number">{segment.segment_number}</p>
-              <div className="segment-content">
-              {(viewMode === VIEW_MODES.SOURCE || viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
-                <p className={`${getLanguageClass(language)}`} dangerouslySetInnerHTML={{ __html: segment.content }} />
-              )}
-              {segment.translation && (viewMode === VIEW_MODES.TRANSLATIONS || viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
-                <p className={`${getLanguageClass(segment.translation.language)}`} dangerouslySetInnerHTML={{ __html: segment.translation.content }} />
-              )}
-              </div> 
-            </button>
-            </div>
-          ))}
-          
-          {section.sections?.map((nestedSection) => 
+          {isProse ? (
+            <p className="prose-paragraph">
+              {section.segments?.map((segment) => (
+                <span
+                  key={segment.segment_id}
+                  className={`segment-text ${
+                    selectedSegmentId === segment.segment_id
+                      ? "highlighted-segment"
+                      : ""
+                  }`}
+                  onClick={() => handleSegmentClick(segment.segment_id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleSegmentClick(segment.segment_id);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                >
+                  {(viewMode === VIEW_MODES.SOURCE ||
+                    viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                    <span
+                      className={languageClass}
+                      dangerouslySetInnerHTML={{ __html: segment.content }}
+                    />
+                  )}
+                  {segment.translation &&
+                    (viewMode === VIEW_MODES.TRANSLATIONS ||
+                      viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                      <span
+                        className={getLanguageClass(
+                          segment.translation.language
+                        )}
+                        dangerouslySetInnerHTML={{
+                          __html: segment.translation.content,
+                        }}
+                      />
+                    )}
+                </span>
+              ))}
+            </p>
+          ) : (
+            section.segments?.map((segment) => (
+              <button
+                key={segment.segment_id}
+                className={`segment-container ${
+                  selectedSegmentId === segment.segment_id
+                    ? "highlighted-segment"
+                    : ""
+                }`}
+                onClick={() => handleSegmentClick(segment.segment_id)}
+              >
+                <p className="segment-number">{segment.segment_number}</p>
+                <div className="segment-content">
+                  {(viewMode === VIEW_MODES.SOURCE ||
+                    viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                    <p
+                      className={languageClass}
+                      dangerouslySetInnerHTML={{ __html: segment.content }}
+                    />
+                  )}
+                  {segment.translation &&
+                    (viewMode === VIEW_MODES.TRANSLATIONS ||
+                      viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                      <p
+                        className={getLanguageClass(
+                          segment.translation.language
+                        )}
+                        dangerouslySetInnerHTML={{
+                          __html: segment.translation.content,
+                        }}
+                      />
+                    )}
+                </div>
+              </button>
+            ))
+          )}
+
+          {section.sections?.map((nestedSection) =>
             renderSectionRecursive(nestedSection)
           )}
         </div>
@@ -231,6 +301,7 @@ UseChapterHook.propTypes = {
   }).isRequired,
   language: PropTypes.string.isRequired,
   viewMode: PropTypes.string.isRequired,
+  layoutMode: PropTypes.string.isRequired,
   addChapter: PropTypes.func.isRequired,
   currentChapter: PropTypes.shape({
     segmentId: PropTypes.string,

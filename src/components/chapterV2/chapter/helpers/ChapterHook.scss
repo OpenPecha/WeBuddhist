@@ -53,6 +53,9 @@
             &.highlighted-segment {
               background-color: #f0f7ff;
             }
+            &:hover {
+              background-color: #f0f7ff;
+            }
             .segment-number{
               margin-right: 2rem;
             }
@@ -95,6 +98,36 @@
         text-align: start;
       }
 
+      }
+    }
+  }
+}
+.prose-layout {
+  .outer-container {
+    display: block;
+    max-width: 800px;
+  }
+  
+  .prose-paragraph {
+    text-align: justify;
+    line-height: 1.8;
+    margin: 0;
+
+    .segment-text {
+      display: inline !important;
+      cursor: pointer;
+      margin-right: 2px;
+
+      &.highlighted-segment span {
+        background-color: #f0f7ff;
+      }
+
+      &:hover span {
+        background-color: #f0f7ff;
+      }
+
+      span {
+        display: inline !important;
       }
     }
   }

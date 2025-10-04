@@ -1,6 +1,7 @@
 import ChapterHeader from "../utils/header/ChapterHeader.jsx";
 import React, { useState, useMemo, useEffect } from "react";
-import { VIEW_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
+import { VIEW_MODES, LAYOUT_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
+import { LAYOUT_MODE, siteName } from "../../../utils/constants.js";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
 import axiosInstance from "../../../config/axios-config.js";
 import { useInfiniteQuery } from "react-query";
@@ -9,7 +10,6 @@ import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } fr
 import Seo from "../../commons/seo/Seo.jsx";
 import { useTranslate } from "@tolgee/react";
 import PropTypes from "prop-types";
-import { siteName } from "../../../utils/constants.js";
 
 const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
   const [_, textId, contentId, versionId, size, initialSegmentId] = queryKey;
@@ -27,6 +27,13 @@ const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
 
 const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE);
+  const [layoutMode, setLayoutMode] = useState(() => {
+    const stored = localStorage.getItem(LAYOUT_MODE);
+    if (stored === LAYOUT_MODES.PROSE || stored === LAYOUT_MODES.SEGMENTED) {
+      return stored;
+    }
+    return LAYOUT_MODES.SEGMENTED;
+  });
   const [showTableOfContents, setShowTableOfContents] = useState(false);
   const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
   const [currentSectionId, setCurrentSectionId] = useState(null);
@@ -44,6 +51,10 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
     setCurrentSegmentId(segmentId);
   }, [segmentId]);
   const { t } = useTranslate();
+
+  useEffect(() => {
+      localStorage.setItem(LAYOUT_MODE, layoutMode);
+  }, [layoutMode]);
 
   const infiniteQuery = useInfiniteQuery(
     ["content", textId, contentId, versionId, size, currentSegmentId],
@@ -94,7 +105,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
   
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
-    const propsForChapterHeader = { viewMode, setViewMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!versionId };
+    const propsForChapterHeader = { viewMode, setViewMode, layoutMode, setLayoutMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!versionId };
     return <ChapterHeader {...propsForChapterHeader} />;
   };
 
@@ -106,6 +117,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
       content: allContent?.content,
       language: allContent?.text_detail?.language,
       viewMode,
+      layoutMode,
       addChapter,
       currentChapter,
       setVersionId,

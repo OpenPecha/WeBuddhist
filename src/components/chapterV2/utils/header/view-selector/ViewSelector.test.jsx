@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
-import ViewSelector, { VIEW_MODES } from "./ViewSelector.jsx";
+import ViewSelector, { VIEW_MODES, LAYOUT_MODES } from "./ViewSelector.jsx";
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -17,12 +17,15 @@ describe("ViewSelector Component", () => {
   const setShowViewSelector = vi.fn();
   const setViewMode = vi.fn();
 
-  const setup = (viewMode = VIEW_MODES.SOURCE) => {
+  const setup = (viewMode = VIEW_MODES.SOURCE, layoutMode = LAYOUT_MODES.SEGMENTED) => {
     return render(
       <ViewSelector
         setShowViewSelector={setShowViewSelector}
         setViewMode={setViewMode}
         viewMode={viewMode}
+        versionSelected={true}
+        layoutMode={layoutMode}
+        setLayoutMode={vi.fn()}
       />
     );
   };
@@ -43,7 +46,7 @@ describe("ViewSelector Component", () => {
   test("renders all radio options with correct checked state", () => {
     setup(VIEW_MODES.TRANSLATIONS);
     const radios = screen.getAllByRole("radio");
-    expect(radios).toHaveLength(3);
+    expect(radios).toHaveLength(5);
     expect(radios[1]).toBeChecked();
     expect(radios[0]).not.toBeChecked();
     expect(radios[2]).not.toBeChecked();
@@ -68,9 +71,29 @@ describe("ViewSelector Component", () => {
   test("radio options are accessible", () => {
     setup();
     const radios = screen.getAllByRole("radio");
-    radios.forEach((radio) => {
+    const viewModeRadios = radios.slice(0, 3);
+    viewModeRadios.forEach((radio) => {
       expect(radio).toHaveAttribute("type", "radio");
       expect(radio).toHaveAttribute("name", "view-mode");
     });
+  });
+
+  test("calls setLayoutMode when layout option is selected", () => {
+    const setLayoutMode = vi.fn();
+    
+    render(
+      <ViewSelector
+        setShowViewSelector={vi.fn()}
+        setViewMode={vi.fn()}
+        viewMode={VIEW_MODES.SOURCE}
+        versionSelected={true}
+        layoutMode={LAYOUT_MODES.SEGMENTED}
+        setLayoutMode={setLayoutMode}
+      />
+    );
+    
+    const radios = screen.getAllByRole("radio");
+    fireEvent.click(radios[3]);
+    expect(setLayoutMode).toHaveBeenCalledWith(LAYOUT_MODES.PROSE);
   });
 });
