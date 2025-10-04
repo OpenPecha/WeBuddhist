@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams,useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams,useNavigate, useSearchParams, Link } from 'react-router-dom';
 import pechaIcon from '../../../assets/icons/pecha_icon.png';
 import './SheetDetailPage.scss';
 import YouTube from 'react-youtube';
@@ -238,7 +238,7 @@ const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
   const renderUserInfo=()=>{
     const { name, username, avatar_url } = sheetData.publisher;
     return(
-      <div className="user-info">
+      <Link to={`/user/${encodeURIComponent(username)}`} className="user-info">
         {avatar_url ? (
         <img src={avatar_url}
          alt="user" className='user-info-avatar' />
@@ -251,7 +251,7 @@ const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
           <p>{name}</p>
           <p>@{username}</p>
         </div>
-      </div>
+      </Link>
     )
   }
   const renderSheetContent=()=>{

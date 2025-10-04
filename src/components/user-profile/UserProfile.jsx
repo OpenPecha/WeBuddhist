@@ -156,11 +156,11 @@ const UserProfile = () => {
 
   const renderSocialLinks = (socialProfiles) => {
     const socialIcons = {
-      linkedin: { icon: BsLinkedin, color: "#0A66C2" },
-      "x.com": { icon: BsTwitter, color: "#1DA1F2" },
-      facebook: { icon: BsFacebook, color: "#4267B2" },
-      youtube: { icon: BsYoutube, color: "#FF0000" },
-      email: { icon: BsEnvelope, color: "#FF0000" },
+      linkedin: { icon: BsLinkedin, color: "#4a4a4a" },
+      "x.com": { icon: BsTwitter, color: "#4a4a4a" },
+      facebook: { icon: BsFacebook, color: "#4a4a4a" },
+      youtube: { icon: BsYoutube, color: "#4a4a4a" },
+      email: { icon: BsEnvelope, color: "#4a4a4a" },
     };
 
     const profilesWithUrls = socialProfiles.filter(profile => profile.url && profile.url.trim() !== '');

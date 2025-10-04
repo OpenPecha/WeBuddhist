@@ -9,11 +9,12 @@
     padding: 2rem;
     height: 100vh;
     overflow-y: auto;
-   
     .sheet-detail-page {
       max-width: 800px;
       margin: 0 auto;
       .user-info{
+        text-decoration: none;
+        color: #000;
         display: flex;
         align-items: center;
         gap: 10px;

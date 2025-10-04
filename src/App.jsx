@@ -12,7 +12,6 @@ import UserProfile from "./components/user-profile/UserProfile.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
 import Sheets from "./components/sheets/Sheets.jsx";
-import SheetDetailPage from "./components/sheets/view-sheet/SheetDetailPage.jsx";
 import SheetChapters from "./components/chapterV2/SheetChapters.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
@@ -25,7 +24,7 @@ const Texts = lazy(() => import("./components/texts/Texts"));
 const Works = lazy(() => import("./components/works/Works.jsx"));
 const SubCollections = lazy(() => import("./components/sub-collections/SubCollections.jsx"));
 const ChaptersV2 = lazy(() => import("./components/chapterV2/Chapters"));
-
+const AuthorProfile = lazy(() => import("./components/author-profile/AuthorProfile.jsx"));
 const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword.jsx"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword.jsx"));
 const SearchResultsPage = lazy(() => import("./components/search/SearchResultsPage.jsx"));
@@ -118,6 +117,7 @@ function App() {
               <Route path="/" element={<Collections/>}/>
               <Route path="/collections" element={<Collections/>}/>
               <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
+              <Route path="/user/:username" element={<AuthorProfile/>}/>
               <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
               <Route path="/reset-password" element={<ResetPassword/>}/>
               <Route path="/forgot-password" element={<ForgotPassword/>}/>

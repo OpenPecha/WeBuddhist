@@ -101,7 +101,7 @@ const CommunityPage = () => {
                             <p className=' navbaritems'>{sheet.summary}</p>
                             </div>
                             </Link>
-                            <div className="sheet-metadata content">
+                            <Link  to ={`/user/${encodeURIComponent(sheet.publisher.username)}`} className="sheet-metadata content">
                                 {sheet.publisher.avatar_url ? (
                             <img src={sheet.publisher.avatar_url} alt={sheet.publisher.name.split(' ').map(name => name[0]).join('').substring(0, 2).toUpperCase()} className='avatar-image' />
                          ) : (
@@ -112,7 +112,7 @@ const CommunityPage = () => {
                          <div className='sheet-publisher-name'>{sheet.publisher.name}</div>
                          <span className="sheet-dot">·</span>
                          <span className="sheet-date ">{sheet.time_passed}</span>
-                        </div>
+                          </Link>
                           </div>
                         </div>
                       ))
