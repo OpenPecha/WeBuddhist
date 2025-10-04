@@ -6,10 +6,10 @@ import SheetListing from "../user-profile/tabs/sheet-listing/SheetListing.jsx";
 import { BsFileEarmark, BsLinkedin, BsTwitter, BsFacebook, BsYoutube, BsEnvelope } from "react-icons/bs";
 import { useParams } from "react-router-dom";
 import { getEarlyReturn } from "../../utils/helperFunctions.jsx";
-
+import noImageUrl from "../../assets/noprofile.jpg";
 
 export const fetchAuthorInfo = async (username) => {
-  const { data } = await axiosInstance.get(`/api/v1/user/${username}`);
+  const { data } = await axiosInstance.get(`/api/v1/users/${username}`);
   return data;
 };
 
@@ -21,7 +21,6 @@ const AuthorProfile = () => {
     error: authorInfoError,
   } = useQuery("userInfo", () => fetchAuthorInfo(username), { retry:false,refetchOnWindowFocus: false });
   const { t } = useTranslate();
-console.log(authorInfo)
   const earlyReturn = getEarlyReturn({ isLoading: authorInfoIsLoading, error: authorInfoError, t });
   if (earlyReturn) return earlyReturn; 
 
@@ -116,14 +115,14 @@ console.log(authorInfo)
 
   const renderAuthorProfileImage = () => (
     <div className="profile-image-container">
-      <img src={authorInfo.avatar_url} alt="Profile" className="profile-image" />
+      <img src={authorInfo.avatar_url} onError={(e) => {e.target.onerror = null; e.target.src = noImageUrl;}} alt="Profile" className="profile-image" />
     </div>
   );
 
   const renderAuthorProfileRightSection = () => (
     <div className="profile-right">
     <div className="profile-picture">
-      {authorInfo?.avatar_url ? renderAuthorProfileImage() : <>hi</>}
+       {renderAuthorProfileImage()}
     </div>
     </div>
   );
@@ -138,7 +137,7 @@ console.log(authorInfo)
   const renderAuthorTabsContainer = () => (
     <div className="tabs-container">
       <div>
-      <button className="nav-link">
+      <button className="nav-sheet">
       <BsFileEarmark />
       {t("profile.tab.stories")}
     </button>

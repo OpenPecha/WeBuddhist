@@ -4,6 +4,9 @@
   align-items: center;
   margin: 0 auto;
   width: 60%;
+  @media (max-width: 768px) {
+    width: 90%;
+  }
 
   .webuddhist-user-profile {
     display: flex;
@@ -272,7 +275,13 @@
 
       .tabs-container {
         width: 100%;
-
+         .nav-sheet{
+          font-size: medium;
+          width: 100%;
+          text-align: left;
+          border: none;
+          background: none;
+         }
         .nav-tabs {
           border-bottom: 2px solid #ddd;
           width: 100%;
