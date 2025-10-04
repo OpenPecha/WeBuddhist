@@ -52,7 +52,7 @@ const ViewSelector = (props) => {
   const renderLayoutModeOptions = () => {
     return (
       <div className="layout-icons-container">
-        <span className="layout-label">{t("text.reader_option_menu.layout")}</span>  
+        <span className="layout-label subcontent">{t("text.reader_option_menu.layout")}</span>  
         <div className="icons-group">
           {layoutOptions.map((option) => (
             <label key={option.id} className="icon-option">
