@@ -68,7 +68,7 @@ const SheetListing = ({ userInfo }) => {
     return <p>Loading sheets...</p>;
   }
   if (!sheetsData?.sheets?.length) {
-    return <p>{t("sheet.not_found")}</p>;
+    return <p className='sheet-not-found'>{t("sheet.not_found")}</p>;
   }
   return (
     <div className="tab-content">
