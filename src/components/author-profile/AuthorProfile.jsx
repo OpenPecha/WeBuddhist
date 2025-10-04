@@ -4,41 +4,48 @@ import axiosInstance from "../../config/axios-config.js";
 import { useTranslate } from "@tolgee/react";
 import SheetListing from "../user-profile/tabs/sheet-listing/SheetListing.jsx";
 import { BsFileEarmark, BsLinkedin, BsTwitter, BsFacebook, BsYoutube, BsEnvelope } from "react-icons/bs";
+import { useParams } from "react-router-dom";
+import { getEarlyReturn } from "../../utils/helperFunctions.jsx";
 
 
-export const fetchUserInfo = async () => {
-  const { data } = await axiosInstance.get("/api/v1/users/info");
+export const fetchAuthorInfo = async (username) => {
+  const { data } = await axiosInstance.get(`/api/v1/user/${username}`);
   return data;
 };
 
 const AuthorProfile = () => {
+  const { username } = useParams();
   const {
-    data: userInfo,
-    isLoading: userInfoIsLoading,
-  } = useQuery("userInfo", fetchUserInfo, { refetchOnWindowFocus: false });
+    data: authorInfo,
+    isLoading: authorInfoIsLoading,
+    error: authorInfoError,
+  } = useQuery("userInfo", () => fetchAuthorInfo(username), { retry:false,refetchOnWindowFocus: false });
   const { t } = useTranslate();
+console.log(authorInfo)
+  const earlyReturn = getEarlyReturn({ isLoading: authorInfoIsLoading, error: authorInfoError, t });
+  if (earlyReturn) return earlyReturn; 
 
   const renderBasicInfo = () => (
     <>
       <h2 className="profile-name">
-        {userInfo?.firstname + " " + userInfo?.lastname}
+        {authorInfo?.firstname + " " + authorInfo?.lastname}
       </h2>
-      <p className="profile-job-title">{userInfo?.title}</p>
+      <p className="profile-job-title">{authorInfo?.title}</p>
     </>
   );
 
   const renderProfileDetails = () => (
     <p className="profile-details">
-      {userInfo?.location && (
+      {authorInfo?.location && (
         <>
-          <span className="location">{userInfo?.location}</span>
+          <span className="location">{authorInfo?.location}</span>
           <span className="separator">·</span>
         </>
       )}
-      {userInfo?.educations?.length ? (
+        {authorInfo?.educations?.length ? (
         <>
           <span className="degree">
-            {userInfo.educations.reduce((acc, curr) => acc + " " + curr)}
+            {authorInfo.educations.reduce((acc, curr) => acc + " " + curr)}
           </span>{" "}
           <span className="separator">·</span>
         </>
@@ -53,10 +60,10 @@ const AuthorProfile = () => {
   const renderFollowersInfo = () => (
     <div className="followers">
       <span className="number-followers">
-        {userInfo?.followers} {t("common.followers")}
+        {authorInfo?.followers} {t("common.followers")}
       </span>
       <span className="number-following">
-        {userInfo?.following} {t("common.following")}
+        {authorInfo?.following} {t("common.following")}
       </span>
     </div>
   );
@@ -102,21 +109,21 @@ const AuthorProfile = () => {
         {renderBasicInfo()}
         {renderProfileDetails()}
         {renderFollowersInfo()}
-        {renderSocialLinks(userInfo?.social_profiles)}
+        {renderSocialLinks(authorInfo?.social_profiles)}
       </div>
     );
   };
 
   const renderProfileImage = () => (
     <div className="profile-image-container">
-      <img src={userInfo.avatar_url} alt="Profile" className="profile-image" />
+      <img src={authorInfo.avatar_url} alt="Profile" className="profile-image" />
     </div>
   );
 
   const renderProfileRightSection = () => (
     <div className="profile-right">
     <div className="profile-picture">
-      {userInfo?.avatar_url ? renderProfileImage() : <>hi</>}
+      {authorInfo?.avatar_url ? renderProfileImage() : <>hi</>}
     </div>
     </div>
   );
@@ -138,7 +145,7 @@ const AuthorProfile = () => {
       <hr />
       </div>
       <div className="tab-content">
-        <SheetListing userInfo={userInfo} />
+        <SheetListing userInfo={authorInfo} />
       </div>
     </div>
   );
@@ -162,7 +169,7 @@ const AuthorProfile = () => {
 
   return (
     <>
-      {!userInfoIsLoading ? (
+      {!authorInfoIsLoading ? (
         renderProfileContent()
       ) : (
         <p className="listsubtitle">{t("common.loading")}</p>

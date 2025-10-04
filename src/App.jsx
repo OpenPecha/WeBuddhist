@@ -117,7 +117,7 @@ function App() {
               <Route path="/" element={<Collections/>}/>
               <Route path="/collections" element={<Collections/>}/>
               <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
-              <Route path="/profile/:username" element={<AuthenticationGuard component={AuthorProfile}/>}/>
+              <Route path="/user/:username" element={<AuthorProfile/>}/>
               <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
               <Route path="/reset-password" element={<ResetPassword/>}/>
               <Route path="/forgot-password" element={<ForgotPassword/>}/>

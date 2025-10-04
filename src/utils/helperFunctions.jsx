@@ -1,4 +1,4 @@
-
+import pechaLogo from "../assets/icons/pecha_icon.png";
 export const getFirstSegmentId = (sections) => {
   if (!sections?.length) {
     return null;
@@ -21,13 +21,14 @@ export const getLastSegmentId = (sections) => {
 
 export const getEarlyReturn = ({ isLoading, error, t }) => {
   if (isLoading) {
-    return <div className="search-message">{t("common.loading")}</div>;
+    return <div className="global-container search-message">{t("common.loading")}</div>;
   }
 
   if (error) {
     return (
-      <div className="notfound">
-        <div className="no-content">{t("text_category.message.notfound")}</div>
+      <div className="global-container">
+        <img src={pechaLogo} alt="Not Found" width={100} height={100} />
+        <div className="no-content">{t("global.not_found")}</div>
       </div>
     );
   }
