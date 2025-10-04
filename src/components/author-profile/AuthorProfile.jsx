@@ -25,7 +25,7 @@ console.log(authorInfo)
   const earlyReturn = getEarlyReturn({ isLoading: authorInfoIsLoading, error: authorInfoError, t });
   if (earlyReturn) return earlyReturn; 
 
-  const renderBasicInfo = () => (
+  const renderAuthorBasicInfo = () => (
     <>
       <h2 className="profile-name">
         {authorInfo?.firstname + " " + authorInfo?.lastname}
@@ -34,7 +34,7 @@ console.log(authorInfo)
     </>
   );
 
-  const renderProfileDetails = () => (
+  const renderAuthorProfileDetails = () => (
     <p className="profile-details">
       {authorInfo?.location && (
         <>
@@ -57,7 +57,7 @@ console.log(authorInfo)
 
 
 
-  const renderFollowersInfo = () => (
+  const renderAuthorFollowersInfo = () => (
     <div className="followers">
       <span className="number-followers">
         {authorInfo?.followers} {t("common.followers")}
@@ -68,7 +68,7 @@ console.log(authorInfo)
     </div>
   );
 
-  const renderSocialLinks = (socialProfiles) => {
+  const renderAuthorSocialLinks = (socialProfiles) => {
     const socialIcons = {
       linkedin: { icon: BsLinkedin, color: "#0A66C2" },
       "x.com": { icon: BsTwitter, color: "#1DA1F2" },
@@ -103,39 +103,39 @@ console.log(authorInfo)
     );
   };
 
-  const renderProfileLeftSection = () => {
+  const renderAuthorProfileLeftSection = () => {
     return (
       <div className="profile-left">
-        {renderBasicInfo()}
-        {renderProfileDetails()}
-        {renderFollowersInfo()}
-        {renderSocialLinks(authorInfo?.social_profiles)}
+        {renderAuthorBasicInfo()}
+        {renderAuthorProfileDetails()}
+        {renderAuthorFollowersInfo()}
+        {renderAuthorSocialLinks(authorInfo?.social_profiles)}
       </div>
     );
   };
 
-  const renderProfileImage = () => (
+  const renderAuthorProfileImage = () => (
     <div className="profile-image-container">
       <img src={authorInfo.avatar_url} alt="Profile" className="profile-image" />
     </div>
   );
 
-  const renderProfileRightSection = () => (
+  const renderAuthorProfileRightSection = () => (
     <div className="profile-right">
     <div className="profile-picture">
-      {authorInfo?.avatar_url ? renderProfileImage() : <>hi</>}
+      {authorInfo?.avatar_url ? renderAuthorProfileImage() : <>hi</>}
     </div>
     </div>
   );
 
-  const renderSection1 = () => (
+  const renderAuthorSection1 = () => (
     <div className="section1">
-      {renderProfileLeftSection()}
-      {renderProfileRightSection()}
+      {renderAuthorProfileLeftSection()}
+      {renderAuthorProfileRightSection()}
     </div>
   );
 
-  const renderTabsContainer = () => (
+  const renderAuthorTabsContainer = () => (
     <div className="tabs-container">
       <div>
       <button className="nav-link">
@@ -150,27 +150,27 @@ console.log(authorInfo)
     </div>
   );
 
-  const renderSection2 = () => (
-    <div className="section2 listtitle">{renderTabsContainer()}</div>
+  const renderAuthorSection2 = () => (
+    <div className="section2 listtitle">{renderAuthorTabsContainer()}</div>
   );
 
-  const renderMainProfile = () => (
+  const renderAuthorMainProfile = () => (
     <div className="webuddhist-user-profile">
-      {renderSection1()}
-      {renderSection2()}
+      {renderAuthorSection1()}
+      {renderAuthorSection2()}
     </div>
   );
 
-  const renderProfileContent = () => (
+  const renderAuthorProfileContent = () => (
     <div className="user-profile listtitle">
-      {renderMainProfile()}
+      {renderAuthorMainProfile()}
     </div>
   );
 
   return (
     <>
       {!authorInfoIsLoading ? (
-        renderProfileContent()
+        renderAuthorProfileContent()
       ) : (
         <p className="listsubtitle">{t("common.loading")}</p>
       )}
