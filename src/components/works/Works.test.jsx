@@ -135,7 +135,7 @@ describe("Works Component", () => {
     }));
 
     setup();
-    expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
+    expect(screen.getByText("global.not_found")).toBeInTheDocument();
   });
 
   test("displays no content message when data is null", () => {
@@ -256,7 +256,7 @@ describe("Works Component", () => {
 
     setup();
 
-    expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
+    expect(screen.getByText("global.not_found")).toBeInTheDocument();
 
     expect(consoleSpy).toHaveBeenCalledWith(
       "API call error:",
