@@ -169,7 +169,7 @@ const Works = (props) => {
         <div className="works-title-container">{renderWorksTitle()}</div>
         {texts.length == 0 && (
           <button className='no-language-alert' onClick={()=>(changeLanguage("bo-IN",queryClient,tolgee))}>
-            No Text found for this language. Click to change language to Tibetan
+            {t("work.no_text.change")}
           </button>
         )}
         <div className="root-text-container">{renderRootTexts()}</div>
