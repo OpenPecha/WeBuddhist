@@ -21,7 +21,17 @@
       letter-spacing: 0.05rem;
 
     }
-
+    .no-language-alert {
+      background-color: #f1c5c5;
+      border: 1px solid #980d0d;
+      color: #980d0d;
+      border-radius: 4px;
+      cursor: pointer;
+      width: fit-content;
+      padding: 0.5rem 1rem;
+      align-self: left;
+      text-decoration: underline;
+    }
     .root-text-container {
       h2 {
         text-align: left;

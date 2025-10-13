@@ -92,8 +92,8 @@ const SubCollections = (props) => {
 
     return (
       <div className="about-content">
-        <h1 className="listsubtitle about-title">{t('common.about')} {subCollectionTitle}</h1>
-        <div className="divider"></div>
+        {/* <h1 className="listsubtitle about-title">{t('common.about')} {subCollectionTitle}</h1>
+        <div className="divider"></div> */}
       </div>
     );
   }

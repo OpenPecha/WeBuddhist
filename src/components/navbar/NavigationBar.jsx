@@ -14,6 +14,12 @@ export const invalidateQueries = async (queryClient) => {
     const queriesToInvalidate = ["texts", "topics","sheets","sidePanel","works","texts-versions","texts-content","sheets-user-profile","table-of-contents","collections","sub-collections","versions"];
     await Promise.all(queriesToInvalidate.map(query => queryClient.invalidateQueries(query)));
   };
+ export const changeLanguage = async (lng,queryClient,tolgee) => {
+    await tolgee.changeLanguage(lng);
+    localStorage.setItem(LANGUAGE, lng);
+    setFontVariables(lng);
+    await invalidateQueries(queryClient)
+  };
 const Navigation = () => {
     const navigate = useNavigate();
     const { t } = useTranslate();
@@ -25,12 +31,7 @@ const Navigation = () => {
     const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
    
-     const changeLanguage = async (lng) => {
-       await tolgee.changeLanguage(lng);
-       localStorage.setItem(LANGUAGE, lng);
-       setFontVariables(lng);
-       await invalidateQueries(queryClient)
-     };
+
      function handleLogout(e) {
         e.preventDefault()
         localStorage.removeItem(LOGGED_IN_VIA);
@@ -54,7 +55,7 @@ const Navigation = () => {
     };
 
     const handleLangSelect = (lng) => {
-      changeLanguage(lng);
+      changeLanguage(lng,queryClient,tolgee);
       setIsLangDropdownOpen(false);
     };
 

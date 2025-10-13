@@ -2,12 +2,13 @@ import React, {useMemo} from 'react';
 import axiosInstance from '../../config/axios-config';
 import { LANGUAGE, siteName } from "../../utils/constants.js";
 import './Works.scss';
-import { useTranslate } from '@tolgee/react';
-import { useQuery } from 'react-query';
+import { useTolgee, useTranslate } from '@tolgee/react';
+import { useQuery, useQueryClient } from 'react-query';
 import { useParams,Link } from 'react-router-dom';
 import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 import Seo from "../commons/seo/Seo.jsx";
 import PropTypes from "prop-types";
+import { changeLanguage } from '../navbar/NavigationBar.jsx';
 
 const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -41,7 +42,8 @@ const Works = (props) => {
   const {id: paramId} = useParams();
   const {t} = useTranslate();
   const {requiredInfo = {}, setRendererInfo} = props
-
+  const queryClient = useQueryClient();
+  const tolgee = useTolgee(['language']);
   const id = requiredInfo.from === "compare-text" ? props.collection_id : paramId;
   const isCompareText = requiredInfo.from === "compare-text";
 
@@ -165,6 +167,11 @@ const Works = (props) => {
       />
       <div className={`${!requiredInfo.from ? "left-section" : "minified-left-section"}`}>
         <div className="works-title-container">{renderWorksTitle()}</div>
+        {texts.length == 0 && (
+          <button className='no-language-alert' onClick={()=>(changeLanguage("bo-IN",queryClient,tolgee))}>
+            {t("work.no_text.change")}
+          </button>
+        )}
         <div className="root-text-container">{renderRootTexts()}</div>
         <div className="commentary-text-container">{renderCommentaryTexts()}</div>
       </div>
