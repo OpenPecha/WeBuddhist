@@ -54,7 +54,7 @@ const Navigation = () => {
       handleMobileMenuToggle();
     };
 
-    const handleLangSelect = (lng,queryClient) => {
+    const handleLangSelect = (lng) => {
       changeLanguage(lng,queryClient,tolgee);
       setIsLangDropdownOpen(false);
     };
@@ -132,7 +132,7 @@ const renderAuthButtons = () => {
     );
   };
   const globalLangSelect=(lang)=>{
-    handleLangSelect(lang,queryClient,tolgee);
+    handleLangSelect(lang);
     handleMobileMenuToggle();
   }
   const renderLanguageOptions=()=>{
