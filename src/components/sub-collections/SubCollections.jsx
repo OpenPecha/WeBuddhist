@@ -109,11 +109,6 @@ const SubCollections = (props) => {
         {!from && renderTitle()}
         {renderSubCollections()}
       </div>
-      {renderAboutSection() && (
-        <div className="about-section">
-          {renderAboutSection()}
-        </div>
-      )}
     </div>
   );
 };
