@@ -84,20 +84,6 @@ const SubCollections = (props) => {
       </div>
     );
   }
-
-  const renderAboutSection = () => {
-    if (from === "compare-text") return null;
-    
-    const subCollectionTitle = subCollectionsData?.parent?.title;
-
-    return (
-      <div className="about-content">
-        {/* <h1 className="listsubtitle about-title">{t('common.about')} {subCollectionTitle}</h1>
-        <div className="divider"></div> */}
-      </div>
-    );
-  }
-
   return (
     <div className={`${!from ? "sub-collections-container" : "sub-collections-container no-margin"}`}>
       <Seo
