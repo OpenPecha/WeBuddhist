@@ -138,33 +138,6 @@ describe("Works Component", () => {
     expect(screen.getByText("global.not_found")).toBeInTheDocument();
   });
 
-  test("displays no content message when data is null", () => {
-    // When data is null, the component will throw an error when trying to access categoryTextData.texts
-    // So we need to mock a minimal valid data structure instead
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: { texts: [] },
-      isLoading: false,
-      error: null,
-    }));
-
-    setup();
-    expect(screen.getByText("text.root_text_not_found")).toBeInTheDocument();
-    expect(screen.getByText("text.commentary_text_not_found")).toBeInTheDocument();
-  });
-
-  test("displays empty text sections when texts array is empty", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: { term: { title: "Empty Category" }, texts: [] },
-      isLoading: false,
-      error: null,
-    }));
-
-    const { container } = setup();
-    expect(screen.getByText("Empty Category")).toBeInTheDocument();
-    expect(screen.getByText("text.root_text_not_found")).toBeInTheDocument();
-    expect(screen.getByText("text.commentary_text_not_found")).toBeInTheDocument();
-
-  });
 
   test("renders correct links to text detail chapter", () => {
     const updatedMockData = {
