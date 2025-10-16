@@ -9,7 +9,7 @@ import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/hel
 import Seo from "../commons/seo/Seo.jsx";
 import PropTypes from "prop-types";
 import { changeLanguage } from '../navbar/NavigationBar.jsx';
-
+import pechaIcon from "../../assets/icons/pecha_icon.png";
 const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
@@ -102,15 +102,15 @@ const Works = (props) => {
   
     return (
       <div className="root-text-section">
-        {renderTitle()}
-        {rootTexts.length === 0 ? (
-          <div className="no-content">{t("text.root_text_not_found")}</div>
-        ) : (
+        {rootTexts.length !== 0 && (
+          <>
+          {renderTitle()}
           <div className={isCompareText ? "minified-root-text-list" : "root-text-list"}>
             {rootTexts.map((text) => 
               renderRootTextItem(text)
             )}
           </div>
+          </>
         )}
       </div>
     );
@@ -141,18 +141,17 @@ const Works = (props) => {
 
   const renderCommentaryTexts = () => {
     const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>;
-  
     return (
       <div className="commentary-section">
-        {renderTitle()}
-        {commentaryTexts.length === 0 ? (
-          <div className="no-content">{t("text.commentary_text_not_found")}</div>
-        ) : (
+        {commentaryTexts.length !== 0 && (
+          <>
+          {renderTitle()}
           <div className={isCompareText ? "minified-commentary-list" : "commentary-list"}>
             {commentaryTexts.map((text) => 
               renderCommentaryTextItem(text)
             )}
           </div>
+          </>
         )}
       </div>
     );
@@ -168,18 +167,17 @@ const Works = (props) => {
       <div className={`${!requiredInfo.from ? "left-section" : "minified-left-section"}`}>
         <div className="works-title-container">{renderWorksTitle()}</div>
         {texts.length == 0 && (
+          <div className="no-content-container">
+          <img src={pechaIcon} alt="pecha icon" width={80} height={80} />
+          <div className="no-content">{t("work.no_text.change")}</div>
           <button className='no-language-alert' onClick={()=>(changeLanguage("bo-IN",queryClient,tolgee))}>
-            {t("work.no_text.change")}
+           {t("work.no_text.button")}
           </button>
+          </div>
         )}
         <div className="root-text-container">{renderRootTexts()}</div>
         <div className="commentary-text-container">{renderCommentaryTexts()}</div>
       </div>
-      {!requiredInfo.from && (
-      <div className="right-section">
-        <div className="sidebar" />
-      </div>
-      )}
     </div>
   )
 
