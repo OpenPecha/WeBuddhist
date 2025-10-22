@@ -1,7 +1,7 @@
 {
   "name": "app-pecha-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "2025.10.22.0616",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,11 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "mac:coverage": "vitest run --coverage && open coverage/index.html"
+    "mac:coverage": "vitest run --coverage && open coverage/index.html",
+    "release:sprint": "node scripts/release-sprint.js --type sprint",
+    "release:hotfix": "node scripts/release-sprint.js --type hotfix",
+    "release:major": "node scripts/release-sprint.js --type release",
+    "release:dry-run": "node scripts/release-sprint.js --dry-run --type sprint"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
