@@ -226,4 +226,21 @@ describe("UseChapterHook", () => {
     expect(container.querySelector(".segment-text")).toBeInTheDocument();
     expect(screen.queryByText("1")).not.toBeInTheDocument();
   });
+
+  test("calls openResourcesPanel when segment is activated with keyboard in prose layout", () => {
+    setup({
+      viewMode: VIEW_MODES.SOURCE,
+      layoutMode: LAYOUT_MODES.PROSE,
+    });
+
+    const segmentText = document.querySelector(".segment-text");
+    expect(segmentText).toBeInTheDocument();
+
+    fireEvent.keyDown(segmentText, { key: "Enter" });
+    expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
+
+    mockState.panelContext.openResourcesPanel.mockClear();
+    fireEvent.keyDown(segmentText, { key: " " });
+    expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
+  });
 });

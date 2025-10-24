@@ -87,6 +87,16 @@ const UseChapterHook = (props) => {
       container.removeEventListener('click', handleDocumentClick);
     };
   }, []);
+
+  useEffect(() => {
+    const container = contentsContainerRef.current;
+    if (!container) return;
+
+    const activeFootnotes = container.querySelectorAll(".footnote.active");
+    activeFootnotes.forEach((footnote) => {
+      footnote.classList.remove("active");
+    });
+  }, [layoutMode]);
   
   useLayoutEffect(() => {
     const scrollContainer = contentsContainerRef.current;
