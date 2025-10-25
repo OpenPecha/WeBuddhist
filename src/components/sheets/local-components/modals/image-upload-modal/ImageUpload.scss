@@ -72,6 +72,9 @@
     p {
       margin: 0;
       color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   
     input {
@@ -107,11 +110,22 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-right: 1rem;
+    flex: 1;
+    min-width: 0;
     .selected-file-name {
       display: flex;
       align-items: start;
       justify-content: start;
       flex-direction: column;
+      flex: 1;
+      min-width: 0;
+      .filename-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+      }
       .cropped-indicator {
         border: 1px solid #A9080E;
         color: #A9080E;
