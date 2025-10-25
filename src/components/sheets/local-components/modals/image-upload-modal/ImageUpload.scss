@@ -15,8 +15,7 @@
   padding: 2rem;
   border-radius: 8px;
   position: relative;
-  min-height: 400px;
-  max-height: 80vh;
+  height: 400px;
   max-width: 500px;
   width: 90%;
   border: none;
@@ -73,7 +72,9 @@
     p {
       margin: 0;
       color: #666;
-      word-break: break-word;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   
     input {
@@ -109,6 +110,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-right: 1rem;
     flex: 1;
     min-width: 0;
     .selected-file-name {
@@ -118,11 +120,12 @@
       flex-direction: column;
       flex: 1;
       min-width: 0;
-      
-      span {
-        word-break: break-word;
+      .filename-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
       }
-      
       .cropped-indicator {
         border: 1px solid #A9080E;
         color: #A9080E;

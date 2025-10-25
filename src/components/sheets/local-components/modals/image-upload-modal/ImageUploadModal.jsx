@@ -129,7 +129,7 @@ const ImageUploadModal = ({ onClose, onUpload, isCameFromProfile = false }) => {
             />
           </div>
           <div className="selected-file-name">
-            <span>{selectedFile.name}</span>
+            <span className="filename-text">{selectedFile.name}</span>
             {croppedFile && (
               <span className="cropped-indicator">Cropped</span>
             )}
