@@ -86,7 +86,7 @@ const CommunityPage = () => {
         <div className='published-list'>
         <div className="sheets-list">
                     {sheetsIsLoading ? (
-                      <p>Loading sheets...</p>
+                      <p>Loading stories...</p>
                     ) : sheetsData?.sheets?.length === 0 ? (
                       <div className="no-stories-message">
                         <p className="navbaritems">{t("community_empty_story")}</p>

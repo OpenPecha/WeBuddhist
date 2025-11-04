@@ -135,7 +135,7 @@ describe("SheetListing Component", () => {
     }));
 
     setup();
-    expect(screen.getByText("Loading sheets...")).toBeInTheDocument();
+    expect(screen.getByText("Loading stories...")).toBeInTheDocument();
   });
 
   test("renders sheets data correctly", () => {
