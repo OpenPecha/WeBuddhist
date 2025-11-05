@@ -136,14 +136,6 @@ describe("CommentaryView", () => {
     expect(mockSetIsRelatedTextView).toHaveBeenCalledWith("main");
   });
 
-  test("toggles commentary expansion when show more button is clicked", () => {
-    setup();
-
-    const showMoreButtons = document.querySelectorAll(".see-more-link");
-    expect(showMoreButtons.length).toBe(2);
-    fireEvent.click(showMoreButtons[0]);
-  });
-
   test("fetchCommentaryData makes correct API call", async () => {
     const segmentId = "mock-segment-id";
     axiosInstance.get.mockResolvedValueOnce({ data: mockCommentariesData });

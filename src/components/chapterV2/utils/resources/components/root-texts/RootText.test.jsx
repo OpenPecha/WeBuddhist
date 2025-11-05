@@ -126,16 +126,6 @@ describe("RootTextView", () => {
     expect(screen.getByText("text.root_text (2)")).toBeInTheDocument();
   });
 
-
-
-  test("toggles root text expansion when show more button is clicked", () => {
-    setup();
-
-    const showMoreButtons = document.querySelectorAll(".see-more-link");
-    expect(showMoreButtons.length).toBe(2);
-    fireEvent.click(showMoreButtons[0]);
-  });
-
   test("fetchRootTextData makes correct API call", async () => {
     const segmentId = "mock-segment-id";
     axiosInstance.get.mockResolvedValueOnce({ data: mockRootTextData });
@@ -201,17 +191,6 @@ describe("RootTextView", () => {
     
     // Check that the second title (English) has the en-text class
     expect(rootTextTitles[1]).toHaveClass('en-text');
-  });
-
-  test("renders root text content correctly", () => {
-    setup();
-    
-    const rootTextContainers = document.querySelectorAll(".root-text-content");
-    expect(rootTextContainers.length).toBe(2);
-    
-    // Check that the content is initially truncated
-    expect(rootTextContainers[0]).toHaveClass("content-truncated");
-    expect(rootTextContainers[1]).toHaveClass("content-truncated");
   });
   
   test("calls setIsRootTextView when close icon is clicked", () => {

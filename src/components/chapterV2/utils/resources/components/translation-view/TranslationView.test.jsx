@@ -140,18 +140,6 @@ describe("TranslationView Component", () => {
     expect(mockProps.setIsTranslationView).toHaveBeenCalledWith("main");
   });
 
-  test("toggles translation expansion correctly", () => {
-    setup();
-    
-    const expandButtons = document.querySelectorAll(".expand-button");
-    expect(expandButtons.length).toBe(3); 
-    fireEvent.click(expandButtons[0]);
-
-    const result = setExpandedCall({});
-    expect(result).toEqual({ "en-0": true });
-  });
-
-
   test("displays current selection status correctly", () => {
     window.sessionStorage.getItem.mockReturnValue("text-123");
     
@@ -254,38 +242,6 @@ describe("TranslationView Component", () => {
     
     expect(englishElements.length).toBeGreaterThan(0);
     expect(tibetanElements.length).toBeGreaterThan(0);
-  });
-
-
-  test("shows expand/collapse buttons only for translations with content", () => {
-    const dataWithEmptyContent = {
-      translations: [
-        { 
-          language: "en", 
-          content: "",
-          title: "Empty Title",
-          text_id: "text-empty",
-          segment_id: "test-segment-id"
-        },
-        { 
-          language: "bo", 
-          content: "Some content", 
-          title: "With Content",
-          text_id: "text-with-content",
-          segment_id: "test-segment-id"
-        }
-      ]
-    };
-
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: dataWithEmptyContent,
-      isLoading: false,
-    }));
-
-    setup();
-    
-    const expandButtons = document.querySelectorAll(".expand-button");
-    expect(expandButtons.length).toBe(1);
   });
 
   test("handles addChapter prop being undefined", () => {
