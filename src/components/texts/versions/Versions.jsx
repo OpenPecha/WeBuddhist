@@ -46,7 +46,8 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
     "sa":"language.sanskrit",
     "bo":"language.tibetan",
     "en":"language.english",
-    "zh":"language.chinese"
+    "zh":"language.chinese",
+    "it":"language.italian"
   }
 
   const totalVersions = versions?.versions.length || 0;

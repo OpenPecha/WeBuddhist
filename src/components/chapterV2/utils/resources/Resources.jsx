@@ -25,9 +25,6 @@ export const fetchSidePanelData = async (segmentId) => {
 const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersionId, handleSegmentNavigate}) => {
   const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
   const showPanel = isResourcesPanelOpen;
-  const [expandedCommentaries, setExpandedCommentaries] = useState({});
-  const [expandedTranslations, setExpandedTranslations] = useState({});
-  const [expandedRootTexts, setExpandedRootTexts] = useState({});
   const [activeView, setActiveView] = useState("main");
   const {t} = useTranslate();
 
@@ -184,8 +181,6 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <TranslationView
             segmentId={segmentId}
             setIsTranslationView={setActiveView}
-            expandedTranslations={expandedTranslations}
-            setExpandedTranslations={setExpandedTranslations}
             addChapter={addChapter}
             currentChapter={currentChapter}
             setVersionId={setVersionId}
@@ -196,8 +191,6 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <CommentaryView
             segmentId={segmentId}
             setIsCommentaryView={setActiveView}
-            expandedCommentaries={expandedCommentaries}
-            setExpandedCommentaries={setExpandedCommentaries}
             addChapter={addChapter}
             currentChapter={currentChapter}
           />
@@ -209,8 +202,6 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <RootTextView
             segmentId={segmentId}
             setIsRootTextView={setActiveView}
-            expandedRootTexts={expandedRootTexts}
-            setExpandedRootTexts={setExpandedRootTexts}
             addChapter={addChapter}
             currentChapter={currentChapter}
           />

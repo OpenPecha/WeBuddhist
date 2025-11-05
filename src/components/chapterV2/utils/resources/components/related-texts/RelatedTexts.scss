@@ -19,36 +19,10 @@
       line-height: 1.6;
     }
   
-    .commentary-content {
-      font-size: 1rem;
-      line-height: 1.7;
-      color: #504e4e;
-      position: relative;
-      
-      &.content-truncated {
-        max-height: 4.8em;
-        overflow: hidden;
-      }
-    }
-  
+
     .see-more-container {
       text-align: left;
       margin: 0.1rem 0 0.5rem;
-    }
-  
-    .see-more-link {
-      background: none;
-      border: none;
-      color: #555;
-      padding: 0;
-      cursor: pointer;
-      font-size: 0.875rem;
-      display: inline-block;
-  
-      &:hover {
-        text-decoration: underline;
-        color: #a70c0c;
-      }
     }
   
     .commentary-source {
@@ -85,5 +59,26 @@
       color: #666;
       font-style: italic;
     }
+  }
+}
+.commentary-content {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #504e4e;
+  position: relative;
+}
+
+.see-more-link {
+  background: none;
+  border: none;
+  color: #555;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: inline-block;
+
+  &:hover {
+    text-decoration: underline;
+    color: #a70c0c;
   }
 }

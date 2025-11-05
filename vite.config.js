@@ -35,6 +35,7 @@ export default defineConfig(({ mode }) => {
           "src/App.jsx",
           "src/context/**",
           "src/utils/**",
+          "src/components/commons/expandtext/**",
         ],
       },
     },
