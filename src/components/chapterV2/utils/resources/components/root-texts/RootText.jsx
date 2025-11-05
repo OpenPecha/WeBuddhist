@@ -9,12 +9,14 @@ import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
+import TextExpand from "../../../../../commons/expandtext/TextExpand.jsx";
+
 export const fetchRootTextData = async (segment_id) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/root_text`);
   return data;
 }
 
-const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter, currentChapter }) => {
+const RootTextView = ({ segmentId, setIsRootTextView, addChapter, currentChapter }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
   const {data: rootTextData} = useQuery(
@@ -53,13 +55,6 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
     };
   }, [rootTextData]);
 
-  const toggleRootText = (rootTextId) => {
-    setExpandedRootTexts(prev => ({
-      ...prev,
-      [rootTextId]: !prev[rootTextId]
-    }));
-  };
-
   return (
     <div>
       <div className="headerthing">
@@ -80,31 +75,14 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
             <div className="all-root-texts">
               {rootTextData.segment_root_mapping.map((rootText) => {
                 const rootTextId = rootText.text_id;
-                const isExpanded = expandedRootTexts[rootTextId];
                 return (
                   <div key={rootTextId} className="root-text-list-item">
                     <h3 className={`root-text-title ${getLanguageClass(rootText.language)}`}>
                       {rootText.title}
                     </h3>
-                    
                     {rootText.content && (
                       <div className="root-text-container">
-                        <div 
-                          className={`root-text-content ${getLanguageClass(rootText.language)} ${isExpanded ? '' : 'content-truncated'}`}
-                        >
-                          <div 
-                            dangerouslySetInnerHTML={{ __html: rootText.content }}
-                          />
-                        </div>
-                        
-                        <div className="see-more-container">
-                          <button 
-                            className="see-more-link" 
-                            onClick={() => toggleRootText(rootTextId)}
-                          >
-                            {isExpanded ? t('panel.showless') : t('panel.showmore')} 
-                          </button>
-                        </div>
+                        <TextExpand language={rootText.language} maxLength={250}>{rootText.content}</TextExpand>
 
                         <div className="root-text-actions">
                           <div className="root-text-buttons">
@@ -147,8 +125,6 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
 export default RootTextView;
 RootTextView.propTypes = {
   segmentId: PropTypes.string.isRequired, 
-  expandedRootTexts: PropTypes.object.isRequired, 
-  setExpandedRootTexts: PropTypes.func.isRequired, 
   setIsRootTextView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
   currentChapter: PropTypes.object, 

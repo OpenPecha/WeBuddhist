@@ -55,12 +55,10 @@ describe("CommentaryView", () => {
   };
 
   let mockSetIsRelatedTextView;
-  let mockSetExpandedCommentaries;
 
   beforeEach(() => {
     vi.resetAllMocks();
     mockSetIsRelatedTextView = vi.fn();
-    mockSetExpandedCommentaries = vi.fn();
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
       if (queryKey[0] === "relatedTexts") {
@@ -94,8 +92,6 @@ describe("CommentaryView", () => {
     const defaultProps = {
       segmentId: "mock-segment-id",
       setIsCommentaryView: mockSetIsRelatedTextView,
-      expandedCommentaries: { "mock-RelatedText-1": false, "mock-RelatedText-2": false },
-      setExpandedCommentaries: mockSetExpandedCommentaries,
       addChapter: vi.fn(),
       sectionindex: 0
     };
@@ -146,7 +142,6 @@ describe("CommentaryView", () => {
     const showMoreButtons = document.querySelectorAll(".see-more-link");
     expect(showMoreButtons.length).toBe(2);
     fireEvent.click(showMoreButtons[0]);
-    expect(mockSetExpandedCommentaries).toHaveBeenCalled();
   });
 
   test("fetchCommentaryData makes correct API call", async () => {

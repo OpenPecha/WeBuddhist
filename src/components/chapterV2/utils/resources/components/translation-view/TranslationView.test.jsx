@@ -71,8 +71,6 @@ describe("TranslationView Component", () => {
   const mockProps = {
     segmentId: "test-segment-id",
     setIsTranslationView: vi.fn(),
-    expandedTranslations: {},
-    setExpandedTranslations: vi.fn(),
     setVersionId: vi.fn(),
     addChapter: vi.fn(),
     currentChapter: { id: "chapter-1" }
@@ -148,10 +146,6 @@ describe("TranslationView Component", () => {
     const expandButtons = document.querySelectorAll(".expand-button");
     expect(expandButtons.length).toBe(3); 
     fireEvent.click(expandButtons[0]);
-    
-
-    expect(mockProps.setExpandedTranslations).toHaveBeenCalled();
-    const setExpandedCall = mockProps.setExpandedTranslations.mock.calls[0][0];
 
     const result = setExpandedCall({});
     expect(result).toEqual({ "en-0": true });

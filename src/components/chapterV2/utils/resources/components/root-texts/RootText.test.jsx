@@ -68,14 +68,12 @@ describe("RootTextView", () => {
   };
 
   let mockSetIsRootTextView;
-  let mockSetExpandedRootTexts;
   let mockAddChapter;
   let mockCloseResourcesPanel;
   let currentChapter;
   beforeEach(() => {
     vi.resetAllMocks();
     mockSetIsRootTextView = vi.fn();
-    mockSetExpandedRootTexts = vi.fn();
     mockAddChapter = vi.fn();
     mockCloseResourcesPanel = vi.fn();
     currentChapter = {
@@ -105,8 +103,6 @@ describe("RootTextView", () => {
     const defaultProps = {
       segmentId: "mock-segment-id",
       setIsRootTextView: mockSetIsRootTextView,
-      expandedRootTexts: { "mock-root-text-1": false, "mock-root-text-2": false },
-      setExpandedRootTexts: mockSetExpandedRootTexts,
       addChapter: mockAddChapter,
       sectionindex: 0,
       currentChapter: currentChapter,
@@ -138,7 +134,6 @@ describe("RootTextView", () => {
     const showMoreButtons = document.querySelectorAll(".see-more-link");
     expect(showMoreButtons.length).toBe(2);
     fireEvent.click(showMoreButtons[0]);
-    expect(mockSetExpandedRootTexts).toHaveBeenCalled();
   });
 
   test("fetchRootTextData makes correct API call", async () => {
@@ -216,19 +211,6 @@ describe("RootTextView", () => {
     
     // Check that the content is initially truncated
     expect(rootTextContainers[0]).toHaveClass("content-truncated");
-    expect(rootTextContainers[1]).toHaveClass("content-truncated");
-  });
-
-  test("removes truncation when expanded", () => {
-    setup({
-      expandedRootTexts: { "mock-root-text-1": true, "mock-root-text-2": false }
-    });
-    
-    const rootTextContainers = document.querySelectorAll(".root-text-content");
-    
-    // First root text should be expanded
-    expect(rootTextContainers[0]).not.toHaveClass("content-truncated");
-    // Second root text should still be truncated
     expect(rootTextContainers[1]).toHaveClass("content-truncated");
   });
   
