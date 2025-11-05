@@ -65,7 +65,7 @@ const SheetListing = ({ userInfo }) => {
 
   const totalPages = Math.ceil((sheetsData?.total || 0) / pagination.limit);
   if (sheetsIsLoading) {
-    return <p>Loading sheets...</p>;
+    return <p>Loading stories...</p>;
   }
   if (!sheetsData?.sheets?.length) {
     return <p className='sheet-not-found'>{t("sheet.not_found")}</p>;
@@ -74,7 +74,7 @@ const SheetListing = ({ userInfo }) => {
     <div className="tab-content">
       <div className="sheets-list">
         {sheetsIsLoading ? (
-          <p>Loading sheets...</p>
+          <p>Loading stories...</p>
         ) : (
           sheetsData?.sheets.map((sheet) => (
             <div key={sheet.id} className="sheet-item">

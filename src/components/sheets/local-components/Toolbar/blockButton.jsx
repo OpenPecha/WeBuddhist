@@ -3,7 +3,7 @@ import { useSlate } from 'slate-react';
 import { useCustomEditor } from '../../sheet-utils/CustomEditor';
 
 const BlockButton = (prop) => {
-    const {format, children, className} = prop 
+    const {format, children, className, title} = prop 
     const editor = useSlate()
     const customEditor = useCustomEditor();
     const isActive = customEditor.isBlockActive(editor, format)
@@ -11,6 +11,7 @@ const BlockButton = (prop) => {
     return (
       <button 
         className={`${className || ''} ${isActive ? 'active' : ''}`}
+        title={title}
         onMouseDown={(e) => { 
           e.preventDefault(); 
           customEditor.toggleBlock(editor, format); 

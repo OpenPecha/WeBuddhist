@@ -192,7 +192,7 @@ const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
   };
 
   if (isLoading) {
-      return <p>{t("common.loading")}</p>;
+      return <p className="sheet-detail-page-loading">{t("common.loading")}</p>;
   }
 
   if (!sheetData || sheetData.content.segments.length === 0) {
