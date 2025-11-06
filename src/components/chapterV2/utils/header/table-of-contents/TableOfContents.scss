@@ -6,16 +6,13 @@
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
   height: 100%;
   z-index: 10;
+  // position: fixed;
 
   &.show {
     width: 300px;
   }
 
   .header-thing {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: #f0f0f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -31,7 +28,6 @@
   }
 
   .toc-content {
-    margin-top: 0.5rem;
     height: calc(100% - 50px);
     overflow-y: auto;
     text-align: start;
@@ -127,6 +123,7 @@
     overflow-x: hidden;
 
     &.show {
+      position: fixed;
       left: 0;
       width: 300px;
     }
@@ -147,5 +144,20 @@
   .table-of-contents .toc-content p {
     padding: 10px 0;
     font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 993px) {
+  .table-of-contents {
+    .header-thing {
+      position: sticky;
+      top: 62px;
+      z-index: 2;
+      background: #f0f0f0;
+    }
+
+    .toc-content {
+      margin-top: 4.5rem;
+    }
   }
 }

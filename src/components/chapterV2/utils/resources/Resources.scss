@@ -1,9 +1,5 @@
 .right-panel {
   .headerthing{
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -190,5 +186,20 @@
   .right-panel .panel-content p {
     padding: 10px 0;
     font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 993px) {
+  .right-panel {
+    .headerthing {
+      position: sticky;
+      top: 62px;
+      z-index: 2;
+      background: #fff;
+    }
+
+    .panel-content {
+      margin-top: 4rem;
+    }
   }
 }
