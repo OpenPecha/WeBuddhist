@@ -30,7 +30,7 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
   const textId = propTextId || urlId;
 
   const {data: versions, isLoading: versionsIsLoading, error: versionsIsError} = useQuery(
-    ["versions", textId, skip],
+    ["versions", textId, skip, pagination.limit],   
     () => fetchVersions(textId, skip, pagination.limit),
     {refetchOnWindowFocus: false, enabled: !!textId}
   );

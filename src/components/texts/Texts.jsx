@@ -41,7 +41,7 @@ const Texts = (props) => {
   const textId = requiredInfo?.from === "compare-text" ? collection_id : urlId;
 
   const {data: tableOfContents, isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError} = useQuery(
-    ["table-of-contents", skip],
+    ["table-of-contents", textId, skip, pagination.limit],   
     () => fetchTableOfContents(textId, skip, pagination.limit),
     {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
   );
