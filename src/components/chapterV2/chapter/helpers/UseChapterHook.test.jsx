@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import UseChapterHook from "./UseChapterHook.jsx";
 import "@testing-library/jest-dom";
@@ -50,6 +50,7 @@ const defaultProps = {
   content: {
     sections: [
       {
+        id: "section-1",
         title: "Section 1",
         segments: [
           {
@@ -78,6 +79,8 @@ const defaultProps = {
     fetchNextPage: vi.fn(),
     fetchPreviousPage: vi.fn(),
   },
+  handleSegmentNavigate: vi.fn(),
+  onCurrentSectionChange: vi.fn(),
 };
 
 const setup = (props = {}) => {
@@ -242,5 +245,27 @@ describe("UseChapterHook", () => {
     mockState.panelContext.openResourcesPanel.mockClear();
     fireEvent.keyDown(segmentText, { key: " " });
     expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
+  });
+
+  test("scrolls to section when segment is selected", async () => {
+    const scrollIntoViewMock = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoViewMock;
+    
+    const { rerender } = setup({
+      currentSegmentId: null,
+      scrollTrigger: 0,
+    });
+    
+    rerender(
+      <UseChapterHook
+        {...defaultProps}
+        currentSegmentId="seg1"
+        scrollTrigger={1}
+      />
+    );
+    
+    await waitFor(() => {
+      expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+    });
   });
 });
