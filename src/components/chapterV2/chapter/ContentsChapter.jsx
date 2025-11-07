@@ -1,5 +1,5 @@
 import ChapterHeader from "../utils/header/ChapterHeader.jsx";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { VIEW_MODES, LAYOUT_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
 import { LAYOUT_MODE, siteName } from "../../../utils/constants.js";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
@@ -37,6 +37,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
   const [showTableOfContents, setShowTableOfContents] = useState(false);
   const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
   const [currentSectionId, setCurrentSectionId] = useState(null);
+  const [scrollTrigger, setScrollTrigger] = useState(0);
   const size = 20;
 
   useEffect(() => {
@@ -88,20 +89,21 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
       content: { ...infiniteQuery.data.pages[0].content, sections: mergedSections },text_detail};
   }, [infiniteQuery.data?.pages]);
 
+  const handleSegmentNavigate = useCallback((newSegmentId) => {
+    setCurrentSegmentId(newSegmentId);
+    setScrollTrigger(prev => prev + 1);
+  }, []);
+
+  const handleCurrentSectionChange = useCallback((sectionId) => {
+    setCurrentSectionId(sectionId);
+  }, []);
+
   // ----------------------------- helpers ---------------------------------------
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const pageTitle = allContent?.text_detail?.title ? `${allContent.text_detail.title} | ${siteName}` : `Chapter | ${siteName}`;
   const earlyReturn = getEarlyReturn({ isLoading: infiniteQuery.isLoading, error: infiniteQuery.error, t });
   if (earlyReturn) return earlyReturn;
-
-  const handleSegmentNavigate = (newSegmentId) => {
-    setCurrentSegmentId(newSegmentId);
-  };
-
-  const handleCurrentSectionChange = (sectionId) => {
-    setCurrentSectionId(sectionId);
-  };
   
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
@@ -125,7 +127,8 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
       infiniteQuery,
       onCurrentSectionChange: handleCurrentSectionChange,
       currentSectionId,
-      currentSegmentId
+      currentSegmentId,
+      scrollTrigger
     };
     return (
         <UseChapterHook {...propsForUseChapterHookComponent} />
