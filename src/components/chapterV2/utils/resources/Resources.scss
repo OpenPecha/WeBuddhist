@@ -191,15 +191,22 @@
 
 @media (min-width: 993px) {
   .right-panel {
+    position: fixed;
+    top: 122px;
+    right: 0;
+
+    &.show {
+      width: 280px;
+    }
+
     .headerthing {
       position: sticky;
-      top: 62px;
-      z-index: 2;
+      top: 0;
       background: #fff;
     }
 
-    .panel-content {
-      margin-top: 4rem;
+    .panel-content { 
+      margin-top: 0;
     }
   }
 }

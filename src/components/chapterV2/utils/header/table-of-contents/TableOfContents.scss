@@ -148,15 +148,22 @@
 
 @media (min-width: 993px) {
   .table-of-contents {
+    position: fixed;
+    top: 122px;
+    left: 0;
+
+    &.show {
+      width: clamp(200px, 20vw, 240px);
+    }
+    
     .header-thing {
       position: sticky;
-      top: 62px;
-      z-index: 2;
+      top: 0;
       background: #f0f0f0;
     }
 
     .toc-content {
-      margin-top: 4.5rem;
+      padding-top: 0.5rem;
     }
   }
 }
