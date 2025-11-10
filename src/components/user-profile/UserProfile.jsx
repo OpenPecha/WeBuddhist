@@ -169,16 +169,16 @@ const UserProfile = () => {
       <div className="social-links">
         {profilesWithUrls.map((profile) => {
           const { icon: Icon, color } = socialIcons[profile.account] || {};
+          const isEmail = profile.account === "email";
           return Icon ? (
             <a
               key={profile.account}
               href={
-                profile.account === "email"
+                isEmail
                   ? "mailto:" + profile.url
                   : profile.url
               }
-              target="_blank"
-              rel="noopener noreferrer"
+              {...(isEmail ? {} : { target: "_blank", rel: "noopener noreferrer" })}
               aria-label={profile.account}
             >
               <Icon style={{ color }} />
