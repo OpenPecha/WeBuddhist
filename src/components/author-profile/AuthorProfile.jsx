@@ -77,21 +77,26 @@ const AuthorProfile = () => {
     };
 
     const profilesWithUrls = socialProfiles.filter(profile => profile.url && profile.url.trim() !== '');
+    const hasEmail = profilesWithUrls.some(profile => profile.account === "email");
+    if (!hasEmail && authorInfo?.email) {
+      profilesWithUrls.push({ account: "email", url: authorInfo.email });
+    }
+    const profilesToDisplay = profilesWithUrls;
 
     return (
       <div className="social-links">
-        {profilesWithUrls.map((profile) => {
+        {profilesToDisplay.map((profile) => {
           const { icon: Icon, color } = socialIcons[profile.account] || {};
-          const isEmail = profile.account === "email";
           return Icon ? (
             <a
               key={profile.account}
               href={
-                isEmail
+                profile.account === "email"
                   ? "mailto:" + profile.url
                   : profile.url
               }
-              {...(isEmail ? {} : { target: "_blank", rel: "noopener noreferrer" })}
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label={profile.account}
             >
               <Icon style={{ color }} />
