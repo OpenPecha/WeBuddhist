@@ -40,8 +40,8 @@ const ViewSelector = (props) => {
   }
 
   const renderViewModeOptions = () => {
-    const visibleOptions = versionSelected ? options : options.filter(option => option.value === VIEW_MODES.SOURCE);
-    return visibleOptions.map((option) => (
+    if (!versionSelected) return null;
+    return options.map((option) => (
       <label key={option.id} className="radio-option subcontent">
         <input type="radio" name="view-mode" value={option.value} checked={viewMode === option.value} onChange={(e) => setViewMode(e.target.value)}/>
         <span>{t(option.label)}</span>
@@ -77,7 +77,7 @@ const ViewSelector = (props) => {
     <div className="view-selector-options-container">
       {renderCloseIcon()}
       {renderViewModeOptions()}
-      <div className="layout-mode-options">
+      <div className={`layout-mode-options ${!versionSelected ? 'no-view-modes' : ''}`}>
         {renderLayoutModeOptions()}
       </div>
     </div>
