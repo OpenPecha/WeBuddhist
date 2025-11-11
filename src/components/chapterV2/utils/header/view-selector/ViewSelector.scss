@@ -41,6 +41,15 @@
     border-top: 1px solid #e0e0e0;
     padding-top: 0.5rem;
     margin-top: 0.5rem;
+    position: relative;
+
+    &.no-view-modes {
+      margin-top: 2rem;
+      
+      .layout-icons-container {
+        padding-top: 0.5rem;
+      }
+    }
     
     .layout-icons-container {
       display: flex;
