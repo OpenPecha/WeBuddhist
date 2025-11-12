@@ -1,4 +1,4 @@
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
+import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockLocalStorage} from "../../test-utils/CommonMocks.js";
 import {vi} from "vitest";
 import {QueryClient, QueryClientProvider} from "react-query";
 import {BrowserRouter as Router, useParams} from "react-router-dom";
@@ -53,15 +53,17 @@ describe("Texts Component", () => {
     }]
   };
 
+  let localStorageMock;
+
   beforeEach(() => {
     vi.restoreAllMocks();
     useParams.mockReturnValue({ id: "123" });
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue("bo-IN");
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockTextDetailData,
       isLoading: false,
     }));
-
-    Storage.prototype.getItem = vi.fn().mockReturnValue("bo-IN");
     axiosInstance.get.mockResolvedValue({ data: mockTextDetailData });
   });
 
@@ -117,6 +119,7 @@ describe("Texts Component", () => {
   });
 
   test("fetchTableOfContents makes correct API call", async () => {
+    localStorageMock.getItem.mockReturnValue("bo-IN");
     const result = await fetchTableOfContents("123", 0, 10);
 
     expect(axiosInstance.get).toHaveBeenCalledWith(

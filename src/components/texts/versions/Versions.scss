@@ -49,6 +49,26 @@ $primary-color: #666666;
         color: $primary-color;
         font-size: 15px;
       }
+      .version-metadata {
+        margin-top: 2px;
+        color: $primary-color;
+        font-size: 14px;
+        .metadata-row {
+          display: flex;
+          gap: 0.5rem;
+          span {
+            color: $primary-color;
+          }
+          a {
+            color: $primary-color;
+            text-decoration: none;
+            cursor: pointer;
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
     }
 
     .version-language{
