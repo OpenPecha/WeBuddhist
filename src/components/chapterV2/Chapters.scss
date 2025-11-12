@@ -21,6 +21,19 @@
         min-height: 100%;
     }
 }
+
+@media (min-width: 993px) {
+    .chapters-container {
+        height: calc(100vh - 59px);
+        overflow: hidden;
+        .chapter-container .contents-chapter-container {
+            overflow: hidden;
+            height: calc(100vh - 59px);
+        }
+    }
+}
+
+
   
  
   

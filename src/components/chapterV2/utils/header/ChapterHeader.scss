@@ -20,3 +20,29 @@
   }
 }
 
+@media (min-width: 993px) {
+  .single-chapter .chapter-header-container {
+    position: fixed;
+    top: 59px;
+    left: 0;
+    right: 0;
+    z-index: 150;
+  }
+}
+
+.split-screen .chapter-header-container {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
+@media (max-width: 992px){
+  .single-chapter .chapter-header-container {
+    position: fixed;
+    top: 59px;
+    left: 0;
+    right: 0;
+    z-index: 150;
+  }
+}

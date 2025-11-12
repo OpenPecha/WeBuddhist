@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 149;
+  z-index: 2000;
   background-color: #ffffff;
   display: flex;
   justify-content: space-between;
@@ -148,8 +148,14 @@
 body {
   padding-top: 60px;
 }
+@media (max-width: 992px){
+  .navigation-main{
+    z-index: 1998;
+  }
+}
 @media (max-width: 768px){
   .navigation-main{
+    z-index: 1998;
     .navigation-left{
       .nav-links{
         display:none;
