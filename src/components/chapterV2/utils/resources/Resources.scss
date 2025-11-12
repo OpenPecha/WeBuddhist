@@ -1,5 +1,9 @@
 .right-panel {
   .headerthing{
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -189,24 +193,3 @@
   }
 }
 
-@media (min-width: 993px) {
-  .right-panel {
-    position: fixed;
-    top: 122px;
-    right: 0;
-
-    &.show {
-      width: 280px;
-    }
-
-    .headerthing {
-      position: sticky;
-      top: 0;
-      background: #fff;
-    }
-
-    .panel-content { 
-      margin-top: 0;
-    }
-  }
-}

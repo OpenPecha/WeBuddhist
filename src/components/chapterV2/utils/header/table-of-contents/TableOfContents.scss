@@ -12,6 +12,10 @@
   }
 
   .header-thing {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f0f0f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -27,6 +31,7 @@
   }
 
   .toc-content {
+    margin-top: 0.5rem;
     height: calc(100% - 50px);
     overflow-y: auto;
     text-align: start;
@@ -122,7 +127,6 @@
     overflow-x: hidden;
 
     &.show {
-      position: fixed;
       left: 0;
       width: 300px;
     }
@@ -143,27 +147,5 @@
   .table-of-contents .toc-content p {
     padding: 10px 0;
     font-size: 0.95rem;
-  }
-}
-
-@media (min-width: 993px) {
-  .table-of-contents {
-    position: fixed;
-    top: 122px;
-    left: 0;
-
-    &.show {
-      width: clamp(200px, 20vw, 240px);
-    }
-    
-    .header-thing {
-      position: sticky;
-      top: 0;
-      background: #f0f0f0;
-    }
-
-    .toc-content {
-      padding-top: 0.5rem;
-    }
   }
 }
