@@ -1,5 +1,5 @@
 import React from "react";
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
+import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockLocalStorage} from "../../test-utils/CommonMocks.js";
 import {QueryClient, QueryClientProvider} from "react-query";
 import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
@@ -56,14 +56,17 @@ describe("Collections Component", () => {
     limit: 10
   };
 
+  let localStorageMock;
+
   beforeEach(() => {
     vi.resetAllMocks();
     useParams.mockReturnValue({ id: null });
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue("bo-IN");
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockCollectionsData,
       isLoading: false,
     }));
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
   });
 
   const setup = () => {
@@ -99,7 +102,7 @@ describe("Collections Component", () => {
   });
 
   test("handles language selection correctly", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en-US");
+    window.localStorage.getItem.mockReturnValue("en-US");
     const useQuerySpy = vi.spyOn(reactQuery, "useQuery");
     setup();
     expect(useQuerySpy).toHaveBeenCalled();
@@ -208,11 +211,11 @@ describe("Collections Component", () => {
     expect(document.querySelector(".right-section")).toBeInTheDocument();
   });
 
-  test("fetches term with correct parameters", async () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en");
+  test("fetches collections with correct parameters", async () => {
+    window.localStorage.getItem.mockReturnValue("en");
     axiosInstance.get.mockResolvedValueOnce({ data: mockCollectionsData });
-
     const result = await fetchCollections();
+    expect(window.localStorage.getItem).toHaveBeenCalledWith("LANGUAGE");
     expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections", {
       params: {
         language: "en",
@@ -220,7 +223,6 @@ describe("Collections Component", () => {
         skip: 0
       }
     });
-
     expect(result).toEqual(mockCollectionsData);
   });
 });

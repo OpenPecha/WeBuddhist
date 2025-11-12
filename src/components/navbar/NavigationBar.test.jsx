@@ -1,4 +1,4 @@
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockUseAuth0} from "../../test-utils/CommonMocks.js";
+import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockUseAuth0, mockLocalStorage} from "../../test-utils/CommonMocks.js";
 import {QueryClient, QueryClientProvider} from "react-query";
 import {BrowserRouter as Router} from "react-router-dom";
 import {TolgeeProvider} from "@tolgee/react";
@@ -14,6 +14,18 @@ mockAxios();
 mockUseAuth()
 mockReactQuery()
 mockUseAuth0()
+
+const sessionStorageMock = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+};
+
+Object.defineProperty(window, 'sessionStorage', {
+  value: sessionStorageMock,
+  writable: true,
+});
 
 const mockLoggedInStatusForIndividualTestCase = () => { vi.spyOn(useAuthContext, "useAuth").mockReturnValue({
     isLoggedIn: true,
@@ -33,6 +45,16 @@ const mockLoggedInStatusForIndividualTestCase = () => { vi.spyOn(useAuthContext,
 describe("NavigationBar Component", () => { // Fix describe name
 
   const queryClient = new QueryClient();
+  let localStorageMock;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue(null);
+    localStorageMock.setItem.mockClear();
+    sessionStorageMock.getItem.mockReturnValue(null);
+    sessionStorageMock.setItem.mockClear();
+  });
   const setup = () => {
     render(
       <Router>
@@ -81,14 +103,14 @@ describe("NavigationBar Component", () => { // Fix describe name
   });
 
   test("language change triggers changeLanguage function", async () => {
+    localStorageMock.getItem.mockReturnValue("en");
     setup();
     const langDropdownButton = screen.getByLabelText("Change language");
     await userEvent.click(langDropdownButton);
 
     const englishOption = screen.getByText("English");
     await userEvent.click(englishOption);
-    expect(localStorage.getItem("language")).toBe("en");
-
+    expect(localStorageMock.getItem("LANGUAGE")).toBe("en");
   });
 
   test("handles search form submission", async () => {

@@ -226,7 +226,8 @@ describe("AuthorProfile Component", () => {
   test("handles author data with no social profiles", () => {
     const authorDataWithoutSocial = { 
       ...mockAuthorData, 
-      social_profiles: [] 
+      social_profiles: [],
+      email: null
     };
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: authorDataWithoutSocial,

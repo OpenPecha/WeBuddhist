@@ -136,7 +136,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
   }
 
   return (
-    <div className="contents-chapter-container">
+    <div className={`contents-chapter-container ${totalChapters > 1 ? 'split-screen' : 'single-chapter'}`}>
       <Seo
         title={pageTitle}
         description="Read chapter content with source and translations."

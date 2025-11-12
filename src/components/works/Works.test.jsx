@@ -6,6 +6,7 @@ import {
   mockAxios,
   mockReactQuery, mockTolgee,
   mockUseAuth,
+  mockLocalStorage,
 } from "../../test-utils/CommonMocks.js";
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -60,17 +61,17 @@ describe("Works Component", () => {
     ],
   };
 
+  let localStorageMock;
+
   beforeEach(() => {
     vi.restoreAllMocks();
     useParams.mockReturnValue({ id: "works-id" });
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue("en");
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockTextCategoryData,
       isLoading: false,
     }));
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation((key) => {
-      if (key === "LANGUAGE") return "en";
-      return null;
-    });
   });
 
   afterEach(() => {
@@ -186,7 +187,7 @@ describe("Works Component", () => {
   });
 
   test("uses correct language from localStorage", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo");
+    localStorageMock.getItem.mockReturnValue("bo");
 
     const axiosSpy = vi.spyOn(axiosInstance, "get");
     axiosSpy.mockResolvedValueOnce({ data: mockTextCategoryData });
@@ -240,7 +241,7 @@ describe("Works Component", () => {
   });
 
   test("uses correct language from localStorage with mapping", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en");
+    localStorageMock.getItem.mockReturnValue("en");
     const axiosSpy = vi.spyOn(axiosInstance, "get").mockResolvedValueOnce({
       data: mockTextCategoryData,
     });
@@ -271,7 +272,7 @@ describe("Works Component", () => {
   });
 
   test("defaults to 'en' language when localStorage is empty", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue(null);
+    localStorageMock.getItem.mockReturnValue(null);
     const axiosSpy = vi.spyOn(axiosInstance, "get").mockResolvedValueOnce({
       data: mockTextCategoryData,
     });

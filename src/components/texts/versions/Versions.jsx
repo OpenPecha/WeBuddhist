@@ -93,9 +93,34 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
     const renderSubtitle = () => {
       return <div className="version-subtitle subtitle">
         {t("text.versions.information.review_history")}
-      </div>
+      </div>  
     }
 
+    const renderMetadata = (version) => {
+      const source = version.source || "Pecha.org";
+      const sourceUrl = version.source_url || "#";
+      const license = version.license || "CC BY-NC-SA";
+      const licenseValue = version.license_value || "CC BY-NC-SA";
+      return (
+        <div className="version-metadata">
+          {source && (
+            <div className="metadata-row">
+              <span>Source:</span>
+              <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
+                {source}
+              </a>
+            </div>
+          )}
+          {license && (
+            <div className="metadata-row">
+              <span>License:</span>
+              <span>{licenseValue}</span>
+            </div>
+          )}
+        </div>
+      )
+    }
+    
     const renderLanguage = (version) => {
       return <div className="version-language subtitle border">
         <p>{t(languageMap[version.language])}</p>
@@ -108,6 +133,7 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
           <div className="version-title-subtitle-container">
             {renderTitle(version)}
             {renderSubtitle()}
+            {renderMetadata(version)}
           </div>
           {renderLanguage(version)}
         </div>
