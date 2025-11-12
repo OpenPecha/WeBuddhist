@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useTranslate } from "@tolgee/react";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import PropTypes from "prop-types";
-import { getLanguageClass, getEarlyReturn } from "../../../../../utils/helperFunctions.jsx";
+import { getLanguageClass } from "../../../../../utils/helperFunctions.jsx";
 import { useQuery } from "react-query";
 import { fetchTableOfContents } from "../../../../texts/Texts.jsx";
 import "./TableOfContents.scss";
@@ -32,9 +32,6 @@ const TableOfContents = (props) => {
   }, [currentSectionId, expandedSections]);
 
   // -------------------------------------------- helpers ----------------------------------------------
-  const earlyReturn = getEarlyReturn({loading: isLoading, error: error, t});
-  if (earlyReturn) return earlyReturn;
-
   const contentData = tableOfContents?.contents || [];
 
   const toggleSection = (sectionId) => {
@@ -95,6 +92,14 @@ const TableOfContents = (props) => {
   };
 
   const renderTocContent = () => {
+    if (isLoading) {
+      return <div className="toc-loading listtitle">{t("common.loading")}</div>;
+    }
+
+    if (error) {
+      return <div className="toc-error listtitle">{t("global.not_found")}</div>;
+    }
+
     if (!contentData || contentData.length === 0) {
       return <div className="no-content listtitle">No content found</div>;
     }
