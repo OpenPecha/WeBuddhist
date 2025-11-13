@@ -147,4 +147,17 @@
   .single-chapter .use-chapter-hook-container {
     padding-top: 63px; 
   }
+  
+  .split-screen .use-chapter-hook-container {
+    overflow: hidden;
+    
+    .chapter-flex-row {
+      overflow: hidden;
+    }
+    
+    .main-content {
+      height: 100%;
+      overflow-x: hidden;
+    }
+  }
 }
