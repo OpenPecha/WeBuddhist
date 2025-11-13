@@ -238,7 +238,7 @@ const UseChapterHook = (props) => {
             </p>
           ) : (
             section.segments?.map((segment) => (
-              <button
+              <div
                 key={segment.segment_id}
                 className={`segment-container ${
                   selectedSegmentId === segment.segment_id
@@ -246,6 +246,7 @@ const UseChapterHook = (props) => {
                     : ""
                 }`}
                 onClick={() => handleSegmentClick(segment.segment_id)}
+                style={{ cursor: 'pointer' }}
               >
                 <p className="segment-number">{segment.segment_number}</p>
                 <div className="segment-content">
@@ -269,7 +270,7 @@ const UseChapterHook = (props) => {
                       />
                     )}
                 </div>
-              </button>
+              </div>
             ))
           )}
 
