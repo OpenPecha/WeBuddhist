@@ -223,23 +223,6 @@ describe("Versions Component", () => {
       expect(languageElements[2].textContent).toBe("language.sanskrit");
     });
 
-    test("renders subtitles for each version", () => {
-      setup();
-
-      const subtitleElements = document.querySelectorAll(".version-subtitle");
-      expect(subtitleElements).toHaveLength(3);
-
-      subtitleElements.forEach(subtitle => {
-        expect(subtitle.textContent).toBe("text.versions.information.review_history");
-      });
-    });
-
-    test("renders horizontal lines between versions", () => {
-      setup();
-
-      const hrElements = document.querySelectorAll("hr");
-      expect(hrElements).toHaveLength(3);
-    });
   });
 
   describe("Pagination", () => {

@@ -8,7 +8,8 @@ $primary-color: #666666;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #E0E0E0;
     .version-title-subtitle-container{
       display: flex;
       flex-direction: column;
@@ -19,12 +20,11 @@ $primary-color: #666666;
         font-weight: 500;
         word-break: break-word;
         color: $primary-color !important;
-
+        text-decoration: none;
         &:hover,
         &:visited,
         &:active {
           color: $primary-color !important;
-          text-decoration: underline;
         }
       }
       .version-title-button{
@@ -41,7 +41,6 @@ $primary-color: #666666;
         
         &:hover {
           color: #333;
-          text-decoration: underline;
         }
       }
       .version-subtitle{
@@ -63,9 +62,6 @@ $primary-color: #666666;
             color: $primary-color;
             text-decoration: none;
             cursor: pointer;
-            &:hover {
-              text-decoration: underline;
-            }
           }
         }
       }

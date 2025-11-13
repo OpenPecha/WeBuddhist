@@ -90,17 +90,10 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
       </Link>
     }
 
-    const renderSubtitle = () => {
-      return <div className="version-subtitle subtitle">
-        {t("text.versions.information.review_history")}
-      </div>  
-    }
-
     const renderMetadata = (version) => {
-      const source = version.source || "Pecha.org";
+      const source = version.source || "";
       const sourceUrl = version.source_url || "#";
-      const license = version.license || "CC BY-NC-SA";
-      const licenseValue = version.license_value || "CC BY-NC-SA";
+      const license = version.license || "";
       return (
         <div className="version-metadata">
           {source && (
@@ -114,7 +107,7 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
           {license && (
             <div className="metadata-row">
               <span>License:</span>
-              <span>{licenseValue}</span>
+              <span>{license}</span>
             </div>
           )}
         </div>
@@ -132,12 +125,10 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
         <div className="version-details" key={version.id}>
           <div className="version-title-subtitle-container">
             {renderTitle(version)}
-            {renderSubtitle()}
             {renderMetadata(version)}
           </div>
           {renderLanguage(version)}
         </div>
-        <hr/>
       </>
     ))
   }
