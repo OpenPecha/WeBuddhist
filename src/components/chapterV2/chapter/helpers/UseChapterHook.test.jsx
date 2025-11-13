@@ -202,20 +202,20 @@ describe("UseChapterHook", () => {
 
   test("renders Resources when panel is open and segment is selected", () => {
     mockState.panelContext.isResourcesPanelOpen = true;
-    setup();
+    const { container } = setup();
     
-    const segmentButton = screen.getByRole("button", { name: /1/i });
-    fireEvent.click(segmentButton);
+    const segmentContainer = container.querySelector(".segment-container");
+    fireEvent.click(segmentContainer);
     
     expect(screen.getByTestId("resources")).toBeInTheDocument();
     expect(screen.getByText("Resources seg1")).toBeInTheDocument();
   });
 
   test("handleSegmentClick opens resources panel", () => {
-    setup();
+    const { container } = setup();
     
-    const segmentButton = screen.getByRole("button", { name: /1/i });
-    fireEvent.click(segmentButton);
+    const segmentContainer = container.querySelector(".segment-container");
+    fireEvent.click(segmentContainer);
     
     expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
   });
