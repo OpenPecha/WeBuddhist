@@ -4,7 +4,7 @@ import {useTranslate} from "@tolgee/react";
 import axiosInstance from "../../config/axios-config.js";
 import {LANGUAGE, siteName} from "../../utils/constants.js";
 import {useQuery} from "react-query";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
 import Seo from "../commons/seo/Seo.jsx";
 import PropTypes from "prop-types";
@@ -23,6 +23,7 @@ export const fetchCollections = async () => {
 }
 const Collections = (props) => {
   const {showDescription = true,requiredInfo = {}, setRendererInfo} = props
+  const navigate = useNavigate();
   const {t} = useTranslate();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
     ["collections"],
@@ -40,7 +41,7 @@ const Collections = (props) => {
   const renderBrowseLibrary = () => {
     return (
       <div className="browse-section">
-        <h2 className="title browse-library-text">{t("home.browse_text")}</h2>
+        <h2 className="browse-library-text">{t("home.browse_text")}</h2>
       </div>
     );
   };
@@ -49,7 +50,7 @@ const Collections = (props) => {
     if (requiredInfo.from === "compare-text" && collection.has_child) {
       return (
         <button 
-          className="listtitle collection-link" 
+          className="title collection-link" 
           onClick={() => {
             setRendererInfo(prev => ({
               ...prev, 
@@ -64,10 +65,10 @@ const Collections = (props) => {
     }
 
     return collection.has_child ?
-      <Link to={`/collections/${collection.id}`} className="listtitle collection-link">
+      <Link to={`/collections/${collection.id}`} className="title collection-link">
         {collection.title}
       </Link> :
-      <Link to={`/works/${collection.id}`} className="listtitle collection-link">
+      <Link to={`/works/${collection.id}`} className="title collection-link">
         {collection.title}
       </Link>
   }
@@ -77,7 +78,7 @@ const Collections = (props) => {
       <div className="collections-list-container">
         {collectionsData?.collections.map((collection, index) => (
           <div className="collections" key={collection.id}>
-            <div className={"red-line"}></div>
+            <div className={`${index % 3 === 0 ? "red-line" : index % 3 === 1 ? "green-line" : "blue-line"}`}/>
               {renderCollectionNames(collection)}
               {showDescription && <p className="content collections-description">{collection.description}</p>}
           </div>
@@ -89,11 +90,19 @@ const Collections = (props) => {
   const renderAboutSection = () => {
     return (
       <div className="right-section-content">
-        <h2 className="title about-title">{t("side_nav.about_pecha_title")}</h2>
+        <h2 className=" subtitle about-title">{t("side_nav.about_pecha_title")}</h2>
         <hr className="divider"/>
         <p className="content about-content">
           {t("side_nav.about_pecha_description")}
         </p>
+        <h2 className=" subtitle about-title">{t("side_nav.community.join_conversation")}</h2>
+        <hr className="divider"/>
+        <p className="content about-content">
+          {t("side_nav.collection.description")}
+        </p>
+        <button className='explore-stories-btn navbaritems' onClick={() => navigate("/community")}>
+         {t("side_nav.community.join_conversation")}
+        </button>
       </div>
     );
   };
@@ -112,6 +121,7 @@ const Collections = (props) => {
       </div>
       {!requiredInfo.from && <div className="right-section">
         {renderAboutSection()}
+
       </div>}
     </div>
   );

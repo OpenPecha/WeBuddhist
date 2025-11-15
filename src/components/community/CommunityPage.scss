@@ -3,10 +3,9 @@
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 0 20px;
-  gap: 30px;
+  padding: 0 6rem;
+  margin: 2rem auto;
+
   
   @media (max-width: 768px) {
     flex-direction: column;
@@ -36,7 +35,6 @@
   flex: 2;
   padding: 20px;
   background-color: white;
-  border-radius: 8px;
   
   @media (max-width: 768px) {
     flex: none;
@@ -83,10 +81,9 @@
 
 .section-title {
   text-align: start;
-  font-size: 24px;
+  font-size: 20px;
   color: #333;
-  margin-bottom: 20px;
-  font-weight: normal;
+  font-weight:bold;
   
   @media (max-width: 768px) {
     font-size: 20px;
