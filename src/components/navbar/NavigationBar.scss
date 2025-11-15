@@ -32,7 +32,8 @@
   .navigation-right{
       display: flex;
       align-items: center;
-      gap: 20px;
+      justify-content: space-between;
+      gap: 0 10px;
       .search-bar{
         .search-icon{
           margin-left: 6px;

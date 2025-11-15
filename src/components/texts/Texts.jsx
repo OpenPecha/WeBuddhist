@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react'
+import React, {useMemo, useState, useEffect} from 'react'
 import {useQuery} from "react-query";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
 import Seo from "../commons/seo/Seo.jsx";
@@ -27,6 +27,19 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
 
 }
 
+export const fetchVersions = async (textId, skip, limit) => {
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
+  const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/versions`, {
+    params: {
+      language,
+      limit,
+      skip
+    }
+  })
+  return data
+}
+
 const Texts = (props) => {
   const {requiredInfo = {}, setRendererInfo, collection_id, addChapter, currentChapter} = props;
   const { t } = useTranslate();
@@ -36,7 +49,9 @@ const Texts = (props) => {
   const [activeTab, setActiveTab] = useState('contents');
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
+  const [versionsPagination, setVersionsPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
+  const versionsSkip = useMemo(() => (versionsPagination?.currentPage - 1) * versionsPagination?.limit, [versionsPagination]);
   
   const textId = requiredInfo?.from === "compare-text" ? collection_id : urlId;
 
@@ -45,6 +60,21 @@ const Texts = (props) => {
     () => fetchTableOfContents(textId, skip, pagination.limit),
     {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
   );
+
+  const {data: versions, isLoading: versionsIsLoading, error: versionsIsError} = useQuery(
+    ["versions", textId, versionsSkip, versionsPagination.limit],   
+    () => fetchVersions(textId, versionsSkip, versionsPagination.limit),
+    {refetchOnWindowFocus: false, enabled: !!textId}
+  );
+
+  useEffect(() => {
+    const hasMultipleSections = tableOfContents?.contents[0]?.sections?.length > 1;
+    if (hasMultipleSections) {
+      setActiveTab('contents');
+    } else if (tableOfContents?.contents) {
+      setActiveTab('versions');
+    }
+  }, [tableOfContents]);
 
   // -------------------------------------------- helpers ----------------------------------------------
   const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
@@ -87,12 +117,16 @@ const Texts = (props) => {
     return <div className="tab-container listsubtitle">
       {/* Tab Navigation */}
       <div className="tab-nav">
-        <button
-          className={`tab-button ${activeTab === 'contents' ? 'active' : ''}`}
-          onClick={() => setActiveTab('contents')}
-        >
-          {t("text.contents")}
-        </button>
+        {
+         tableOfContents?.contents[0]?.sections?.length > 1 && (
+            <button
+              className={`tab-button ${activeTab === 'contents' ? 'active' : ''}`}
+              onClick={() => setActiveTab('contents')}
+            >
+              {t("text.contents")}
+            </button>
+          )
+        }
         <button
           className={`tab-button ${activeTab === 'versions' ? 'active' : ''}`}
           onClick={() => setActiveTab('versions')}
@@ -103,14 +137,24 @@ const Texts = (props) => {
 
       {/* Tab Content */}
       <div className="tab-content">
-        {activeTab === 'contents' && (
+        {activeTab === 'contents' && tableOfContents?.contents[0]?.sections?.length > 1 && (
           <div className="tab-panel">
             <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={tableOfContents?.text_detail?.id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t} requiredInfo={requiredInfo} addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}/>
           </div>
         )}
         {activeTab === 'versions' && (
           <div className="tab-panel">
-            <Versions textId={textId} requiredInfo={requiredInfo} addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined} />
+            <Versions 
+              textId={textId} 
+              requiredInfo={requiredInfo} 
+              addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} 
+              currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}
+              versions={versions}
+              versionsIsLoading={versionsIsLoading}
+              versionsIsError={versionsIsError}
+              versionsPagination={versionsPagination}
+              setVersionsPagination={setVersionsPagination}
+            />
           </div>
         )}
       </div>
