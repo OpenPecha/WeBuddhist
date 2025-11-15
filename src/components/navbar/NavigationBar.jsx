@@ -198,6 +198,7 @@ const renderAuthButtons = () => {
               </button>
           </div>
       </div>
+
       {isMobileMenuOpen && (
         <div className="mobile-menu">
           {renderSearch()}

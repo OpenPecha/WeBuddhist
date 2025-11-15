@@ -95,13 +95,13 @@ const Collections = (props) => {
         <p className="content about-content">
           {t("side_nav.about_pecha_description")}
         </p>
-        <h2 className=" subtitle about-title">Join the Conversation</h2>
+        <h2 className=" subtitle about-title">{t("side_nav.community.join_conversation")}</h2>
         <hr className="divider"/>
         <p className="content about-content">
-        People around the world use Webuddhist to create and share their Stories and Learning. You're invited to add your voice.
+          {t("side_nav.collection.description")}
         </p>
         <button className='explore-stories-btn navbaritems' onClick={() => navigate("/community")}>
-         Explore Stories
+         {t("side_nav.community.join_conversation")}
         </button>
       </div>
     );

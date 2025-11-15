@@ -9,7 +9,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    margin: 1rem 5rem 0 5rem;
+    margin: 1.5rem 5rem 0 8rem;
     gap: 2rem;
     h1 {
       font-size: 24px;
@@ -62,14 +62,13 @@
             cursor: pointer;
             transition: color 0.2s ease;
             text-align: left;
-            font-size: 1.2rem;
             line-height: 1.4;
             color: #333;
             padding-top: 1rem;
             font-weight: 400;
             background: none;
             border: none;
-            font-family: var(--title-font-family);
+            
             .divider {
               height: 1px;
               background-color: #e0e0e0;
@@ -127,16 +126,14 @@
             cursor: pointer;
             transition: color 0.2s ease;
             text-align: left;
-            font-size: 1.2rem;
             line-height: 1.4;
             color: #333;
             padding-top: 1rem;
             font-weight: 400;
             background: none;
             border: none;
-            font-family: var(--listtitle-font-family);
             &:hover {
-              text-decoration: underline;
+              color: #666666;
             }
             .divider {
               height: 1px;

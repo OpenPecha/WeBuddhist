@@ -19,6 +19,13 @@
   --overalltext-font-family: 'Times New Roman', Times, serif;
 }
 
+.div-color{
+  height: 1px;
+  background-color: #dd0707;
+  margin-bottom: 1rem;
+  width: 100%
+}
+
 @font-face {
   font-family: 'MonlamUniOuChan2';
   src: url("./assets/fonts/MonlamUniOuChan2.woff") format('woff');
