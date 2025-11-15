@@ -1,6 +1,7 @@
 import "./App.css";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import NavigationBar from "./components/navbar/NavigationBar.jsx";
+import Footer from "./components/Footer/footer.jsx";
 import { useMutation } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.jsx";
 import { useEffect, useState , Suspense, lazy} from "react";
@@ -135,6 +136,7 @@ function App() {
               <Route path="/sheets/:id" element={<Sheets/>}/>
               <Route path="/:username/:sheetSlugAndId" element={<SheetChapters/>}/>
           </Routes>
+          <Footer/>
       </Suspense>
     );
 }
