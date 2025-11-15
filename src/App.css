@@ -2,7 +2,7 @@
 #root {
   text-align: center;
   --title-font-size: 16px;
-  --title-font-family: 'title-font',"Inter";
+  --title-font-family: 'Times New Roman', Times, serif;
   --subtitle-font-size: 16px;
   --subtitle-font-family: 'sub-title-font',"Inter";
   --content-font-size: 16px;
@@ -15,8 +15,8 @@
   --listsubtitle-font-family: 'list-subtitle-font',"Inter";
   --navbaritems-font-size: 16px;
   --navbaritems-font-family: 'navbar-items-font',"Inter";
-  --overalltext-font-size: 22px;
-  --overalltext-font-family: 'overall-text-font',"Inter";
+  --overalltext-font-size: 24px;
+  --overalltext-font-family: 'Times New Roman', Times, serif;
 }
 
 @font-face {
@@ -35,6 +35,9 @@
 .en-text{
   font-family: 'Inter', sans-serif;
   font-size: 18px;
+}
+.en-title-text{
+  font-family: 'Times New Roman', Times, serif;
 }
 .title {
   font-size: var(--title-font-size);

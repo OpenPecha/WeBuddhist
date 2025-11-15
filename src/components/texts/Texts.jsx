@@ -56,13 +56,13 @@ const Texts = (props) => {
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
     const renderTitle = () => {
-      return <h3 className={`${getLanguageClass(tableOfContents?.text_detail.language)}`}>
+      return <h1 className={`${getLanguageClass(tableOfContents?.text_detail.language)} overalltext`}>
         {tableOfContents?.text_detail.title}
-      </h3>
+      </h1>
     }
 
     const renderType = () => {
-      return <div className="navbaritems subcom">
+      return <div className="navbaritems">
         {t(`text.type.${type}`)}
       </div>
     }

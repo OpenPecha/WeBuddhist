@@ -1,7 +1,6 @@
 .works-container {
   display: flex;
   justify-content: space-around;
-  gap: 1rem;
   &.no-margin {
     margin: 0;
   }
@@ -10,9 +9,16 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    margin: 5rem 5rem 0 5rem;
+    margin: 1rem 5rem 0 5rem;
     gap: 2rem;
-
+    h1 {
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: 0.05rem;
+      text-align: left;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
     .works-title-container {
       text-align: left;
       font-size: 1.8rem;
@@ -44,19 +50,11 @@
  
 
     .root-text-container {
-      h2 {
-        text-align: left;
-        font-weight: 500;
-        font-size: 20px;
-        color: #8e8e8e;
-        letter-spacing: 0.05rem;
-      }
 
       .root-text-section {
         .root-text-list {
           display: flex;
           flex-wrap: wrap;
-          gap: 3rem;
 
           .root-text {
             width: 20rem;
@@ -71,10 +69,7 @@
             font-weight: 400;
             background: none;
             border: none;
-            font-family: var(--listtitle-font-family);
-            &:hover {
-              text-decoration: underline;
-            }
+            font-family: var(--title-font-family);
             .divider {
               height: 1px;
               background-color: #e0e0e0;
@@ -207,13 +202,11 @@
         font-family: inherit;
         
         p {
-          font-size: 1.1rem;
           color: #666;
           transition: color 0.2s ease;
           
           &:hover {
             color: #333;
-            text-decoration: underline;
           }
         }
       }
