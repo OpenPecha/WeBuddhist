@@ -82,7 +82,7 @@ const renderNavLinks=()=>{
 const renderSearch = () => {
     return (
       <form className="search-bar navbaritems" onSubmit={handleSearchSubmit}>
-        <FaSearch />
+        <FaSearch className="search-icon" />
         <input
           type="text"
           placeholder={t("common.placeholder.search")}

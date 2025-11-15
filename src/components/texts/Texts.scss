@@ -11,7 +11,7 @@ $primary-color: #871C1C;
     flex-direction: column;
     gap: 2rem;
     width: 70%;
-    margin-top: 5rem;
+    margin-top: 4rem;
 
     .title-type-container{
       display: flex;
@@ -215,7 +215,7 @@ $primary-color: #871C1C;
   .texts-container{
     display: flex;
     flex-direction: column;
-    margin: 0 5rem;
+    margin: 1rem;
     justify-content: space-around;
     .left-section, .right-section{
       width: 100%;
