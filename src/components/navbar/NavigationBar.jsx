@@ -30,6 +30,7 @@ const Navigation = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
    
 
      function handleLogout(e) {
@@ -81,13 +82,15 @@ const renderNavLinks=()=>{
 }
 const renderSearch = () => {
     return (
-      <form className="search-bar navbaritems" onSubmit={handleSearchSubmit}>
+      <form className={`search-bar navbaritems ${isSearchFocused ? 'search-focused' : ''}`} onSubmit={handleSearchSubmit}>
         <FaSearch className="search-icon" />
         <input
           type="text"
           placeholder={t("common.placeholder.search")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => setIsSearchFocused(false)}
           className="search-input"
         />
       </form>
