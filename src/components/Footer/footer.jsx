@@ -54,7 +54,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="footer-main">
+    <footer className="footer-main navbaritems">
       <div className="footer-content">
         {renderAboutColumn()}
         {renderToolsColumn()}

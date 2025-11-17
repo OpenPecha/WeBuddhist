@@ -1,5 +1,5 @@
 import "./App.css";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate, useLocation, matchPath } from "react-router-dom";
 import NavigationBar from "./components/navbar/NavigationBar.jsx";
 import Footer from "./components/Footer/footer.jsx";
 import { useMutation } from "react-query";
@@ -33,6 +33,7 @@ const SearchResultsPage = lazy(() => import("./components/search/SearchResultsPa
 
 function App() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { login, isLoggedIn, logout: pechaLogout } = useAuth();
     const [intervalId, setIntervalId] = useState(null);
     const { getIdTokenClaims, isAuthenticated, logout } = useAuth0();
@@ -111,6 +112,11 @@ function App() {
         setFontVariables(localStorage.getItem(LANGUAGE) || "en");
     }, []);
 
+    const hideFooter =
+        !!matchPath("/sheets/:id", location.pathname) ||
+        !!matchPath("/chapter", location.pathname) ||
+        !!matchPath("/:username/:sheetSlugAndId", location.pathname);
+
     return (
       <Suspense>
           <NavigationBar/>
@@ -136,7 +142,7 @@ function App() {
               <Route path="/sheets/:id" element={<Sheets/>}/>
               <Route path="/:username/:sheetSlugAndId" element={<SheetChapters/>}/>
           </Routes>
-          <Footer/>
+          {!hideFooter && <Footer/>}
       </Suspense>
     );
 }
