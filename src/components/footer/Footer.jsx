@@ -8,7 +8,6 @@ const Footer = () => {
       <div className="footer-column">
         <h3 className="footer-column-title">About</h3>
         <ul className="footer-links">
-          <li><a href="#">{t('what_is_webuddhist')}</a></li>
           <li><a href="https://dharmaduta.in/team" target="_blank" rel="noopener noreferrer">{t('Teams')}</a></li>
           <li><a href="https://wiki.openpecha.org/#/" target="_blank" rel="noopener noreferrer">{t('Developer_guidelines')}</a></li>
           <li><a href="https://dharmaduta.in/projects" target="_blank" rel="noopener noreferrer">{t('Products')}</a></li>
