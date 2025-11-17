@@ -1,8 +1,9 @@
 .works-container {
   display: flex;
-  justify-content: flex-start;
-  margin: 0 1rem 0 5rem;
-  min-height: calc(100vh - var(--navbar-height, 60px));
+//   justify-content: flex-start;
+//   margin: 0 1rem 0 5rem;
+//   min-height: calc(100vh - var(--navbar-height, 60px));
+  justify-content: space-around;
   &.no-margin {
     margin: 0;
   }
@@ -11,7 +12,8 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    margin: 1.5rem 0 0 0;
+//     margin: 1.5rem 0 0 0;
+    margin: 1.5rem 5rem 0 8rem;
     gap: 2rem;
     h1 {
       font-size: 24px;

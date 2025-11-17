@@ -4,9 +4,11 @@ $primary-color: #871C1C;
 .texts-container{
   display: flex;
   gap: 2rem;
-  margin: 0 1rem 0 5rem;
-  min-height: calc(100vh - var(--navbar-height, 60px));
-  justify-content: flex-start;
+//   margin: 0 1rem 0 5rem;
+//   min-height: calc(100vh - var(--navbar-height, 60px));
+//   justify-content: flex-start;
+  margin: 0 8rem;
+  justify-content: space-around;
   .left-section{
     display: flex;
     flex-direction: column;
@@ -218,6 +220,7 @@ $primary-color: #871C1C;
     flex-direction: column;
     margin: 1rem;
     justify-content: flex-start;
+//     justify-content: space-around;
     .left-section, .right-section{
       width: 100%;
     }

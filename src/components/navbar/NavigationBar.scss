@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  // border-bottom: 1px solid #989898;
+  border-bottom: 4px solid #ffffff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
   .navigation-left{
       display: flex;
@@ -45,11 +45,16 @@
           border-radius: 30rem;
           border: 1px solid #e0e0e0;
           background-color: #EDEDEC;
+          width: 200px;
+          transition: width 0.3s ease;
           input{
               width: 100%;
               border: none;
               background-color: transparent;
               outline: none;
+          }
+          &.search-focused{
+            width: 250px;
           }
 
       }

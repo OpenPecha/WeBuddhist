@@ -53,6 +53,7 @@ describe("Texts Component", () => {
       sections: [
         { id: "section1", title: "Section 1" },
         { id: "section2", title: "Section 2" }
+
       ]
     }]
   };
