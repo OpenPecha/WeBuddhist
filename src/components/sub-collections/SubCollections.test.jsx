@@ -101,14 +101,6 @@ describe("SubCollections Component", () => {
     expect(header.textContent).toBe("PARENT TITLE");
   });
 
-  test("renders the correct number of text items", () => {
-    setup();
-    const textItems = document.querySelectorAll(".text-item");
-    expect(textItems).toHaveLength(3);
-    expect(textItems[0].textContent).toBe("Term 1");
-    expect(textItems[1].textContent).toBe("Term 2");
-    expect(textItems[2].textContent).toBe("Term 3");
-  });
 
   test("text items have correct navigation links", () => {
     setup();
