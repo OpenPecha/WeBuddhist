@@ -87,7 +87,7 @@ const Works = (props) => {
       }}
     >
       <div className="divider"></div>
-      <p>{text.title}</p>
+      <p>{text.title}ff</p>
     </button>
   ) : (
     <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
@@ -98,7 +98,7 @@ const Works = (props) => {
   )
 
   const renderRootTexts = () => {
-    const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>;
+    const renderTitle = () => <h1 className="title">{t("text.type.root_text")}</h1>;
   
     return (
       <div className="root-text-section">

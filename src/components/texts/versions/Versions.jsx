@@ -1,39 +1,26 @@
-import React, {useMemo, useState} from 'react'
-import {LANGUAGE} from "../../../utils/constants.js";
-import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../../utils/helperFunctions.jsx";
-import axiosInstance from "../../../config/axios-config.js";
+import React from 'react'
+import {getEarlyReturn, getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link, useParams} from "react-router-dom";
-import {useQuery} from "react-query";
 import {useTranslate} from "@tolgee/react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import "./Versions.scss"
 import PropTypes from "prop-types";
 
-export const fetchVersions = async (textId, skip, limit) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
-  const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/versions`, {
-    params: {
-      language,
-      limit,
-      skip
-    }
-  })
-  return data
-}
-const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter }) => {
+const Versions = ({ 
+  textId: propTextId, 
+  requiredInfo, 
+  addChapter, 
+  currentChapter, 
+  versions, 
+  versionsIsLoading, 
+  versionsIsError, 
+  versionsPagination, 
+  setVersionsPagination 
+}) => {
   const { id: urlId } = useParams();
   const { t } = useTranslate();
-  const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
-  const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
   
   const textId = propTextId || urlId;
-
-  const {data: versions, isLoading: versionsIsLoading, error: versionsIsError} = useQuery(
-    ["versions", textId, skip, pagination.limit],   
-    () => fetchVersions(textId, skip, pagination.limit),
-    {refetchOnWindowFocus: false, enabled: !!textId}
-  );
 
   // -------------------------------------------- helpers ----------------------------------------------
 
@@ -51,10 +38,10 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
   }
 
   const totalVersions = versions?.versions.length || 0;
-  const totalPages = Math.ceil(totalVersions / pagination.limit);
+  const totalPages = Math.ceil(totalVersions / versionsPagination.limit);
 
   const handlePageChange = (pageNumber) => {
-    setPagination(prev => ({ ...prev, currentPage: pageNumber }));
+    setVersionsPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
 
 
@@ -121,7 +108,6 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
     }
 
     return versions?.versions.map((version) => (
-      <>
         <div className="version-details" key={version.id}>
           <div className="version-title-subtitle-container">
             {renderTitle(version)}
@@ -129,16 +115,15 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
           </div>
           {renderLanguage(version)}
         </div>
-      </>
     ))
   }
   const renderPagination = () => {
-    return versions.versions.length > 0 ?
+    return versions?.versions?.length > 0 ?
       <PaginationComponent
-        pagination={pagination}
+        pagination={versionsPagination}
         totalPages={totalPages}
         handlePageChange={handlePageChange}
-        setPagination={setPagination}
+        setPagination={setVersionsPagination}
       /> :<></>
   }
 
@@ -155,5 +140,13 @@ Versions.propTypes = {
     from: PropTypes.string
   }),
   addChapter: PropTypes.func,
-  currentChapter: PropTypes.object
+  currentChapter: PropTypes.object,
+  versions: PropTypes.object,
+  versionsIsLoading: PropTypes.bool,
+  versionsIsError: PropTypes.object,
+  versionsPagination: PropTypes.shape({
+    currentPage: PropTypes.number.isRequired,
+    limit: PropTypes.number.isRequired
+  }),
+  setVersionsPagination: PropTypes.func
 };

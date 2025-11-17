@@ -49,7 +49,13 @@ describe("Texts Component", () => {
       type: "Test Type"
     },
     contents:[{
-      id:"sdfasdfasdf"
+      id:"sdfasdfasdf",
+      sections: [
+        { id: "section1", title: "Section 1" },
+        { id: "section2", title: "Section 2" }
+
+
+      ]
     }]
   };
 

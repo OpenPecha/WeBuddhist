@@ -12,6 +12,7 @@ import localeBoIn from "./i18n/bo-IN.json";
 import { LANGUAGE } from "./utils/constants.js";
 import { HelmetProvider } from "react-helmet-async";
 import { UserbackProvider } from "./context/UserBackProvider.jsx";
+import { CollectionColorProvider } from "./context/CollectionColorContext.jsx";
 const queryClient = new QueryClient();
 const defaultLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE || "en";
 
@@ -44,7 +45,9 @@ createRoot(document.getElementById('root')).render(
           <PechaAuthProvider>
             <HelmetProvider>
               <UserbackProvider>
-              <App />
+                <CollectionColorProvider>
+                  <App />
+                </CollectionColorProvider>
               </UserbackProvider>
             </HelmetProvider>
           </PechaAuthProvider>

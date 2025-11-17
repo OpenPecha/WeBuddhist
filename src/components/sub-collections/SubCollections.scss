@@ -8,7 +8,7 @@
   }
 
   .sub-collection-details {
-    margin: 5rem 5rem 0 5rem;
+    margin: 4rem 5rem 0 8rem;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -20,14 +20,13 @@
       letter-spacing: 0.05rem;
       text-align: left;
       color: #555;
-      margin-bottom: 0.5rem;
     }
 
     .sub-collections-list-container {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 2rem;
-      margin-top: 2rem;
+      margin-top: 1rem;
       
       @media (max-width: 1000px) {
         grid-template-columns: repeat(2, 1fr);
@@ -48,12 +47,10 @@
         .divider {
           height: 1px;
           background-color: #e0e0e0;
-          margin-bottom: 1rem;
           width: 100%
         }
 
         p {
-          font-size: 20px;
           cursor: pointer;
           width: 100%;
           line-height: 1.4;
@@ -61,10 +58,8 @@
           padding-top: 1rem;
           font-weight: 400;
           margin: 0;
-
           &:hover {
             color: #666666;
-            text-decoration: underline;
           }
         }
       }

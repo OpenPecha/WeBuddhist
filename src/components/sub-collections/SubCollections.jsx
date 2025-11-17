@@ -44,7 +44,7 @@ const SubCollections = (props) => {
   if (earlyReturn) return earlyReturn;
 
   // ----------------------------------- renderers ---------------------------------------
-  const renderTitle = () =>  <h1 className="listtitle">{subCollectionsData?.parent?.title?.toUpperCase()}</h1>
+  const renderTitle = () =>  <h1 className="title">{subCollectionsData?.parent?.title?.toUpperCase()}</h1>
 
   const renderSubCollectionItem = (collection) => {
     if (from === "compare-text") {
@@ -67,7 +67,7 @@ const SubCollections = (props) => {
     }
     
     return (
-      <Link key={collection.id} to={`/works/${collection.id}`} className="text-item overalltext sub-collection">
+      <Link key={collection.id} to={`/works/${collection.id}`} className=" overalltext sub-collection">
         <div className="divider"></div>
         <p>{collection.title}</p>
       </Link>

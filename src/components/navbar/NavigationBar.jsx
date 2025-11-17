@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaGlobe, FaSearch } from "react-icons/fa";
 import { RxHamburgerMenu , RxCross1 } from "react-icons/rx";
 import { useAuth } from "../../config/AuthContext.jsx";
@@ -9,6 +9,7 @@ import { setFontVariables } from "../../config/commonConfigs.js";
 import { useQueryClient } from "react-query";
 import { useState } from 'react';
 import "./NavigationBar.scss";
+import { useCollectionColor } from "../../context/CollectionColorContext.jsx";
 
 export const invalidateQueries = async (queryClient) => {
     const queriesToInvalidate = ["texts", "topics","sheets","sidePanel","works","texts-versions","texts-content","sheets-user-profile","table-of-contents","collections","sub-collections","versions"];
@@ -22,14 +23,20 @@ export const invalidateQueries = async (queryClient) => {
   };
 const Navigation = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslate();
     const { isLoggedIn, logout: pechaLogout, isAuthLoading } = useAuth();
     const { isAuthenticated, logout, isLoading: isAuth0Loading } = useAuth0();
     const tolgee = useTolgee(['language']);
     const queryClient = useQueryClient();
+    const { collectionColor } = useCollectionColor();
     const [searchTerm, setSearchTerm] = useState("");
     const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+    const routesWithoutColorBorder = ['/', '/collections', '/login', '/register', '/signup', '/community','/user'];
+    const shouldHideColorBorder = routesWithoutColorBorder.includes(location.pathname);
    
 
      function handleLogout(e) {
@@ -81,13 +88,15 @@ const renderNavLinks=()=>{
 }
 const renderSearch = () => {
     return (
-      <form className="search-bar navbaritems" onSubmit={handleSearchSubmit}>
-        <FaSearch />
+      <form className={`search-bar navbaritems ${isSearchFocused ? 'search-focused' : ''}`} onSubmit={handleSearchSubmit}>
+        <FaSearch className="search-icon" />
         <input
           type="text"
           placeholder={t("common.placeholder.search")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => setIsSearchFocused(false)}
           className="search-input"
         />
       </form>
@@ -180,7 +189,12 @@ const renderAuthButtons = () => {
   }
   return (
     <>
-      <div className='navigation-main'>
+      <div 
+        className='navigation-main'
+        style={{
+          borderBottomColor: shouldHideColorBorder ? '#ffffff' : (collectionColor || '#ffffff')
+        }}
+      >
           <div className='navigation-left'>
               {renderLogo()}
               {renderNavLinks()}
@@ -198,6 +212,7 @@ const renderAuthButtons = () => {
               </button>
           </div>
       </div>
+
       {isMobileMenuOpen && (
         <div className="mobile-menu">
           {renderSearch()}

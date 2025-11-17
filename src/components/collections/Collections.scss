@@ -1,38 +1,42 @@
 $button-color: #888888;
-$greenline-color: rgb(151, 179, 134);
-$redline-color: brown;
+$greenline-color: #5B99B7;
+$redline-color: #802F3E;
+$blueline-color: #004E5F;
+
 $background-color: #f8f9fa;
 $primary-color: #666666;
 $rightsection-color: #FBFBFA;
 
-$font-size-title: 24px;
+$font-size-title: 22px;
 $font-size-title-sm: 20px;
 $font-size-button: 16px;
 $font-size-button-sm: 12px;
-$font-size-part-title: 20px;
-$font-size-part-title-sm: 16px;
+$font-size-part-title: 22px;
+$font-size-part-title-sm: 14px;
 $font-size-content: 16px;
 $font-size-content-sm: 14px;
 
 .collections-container{
   display:  flex;
   gap: 2rem;
-  margin: 0 5rem;
+  margin: 0 1rem 0 5rem;
   justify-content: space-around;
   .browse-section{
     display: flex;
     justify-content: space-between;
-    margin: 5rem 0 3rem 0;
+    margin: 4rem 0 1rem 0;
 
     .browse-library-text {
       font-size: $font-size-title;
       font-weight: 600;
-      align-items: flex-start;
+      margin-left: 2.5rem;
       word-wrap: break-word;
       max-width: 100%;
+      font-family: var(--listtitle-font-family);
 
       @media (max-width: 576px) {
         font-size: $font-size-title-sm;
+        margin-left: 0rem;
       }
     }
 
@@ -59,17 +63,30 @@ $font-size-content-sm: 14px;
   .left-section{
     width: 65%;
     .collections-list-container{
+      margin: 0 auto;
+      width: 90%;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 3rem;
+      gap: 1rem;
       text-align: left;
-
       .collections {
         width: 100%;
         .red-line {
           width: 100%;
           height: 4px;
           background-color: $redline-color;
+          margin-bottom: 1rem;
+        }
+        .green-line {
+          width: 100%;
+          height: 4px;
+          background-color: $greenline-color;
+          margin-bottom: 1rem;
+        }
+        .blue-line {
+          width: 100%;
+          height: 4px;
+          background-color: $blueline-color;
           margin-bottom: 1rem;
         }
         .collection-link {
@@ -85,16 +102,11 @@ $font-size-content-sm: 14px;
           background: none;
           border: none;
           padding: 0;
-          font-family: var(--listtitle-font-family);
 
           &:hover {
             color: $primary-color;
-            text-decoration: underline;
           }
 
-          @media (max-width: 576px) {
-            font-size: $font-size-part-title-sm;
-          }
         }
         .collections-description{
           font-size: $font-size-content;
@@ -104,9 +116,7 @@ $font-size-content-sm: 14px;
           word-break: break-word;
           hyphens: auto;
 
-          @media (max-width: 576px) {
-            font-size: $font-size-content-sm;
-          }
+        
         }
       }
     }
@@ -144,7 +154,6 @@ $font-size-content-sm: 14px;
           background: none;
           border: none;
           padding: 0;
-          font-family: var(--listtitle-font-family);
 
           &:hover {
             color: $primary-color;
@@ -165,24 +174,22 @@ $font-size-content-sm: 14px;
     background-color: $rightsection-color;
     height: 95vh;
     .right-section-content{
-      margin: 5rem 1rem 0 1rem ;
-
+      margin: 4rem 1rem 0 1rem ;
       .about-title {
         font-size: $font-size-title;
         text-align: start;
+        font-weight: 600;
         color: $primary-color;
         margin: 1rem;
+        padding-top: 1rem;
         word-wrap: break-word;
 
-        @media (max-width: 576px) {
-          font-size: $font-size-title-sm;
-        }
+       
       }
 
       .about-content {
         font-size: $font-size-content;
         text-align: start;
-        line-height: 2;
         color: $primary-color;
         margin: 1rem;
         word-wrap: break-word;
@@ -209,8 +216,11 @@ $font-size-content-sm: 14px;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin: 4rem 1rem;
-
+    margin: 0 1rem;
+    .browse-section{
+      width: 100%;
+      padding: 0 1rem;
+    }
     .left-section, .right-section{
       width: 100%;
     }
@@ -225,4 +235,16 @@ $font-size-content-sm: 14px;
     }
 
   }
+}
+.explore-stories-btn{
+  width: 100%;
+  font-family: var(--listtitle-font-family);
+  background-color: #e9e9e9;
+  border: none;
+  border-radius: 0.4rem;
+  box-sizing: border-box;
+  color: rgb(107, 107, 107);
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+  font-size: $font-size-button;
 }
