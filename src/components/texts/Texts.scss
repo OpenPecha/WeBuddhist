@@ -4,8 +4,9 @@ $primary-color: #871C1C;
 .texts-container{
   display: flex;
   gap: 2rem;
-  margin: 0 8rem;
-  justify-content: space-around;
+  margin: 0 1rem 0 5rem;
+  min-height: calc(100vh - var(--navbar-height, 60px));
+  justify-content: flex-start;
   .left-section{
     display: flex;
     flex-direction: column;
@@ -216,7 +217,7 @@ $primary-color: #871C1C;
     display: flex;
     flex-direction: column;
     margin: 1rem;
-    justify-content: space-around;
+    justify-content: flex-start;
     .left-section, .right-section{
       width: 100%;
     }

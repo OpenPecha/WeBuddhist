@@ -10,11 +10,12 @@ $text-color-title: #000000;
   border-top: 1px solid $light-grey;
   padding: 1rem 0;
   position: static;
+  margin-top: auto;
 }
 
 .footer-content {
   max-width: 1400px;
-  margin: 0 1rem 0 5rem; 
+  margin: 0 1rem 0 7rem; 
   padding: 0;
   display: flex;
   flex-wrap: wrap;
