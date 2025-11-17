@@ -5,6 +5,7 @@ $text-color: #666666;
 $font-size-title: 16px;
 $text-color-title: #000000;
 
+
 .footer-main {
   background-color: #ffffff;
   border-top: 1px solid $light-grey;
@@ -21,6 +22,13 @@ $text-color-title: #000000;
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: space-between;
+}
+
+@media (min-width: 769px) {
+  .profile-page ~ .footer-main .footer-content,
+  .auth-page ~ .footer-main .footer-content {
+    margin: 0 1rem 0 18rem;
+  }
 }
 
 .footer-column {
