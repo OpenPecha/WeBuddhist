@@ -1,14 +1,17 @@
 .sub-collections-container {
 
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-start;
+  align-items: stretch;
+  margin: 0 1rem 0 8rem;
+  min-height: calc(100vh - var(--navbar-height, 60px));
 
   &.no-margin {
     margin: 0;
   }
 
   .sub-collection-details {
-    margin: 4rem 5rem 0 8rem;
+    margin: 4rem 5rem 0 0;
     display: flex;
     flex-direction: column;
     width: 100%;

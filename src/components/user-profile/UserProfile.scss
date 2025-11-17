@@ -424,3 +424,7 @@
 p.listsubtitle {
   padding-top: 30vh;
 }
+
+.profile-page {
+  min-height: calc(100vh - var(--navbar-height, 60px));
+}
