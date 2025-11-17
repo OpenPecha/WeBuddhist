@@ -39,6 +39,10 @@ function App() {
     const { getIdTokenClaims, isAuthenticated, logout } = useAuth0();
 
     useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }, [location.pathname]);
+
+    useEffect(() => {
         if (isAuthenticated) {
             const getToken = async () => {
                 try {
@@ -115,7 +119,8 @@ function App() {
     const hideFooter =
         !!matchPath("/sheets/:id", location.pathname) ||
         !!matchPath("/chapter", location.pathname) ||
-        !!matchPath("/:username/:sheetSlugAndId", location.pathname);
+        !!matchPath("/login", location.pathname) ||
+        !!matchPath("/register", location.pathname);
 
     return (
       <Suspense>
