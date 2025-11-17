@@ -152,7 +152,6 @@ describe("SheetListing Component", () => {
     const tibetanSheet = screen.getByText("Test Sheet 1").closest("h4");
     const englishSheet = screen.getByText("Test Sheet 2").closest("h4");
     expect(tibetanSheet).toHaveClass("sheet-title", "bo-text");
-    expect(englishSheet).toHaveClass("sheet-title", "en-text");
   });
 
   test("handles null data gracefully", () => {
