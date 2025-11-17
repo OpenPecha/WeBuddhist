@@ -8,6 +8,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
 import Seo from "../commons/seo/Seo.jsx";
 import PropTypes from "prop-types";
+import {useCollectionColor} from "../../context/CollectionColorContext.jsx";
 
 export const fetchCollections = async () => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -25,6 +26,7 @@ const Collections = (props) => {
   const {showDescription = true,requiredInfo = {}, setRendererInfo} = props
   const navigate = useNavigate();
   const {t} = useTranslate();
+  const {setCollectionColor} = useCollectionColor();
   const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery(
     ["collections"],
     () => fetchCollections(),
@@ -37,6 +39,17 @@ const Collections = (props) => {
   const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, error: collectionsError, t });
   if (earlyReturn) return earlyReturn;
 
+  const getColorFromIndex = (index) => {
+    if (index % 3 === 0) return "#802F3E";
+    if (index % 3 === 1) return "#5B99B7";
+    return "#004E5F";
+  };
+
+  const handleCollectionClick = (index) => {
+    const color = getColorFromIndex(index);
+    setCollectionColor(color);
+  };
+
   // ----------------------------- renderers -------------------------------------
   const renderBrowseLibrary = () => {
     return (
@@ -46,12 +59,13 @@ const Collections = (props) => {
     );
   };
 
-  const renderCollectionNames = (collection) => {
+  const renderCollectionNames = (collection, index) => {
     if (requiredInfo.from === "compare-text" && collection.has_child) {
       return (
         <button 
           className="title collection-link" 
           onClick={() => {
+            handleCollectionClick(index);
             setRendererInfo(prev => ({
               ...prev, 
               requiredId: collection.id,
@@ -65,10 +79,18 @@ const Collections = (props) => {
     }
 
     return collection.has_child ?
-      <Link to={`/collections/${collection.id}`} className="title collection-link">
+      <Link 
+        to={`/collections/${collection.id}`} 
+        className="title collection-link"
+        onClick={() => handleCollectionClick(index)}
+      >
         {collection.title}
       </Link> :
-      <Link to={`/works/${collection.id}`} className="title collection-link">
+      <Link 
+        to={`/works/${collection.id}`} 
+        className="title collection-link"
+        onClick={() => handleCollectionClick(index)}
+      >
         {collection.title}
       </Link>
   }
@@ -79,7 +101,7 @@ const Collections = (props) => {
         {collectionsData?.collections.map((collection, index) => (
           <div className="collections" key={collection.id}>
             <div className={`${index % 3 === 0 ? "red-line" : index % 3 === 1 ? "green-line" : "blue-line"}`}/>
-              {renderCollectionNames(collection)}
+              {renderCollectionNames(collection, index)}
               {showDescription && <p className="content collections-description">{collection.description}</p>}
           </div>
         ))}
