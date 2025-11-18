@@ -6,11 +6,11 @@ const Footer = () => {
   const renderAboutColumn = () => {
     return (
       <div className="footer-column">
-        <h3 className="footer-column-title">About</h3>
+        <h3 className="footer-column-title">{t("footer.about")}</h3>
         <ul className="footer-links">
-          <li><a href="https://dharmaduta.in/team" target="_blank" rel="noopener noreferrer">{t('Teams')}</a></li>
-          <li><a href="https://wiki.openpecha.org/#/" target="_blank" rel="noopener noreferrer">{t('Developer_guidelines')}</a></li>
-          <li><a href="https://dharmaduta.in/projects" target="_blank" rel="noopener noreferrer">{t('Products')}</a></li>
+          <li><a href="https://dharmaduta.in/team" target="_blank" rel="noopener noreferrer">{t('footer.team')}</a></li>
+          <li><a href="https://wiki.openpecha.org/#/" target="_blank" rel="noopener noreferrer">{t('footer.developer_guidelines')}</a></li>
+          <li><a href="https://dharmaduta.in/projects" target="_blank" rel="noopener noreferrer">{t('footer.products')}</a></li>
         </ul>
       </div>
     );
@@ -21,9 +21,8 @@ const Footer = () => {
       <div className="footer-column">
         <h3 className="footer-column-title">Tools</h3>
         <ul className="footer-links">
-          <li><a href="https://buddhistai.tools/" target="_blank" rel="noopener noreferrer">{t('buddhist_ai_tools')}</a></li>
-          <li><a href="https://webuddhist.com/" target="_blank" rel="noopener noreferrer">{t('we_buddhist_study_platform')}</a></li>
-          <li><a href="https://sherab.org/" target="_blank" rel="noopener noreferrer">{t('sherab')}</a></li>
+          <li><a href="https://buddhistai.tools/" target="_blank" rel="noopener noreferrer">{t('footer.buddhist_ai_tools')}</a></li>
+          <li><a href="https://sherab.org/" target="_blank" rel="noopener noreferrer">{t('footer.sherab')}</a></li>
         </ul>
       </div>
     );
