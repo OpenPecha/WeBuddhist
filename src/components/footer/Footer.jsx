@@ -31,7 +31,7 @@ const Footer = () => {
   const renderDevelopersColumn = () => {
     return (
       <div className="footer-column">
-        <h3 className="footer-column-title">Developers</h3>
+        <h3 className="footer-column-title">{t("footer.developers")}</h3>
         <ul className="footer-links">
           <li><a href="https://github.com/OpenPecha" target="_blank" rel="noopener noreferrer">{t('fork_us_on_github')}</a></li>
         </ul>
