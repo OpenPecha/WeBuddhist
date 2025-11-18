@@ -10,7 +10,7 @@ import { usePanelContext } from "../../../../context/PanelContext.jsx";
 
 const ChapterHeader = (props) => {
 
-  const {viewMode, setViewMode, layoutMode, setLayoutMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, versionSelected} = props
+  const {viewMode, setViewMode, layoutMode, setLayoutMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, versionSelected, canShowTableOfContents = true} = props
   const { isResourcesPanelOpen, isViewSelectorOpen, setIsViewSelectorOpen, closeResourcesPanel } = usePanelContext()
 
   useEffect(() => {
@@ -26,6 +26,7 @@ const ChapterHeader = (props) => {
   // ----------------------- renderers --------------------------
 
   const renderTableOfContentsIcon = () => {
+    if (!canShowTableOfContents) return null;
     return <div className="left-group toc-icon-container">
       {
         showTableOfContents ?
@@ -84,4 +85,5 @@ ChapterHeader.propTypes = {
   currentChapter: PropTypes.object.isRequired,
   totalChapters: PropTypes.number.isRequired,
   versionSelected: PropTypes.bool,
+  canShowTableOfContents: PropTypes.bool,
 };
