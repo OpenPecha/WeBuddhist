@@ -19,7 +19,7 @@ const Footer = () => {
   const renderToolsColumn = () => {
     return (
       <div className="footer-column">
-        <h3 className="footer-column-title">Tools</h3>
+        <h3 className="footer-column-title">{t("footer.tools")}</h3>
         <ul className="footer-links">
           <li><a href="https://buddhistai.tools/" target="_blank" rel="noopener noreferrer">{t('footer.buddhist_ai_tools')}</a></li>
           <li><a href="https://sherab.org/" target="_blank" rel="noopener noreferrer">{t('footer.sherab')}</a></li>
@@ -42,7 +42,7 @@ const Footer = () => {
   const renderConnectSection = () => {
     return (
       <div className="footer-connect">
-        <h3 className="footer-column-title">CONNECT</h3>
+        <h3 className="footer-column-title">{t("footer.connect")}</h3>
         <div className="social-links">
           <a href="https://www.instagram.com/dharmaduta.in/" target="_blank" rel="noopener noreferrer">{t('footer.instagram')}</a>
           <a href="https://www.facebook.com/profile.php?id=61578322432088" target="_blank" rel="noopener noreferrer">{t('footer.facebook')}</a>
