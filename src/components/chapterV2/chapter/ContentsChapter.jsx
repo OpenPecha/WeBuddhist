@@ -104,17 +104,18 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
   const pageTitle = allContent?.text_detail?.title ? `${allContent.text_detail.title} | ${siteName}` : `Chapter | ${siteName}`;
   const earlyReturn = getEarlyReturn({ isLoading: infiniteQuery.isLoading, error: infiniteQuery.error, t });
   if (earlyReturn) return earlyReturn;
+  const canShowTableOfContents = ((allContent?.content?.sections || []).length) > 1;
   
   // ------------------------ renderers ----------------------
   const renderChapterHeader = () => {
-    const propsForChapterHeader = { viewMode, setViewMode, layoutMode, setLayoutMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!versionId };
+    const propsForChapterHeader = { viewMode, setViewMode, layoutMode, setLayoutMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!versionId, canShowTableOfContents };
     return <ChapterHeader {...propsForChapterHeader} />;
   };
 
   const renderChapter = () => {
     const propsForUseChapterHookComponent = {
       textId,
-      showTableOfContents,
+      showTableOfContents: showTableOfContents && canShowTableOfContents,
       setShowTableOfContents,
       content: allContent?.content,
       language: allContent?.text_detail?.language,
