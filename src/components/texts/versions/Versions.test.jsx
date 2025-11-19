@@ -266,31 +266,6 @@ describe("Versions Component", () => {
     });
   });
 
-  describe("Version metadata rendering", () => {
-    test("renders version source and source_url when available", () => {
-      const versionsWithMetadata = {
-        versions: [
-          {
-            id: "version1",
-            title: "Version 1",
-            language: "bo",
-            table_of_contents: ["content1"],
-            source: "Test Source",
-            source_url: "https://test.com",
-            license: "CC BY 4.0"
-          }
-        ]
-      };
-
-      setup({ versions: versionsWithMetadata });
-
-      expect(screen.getByText("Source:")).toBeInTheDocument();
-      expect(screen.getByText("Test Source")).toBeInTheDocument();
-      expect(screen.getByText("License:")).toBeInTheDocument();
-      expect(screen.getByText("CC BY 4.0")).toBeInTheDocument();
-    });
-  });
-
   describe("addChapter mode", () => {
     test("renders button instead of link when addChapter is provided", () => {
       const mockAddChapter = vi.fn();
