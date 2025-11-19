@@ -78,17 +78,16 @@ const Versions = ({
     }
 
     const renderMetadata = (version) => {
-      const source = version.source || "";
-      const sourceUrl = version.source_url || "#";
+      const source = version.source_link || "";
       const license = version.license || "";
       return (
-        <div className="version-metadata">
+        <div className={`version-metadata en-text`}>
           {source && (
             <div className="metadata-row">
               <span>Source:</span>
-              <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
+              <span>
                 {source}
-              </a>
+              </span>
             </div>
           )}
           {license && (
