@@ -65,21 +65,21 @@ const Collections = (props) => {
   };
 
   const renderCollectionNames = (collection, index) => {
-    if (requiredInfo.from === "compare-text" && collection.has_child) {
+    if (requiredInfo.from === "compare-text" && !collection.has_child) {
       return (
-        <button 
+        <Link 
           className="title collection-link" 
           onClick={() => {
             handleCollectionClick(index);
             setRendererInfo(prev => ({
               ...prev, 
               requiredId: collection.id,
-              renderer: "sub-collections"
+              renderer: "works"
             }));
           }}
         >
           {collection.title}
-        </button>
+        </Link>
       );
     }
 

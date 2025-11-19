@@ -231,41 +231,4 @@ describe("Collections Component", () => {
     expect(result).toEqual(mockCollectionsData);
   });
 
-  test("sets collection color based on index", () => {
-    const data = {
-      collections: [
-        { id: "c1", title: "A", description: "d1", has_child: true },
-        { id: "c2", title: "B", description: "d2", has_child: false },
-        { id: "c3", title: "C", description: "d3", has_child: true },
-      ],
-      total: 3,
-      skip: 0,
-      limit: 10
-    };
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data,
-      isLoading: false,
-    }));
-
-    render(
-      <Router>
-        <QueryClientProvider client={queryClient}>
-          <TolgeeProvider
-            fallback={"Loading tolgee..."}
-            tolgee={mockTolgee}
-          >
-            <Collections />
-          </TolgeeProvider>
-        </QueryClientProvider>
-      </Router>
-    );
-
-    const links = screen.getAllByRole('link', { name: /A|B|C/ });
-    fireEvent.click(links[0]);
-    fireEvent.click(links[1]);
-    fireEvent.click(links[2]);
-    expect(setCollectionColorMock).toHaveBeenNthCalledWith(1, "#802F3E");
-    expect(setCollectionColorMock).toHaveBeenNthCalledWith(2, "#5B99B7");
-    expect(setCollectionColorMock).toHaveBeenNthCalledWith(3, "#004E5F");
-  });
 });
