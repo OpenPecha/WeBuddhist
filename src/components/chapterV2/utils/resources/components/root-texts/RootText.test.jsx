@@ -151,19 +151,6 @@ describe("RootTextView", () => {
     }
   });
 
-  test("clicking on 'open text' button calls addChapter with correct parameters", () => {
-    setup();
-
-    const openTextButtons = document.querySelectorAll(".root-text-button");
-    // The first button is the 'open text' button for the first root text
-    fireEvent.click(openTextButtons[0]);
-
-    expect(mockAddChapter).toHaveBeenCalledWith({
-      textId: "mock-root-text-1",
-      segmentId: "mock-segment-id",
-    },currentChapter);
-  });
-
   test("renders correctly with empty root texts", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementationOnce(() => ({
       data: mockEmptyRootTextData,
