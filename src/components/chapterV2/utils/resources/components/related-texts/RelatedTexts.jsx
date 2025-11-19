@@ -64,7 +64,6 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentCha
                           <TextExpand language={commentary.language} maxLength={250}>
                             {item.content}
                           </TextExpand>
-                          <div className="commentary-actions">
                           <div className="commentary-buttons">
                             <button className="commentary-button"
                                  onClick={() => {
@@ -88,7 +87,6 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentCha
                               <span>{t("common.share")}</span>
                             </div> */}
                           </div>
-                        </div>
                           </div>
                         ))}
                       </div>
