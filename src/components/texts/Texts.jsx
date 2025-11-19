@@ -100,7 +100,7 @@ const Texts = (props) => {
     return(
       <div className="title-type-container">
         {renderTitle()}
-        {renderType()}
+        {/* {renderType()} */}
       </div>
     )
   }
