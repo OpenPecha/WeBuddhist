@@ -57,20 +57,20 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentCha
                       {commentary.title} {commentary.count && `(${commentary.count})`}
                     </h3>
                     
-                    {commentary.content && (
+                    {commentary.segments && (
                       <div className="commentary-container">
-                        {commentary.content && commentary.content.map((item, idx) => (
-                          <TextExpand key={idx} language={commentary.language} maxLength={250}>
-                            {item}
+                        {commentary.segments && commentary.segments.map((item, idx) => (
+                          <div key={idx}>
+                          <TextExpand language={commentary.language} maxLength={250}>
+                            {item.content}
                           </TextExpand>
-                        ))}
-                        <div className="commentary-actions">
+                          <div className="commentary-actions">
                           <div className="commentary-buttons">
                             <button className="commentary-button"
                                  onClick={() => {
                                    addChapter({
                                      textId: textId, 
-                                     segmentId: segmentId,
+                                     segmentId: item.segment_id,
                                    }, currentChapter);
                                    closeResourcesPanel();
                                  }}>
@@ -89,6 +89,8 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentCha
                             </div> */}
                           </div>
                         </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
