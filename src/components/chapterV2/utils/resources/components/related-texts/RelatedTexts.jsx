@@ -59,7 +59,11 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentCha
                     
                     {commentary.content && (
                       <div className="commentary-container">
-                        <TextExpand language={commentary.language} maxLength={250}>{commentary.content}</TextExpand>
+                        {commentary.content && commentary.content.map((item, idx) => (
+                          <TextExpand key={idx} language={commentary.language} maxLength={250}>
+                            {item}
+                          </TextExpand>
+                        ))}
                         <div className="commentary-actions">
                           <div className="commentary-buttons">
                             <button className="commentary-button"
