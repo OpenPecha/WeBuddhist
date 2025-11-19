@@ -258,16 +258,18 @@ const EditUserProfile = () => {
   );
 
   return (
-    <div className="edit-user-profile listtitle">
-      <h2>{t("edit_profile.header")}</h2>
-      <hr />
-      <form onSubmit={handleSubmit} className="textalign">
-        <div className="custom-tabs">
-          {renderTabNavigation()}
-          {renderTabContent()}
-        </div>
-        {renderFormButtons()}
-      </form>
+    <div className="profile-page">
+      <div className="edit-user-profile listtitle">
+        <h2>{t("edit_profile.header")}</h2>
+        <hr />
+        <form onSubmit={handleSubmit} className="textalign">
+          <div className="custom-tabs">
+            {renderTabNavigation()}
+            {renderTabContent()}
+          </div>
+          {renderFormButtons()}
+        </form>
+      </div>
     </div>
   );
 };

@@ -2,10 +2,15 @@ $button-color: #888888;
 $greenline-color: #5B99B7;
 $redline-color: #802F3E;
 $blueline-color: #004E5F;
-
+$goldline-color: #CCB478;
+$lightgreenline-color:#5D956F;
 $background-color: #f8f9fa;
 $primary-color: #666666;
 $rightsection-color: #FBFBFA;
+$purpleline-color: #594176;
+$orangeline-color: #D4896C;
+$pinkline-color: #C6A7B4;
+$lightpurpleline-color: #7F85A9;
 
 $font-size-title: 22px;
 $font-size-title-sm: 20px;
@@ -77,10 +82,46 @@ $font-size-content-sm: 14px;
           background-color: $redline-color;
           margin-bottom: 1rem;
         }
+        .gold-line {
+          width: 100%;
+          height: 4px;
+          background-color: $goldline-color;
+          margin-bottom: 1rem;
+        }
+        .pink-line {
+          width: 100%;
+          height: 4px;
+          background-color: $pinkline-color;
+          margin-bottom: 1rem;
+        }
         .green-line {
           width: 100%;
           height: 4px;
           background-color: $greenline-color;
+          margin-bottom: 1rem;
+        }
+        .lightgreen-line {
+          width: 100%;
+          height: 4px;
+          background-color: $lightgreenline-color;
+          margin-bottom: 1rem;
+        }
+        .purple-line {
+          width: 100%;
+          height: 4px;
+          background-color: $purpleline-color;
+          margin-bottom: 1rem;
+        }
+        .orangeline-line {
+          width: 100%;
+          height: 4px;
+          background-color: $orangeline-color;
+          margin-bottom: 1rem;
+        }
+        .lightpurpleline-line {
+          width: 100%;
+          height: 4px;
+          background-color: $lightpurpleline-color;
           margin-bottom: 1rem;
         }
         .blue-line {
@@ -212,6 +253,12 @@ $font-size-content-sm: 14px;
   }
 }
 @media (max-width: 1000px) {
+  .collections-container{
+    gap: 0;
+    margin: 0;
+  }
+}
+@media (max-width: 656px) {
   .collections-container{
     display: flex;
     flex-direction: column;

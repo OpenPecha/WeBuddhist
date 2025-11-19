@@ -4,8 +4,10 @@ $primary-color: #871C1C;
 .texts-container{
   display: flex;
   gap: 2rem;
-  margin: 0 8rem;
-  justify-content: space-around;
+  margin: 0 1rem 0 8rem;
+  justify-content: flex-start;
+  align-items: stretch;
+  min-height: calc(100vh - var(--navbar-height, 60px));
   .left-section{
     display: flex;
     flex-direction: column;

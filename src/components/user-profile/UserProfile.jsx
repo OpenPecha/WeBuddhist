@@ -315,14 +315,14 @@ const UserProfile = () => {
     );
 
   return (
-    <>
+    <div className="profile-page">
       {!userInfoIsLoading ? (
         renderProfileContent()
       ) : (
         <p className="listsubtitle">{t("common.loading")}</p>
       )}
       {renderImageUploadModal()}
-    </>
+    </div>
   );
 };
 

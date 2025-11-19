@@ -7,7 +7,7 @@ import axiosInstance from "../../config/axios-config.js";
 import {render, screen, fireEvent} from "@testing-library/react";
 import {TolgeeProvider} from "@tolgee/react";
 import React from "react";
-import Texts, {fetchTableOfContents} from "./Texts.jsx";
+import Texts, {fetchTableOfContents, fetchVersions} from "./Texts.jsx";
 
 mockAxios();
 mockUseAuth();
@@ -151,6 +151,24 @@ describe("Texts Component", () => {
     fireEvent.click(buttons[1]);
     expect(buttons[1]).toHaveClass('active');
     expect(screen.getByTestId("versions-component")).toBeInTheDocument();
+  });
+
+  test("fetchVersions makes correct API call", async () => {
+    const local = mockLocalStorage();
+    local.getItem.mockReturnValue("bo-IN");
+    axiosInstance.get.mockResolvedValueOnce({ data: { versions: [] } });
+    const result = await fetchVersions("123", 0, 10);
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      "/api/v1/texts/123/versions",
+      {
+        params: {
+          language: "bo",
+          limit: 10,
+          skip: 0
+        }
+      }
+    );
+    expect(result).toEqual({ versions: [] });
   });
 
   test("switches back to contents from versions tab", () => {

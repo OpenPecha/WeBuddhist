@@ -48,7 +48,8 @@ const TranslationView = ({
     "bhu":"language.bhutanese",
     "mo":"language.mongolian",
     "sp":"language.spanish",
-    "it":"language.italian"
+    "it":"language.italian",
+    "zh":"language.chinese"
   }
   const groupedTranslations = sidePanelTranslationsData?.translations?.reduce((acc, translation) => {
     if (!acc[translation.language]) {
@@ -71,11 +72,6 @@ const TranslationView = ({
               {t("connection_panel.menuscript.source")}:<span className={`${getLanguageClass("en")} source`}> {translation.source}</span>
             </p>
           )}
-
-          <p className="text-great review navbaritems">
-            {t("text.versions.information.review_history")}
-          </p>
-
           <div className="link-select navbaritems">
             {addChapter && (
               <button

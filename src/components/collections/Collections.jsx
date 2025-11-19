@@ -40,14 +40,19 @@ const Collections = (props) => {
   if (earlyReturn) return earlyReturn;
 
   const getColorFromIndex = (index) => {
-    if (index % 3 === 0) return "#802F3E";
-    if (index % 3 === 1) return "#5B99B7";
-    return "#004E5F";
+    if (index % 9 === 0) return "#802F3E";
+    if (index % 9 === 1) return "#5B99B7";
+    if (index % 9 === 2) return "#5D956F";
+    if (index % 9 === 3) return "#004E5F";
+    if (index % 9 === 4) return "#594176";
+    if (index % 9 === 5) return "#7F85A9";
+    if (index % 9 === 6) return "#D4896C";
+    if (index % 9 === 7) return "#C6A7B4";
+    return "#CCB478";
   };
 
   const handleCollectionClick = (index) => {
-    const color = getColorFromIndex(index);
-    setCollectionColor(color);
+    setCollectionColor(getColorFromIndex(index));
   };
 
   // ----------------------------- renderers -------------------------------------
@@ -100,10 +105,10 @@ const Collections = (props) => {
       <div className="collections-list-container">
         {collectionsData?.collections.map((collection, index) => (
           <div className="collections" key={collection.id}>
-            <div className={`${index % 3 === 0 ? "red-line" : index % 3 === 1 ? "green-line" : "blue-line"}`}/>
+            <div className={`${index % 9 === 0 ? "red-line" : index % 9 === 1 ? "green-line" : index % 9 === 2 ? "lightgreen-line" : index % 9 === 3 ? "blue-line" : index % 9 === 4 ? "purple-line" : index % 9 === 5 ? "lightpurpleline-line " : index % 9 === 6 ? "orangeline-line" : index % 9 === 7 ? "pink-line" : "gold-line"}`}/>
               {renderCollectionNames(collection, index)}
               {showDescription && <p className="content collections-description">{collection.description}</p>}
-          </div>
+          </div>  
         ))}
       </div>
     );
