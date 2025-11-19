@@ -88,7 +88,7 @@ const renderNavLinks=()=>{
 }
 const renderSearch = () => {
     return (
-      <form className={`search-bar navbaritems ${isSearchFocused ? 'search-focused' : ''}`} onSubmit={handleSearchSubmit}>
+      <form className={`search-bar  ${isSearchFocused ? 'search-focused' : ''}`} onSubmit={handleSearchSubmit}>
         <FaSearch className="search-icon" />
         <input
           type="text"
