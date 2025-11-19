@@ -50,7 +50,6 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentCha
             <div>
               {segmentCommentaries.commentaries.map((commentary) => {
                 const textId = commentary.text_id;
-                const segmentId = commentary.segment_id;
                 return (
                   <div key={textId} className="commentary-list-item">
                     <h3 className={`commentary-title ${getLanguageClass(commentary.language)}`}>
