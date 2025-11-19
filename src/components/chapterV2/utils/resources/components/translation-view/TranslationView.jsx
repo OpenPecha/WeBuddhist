@@ -72,11 +72,6 @@ const TranslationView = ({
               {t("connection_panel.menuscript.source")}:<span className={`${getLanguageClass("en")} source`}> {translation.source}</span>
             </p>
           )}
-
-          <p className="text-great review navbaritems">
-            {t("text.versions.information.review_history")}
-          </p>
-
           <div className="link-select navbaritems">
             {addChapter && (
               <button
