@@ -8,12 +8,13 @@ const Footer = () => {
       <div className="footer-column">
         <h3 className="footer-column-title">{t("footer.about")}</h3>
         <ul className="footer-links">
+          <li><a href="https://forum.openpecha.org/" target="_blank" rel="noopener noreferrer">{t('footer.forum')}</a></li>
           <li><a href="https://dharmaduta.in/team" target="_blank" rel="noopener noreferrer">{t('footer.team')}</a></li>
           <li><a href="https://wiki.openpecha.org/#/" target="_blank" rel="noopener noreferrer">{t('footer.developer_guidelines')}</a></li>
           <li><a href="https://dharmaduta.in/projects" target="_blank" rel="noopener noreferrer">{t('footer.products')}</a></li>
         </ul>
       </div>
-    );
+    );v
   };
 
   const renderToolsColumn = () => {
