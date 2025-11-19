@@ -74,25 +74,28 @@ const RootTextView = ({ segmentId, setIsRootTextView, addChapter, currentChapter
           {rootTextData?.segment_root_mapping?.length > 0 && (
             <div className="all-root-texts">
               {rootTextData.segment_root_mapping.map((rootText) => {
-                const rootTextId = rootText.text_id;
+                const textId = rootText.text_id;
+                const language=rootText.language;
                 return (
-                  <div key={rootTextId} className="root-text-list-item">
-                    <h3 className={`root-text-title ${getLanguageClass(rootText.language)}`}>
-                      {rootText.title}
+                  <div key={textId} className="root-text-list-item">
+                    <h3 className={`root-text-title ${getLanguageClass(language)}`}>
+                      {rootText.title} {rootText.count && `(${rootText.count})`}
                     </h3>
-                    {rootText.content && (
+                    {rootText.segments && (
                       <div className="root-text-container">
-                        <TextExpand language={rootText.language} maxLength={250}>{rootText.content}</TextExpand>
-
-                        <div className="root-text-actions">
+                          {rootText.segments && rootText.segments.map((item, idx) => (
+                          <div key={idx}>
+                          <TextExpand language={language} maxLength={250}>
+                            {item.content}
+                          </TextExpand>
                           <div className="root-text-buttons">
                             <button className="root-text-button"
                                  onClick={() => {
-                                  addChapter({
-                                   textId: rootText.text_id, 
-                                   segmentId: rootText.segment_id,
-                                 },currentChapter)
-                                 closeResourcesPanel();
+                                   addChapter({
+                                     textId: textId, 
+                                     segmentId: item.segment_id,
+                                   }, currentChapter);
+                                   closeResourcesPanel();
                                  }}>
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
@@ -108,14 +111,15 @@ const RootTextView = ({ segmentId, setIsRootTextView, addChapter, currentChapter
                               <span>{t("common.share")}</span>
                             </div> */}
                           </div>
-                        </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
                 );
               })}
             </div>
-          )}
+            )}
         </div>
       </div>
     </div>
