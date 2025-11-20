@@ -51,8 +51,8 @@ const fontConfig = {
       fontFamily: "Jomolhari-Regular",
     },
     content: {
-      fontSize: "17px",
-      fontFamily: "NotoSerifTibetan-Medium",
+      fontSize: "20px",
+      fontFamily: "Jomolhari-Regular",
     },
     subcontent: {
       fontSize: "14px",

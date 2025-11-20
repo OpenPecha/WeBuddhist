@@ -18,7 +18,7 @@
   --overalltext-font-size: 24px;
   --overalltext-font-family: 'Times New Roman', Times, serif;
   --collection-link-font-size: 16px;
-  --collection-link-font-family: 'collection-font';
+  --collection-link-font-family: 'collection-link-font';
 }
 
 .div-color{

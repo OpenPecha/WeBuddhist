@@ -61,7 +61,7 @@ const Versions = ({
               }, currentChapter);
             }
           }}>
-            <div className={`${getLanguageClass(version.language)}`}>
+            <div className={`${getLanguageClass(version.language)} version-title`}>
               {version.title}
             </div>
           </button>
@@ -71,7 +71,7 @@ const Versions = ({
         to={`/chapter?text_id=${version.id}&content_id=${version.table_of_contents[0]}`}
         className="version-title"
       >
-        <div className={`${getLanguageClass(version.language)}`}>
+        <div className={`${getLanguageClass(version.language)} version-title`}>
           {version.title}
         </div>
       </Link>
