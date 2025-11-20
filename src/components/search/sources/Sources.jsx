@@ -6,17 +6,21 @@ import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import PaginationComponent from '../../commons/pagination/PaginationComponent';
 import { highlightSearchMatch } from '../../../utils/highlightUtils.jsx';
-import {getLanguageClass} from "../../../utils/helperFunctions.jsx";
+import {getLanguageClass, mapLanguageCode} from "../../../utils/helperFunctions.jsx";
+import { LANGUAGE } from "../../../utils/constants.js";
 
 
-export const fetchSources = async(query, skip, pagination) => {
+export const fetchSources = async(query, language, skip, pagination) => {
 
-  const {data} = await axiosInstance.get(`api/v1/search?query=${query}&search_type=${'SOURCE'}`, {
+  const {data} = await axiosInstance.get('api/v1/search/multilingual', {
     params: {
+      query,
+      search_type: 'exact',
+      language,
       limit: pagination.limit,
       skip: skip
     }
-  })
+  });
   return data;
   
 }
@@ -25,18 +29,20 @@ const Sources = (query) => {
   const { t } = useTranslate();
   const stringq = query?.query;
   const navigate = useNavigate();
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
 
    const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
     const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
     const {data:sourceData,isLoading,error}=useQuery(
-      ["sources",stringq,skip,pagination],
-      ()=>fetchSources(stringq,skip,pagination),
+      ["sources",stringq,language,skip,pagination],
+      ()=>fetchSources(stringq,language,skip,pagination),
       {
         refetchOnWindowFocus:false,
         retry:1
       }
     )
-    const searchText = sourceData?.search?.text || stringq;
+    const searchText = sourceData?.query || stringq;
 
     if (isLoading) return <div className="listsubtitle">{t("common.loading")}</div>;
   
@@ -64,7 +70,7 @@ const Sources = (query) => {
         <h4>{source.text.title}</h4>
         <span className='en-text'>{source.text.published_date}</span>
         <div className="segments">
-          {source.segment_match.map((segment) => (
+          {source.segment_matches.map((segment) => (
             <button type="button" key={segment.segment_id} className="segment" 
             onClick={() => {
               if (segment.segment_id && source.text?.text_id) {

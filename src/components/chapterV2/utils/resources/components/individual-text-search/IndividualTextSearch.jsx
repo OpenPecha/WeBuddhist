@@ -8,15 +8,20 @@ import { useSearchParams } from 'react-router-dom';
 import axiosInstance from '../../../../../../config/axios-config.js';
 import PaginationComponent from '../../../../../commons/pagination/PaginationComponent.jsx';
 import { highlightSearchMatch } from '../../../../../../utils/highlightUtils.jsx';
-import { getLanguageClass, getEarlyReturn } from '../../../../../../utils/helperFunctions.jsx';
+import { getLanguageClass, getEarlyReturn, mapLanguageCode } from '../../../../../../utils/helperFunctions.jsx';
 import { usePanelContext } from '../../../../../../context/PanelContext.jsx';
 import './IndividualTextSearch.scss';
 import PropTypes from "prop-types";
 import { useDebounce } from 'use-debounce';
+import { LANGUAGE } from '../../../../../../utils/constants.js';
 
-export const fetchTextSearchResults = async(query, textId, skip, pagination) => {
-  const { data } = await axiosInstance.get(`api/v1/search?query=${query}&search_type=SOURCE&text_id=${textId}`, {
+export const fetchTextSearchResults = async(query, textId, language, skip, pagination) => {
+  const { data } = await axiosInstance.get('api/v1/search/multilingual', {
     params: {
+      query,
+      search_type: 'exact',
+      text_id: textId,
+      language,
       limit: pagination.limit,
       skip: skip
     }
@@ -32,13 +37,15 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
   const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
   const { t } = useTranslate();
   const { openResourcesPanel } = usePanelContext();
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : 'en';
   
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
   
   const { data: searchResults, isLoading, error } = useQuery(
-    ["textSearch", searchQuery, textId, skip, pagination],
-    () => fetchTextSearchResults(searchQuery, textId, skip, pagination),
+    ["textSearch", debouncedSearchQuery, textId, language, skip, pagination],
+    () => fetchTextSearchResults(debouncedSearchQuery, textId, language, skip, pagination),
     {
       refetchOnWindowFocus: false,
       retry: 1,
@@ -46,7 +53,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
     }
   );
   
-  const searchText = searchResults?.search?.text || searchQuery;
+  const searchText = searchResults?.query || searchQuery;
 
   // ----------------------------- helpers ---------------------------------------
 
@@ -144,8 +151,8 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
       return <div className="search-message">{t('search.zero_result', 'No results to display.')}</div>;
     }
 
-    const source = searchResults.sources[0];
-    const segments = source?.segment_match || [];
+    const source = searchResults.sources?.[0];
+    const segments = source?.segment_matches || [];
     const totalSegments = segments.length;
 
     return (
