@@ -133,6 +133,8 @@ $font-size-content-sm: 14px;
         .collection-link {
           text-align: left;
           margin: 0 0 3px 0;
+          width: 100%;
+          display: block;
           word-break: break-word;
           hyphens: auto;
           color: inherit;
