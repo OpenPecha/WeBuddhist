@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslate } from '@tolgee/react';
-import { getEarlyReturn, getLanguageClass } from '../../../utils/helperFunctions.jsx';
+import { getEarlyReturn, getLanguageClass, mapLanguageCode } from '../../../utils/helperFunctions.jsx';
+import { LANGUAGE } from '../../../utils/constants.js';
 import PaginationComponent from '../../commons/pagination/PaginationComponent.jsx';
 import { Link } from 'react-router-dom';
 import './Commentaries.scss';
@@ -28,9 +29,11 @@ const Commentaries = ({
   if (earlyReturn) return earlyReturn;
 
   if (!items || items.length === 0) {
+    const uiLanguage = mapLanguageCode(localStorage.getItem(LANGUAGE)) || 'en';
+    const notFoundClassName = uiLanguage === 'bo' ? 'bo-text' : '';
     return (
       <div className="listtitle">
-        <p>{t('global.not_found')}</p>
+        <p className={notFoundClassName}>{t('global.not_found')}</p>
       </div>
     );
   }

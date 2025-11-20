@@ -81,6 +81,9 @@
   font-size: var(--listtitle-font-size);
   font-family: var(--listtitle-font-family);
 }
+.listtitle p.bo-text{
+  margin-top: 1rem;
+}
 .overalltext{
   font-size: var(--overalltext-font-size);
   font-family: var(--overalltext-font-family);
