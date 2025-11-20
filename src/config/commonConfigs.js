@@ -2,7 +2,7 @@ const fontConfig = {
   en: {
     title: {
       fontSize: "30px",
-      fontFamily: "Times New Roman",
+      fontFamily: "EBGaramond-Regular",
     },
     subtitle: {
       fontSize: "20px",
@@ -34,7 +34,7 @@ const fontConfig = {
     },
     overalltext: {
       fontSize: "22px",
-      fontFamily: "Times New Roman",
+      fontFamily: "EBGaramond-Regular",
     },
   },
   "bo-IN": {

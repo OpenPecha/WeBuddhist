@@ -221,7 +221,6 @@ const UserLogin = () => {
 
   const renderSocialLoginButtons = () => (
     <>
-    <hr />
     <div className="social-login-buttons">
       <button type="button" className="social-btn" onClick={loginWithGoogle}>
         <FaGoogle />
@@ -232,14 +231,16 @@ const UserLogin = () => {
         Apple
       </button>
     </div>
+    <hr />
+
     </>
   );
 
   const renderLoginForm = () => (
     <form onSubmit={handleSubmit}>
+      {renderSocialLoginButtons()}
       {renderLoginFields()}
       {renderFormActions()}
-      {renderSocialLoginButtons()}
     </form>
   );
 

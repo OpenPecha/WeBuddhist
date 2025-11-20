@@ -277,7 +277,6 @@ const UserRegistration = () => {
 
   const renderSocialLoginSection = () => (
     <>
-      <hr />
       <div className="social-login-buttons">
         <button className="social-btn" onClick={loginWithGoogle}>
           <FaGoogle />
@@ -294,15 +293,17 @@ const UserRegistration = () => {
           {registrationError}
         </div>
       )}
+      <hr />
+
     </>
   );
 
   const renderRegistrationForm = () => (
     <form onSubmit={registerUser}>
+      {renderSocialLoginSection()}
       {renderBasicInfoFields()}
       {renderPasswordFields()}
       {renderFormActions()}
-      {renderSocialLoginSection()}
     </form>
   );
 

@@ -2,7 +2,7 @@
 #root {
   text-align: center;
   --title-font-size: 16px;
-  --title-font-family: 'Times New Roman', Times, serif;
+  --title-font-family: 'EBGaramond-Regular', sans-serif;
   --subtitle-font-size: 16px;
   --subtitle-font-family: 'sub-title-font',"Inter";
   --content-font-size: 16px;
@@ -16,7 +16,7 @@
   --navbaritems-font-size: 16px;
   --navbaritems-font-family: 'navbar-items-font',"Inter";
   --overalltext-font-size: 24px;
-  --overalltext-font-family: 'Times New Roman', Times, serif;
+  --overalltext-font-family: 'EBGaramond-Regular', sans-serif;
   --collection-link-font-size: 16px;
   --collection-link-font-family: 'collection-link-font';
 }
@@ -31,6 +31,11 @@
 @font-face {
   font-family: 'Jomolhari-Regular';
   src: url("./assets/fonts/Jomolhari-Regular.ttf");
+}
+
+@font-face {
+  font-family: 'EBGaramond-Regular';
+  src: url("./assets/fonts/EBGaramond-Regular.ttf");
 }
 
 @font-face {
@@ -51,7 +56,7 @@
   font-size: 18px;
 }
 .en-title-text{
-  font-family: 'Times New Roman', Times, serif;
+  font-family: 'EBGaramond-Regular', sans-serif;
 }
 .title {
   font-size: var(--title-font-size);
