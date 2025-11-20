@@ -195,15 +195,9 @@
 
 @media (min-width: 993px) {
   .single-chapter .right-panel {
-    position: fixed;
-    top: 119px;
-    right: 0;
-    height: calc(100vh - 119px);
-
     &.show {
       width: 280px;
     }
-
     .headerthing {
       position: sticky;
       top: 0;
