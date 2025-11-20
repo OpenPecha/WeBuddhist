@@ -50,6 +50,28 @@ const Commentaries = ({
   };
 
   const renderItem = (commentary) => {
+    const renderMetadata = (item) => {
+      const source = item.source_link || "";
+      const license = item.license || "";
+      if (!source && !license) return null;
+      return (
+        <div className="commentary-metadata en-text">
+          {source && (
+            <div className="metadata-row">
+              <span>Source:</span>
+              <span>{source}</span>
+            </div>
+          )}
+          {license && (
+            <div className="metadata-row">
+              <span>License:</span>
+              <span>{license}</span>
+            </div>
+          )}
+        </div>
+      );
+    };
+
     return (
       <div className="commentary-details" key={commentary.id}>
         <div className="commentary-title-subtitle-container">
@@ -60,6 +82,7 @@ const Commentaries = ({
               {commentary.title}
             </div>  
           </Link>
+          {renderMetadata(commentary)}
         </div>
         {renderLanguage(commentary)}
       </div>
