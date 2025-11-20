@@ -6,14 +6,16 @@ import SubCollections from "../../../sub-collections/SubCollections";
 import Works from "../../../works/Works";
 import Texts from "../../../texts/Texts";
 import PropTypes from "prop-types";
+import { IoChevronBackSharp } from "react-icons/io5";
 
-const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
+const CompareText = ({ setIsCompareTextView, addChapter, currentChapter, handleNavigate }) => {
     const [rendererInfo, setRendererInfo] = useState({renderer: "collections", requiredId: ""});
 
     const { t } = useTranslate();
 
     const renderPanelHeader = () => (
         <div className="headerthing">
+            <IoChevronBackSharp size={24} onClick={() => handleNavigate()} className="back-icon" />
             <p className='mt-4 px-4 listtitle'>{t('connection_panel.compare_text')}</p>
             <IoMdClose
                 size={24}
@@ -67,7 +69,8 @@ const CompareText = ({ setIsCompareTextView, addChapter, currentChapter }) => {
 CompareText.propTypes = {
     setIsCompareTextView: PropTypes.func.isRequired,
     addChapter: PropTypes.func,
-    currentChapter: PropTypes.object
+    currentChapter: PropTypes.object,
+    handleNavigate: PropTypes.func.isRequired,
 };
 
 export default CompareText

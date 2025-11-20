@@ -8,6 +8,9 @@
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
+    .back-icon {
+      cursor: pointer;
+    }
     .close-icon {
       cursor: pointer;
       padding: 4px;

@@ -20,10 +20,12 @@ $primary-color: #666666;
         word-break: break-word;
         color: $primary-color !important;
         text-decoration: none;
-        &:hover,
+        &:hover {
+          text-decoration: underline;
+        }
         &:visited,
         &:active {
-          color: $primary-color !important;
+          text-decoration: none;
         }
       }
       .version-title-button{
