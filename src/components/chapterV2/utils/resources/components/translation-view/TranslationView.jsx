@@ -8,6 +8,7 @@ import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
 import TextExpand from "../../../../../commons/expandtext/TextExpand.jsx";
+import { IoChevronBackSharp } from "react-icons/io5";
 
 export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {
@@ -26,6 +27,7 @@ const TranslationView = ({
   addChapter,
   currentChapter,
   setVersionId,
+  handleNavigate,
 }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
@@ -106,6 +108,7 @@ const TranslationView = ({
   return (
     <div className="translation-view">
       <div className="headerthing">
+        <IoChevronBackSharp size={24} onClick={() => handleNavigate()} className="back-icon" />
         <p className="mt-4 px-4 listtitle">
           {t('connection_pannel.translations')}
         </p>
@@ -145,4 +148,5 @@ TranslationView.propTypes = {
   addChapter: PropTypes.func, 
   currentChapter: PropTypes.object, 
   setVersionId: PropTypes.func.isRequired,
+  handleNavigate: PropTypes.func.isRequired,
 }
