@@ -36,7 +36,8 @@ vi.mock("react-router-dom", async () => {
 
 vi.mock("../../utils/helperFunctions.jsx", () => ({
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
-  getEarlyReturn: () => null
+  getEarlyReturn: () => null,
+  getLanguageClass: (language) => language === "bo" ? "tibetan-font" : ""
 }));
 
 vi.mock("../../utils/constants.js", () => ({
