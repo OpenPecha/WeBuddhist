@@ -124,14 +124,16 @@ const ResetPassword = () => {
   );
 
   return (
-    <div className="reset-password-container">
-      <form onSubmit={ handleSubmit }>
-        { renderInputField("New Password", "newPassword") }
-        { renderInputField("Confirm Password", "confirmPassword") }
-        <button type="submit" className="reset-button">
-          Reset Password
-        </button>
-      </form>
+    <div className="auth-page">
+      <div className="reset-password-container">
+        <form onSubmit={ handleSubmit }>
+          { renderInputField("New Password", "newPassword") }
+          { renderInputField("Confirm Password", "confirmPassword") }
+          <button type="submit" className="reset-button">
+            Reset Password
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

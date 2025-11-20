@@ -8,41 +8,55 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 15px 20px;
+  border-bottom: 4px solid #ffffff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
   .navigation-left{
       display: flex;
       align-items: center;
       gap: 20px;
       .logo{
-         height: 25px;
+         height: 30px;
+         margin-left: 10px;
       }
       .nav-links{
           display: flex;
           gap: 20px;
           a{
               text-decoration: none;
-              color: #2f2f2f;
+              color: #5b5b5b;
           }
       }
   }
   .navigation-right{
       display: flex;
       align-items: center;
-      gap: 20px;
+      justify-content: space-between;
+      gap: 0 10px;
       .search-bar{
+        .search-icon{
+          margin-left: 6px;
+          color: #5b5b5b;
+        }
           display: flex;
           align-items: center;
-          gap: 10px;
-          padding: 5px;
-          border-radius: 5px;
+          gap: 4px;
+          padding: 4px;
+          border-radius: 30rem;
           border: 1px solid #e0e0e0;
-          background-color: #ffffff;
+          background-color: #EDEDEC;
+          width: 200px;
+          transition: width 0.3s ease;
           input{
+              width: 100%;
               border: none;
               background-color: transparent;
               outline: none;
           }
+          &.search-focused{
+            width: 250px;
+          }
+
       }
       .auth-buttons{
           display: flex;
@@ -56,32 +70,29 @@
               color: #2f2f2f;
           }
           .auth-button-login{
-              border: 1px solid #a2a2a2;
               color: #2b2b2b;
               padding: 5px 10px;
               border-radius: 5px;
               transition: all 0.3s ease;
               &:hover{
-                background-color: #f0f0f0;
+                background-color: #f5f5f5;
               }
           }
           .auth-button-register{
-              background-color: #888888;
-              color: #ffffff;
+              border: 1px solid #dbdbdb;
+              color: #2b2b2b;
               padding: 5px 10px;
               border-radius: 5px;
               transition: all 0.3s ease;
-              &:hover{
-                background-color: #666666;
-              }
           }
       }
       .logout-button{
-          border: 1px solid #767676;
-          background-color: transparent;
-          color: #2b2b2b;
-          padding: 5px 15px;
-          border-radius: 5px;
+              border: 1px solid #dbdbdb;
+              background-color: transparent;
+              color: #2b2b2b;
+              padding: 5px 10px;
+              border-radius: 5px;
+              transition: all 0.3s ease;
       }
       .language-dropdown {
           position: relative;

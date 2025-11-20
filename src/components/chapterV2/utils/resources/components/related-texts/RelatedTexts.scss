@@ -10,7 +10,7 @@
   
     .commentary-title {
       font-weight: 600;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       color: #333;
       margin-top: 0.5rem;
       margin-bottom: 0.5rem;
@@ -34,7 +34,7 @@
     .commentary-buttons {
       display: flex;
       gap: 1.5rem;
-      margin: 0.75rem 0 0;
+      padding: 10px 0;
     }
   
     .commentary-button {
@@ -62,8 +62,7 @@
   }
 }
 .commentary-content {
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: 18px;
   color: #504e4e;
   position: relative;
 }

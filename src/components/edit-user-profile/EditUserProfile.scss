@@ -292,3 +292,7 @@ $removeicon: #4d5154;
     }
   }
 }
+
+.profile-page {
+  min-height: calc(100vh - var(--navbar-height, 60px));
+}

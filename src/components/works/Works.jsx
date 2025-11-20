@@ -98,7 +98,7 @@ const Works = (props) => {
   )
 
   const renderRootTexts = () => {
-    const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>;
+    const renderTitle = () => <h1 className="title">{worksData?.collection?.title}</h1>;
   
     return (
       <div className="root-text-section">

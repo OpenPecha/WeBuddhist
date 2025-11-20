@@ -3,18 +3,11 @@ import React from "react";
 import {BrowserRouter as Router, useParams} from "react-router-dom";
 
 import "@testing-library/jest-dom";
-import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../../test-utils/CommonMocks.js";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { mockTolgee } from "../../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import Versions, {fetchVersions} from "./Versions.jsx";
+import Versions from "./Versions.jsx";
 import { vi } from "vitest";
-import * as reactQuery from "react-query";
-import axiosInstance from "../../../config/axios-config.js";
-
-mockAxios();
-mockUseAuth();
-mockReactQuery();
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
@@ -41,11 +34,6 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
     if (error) return <div>Error occurred</div>;
     return null;
   },
-  mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
-}));
-
-vi.mock("../../../utils/constants.js", () => ({
-  LANGUAGE: "language",
 }));
 
 vi.mock("../../commons/pagination/PaginationComponent.jsx", () => ({
@@ -61,30 +49,7 @@ vi.mock("../../commons/pagination/PaginationComponent.jsx", () => ({
   ),
 }));
 
-const mockAxiosInstance = {
-  get: vi.fn()
-};
-
-// Mock localStorage
-const mockLocalStorage = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-};
-Object.defineProperty(window, 'localStorage', {
-  value: mockLocalStorage,
-});
-
 describe("Versions Component", () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  });
-
   const mockVersionsData = {
     versions: [
       {
@@ -111,105 +76,58 @@ describe("Versions Component", () => {
     limit: 10
   };
 
-  // Mock useQuery consistently
-  const mockUseQuery = vi.fn();
+  const mockSetVersionsPagination = vi.fn();
+
+  const defaultProps = {
+    textId: "123",
+    versions: mockVersionsData,
+    versionsIsLoading: false,
+    versionsIsError: null,
+    versionsPagination: { currentPage: 1, limit: 10 },
+    setVersionsPagination: mockSetVersionsPagination,
+  };
 
   beforeEach(() => {
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
     useParams.mockReturnValue({ id: "123" });
-
-    // Mock Storage prototype
-    Storage.prototype.getItem = vi.fn().mockReturnValue("bo-IN");
-    mockLocalStorage.getItem.mockReturnValue("bo-IN");
-
-    // Mock axios instance
-    axiosInstance.get.mockResolvedValue({ data: mockVersionsData });
-    mockAxiosInstance.get.mockResolvedValue({ data: mockVersionsData });
-
-    // Reset useQuery mock
-    mockUseQuery.mockReturnValue({
-      data: mockVersionsData,
-      isLoading: false,
-      error: null,
-    });
-
-    // Spy on react-query's useQuery and make it use our mock
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(mockUseQuery);
   });
 
-  const setup = (queryReturnValue = {}) => {
-    const defaultQueryReturn = {
-      data: mockVersionsData,
-      isLoading: false,
-      error: null,
-      ...queryReturnValue
+  const setup = (props = {}) => {
+    const mergedProps = {
+      ...defaultProps,
+      ...props
     };
-
-    // Update the mock to return the new values
-    mockUseQuery.mockReturnValue(defaultQueryReturn);
-
-    // Also update the spy to ensure consistency
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => defaultQueryReturn);
 
     return render(
       <Router>
-        <QueryClientProvider client={queryClient}>
-          <TolgeeProvider
-            fallback={"Loading tolgee..."}
-            tolgee={mockTolgee}
-          >
-            <Versions />
-          </TolgeeProvider>
-        </QueryClientProvider>
+        <TolgeeProvider
+          fallback={"Loading tolgee..."}
+          tolgee={mockTolgee}
+        >
+          <Versions {...mergedProps} />
+        </TolgeeProvider>
       </Router>
     );
   };
 
   describe("Component rendering", () => {
-    test("renders Versions component with version data", () => {
-      setup();
-
-      expect(document.querySelector(".versions-container")).toBeInTheDocument();
-
-      const versionElements = document.querySelectorAll(".version-details");
-      expect(versionElements.length).toBe(3);
-
-      // Check version titles
-      const titleElements = document.querySelectorAll(".version-title");
-      expect(titleElements).toHaveLength(3);
-
-      // Check if language classes are applied correctly
-      const languageElements = document.querySelectorAll(".language-bo, .language-en, .language-sa");
-      expect(languageElements.length).toBeGreaterThan(0);
-    });
 
     test("displays loading state when data is loading", () => {
-      setup({ isLoading: true, data: null });
+      setup({ 
+        versionsIsLoading: true, 
+        versions: null 
+      });
 
       expect(screen.getByText("Loading...")).toBeInTheDocument();
     });
 
     test("displays error state when there's an error", () => {
-      setup({ error: new Error("API Error"), data: null });
+      setup({ 
+        versionsIsError: new Error("API Error"), 
+        versions: null 
+      });
 
       expect(screen.getByText("Error occurred")).toBeInTheDocument();
-    });
-
-    test("renders version titles with correct links", () => {
-      setup();
-
-      const links = document.querySelectorAll(".version-title");
-      expect(links).toHaveLength(3);
-
-      expect(links[0].getAttribute("href")).toBe(
-        "/chapter?text_id=version1&content_id=content1"
-      );
-      expect(links[1].getAttribute("href")).toBe(
-        "/chapter?text_id=version2&content_id=content2"
-      );
-      expect(links[2].getAttribute("href")).toBe(
-        "/chapter?text_id=version3&content_id=content3"
-      );
     });
 
     test("displays correct language translations", () => {
@@ -221,6 +139,14 @@ describe("Versions Component", () => {
       expect(languageElements[0].textContent).toBe("language.tibetan");
       expect(languageElements[1].textContent).toBe("language.english");
       expect(languageElements[2].textContent).toBe("language.sanskrit");
+    });
+
+    test("displays not found message when no versions exist", () => {
+      setup({ 
+        versions: { versions: [], total: 0 } 
+      });
+
+      expect(screen.getByText("text.version.notfound")).toBeInTheDocument();
     });
 
   });
@@ -235,7 +161,7 @@ describe("Versions Component", () => {
 
     test("does not render pagination component when no versions exist", () => {
       setup({
-        data: {
+        versions: {
           versions: [],
           total: 0
         }
@@ -251,8 +177,7 @@ describe("Versions Component", () => {
       const pageButton = document.querySelector(".page-link");
       fireEvent.click(pageButton);
 
-      // Since we're testing the component behavior, we can verify the pagination component received the correct props
-      expect(pageButton).toBeInTheDocument();
+      expect(mockSetVersionsPagination).toHaveBeenCalledWith(expect.any(Function));
     });
   });
 
@@ -270,7 +195,7 @@ describe("Versions Component", () => {
         limit: 10
       };
 
-      setup({ data: versionsData });
+      setup({ versions: versionsData });
 
       // With 25 versions and limit of 10, should have 3 pages
       const paginationComponent = document.querySelector(".pagination");
@@ -279,12 +204,11 @@ describe("Versions Component", () => {
 
     test("handles empty versions array", () => {
       setup({
-        data: {
+        versions: {
           versions: [],
           total: 0
         }
       });
-
 
       const versionElements = document.querySelectorAll(".version-details");
       expect(versionElements).toHaveLength(0);
@@ -294,27 +218,65 @@ describe("Versions Component", () => {
       expect(Versions.$$typeof).toBeDefined();
     });
 
-    test("fetchVersions function fetches versions data correctly", async () => {
-      const textId = "test123";
-      const skip = 0;
-      const limit = 10;
+    test("uses textId from props when provided", () => {
+      setup({ textId: "prop-123" });
 
-      mockLocalStorage.getItem.mockReturnValue("bo-IN");
-      axiosInstance.get.mockResolvedValue({ data: mockVersionsData });
+      expect(document.querySelector(".versions-container")).toBeInTheDocument();
+    });
 
-      const result = await fetchVersions(textId, skip, limit);
+    test("uses textId from URL params when prop not provided", () => {
+      useParams.mockReturnValue({ id: "url-456" });
+      
+      setup({ textId: undefined });
 
-      expect(axiosInstance.get).toHaveBeenCalledWith(
-        `/api/v1/texts/${textId}/versions`,
-        {
-          params: {
+      expect(document.querySelector(".versions-container")).toBeInTheDocument();
+    });
+  });
+
+  describe("Version metadata rendering", () => {
+    test("renders version source and source_url when available", () => {
+      const versionsWithMetadata = {
+        versions: [
+          {
+            id: "version1",
+            title: "Version 1",
             language: "bo",
-            limit: 10,
-            skip: 0
-          },
-        }
+            table_of_contents: ["content1"],
+            source_link: "Test Source",
+            license: "CC BY 4.0"
+          }
+        ]
+      };
+
+      setup({ versions: versionsWithMetadata });
+
+      expect(screen.getByText("Source:")).toBeInTheDocument();
+      expect(screen.getByText("Test Source")).toBeInTheDocument();
+      expect(screen.getByText("License:")).toBeInTheDocument();
+      expect(screen.getByText("CC BY 4.0")).toBeInTheDocument();
+    });
+  });
+
+  describe("addChapter mode", () => {
+    test("calls addChapter when button is clicked", () => {
+      const mockAddChapter = vi.fn();
+      const mockCurrentChapter = { id: "chapter1" };
+
+      setup({
+        addChapter: mockAddChapter,
+        currentChapter: mockCurrentChapter
+      });
+
+      const button = document.querySelector(".version-title-button");
+      fireEvent.click(button);
+
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: "version1",
+          contentId: "content1"
+        },
+        mockCurrentChapter
       );
-      expect(result).toEqual(mockVersionsData);
     });
   });
 });

@@ -50,23 +50,25 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentCha
             <div>
               {segmentCommentaries.commentaries.map((commentary) => {
                 const textId = commentary.text_id;
-                const segmentId = commentary.segment_id;
                 return (
                   <div key={textId} className="commentary-list-item">
                     <h3 className={`commentary-title ${getLanguageClass(commentary.language)}`}>
                       {commentary.title} {commentary.count && `(${commentary.count})`}
                     </h3>
                     
-                    {commentary.content && (
+                    {commentary.segments && (
                       <div className="commentary-container">
-                        <TextExpand language={commentary.language} maxLength={250}>{commentary.content}</TextExpand>
-                        <div className="commentary-actions">
+                        {commentary.segments && commentary.segments.map((item, idx) => (
+                          <div key={`${textId}-${idx}`}>
+                          <TextExpand language={commentary.language} maxLength={250}>
+                            {item.content}
+                          </TextExpand>
                           <div className="commentary-buttons">
                             <button className="commentary-button"
                                  onClick={() => {
                                    addChapter({
                                      textId: textId, 
-                                     segmentId: segmentId,
+                                     segmentId: item.segment_id,
                                    }, currentChapter);
                                    closeResourcesPanel();
                                  }}>
@@ -84,7 +86,8 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentCha
                               <span>{t("common.share")}</span>
                             </div> */}
                           </div>
-                        </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

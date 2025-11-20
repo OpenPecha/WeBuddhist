@@ -8,7 +8,7 @@
   padding: 1rem;
   gap: 2rem;
   border-bottom: 1px solid #e0e0e0;
-  background: rgba(255, 255, 255);
+  background: rgb(248, 248, 248);
   .bookmark-icon-container button {
     background: none;
     border: none;
@@ -17,6 +17,13 @@
   .title-container {
     margin: 0 auto;
     white-space: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1 1 auto;
+  }
+  .toc-icon-container, .view-selector-icon-container, .close-icon-container {
+    flex: 0 0 auto;
   }
 }
 
