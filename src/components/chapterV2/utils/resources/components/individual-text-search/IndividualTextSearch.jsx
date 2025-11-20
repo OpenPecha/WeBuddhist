@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { IoMdClose } from 'react-icons/io';
+import { IoChevronBackSharp } from "react-icons/io5";
 import { BiSearch } from 'react-icons/bi';
 import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
@@ -23,7 +24,7 @@ export const fetchTextSearchResults = async(query, textId, skip, pagination) => 
   return data;
 };
 
-const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNavigate }) => {
+const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNavigate, handleNavigate }) => {
   const [searchParams] = useSearchParams();
   const textId = propTextId || searchParams.get("text_id");
   
@@ -65,6 +66,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
   const renderHeader = () => {
     return (
       <div className="search-header">
+        <IoChevronBackSharp size={24} onClick={() => handleNavigate()} className="back-icon" />
         <h2>{t('connection_panel.search_in_this_text')}</h2>
         <IoMdClose
           size={24}
@@ -172,4 +174,5 @@ IndividualTextSearch.propTypes = {
   onClose: PropTypes.func.isRequired,
   textId: PropTypes.string,
   handleSegmentNavigate: PropTypes.func.isRequired,
+  handleNavigate: PropTypes.func.isRequired,
 };

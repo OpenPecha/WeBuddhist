@@ -166,6 +166,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <ShareView
             segmentId={segmentId}
             setIsShareView={setActiveView}
+            handleNavigate={() => setActiveView("main")}
           />
         );
       case "search":
@@ -174,6 +175,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
             onClose={() => setActiveView("main")}
             textId={sidePanelData?.segment_info?.text_id}
             handleSegmentNavigate={handleSegmentNavigate}
+            handleNavigate={() => setActiveView("main")}
           />
         );
       case "translation":
@@ -184,6 +186,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
             addChapter={addChapter}
             currentChapter={currentChapter}
             setVersionId={setVersionId}
+            handleNavigate={() => setActiveView("main")}
           />
         );
       case "commentary":
@@ -193,10 +196,11 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
             setIsCommentaryView={setActiveView}
             addChapter={addChapter}
             currentChapter={currentChapter}
+            handleNavigate={() => setActiveView("main")}
           />
         );
       case "compare_text": 
-        return <CompareText setIsCompareTextView={setActiveView} addChapter={addChapter} currentChapter={currentChapter} />;
+        return <CompareText setIsCompareTextView={setActiveView} addChapter={addChapter} currentChapter={currentChapter} handleNavigate={() => setActiveView("main")}/>;
       case "root_text":
         return (
           <RootTextView

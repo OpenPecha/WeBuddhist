@@ -20,10 +20,12 @@ $primary-color: #666666;
         word-break: break-word;
         color: $primary-color;
         text-decoration: none;
-        &:hover,
-        &:visited,
+        &:hover {
+          text-decoration: underline;
+        }
+        &:visited,  
         &:active {
-          color: $primary-color;
+          text-decoration: none;
         }
       }
       .commentary-metadata {

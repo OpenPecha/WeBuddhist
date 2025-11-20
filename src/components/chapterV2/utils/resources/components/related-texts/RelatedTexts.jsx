@@ -1,4 +1,5 @@
 import { IoMdClose } from "react-icons/io";
+import { IoChevronBackSharp } from "react-icons/io5";
 // import { IoAddCircleOutline, IoShareSocialSharp } from "react-icons/io5";
 import { GoLinkExternal } from "react-icons/go";
 import { useTranslate } from "@tolgee/react";
@@ -19,7 +20,7 @@ export const fetchCommentaryData = async (segment_id, skip = 0, limit = 10) => {
   });
   return data;
 }
-const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentChapter }) => {
+const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentChapter, handleNavigate }) => {
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext();
   const {data: segmentCommentaries} = useQuery(
@@ -33,6 +34,7 @@ const CommentaryView = ({ segmentId, setIsCommentaryView, addChapter, currentCha
   return (
     <div>
       <div className="headerthing">
+        <IoChevronBackSharp size={24} onClick={() => handleNavigate()} className="back-icon" />
         <p className="mt-4 px-4 listtitle">
           {t("text.commentary")}
           {segmentCommentaries?.commentaries?.length > 0 ? 
@@ -106,5 +108,6 @@ CommentaryView.propTypes = {
   segmentId: PropTypes.string.isRequired, 
   setIsCommentaryView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
-  currentChapter: PropTypes.object
+  currentChapter: PropTypes.object,
+  handleNavigate: PropTypes.func.isRequired,
 }

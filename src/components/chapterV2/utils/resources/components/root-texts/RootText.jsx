@@ -16,7 +16,7 @@ export const fetchRootTextData = async (segment_id) => {
   return data;
 }
 
-const RootTextView = ({ segmentId, setIsRootTextView, addChapter, currentChapter }) => {
+const RootTextView = ({ segmentId, setIsRootTextView, addChapter, currentChapter, handleNavigate }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
   const {data: rootTextData} = useQuery(
@@ -58,6 +58,7 @@ const RootTextView = ({ segmentId, setIsRootTextView, addChapter, currentChapter
   return (
     <div>
       <div className="headerthing">
+        <IoChevronBackSharp size={24} onClick={() => handleNavigate()} className="back-icon" />
         <p className="mt-4 px-4 listtitle">
           {t("text.root_text")}
           {rootTextData?.segment_root_mapping?.length > 0 ? 
@@ -132,4 +133,5 @@ RootTextView.propTypes = {
   setIsRootTextView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
   currentChapter: PropTypes.object, 
+  handleNavigate: PropTypes.func.isRequired,
 } 
