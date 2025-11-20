@@ -77,6 +77,7 @@ const Commentaries = ({
         <div className="commentary-title-subtitle-container">
           <Link
             to={`/chapter?text_id=${commentary.id}`}
+            className="commentary-title"
           >
             <div className={`${getLanguageClass(commentary.language)}`}>
               {commentary.title}

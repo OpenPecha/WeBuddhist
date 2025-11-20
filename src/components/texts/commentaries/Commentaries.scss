@@ -14,17 +14,23 @@ $primary-color: #666666;
       flex-direction: column;
       text-align: left;
       color: $primary-color;
-      word-break: break-word;
-      font-size: 16px;
-      font-weight: 500;
-      a, a:visited, a:hover, a:active {
-        color: inherit;
+      .commentary-title{
+        font-size: 16px;
+        font-weight: 500;
+        word-break: break-word;
+        color: $primary-color;
         text-decoration: none;
+        &:hover,
+        &:visited,
+        &:active {
+          color: $primary-color;
+        }
       }
       .commentary-metadata {
         margin-top: 2px;
         color: $primary-color;
         font-size: 14px;
+        font-weight: 400;
         .metadata-row {
           display: flex;
           gap: 0.5rem;

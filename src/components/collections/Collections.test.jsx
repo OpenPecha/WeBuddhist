@@ -273,7 +273,7 @@ describe("Collections Component", () => {
   test("compare-text mode: renders button and triggers callbacks", () => {
     const data = {
       collections: [
-        { id: "c1", title: "Compare A", description: "d1", has_child: true },
+        { id: "c1", title: "Compare A", description: "d1", has_child: false },
       ],
       total: 1,
       skip: 0,
@@ -300,8 +300,8 @@ describe("Collections Component", () => {
       </Router>
     );
 
-    const button = screen.getByRole("button", { name: "Compare A" });
-    fireEvent.click(button);
+    const link = screen.getByRole("link", { name: "Compare A" });
+    fireEvent.click(link);
 
     expect(setCollectionColorMock).toHaveBeenCalledWith("#802F3E");
     expect(setRendererInfo).toHaveBeenCalledTimes(1);
@@ -309,7 +309,7 @@ describe("Collections Component", () => {
     expect(typeof updater).toBe("function");
     const prev = { foo: "bar" };
     const next = updater(prev);
-    expect(next).toEqual({ foo: "bar", requiredId: "c1", renderer: "sub-collections" });
+    expect(next).toEqual({ foo: "bar", requiredId: "c1", renderer: "works" });
   });
 
   test("renders correct link targets based on has_child", () => {
