@@ -10,6 +10,7 @@ import {Link, useParams, useSearchParams} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
+import Commentaries from "./commentaries/Commentaries.jsx";
 import PropTypes from "prop-types";
 
 export const fetchTableOfContents = async (textId, skip, limit, languageFromContent = null) => {
@@ -40,6 +41,21 @@ export const fetchVersions = async (textId, skip, limit) => {
   return data
 }
 
+export const fetchCommentaries = async (textId, skip, limit) => {
+  const { data } = await axiosInstance.get(`/api/v1/texts/${textId}/commentaries`, {
+    params: {
+      skip,
+      limit
+    }
+  });
+  const items = Array.isArray(data) ? data : (data?.commentaries || data?.items || []);
+  const total = Array.isArray(data) ? undefined : (data?.total);
+  return { items, total };
+  // const {data: mockData} = mockResponseData;
+  // console.log(mockData);
+  // return mockData;
+}
+
 const Texts = (props) => {
   const {requiredInfo = {}, setRendererInfo, collection_id, addChapter, currentChapter} = props;
   const { t } = useTranslate();
@@ -50,8 +66,10 @@ const Texts = (props) => {
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const [versionsPagination, setVersionsPagination] = useState({ currentPage: 1, limit: 10 });
+  const [commentariesPagination, setCommentariesPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
   const versionsSkip = useMemo(() => (versionsPagination?.currentPage - 1) * versionsPagination?.limit, [versionsPagination]);
+  const commentariesSkip = useMemo(() => (commentariesPagination?.currentPage - 1) * commentariesPagination?.limit, [commentariesPagination]);
   
   const textId = requiredInfo?.from === "compare-text" ? collection_id : urlId;
 
@@ -65,6 +83,12 @@ const Texts = (props) => {
     ["versions", textId, versionsSkip, versionsPagination.limit],   
     () => fetchVersions(textId, versionsSkip, versionsPagination.limit),
     {refetchOnWindowFocus: false, enabled: !!textId}
+  );
+
+  const {data: commentaries, isLoading: commentariesIsLoading, error: commentariesIsError} = useQuery(
+    ["commentaries", textId, commentariesSkip, commentariesPagination.limit],
+    () => fetchCommentaries(textId, commentariesSkip, commentariesPagination.limit),
+    {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
   );
 
   useEffect(() => {
@@ -133,6 +157,12 @@ const Texts = (props) => {
         >
           {t("common.version")}
         </button>
+        <button
+          className={`tab-button ${activeTab === 'commentaries' ? 'active' : ''}`}
+          onClick={() => setActiveTab('commentaries')}
+        >
+          {t("text.type.commentary")}
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -154,6 +184,22 @@ const Texts = (props) => {
               versionsIsError={versionsIsError}
               versionsPagination={versionsPagination}
               setVersionsPagination={setVersionsPagination}
+            />
+          </div>
+        )}
+        {activeTab === 'commentaries' && (
+          <div className="tab-panel">
+            <Commentaries
+              textId={textId}
+              requiredInfo={requiredInfo}
+              addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined}
+              currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}
+              items={commentaries?.items || []}
+              total={commentaries?.total}
+              isLoading={commentariesIsLoading}
+              isError={commentariesIsError}
+              pagination={commentariesPagination}
+              setPagination={setCommentariesPagination}
             />
           </div>
         )}
