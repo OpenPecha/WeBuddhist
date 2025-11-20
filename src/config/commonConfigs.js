@@ -20,6 +20,10 @@ const fontConfig = {
       fontSize: "20px",
       fontFamily: "Inter",
     },
+    collectionfont: {
+      fontSize: "16px",
+      fontFamily: "Inter",
+    },
     listsubtitle: {
       fontSize: "14px",
       fontFamily: "Inter",
@@ -36,35 +40,39 @@ const fontConfig = {
   "bo-IN": {
     title: {
       fontSize: "30px",
-      fontFamily: "MonlamUniOuChan2",
+      fontFamily: "NotoSerifTibetan-Medium",
     },
     subtitle: {
       fontSize: "20px",
-      fontFamily: "MonlamUniOuChan2",
+      fontFamily: "NotoSerifTibetan-Medium",
+    },
+    collectionfont: {
+      fontSize: "16px",
+      fontFamily: "Jomolhari-Regular",
     },
     content: {
-      fontSize: "17px",
-      fontFamily: "MonlamUniOuChan2",
+      fontSize: "20px",
+      fontFamily: "Jomolhari-Regular",
     },
     subcontent: {
       fontSize: "14px",
-      fontFamily: "MonlamUniOuChan2",
+      fontFamily: "NotoSerifTibetan-Medium",
     },
     listtitle: {
       fontSize: "20px",
-      fontFamily: "MonlamUniOuChan2",
+      fontFamily: "NotoSerifTibetan-Medium",
     },
     listsubtitle: {
       fontSize: "14px",
-      fontFamily: "MonlamUniOuChan2",
+      fontFamily: "NotoSerifTibetan-Medium",
     },
     navbaritems: {
       fontSize: "16px",
-      fontFamily: "MonlamUniOuChan2",
+      fontFamily: "NotoSerifTibetan-Medium",
     },
     overalltext: {
       fontSize: "22px",
-      fontFamily: "MonlamUniOuChan2",
+      fontFamily: "NotoSerifTibetan-Medium",
     },
   },
 };

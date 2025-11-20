@@ -5,7 +5,7 @@ import axiosInstance from "../../config/axios-config.js";
 import {LANGUAGE, siteName} from "../../utils/constants.js";
 import {useQuery} from "react-query";
 import {Link, useNavigate} from "react-router-dom";
-import {getEarlyReturn, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
+import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
 import Seo from "../commons/seo/Seo.jsx";
 import PropTypes from "prop-types";
 import {useCollectionColor} from "../../context/CollectionColorContext.jsx";
@@ -68,7 +68,7 @@ const Collections = (props) => {
     if (requiredInfo.from === "compare-text" && !collection.has_child) {
       return (
         <Link 
-          className="title collection-link" 
+          className= {`collection-link ${getLanguageClass(collection.language)}`} 
           onClick={() => {
             handleCollectionClick(index);
             setRendererInfo(prev => ({
@@ -86,14 +86,14 @@ const Collections = (props) => {
     return collection.has_child ?
       <Link 
         to={`/collections/${collection.id}`} 
-        className="title collection-link"
+        className= {`collection-link ${getLanguageClass(collection.language)}`}
         onClick={() => handleCollectionClick(index)}
       >
         {collection.title}
       </Link> :
       <Link 
         to={`/works/${collection.id}`} 
-        className="title collection-link"
+        className= {`collection-link ${getLanguageClass(collection.language)}`}
         onClick={() => handleCollectionClick(index)}
       >
         {collection.title}

@@ -17,6 +17,8 @@
   --navbaritems-font-family: 'navbar-items-font',"Inter";
   --overalltext-font-size: 24px;
   --overalltext-font-family: 'Times New Roman', Times, serif;
+  --collection-link-font-size: 16px;
+  --collection-link-font-family: 'collection-link-font';
 }
 
 .div-color{
@@ -27,8 +29,13 @@
 }
 
 @font-face {
-  font-family: 'MonlamUniOuChan2';
-  src: url("./assets/fonts/MonlamUniOuChan2.woff") format('woff');
+  font-family: 'Jomolhari-Regular';
+  src: url("./assets/fonts/Jomolhari-Regular.ttf");
+}
+
+@font-face {
+  font-family: 'NotoSerifTibetan-Medium';
+  src: url("./assets/fonts/NotoSerifTibetan-Medium.ttf");
 }
 
 @font-face {
@@ -36,8 +43,8 @@
   src: url("./assets/fonts/InterRegular.woff") format('woff');
 }
 .bo-text{
-  font-family: 'MonlamUniOuChan2', sans-serif;
-  font-size: 20px;
+  font-family: 'Jomolhari-Regular', sans-serif;
+  font-size: 26px;
 }
 .en-text{
   font-family: 'Inter', sans-serif;
@@ -54,6 +61,10 @@
 .subtitle {
   font-size: var(--subtitle-font-size);
   font-family: var(--subtitle-font-family);
+}
+.collectionfont{
+  font-family: var(--collection-link-font-family);
+  font-size: var(--collection-link-font-size);
 }
 
 .content {

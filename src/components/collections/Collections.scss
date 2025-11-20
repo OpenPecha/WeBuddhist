@@ -131,7 +131,6 @@ $font-size-content-sm: 14px;
           margin-bottom: 1rem;
         }
         .collection-link {
-          font-size: $font-size-part-title;
           text-align: left;
           margin: 0 0 3px 0;
           word-break: break-word;
@@ -262,28 +261,19 @@ $font-size-content-sm: 14px;
     .right-section-content{
       margin: 4rem 1rem 0 1rem ;
       .about-title {
-        font-size: $font-size-title;
         text-align: start;
         font-weight: 600;
         color: $primary-color;
-        margin: 1rem;
+        margin: 1rem 0;
         padding-top: 1rem;
         word-wrap: break-word;
-
-       
       }
 
       .about-content {
-        font-size: $font-size-content;
         text-align: start;
         color: $primary-color;
-        margin: 1rem;
+        margin: 1rem 0;
         word-wrap: break-word;
-
-        @media (max-width: 576px) {
-          font-size: $font-size-content-sm;
-          line-height: 1.8;
-        }
 
         .learn-more {
           text-decoration: underline;
@@ -330,7 +320,6 @@ $font-size-content-sm: 14px;
 }
 .explore-stories-btn{
   width: 100%;
-  font-family: var(--listtitle-font-family);
   background-color: #e9e9e9;
   border: none;
   border-radius: 0.4rem;
@@ -338,5 +327,9 @@ $font-size-content-sm: 14px;
   color: rgb(107, 107, 107);
   padding: 0.5rem 1rem;
   white-space: nowrap;
-  font-size: $font-size-button;
+  transition: all 0.2s ease;
+  &:hover{
+    background-color: #d9d9d9;
+    color: #666666;
+  }
 }

@@ -105,7 +105,7 @@ const Texts = (props) => {
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
     const renderTitle = () => {
-      return <h1 className={`${getLanguageClass(tableOfContents?.text_detail.language)} overalltext`}>
+      return <h1 className={`${getLanguageClass(tableOfContents?.text_detail.language)}`}>
         {tableOfContents?.text_detail.title}
       </h1>
     }

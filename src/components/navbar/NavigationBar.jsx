@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaGlobe, FaSearch } from "react-icons/fa";
-import { RxHamburgerMenu , RxCross1 } from "react-icons/rx";
+import { MdOutlineManageSearch } from "react-icons/md";
+import { RxCross1 } from "react-icons/rx";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
@@ -88,7 +89,7 @@ const renderNavLinks=()=>{
 }
 const renderSearch = () => {
     return (
-      <form className={`search-bar navbaritems ${isSearchFocused ? 'search-focused' : ''}`} onSubmit={handleSearchSubmit}>
+      <form className={`search-bar content ${isSearchFocused ? 'search-focused' : ''}`} onSubmit={handleSearchSubmit}>
         <FaSearch className="search-icon" />
         <input
           type="text"
@@ -208,7 +209,7 @@ const renderAuthButtons = () => {
                 className="mobile-menu-trigger"
                 onClick={handleMobileMenuToggle}
               >
-                {!isMobileMenuOpen ? <RxHamburgerMenu /> : <RxCross1 />}
+                {!isMobileMenuOpen ? <MdOutlineManageSearch size={30} /> : <RxCross1 />}
               </button>
           </div>
       </div>

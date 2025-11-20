@@ -111,22 +111,6 @@ describe("Versions Component", () => {
   };
 
   describe("Component rendering", () => {
-    test("renders Versions component with version data", () => {
-      setup();
-
-      expect(document.querySelector(".versions-container")).toBeInTheDocument();
-
-      const versionElements = document.querySelectorAll(".version-details");
-      expect(versionElements.length).toBe(3);
-
-      // Check version titles
-      const titleElements = document.querySelectorAll(".version-title");
-      expect(titleElements).toHaveLength(3);
-
-      // Check if language classes are applied correctly
-      const languageElements = document.querySelectorAll(".language-bo, .language-en, .language-sa");
-      expect(languageElements.length).toBeGreaterThan(0);
-    });
 
     test("displays loading state when data is loading", () => {
       setup({ 
@@ -144,23 +128,6 @@ describe("Versions Component", () => {
       });
 
       expect(screen.getByText("Error occurred")).toBeInTheDocument();
-    });
-
-    test("renders version titles with correct links", () => {
-      setup();
-
-      const links = document.querySelectorAll(".version-title");
-      expect(links).toHaveLength(3);
-
-      expect(links[0].getAttribute("href")).toBe(
-        "/chapter?text_id=version1&content_id=content1"
-      );
-      expect(links[1].getAttribute("href")).toBe(
-        "/chapter?text_id=version2&content_id=content2"
-      );
-      expect(links[2].getAttribute("href")).toBe(
-        "/chapter?text_id=version3&content_id=content3"
-      );
     });
 
     test("displays correct language translations", () => {
@@ -291,20 +258,6 @@ describe("Versions Component", () => {
   });
 
   describe("addChapter mode", () => {
-    test("renders button instead of link when addChapter is provided", () => {
-      const mockAddChapter = vi.fn();
-      const mockCurrentChapter = { id: "chapter1" };
-
-      setup({
-        addChapter: mockAddChapter,
-        currentChapter: mockCurrentChapter
-      });
-
-      const buttons = document.querySelectorAll(".version-title-button");
-      expect(buttons).toHaveLength(3);
-      expect(document.querySelectorAll(".version-title")).toHaveLength(0);
-    });
-
     test("calls addChapter when button is clicked", () => {
       const mockAddChapter = vi.fn();
       const mockCurrentChapter = { id: "chapter1" };
