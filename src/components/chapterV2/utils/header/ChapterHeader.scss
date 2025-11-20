@@ -17,6 +17,13 @@
   .title-container {
     margin: 0 auto;
     white-space: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1 1 auto;
+  }
+  .toc-icon-container, .view-selector-icon-container, .close-icon-container {
+    flex: 0 0 auto;
   }
 }
 
