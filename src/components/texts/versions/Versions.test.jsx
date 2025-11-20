@@ -275,8 +275,7 @@ describe("Versions Component", () => {
             title: "Version 1",
             language: "bo",
             table_of_contents: ["content1"],
-            source: "Test Source",
-            source_url: "https://test.com",
+            source_link: "Test Source",
             license: "CC BY 4.0"
           }
         ]

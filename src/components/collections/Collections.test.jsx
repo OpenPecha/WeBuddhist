@@ -266,6 +266,6 @@ describe("Collections Component", () => {
     fireEvent.click(links[2]);
     expect(setCollectionColorMock).toHaveBeenNthCalledWith(1, "#802F3E");
     expect(setCollectionColorMock).toHaveBeenNthCalledWith(2, "#5B99B7");
-    expect(setCollectionColorMock).toHaveBeenNthCalledWith(3, "#004E5F");
+    expect(setCollectionColorMock).toHaveBeenNthCalledWith(3, "#5D956F");
   });
 });
