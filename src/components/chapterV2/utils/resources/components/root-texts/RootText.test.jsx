@@ -46,19 +46,27 @@ describe("RootTextView", () => {
     segment_root_mapping: [
       {
         text_id: "mock-root-text-1",
-        segment_id: "mock-segment-id",
         title: "རྩ་བའི་གཞུང་དང་པོ།",
         language: "bo",
-        content:
-          "<p>འདི་ནི་རྩ་བའི་གཞུང་གི་ནང་དོན་ཡིན།</p><p>གཉིས་པའི་བརྗོད་པ།</p>",
+        segments: [
+          {
+            segment_id: "mock-segment-id",
+            content:
+              "<p>འདི་ནི་རྩ་བའི་གཞུང་གི་ནང་དོན་ཡིན།</p><p>གཉིས་པའི་བརྗོད་པ།</p>",
+          },
+        ],
       },
       {
         text_id: "mock-root-text-2",
-        segment_id: "mock-segment-id",
         title: "Root Text on Buddhist Philosophy",
         language: "en",
-        content:
-          "<p>This is a sample root text about Buddhist philosophy.</p><p>Second paragraph with a <span class='footnote-marker'>*</span><span class='footnote'>This is a footnote</span> footnote.</p>",
+        segments: [
+          {
+            segment_id: "mock-segment-id",
+            content:
+              "<p>This is a sample root text about Buddhist philosophy.</p><p>Second paragraph with a <span class='footnote-marker'>*</span><span class='footnote'>This is a footnote</span> footnote.</p>",
+          },
+        ],
       },
     ],
   };
@@ -71,11 +79,13 @@ describe("RootTextView", () => {
   let mockAddChapter;
   let mockCloseResourcesPanel;
   let currentChapter;
+  let mockHandleNavigate;
   beforeEach(() => {
     vi.resetAllMocks();
     mockSetIsRootTextView = vi.fn();
     mockAddChapter = vi.fn();
     mockCloseResourcesPanel = vi.fn();
+    mockHandleNavigate = vi.fn();
     currentChapter = {
       textId: "mock-root-text-1",
       segmentId: "mock-segment-id",
@@ -106,6 +116,7 @@ describe("RootTextView", () => {
       addChapter: mockAddChapter,
       sectionindex: 0,
       currentChapter: currentChapter,
+      handleNavigate: mockHandleNavigate,
     };
 
     return render(

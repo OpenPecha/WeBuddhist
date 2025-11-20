@@ -27,6 +27,7 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
     if (error) return <div>Error occurred</div>;
     return null;
   },
+  mapLanguageCode: () => null,
 }));
 
 vi.mock("../../commons/pagination/PaginationComponent.jsx", () => ({
