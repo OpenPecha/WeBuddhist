@@ -79,7 +79,7 @@ const Commentaries = ({
             to={`/chapter?text_id=${commentary.id}`}
             className="commentary-title"
           >
-            <div className={`${getLanguageClass(commentary.language)}`}>
+            <div className={`${getLanguageClass(commentary.language)} commentary-title`}>
               {commentary.title}
             </div>  
           </Link>
