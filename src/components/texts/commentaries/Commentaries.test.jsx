@@ -4,8 +4,10 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TolgeeProvider } from "@tolgee/react";
 import "@testing-library/jest-dom";
-import { mockTolgee } from "../../../test-utils/CommonMocks.js";
+import { mockTolgee, mockLocalStorage } from "../../../test-utils/CommonMocks.js";
 import Commentaries from "./Commentaries.jsx";
+
+let localStorageMock;
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -19,6 +21,7 @@ vi.mock("@tolgee/react", async () => {
 
 vi.mock("../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: (lang) => `language-${lang}`,
+  mapLanguageCode: () => "en",
   getEarlyReturn: ({ isLoading, error }) => {
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error occurred</div>;
@@ -37,6 +40,11 @@ vi.mock("../../commons/pagination/PaginationComponent.jsx", () => ({
 }));
 
 describe("Commentaries Component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue(null);
+  });
   const defaultProps = {
     items: [
       { id: "c1", title: "Commentary 1", language: "bo" },
@@ -58,10 +66,6 @@ describe("Commentaries Component", () => {
       </Router>
     );
   };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   test("renders items with language labels and pagination; handles page change", () => {
     setup();
