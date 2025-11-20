@@ -179,7 +179,7 @@ const UseChapterHook = (props) => {
     const languageClass = getLanguageClass(language);
     return (
       <div
-        className={`contents-container ${isProse ? "prose-layout" : ""}`}
+        className={`contents-container border ${isProse ? "prose-layout" : ""}`}
         key={section.title || "root"}
         ref={(sectionRef) => {
           sectionRef &&
