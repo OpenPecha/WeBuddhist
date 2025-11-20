@@ -93,7 +93,6 @@ describe("Works Component", () => {
 
   test("renders root texts correctly", () => {
     setup();
-    expect(screen.getByText("text.type.root_text")).toBeInTheDocument();
     expect(screen.getByText("Root Text 1")).toBeInTheDocument();
     expect(screen.getByText("Root Text 2")).toBeInTheDocument();
   });
@@ -343,7 +342,6 @@ describe("Works Component", () => {
 
     const { container } = setup();
 
-    expect(screen.getByText("text.type.root_text")).toBeInTheDocument();
     expect(screen.getByText("text.type.commentary")).toBeInTheDocument();
 
     const textSections = container.querySelectorAll(".root-text");

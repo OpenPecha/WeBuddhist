@@ -34,8 +34,9 @@ describe("CommentaryView", () => {
         segment_id: "mock-segment-id",
         title: "རྩོམ་པ་པོ་དང་པོ། དབུ་མའི་ལྟ་བའི་གསལ་བཤད།",
         language: "bo",
-        content:
-          "<p>སེམས་ཀྱི་ངོ་བོ་ནི་གསལ་བ་དང་རིག་པ་ཡིན། དེ་ནི་འོད་གསལ་བ་དང་རྣམ་པར་དག་པ་ཡིན།</p>",
+        content: [
+          "<p>སེམས་ཀྱི་ངོ་བོ་ནི་གསལ་བ་དང་རིག་པ་ཡིན། དེ་ནི་འོད་གསལ་བ་དང་རྣམ་པར་དག་པ་ཡིན།</p>"
+        ],
         count: 2,
       },
       {
@@ -43,8 +44,10 @@ describe("CommentaryView", () => {
         segment_id: "mock-segment-id",
         title: "RelatedText on Buddhist Philosophy",
         language: "en",
-        content:
-          "<p>This is a sample RelatedText about Buddhist philosophy and its principles.</p><p>Second paragraph.</p>",
+        content: [
+          "<p>This is a sample RelatedText about Buddhist philosophy and its principles.</p>",
+          "<p>Second paragraph.</p>"
+        ],
         count: 3,
       },
     ],
