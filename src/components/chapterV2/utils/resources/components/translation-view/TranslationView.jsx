@@ -51,7 +51,8 @@ const TranslationView = ({
     "mo":"language.mongolian",
     "sp":"language.spanish",
     "it":"language.italian",
-    "zh":"language.chinese"
+    "zh":"language.chinese",
+    "tib":"language.tibetan"
   }
   const groupedTranslations = sidePanelTranslationsData?.translations?.reduce((acc, translation) => {
     if (!acc[translation.language]) {

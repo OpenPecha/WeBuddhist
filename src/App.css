@@ -33,6 +33,11 @@
   src: url("./assets/fonts/Jomolhari-Regular.ttf");
 }
 
+@font-face{
+  font-family: 'Atisha';
+  src: url("./assets/fonts/Atisha.ttf");
+}
+
 @font-face {
   font-family: 'EBGaramond-Regular';
   src: url("./assets/fonts/EBGaramond-Regular.ttf");
@@ -48,7 +53,7 @@
   src: url("./assets/fonts/InterRegular.woff") format('woff');
 }
 .bo-text{
-  font-family: 'Jomolhari-Regular', sans-serif;
+  font-family: 'Atisha', sans-serif;
   font-size: 26px;
 }
 .en-text{

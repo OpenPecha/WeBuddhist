@@ -57,7 +57,7 @@
         .outer-container{
         display: flex;
         flex-direction: column;
-        width: 80%;
+        width: 100%;
         padding: 0 10px;
         align-items: center;
         margin: 0 auto;
@@ -69,15 +69,12 @@
             display: flex;
             align-items: flex-start;
             margin-top: 10px;
-            width: 500px;
+            width: 700px;
 
             @media (max-width: 768px) {
               width: 100%;
             }
             &.highlighted-segment {
-              background-color: #f0f7ff;
-            }
-            &:hover {
               background-color: #f0f7ff;
             }
             .segment-number{

@@ -53,6 +53,8 @@ export const getLanguageClass = (language) => {
       return "bo-text";
     case "bhu":
       return "bo-text";
+    case "tib":
+      return "bo-text";
     case "it":
       return "overalltext";
     default:

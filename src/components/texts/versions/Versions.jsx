@@ -34,7 +34,8 @@ const Versions = ({
     "bo":"language.tibetan",
     "en":"language.english",
     "zh":"language.chinese",
-    "it":"language.italian"
+    "it":"language.italian",
+    "tib":"language.tibetan"
   }
 
   const totalVersions = versions?.versions.length || 0;
@@ -128,7 +129,7 @@ const Versions = ({
 
   return <div className="versions-container">
     {renderVersions()}
-    {renderPagination()}
+    {/* {renderPagination()} */}
   </div>
 }
 

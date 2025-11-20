@@ -3,12 +3,13 @@
     position: sticky;
     top: 0;
     z-index: 2;
-    background: #fff;
+    background-color: #EDEDED;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
     .back-icon {
+      margin: 0 10px;
       cursor: pointer;
     }
     .close-icon {
@@ -26,14 +27,12 @@
     }
   }
   width: 350px;
-  min-width: 400px;
+  min-width: 420px;
   max-width: 100vw;
   height: 100%;
-  background-color: #fff;
-  border-left: 1px solid #e0e0e0;
+  background-color: #FBFBFA;
   transition: width 0.3s ease-in-out;
   overflow: auto;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
   z-index: 1;
   &:not(.show) {
     transition:none;
@@ -198,19 +197,13 @@
 
 @media (min-width: 993px) {
   .single-chapter .right-panel {
-    position: fixed;
-    top: 119px;
-    right: 0;
-    height: calc(100vh - 119px);
-
     &.show {
       width: 280px;
     }
-
     .headerthing {
       position: sticky;
       top: 0;
-      background: #fff;
+      background: #EDEDED;
     }
 
     .panel-content { 

@@ -48,11 +48,11 @@ const fontConfig = {
     },
     collectionfont: {
       fontSize: "16px",
-      fontFamily: "Jomolhari-Regular",
+      fontFamily: "Atisha",
     },
     content: {
       fontSize: "20px",
-      fontFamily: "Jomolhari-Regular",
+      fontFamily: "Atisha",
     },
     subcontent: {
       fontSize: "14px",
