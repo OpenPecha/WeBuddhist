@@ -109,7 +109,7 @@ const Commentaries = ({
   return (
     <div className="commentaries-container">
       {items.map((commentary) => renderItem(commentary))}
-      {renderPagination()}
+      {/* {renderPagination()} */}
     </div>
   );
 };
