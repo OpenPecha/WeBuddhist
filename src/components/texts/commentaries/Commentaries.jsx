@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useTranslate } from '@tolgee/react';
 import { getEarlyReturn, getLanguageClass } from '../../../utils/helperFunctions.jsx';
 import PaginationComponent from '../../commons/pagination/PaginationComponent.jsx';
+import { Link } from 'react-router-dom';
 import './Commentaries.scss';
 
 const LANGUAGE_MAP = {
@@ -14,6 +15,7 @@ const LANGUAGE_MAP = {
 };
 
 const Commentaries = ({
+  textId,
   items = [],
   isLoading,
   isError,
@@ -51,9 +53,13 @@ const Commentaries = ({
     return (
       <div className="commentary-details" key={commentary.id}>
         <div className="commentary-title-subtitle-container">
-          <div className={`${getLanguageClass(commentary.language)}`}>
-            {commentary.title}
-          </div>
+          <Link
+            to={`/chapter?text_id=${commentary.id}`}
+          >
+            <div className={`${getLanguageClass(commentary.language)}`}>
+              {commentary.title}
+            </div>  
+          </Link>
         </div>
         {renderLanguage(commentary)}
       </div>
@@ -84,6 +90,7 @@ const Commentaries = ({
 export default React.memo(Commentaries);
 
 Commentaries.propTypes = {
+  textId: PropTypes.string,
   items: PropTypes.arrayOf(PropTypes.object),
   isLoading: PropTypes.bool,
   isError: PropTypes.object,
