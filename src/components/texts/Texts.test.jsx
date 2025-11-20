@@ -93,7 +93,7 @@ describe("Texts Component", () => {
     setup();
     expect(screen.getByText("Table of Contents Component")).toBeInTheDocument();
     const buttons = document.querySelectorAll('.tab-button');
-      expect(buttons[0]).toHaveTextContent("Content")
+      expect(buttons[0]).toHaveTextContent("Contents")
     expect(buttons[1]).toHaveTextContent("Version")
 
   });
