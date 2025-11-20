@@ -48,12 +48,7 @@ export const fetchCommentaries = async (textId, skip, limit) => {
       limit
     }
   });
-  const items = Array.isArray(data) ? data : (data?.commentaries || data?.items || []);
-  const total = Array.isArray(data) ? undefined : (data?.total);
-  return { items, total };
-  // const {data: mockData} = mockResponseData;
-  // console.log(mockData);
-  // return mockData;
+  return { items: data };
 }
 
 const Texts = (props) => {
@@ -195,7 +190,6 @@ const Texts = (props) => {
               addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined}
               currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}
               items={commentaries?.items || []}
-              total={commentaries?.total}
               isLoading={commentariesIsLoading}
               isError={commentariesIsError}
               pagination={commentariesPagination}

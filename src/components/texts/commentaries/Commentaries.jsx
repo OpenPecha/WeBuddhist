@@ -5,58 +5,16 @@ import { getEarlyReturn, getLanguageClass } from '../../../utils/helperFunctions
 import PaginationComponent from '../../commons/pagination/PaginationComponent.jsx';
 import './Commentaries.scss';
 
-// const mockResponseData = [
-//     {
-//       "id": "string",
-//       "pecha_text_id": "string",
-//       "title": "Commentary 1",
-//       "language": "string",
-//       "group_id": "string",
-//       "type": "string",
-//       "summary": "",
-//       "is_published": true,
-//       "created_date": "string",
-//       "updated_date": "string",
-//       "published_date": "string",
-//       "published_by": "string",
-//       "categories": [
-//         "string"
-//       ],
-//       "views": 0,
-//       "likes": [],
-//       "source_link": "string",
-//       "ranking": 0,
-//       "license": "string"
-//     },
-
-//   {
-//     "id": "string",
-//     "pecha_text_id": "string",
-//     "title": "Commentary 2",
-//     "language": "string",
-//     "group_id": "string",
-//     "type": "string",
-//     "summary": "",
-//     "is_published": true,
-//     "created_date": "string",
-//     "updated_date": "string",
-//     "published_date": "string",
-//     "published_by": "string",
-//     "categories": [
-//       "string"
-//     ],
-//     "views": 0,
-//     "likes": [],
-//     "source_link": "string",
-//     "ranking": 0,
-//     "license": "string"
-//   }
-//   ]
+const LANGUAGE_MAP = {
+  sa: 'language.sanskrit',
+  bo: 'language.tibetan',
+  en: 'language.english',
+  zh: 'language.chinese',
+  it: 'language.italian'
+};
 
 const Commentaries = ({
-  textId: propTextId,
   items = [],
-  total,
   isLoading,
   isError,
   pagination,
@@ -75,16 +33,7 @@ const Commentaries = ({
     );
   }
 
-  const languageMap = {
-    sa: 'language.sanskrit',
-    bo: 'language.tibetan',
-    en: 'language.english',
-    zh: 'language.chinese',
-    it: 'language.italian'
-  };
-
-  const totalItems = typeof total === 'number' ? total : items.length;
-  const totalPages = Math.ceil(totalItems / pagination.limit);
+  const totalPages = Math.ceil((items?.length || 0) / pagination.limit);
 
   const handlePageChange = (pageNumber) => {
     setPagination((prev) => ({ ...prev, currentPage: pageNumber }));
@@ -93,7 +42,7 @@ const Commentaries = ({
   const renderLanguage = (commentary) => {
     return (
       <div className="commentary-language subtitle border">
-        <p>{t(languageMap[commentary.language])}</p>
+        <p>{t(LANGUAGE_MAP[commentary.language])}</p>
       </div>
     );
   };
@@ -135,9 +84,7 @@ const Commentaries = ({
 export default React.memo(Commentaries);
 
 Commentaries.propTypes = {
-  textId: PropTypes.string,
   items: PropTypes.arrayOf(PropTypes.object),
-  total: PropTypes.number,
   isLoading: PropTypes.bool,
   isError: PropTypes.object,
   pagination: PropTypes.shape({
