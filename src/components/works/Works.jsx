@@ -87,7 +87,7 @@ const Works = (props) => {
       }}
     >
       <div className="divider"></div>
-      <p>{text.title}ff</p>
+      <p>{text.title}</p>
     </button>
   ) : (
     <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
