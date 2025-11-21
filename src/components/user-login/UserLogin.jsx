@@ -9,7 +9,8 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useTranslate } from "@tolgee/react";
-import { FaGoogle, FaApple } from "react-icons/fa";
+import { FaApple } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
 const UserLogin = () => {
     const { t } = useTranslate();
@@ -129,7 +130,7 @@ const UserLogin = () => {
 );
 
   const renderLoginTitle = () => (
-    <h2 className="title login-title">{t("login.form.button.login_in")}</h2>
+    <h3 className="subtitle login-title">{t("login.form.button.login_in")}</h3>
   );
 
   const renderEmailField = () => (
@@ -137,7 +138,7 @@ const UserLogin = () => {
       <input
         type="email"
         placeholder={t("common.email")}
-        className={`form-input ${errors.email ? "is-invalid" : ""}`}
+        className={` form-input subcontent ${errors.email ? "is-invalid" : ""}`}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
@@ -169,7 +170,7 @@ const UserLogin = () => {
       <input
         type={showPassword ? "text" : "password"}
         placeholder={t("common.password")}
-        className={`form-input ${errors.password ? "is-invalid" : ""}`}
+        className={`form-input  subcontent ${errors.password ? "is-invalid" : ""}`}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
@@ -201,7 +202,7 @@ const UserLogin = () => {
      {renderServerError()} 
       <button
         type="submit"
-        className="login-button"
+        className="login-button subcontent"
         // disabled={loginMutation.isLoading}
       >
         {t("login.form.button.login_in")}
@@ -223,7 +224,7 @@ const UserLogin = () => {
     <>
     <div className="social-login-buttons">
       <button type="button" className="social-btn" onClick={loginWithGoogle}>
-        <FaGoogle />
+        <FcGoogle />
         Google
       </button>
       <button type="button" className="social-btn" onClick={loginWithApple}>
