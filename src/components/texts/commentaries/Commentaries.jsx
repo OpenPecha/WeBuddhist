@@ -32,11 +32,9 @@ const Commentaries = ({
   if (earlyReturn) return earlyReturn;
 
   if (!items || items.length === 0) {
-    const uiLanguage = mapLanguageCode(localStorage.getItem(LANGUAGE)) || 'en';
-    const notFoundClassName = uiLanguage === 'bo' ? 'bo-text' : '';
     return (
-      <div className="listtitle">
-        <p className={notFoundClassName}>{t('global.not_found')}</p>
+      <div className="content">
+        <p className='mt-2'>{t('global.not_found')}</p>
       </div>
     );
   }

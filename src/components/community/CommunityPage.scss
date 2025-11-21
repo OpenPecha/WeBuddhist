@@ -1,3 +1,5 @@
+$font-size-content: 18px;
+
 .container-community {
   display: flex;
   flex-direction: row;
@@ -53,7 +55,7 @@
     .community-dropdown {
       background-color: #fff;
       color: #0b0b0b ;
-      border: 1px solid #A8262B ;
+      border: 1px solid #18345D ;
       box-shadow: none ;
       border-radius: 4px ;
       padding: 8px 16px ;
@@ -192,7 +194,7 @@
 
 .sidebar-content {
   color: #666;
-  line-height: 1.5;
+  font-size: $font-size-content;
 }
 
 .make-sheet-btn, .explore-collections-btn {
@@ -202,7 +204,7 @@
   width: 100%;
   padding: 10px;
   margin-top: 15px;
-  background-color: #871C1C;
+  background-color: #18345D;
   color: white;
   border: none;
   border-radius: 4px;

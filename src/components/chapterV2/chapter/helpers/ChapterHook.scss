@@ -79,6 +79,7 @@
             }
             .segment-number{
               margin-right: 2rem;
+              font-size: 12px;
             }
             .segment-content{
               display: flex;
@@ -93,10 +94,8 @@
           }
       }
       h2{
-        border-bottom: 4px solid #ae1c21;
-        border-radius: 4px;
-        padding-bottom: 10px;
-        margin-bottom: 10px;
+        border-bottom: 4px solid #c8c8c8;
+        padding:10px;
       }
       button{
         background-color: transparent;

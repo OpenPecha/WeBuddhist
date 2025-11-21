@@ -276,6 +276,7 @@ $font-size-content-sm: 14px;
         color: $primary-color;
         margin: 1rem 0;
         word-wrap: break-word;
+        font-size: $font-size-content;
 
         .learn-more {
           text-decoration: underline;
