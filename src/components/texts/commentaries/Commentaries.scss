@@ -46,6 +46,15 @@ $primary-color: #666666;
           }
         }
       }
+      .commentary-title-button{
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        text-align: left;
+        font-size: 16px;
+      }
     }
     .commentary-language{
       height: 30px;

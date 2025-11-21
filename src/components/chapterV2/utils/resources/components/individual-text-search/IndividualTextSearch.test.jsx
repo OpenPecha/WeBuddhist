@@ -6,6 +6,7 @@ import { useQuery } from 'react-query';
 import IndividualTextSearch, { fetchTextSearchResults } from './IndividualTextSearch';
 import axiosInstance from '../../../../../../config/axios-config';
 import { usePanelContext } from '../../../../../../context/PanelContext';
+import { mockLocalStorage } from '../../../../../../test-utils/CommonMocks.js';
 
 vi.mock('use-debounce', () => ({
   useDebounce: vi.fn((value) => [value, vi.fn()])
@@ -40,6 +41,14 @@ vi.mock('../../../../../../config/axios-config', () => ({
     get: vi.fn(),
   },
 }));
+
+let localStorageMock;
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  localStorageMock = mockLocalStorage();
+  localStorageMock.getItem.mockReturnValue('en');
+});
 
 describe('fetchTextSearchResults', () => {
   beforeEach(() => {

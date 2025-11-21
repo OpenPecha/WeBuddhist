@@ -82,7 +82,7 @@ const Navigation = () => {
 const renderLogo=()=>{
     return(
         <Link to="/" onClick={handleLogoClick}>
-         <img className="logo" src="/img/webuddhist_logo.svg" alt="Webuddhist"/>
+         <img className="logo" src="/img/webuddhist.svg" alt="Webuddhist"/>
        </Link>
     )
 }
