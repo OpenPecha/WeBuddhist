@@ -9,7 +9,8 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useTranslate } from "@tolgee/react";
-import { FaGoogle, FaApple } from "react-icons/fa";
+import { FaApple } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
 const UserRegistration = () => {
   const { t } = useTranslate();
@@ -139,7 +140,7 @@ const UserRegistration = () => {
   const loginWithApple = () => handleSocialLogin('apple');
 
   const renderRegistrationTitle = () => (
-    <h2 className="title register-title" data-testid="signup-title">
+    <h2 className="subtitle register-title" data-testid="signup-title">
       {t("common.sign_up")}
     </h2>
   );
@@ -149,7 +150,7 @@ const UserRegistration = () => {
       <input
         type={field.type}
         placeholder={t(field.placeholderKey)}
-        className={`form-input ${errors[field.name] ? "is-invalid" : ""}`}
+        className={`form-input content ${errors[field.name] ? "is-invalid" : ""}`}
         value={field.value}
         onChange={field.onChange}
       />
@@ -225,7 +226,7 @@ const UserRegistration = () => {
       <input
         type={showPassword ? "text" : "password"}
         placeholder={t("common.password")}
-        className={`form-input ${errors.password ? "is-invalid" : ""}`}
+        className={`form-input content ${errors.password ? "is-invalid" : ""}`}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
@@ -279,7 +280,7 @@ const UserRegistration = () => {
     <>
       <div className="social-login-buttons">
         <button className="social-btn" onClick={loginWithGoogle}>
-          <FaGoogle />
+          <FcGoogle />
           Google
         </button>
         <button className="social-btn" onClick={loginWithApple}>
