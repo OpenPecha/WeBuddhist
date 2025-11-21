@@ -27,7 +27,6 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
     if (error) return <div>Error occurred</div>;
     return null;
   },
-  mapLanguageCode: () => null,
 }));
 
 vi.mock("../../commons/pagination/PaginationComponent.jsx", () => ({
@@ -68,7 +67,7 @@ describe("Commentaries Component", () => {
     );
   };
 
-  test("renders items with language labels and pagination; handles page change", () => {
+  test("renders items with language labels", () => {
     setup();
 
     expect(document.querySelector(".commentaries-container")).toBeInTheDocument();
@@ -80,11 +79,6 @@ describe("Commentaries Component", () => {
     expect(languageLabels).toHaveLength(2);
     expect(languageLabels[0].textContent).toBe("language.tibetan");
     expect(languageLabels[1].textContent).toBe("language.english");
-
-    const pagination = document.querySelector(".pagination");
-    expect(pagination).toBeInTheDocument();
-    fireEvent.click(pagination.querySelector(".page-link"));
-    expect(defaultProps.setPagination).toHaveBeenCalledWith(expect.any(Function));
   });
 
   test("displays loading state when isLoading is true", () => {

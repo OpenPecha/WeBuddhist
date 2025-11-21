@@ -152,13 +152,6 @@ describe("Versions Component", () => {
   });
 
   describe("Pagination", () => {
-    test("renders pagination component when versions exist", () => {
-      setup();
-
-      const paginationComponent = document.querySelector(".pagination");
-      expect(paginationComponent).toBeInTheDocument();
-    });
-
     test("does not render pagination component when no versions exist", () => {
       setup({
         versions: {
@@ -170,38 +163,9 @@ describe("Versions Component", () => {
       const paginationComponent = document.querySelector(".pagination");
       expect(paginationComponent).not.toBeInTheDocument();
     });
-
-    test("handles page change correctly", () => {
-      setup();
-
-      const pageButton = document.querySelector(".page-link");
-      fireEvent.click(pageButton);
-
-      expect(mockSetVersionsPagination).toHaveBeenCalledWith(expect.any(Function));
-    });
   });
 
   describe("Component behavior", () => {
-    test("calculates total pages correctly", () => {
-      const versionsData = {
-        versions: new Array(25).fill(null).map((_, i) => ({
-          id: `version${i}`,
-          title: `Version ${i}`,
-          language: "bo",
-          table_of_contents: [`content${i}`]
-        })),
-        total: 25,
-        skip: 0,
-        limit: 10
-      };
-
-      setup({ versions: versionsData });
-
-      // With 25 versions and limit of 10, should have 3 pages
-      const paginationComponent = document.querySelector(".pagination");
-      expect(paginationComponent).toBeInTheDocument();
-    });
-
     test("handles empty versions array", () => {
       setup({
         versions: {

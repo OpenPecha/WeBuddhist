@@ -31,8 +31,13 @@ vi.mock("../../../utils/highlightUtils.jsx", () => ({
   highlightSearchMatch: (text, searchText, className) => text,
 }));
 
-vi.mock("../../../utils/Constants", () => ({
+vi.mock("../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: () => "bo",
+  mapLanguageCode: (code) => code === "bo-IN" ? "bo" : "en",
+}));
+
+vi.mock("../../../utils/constants.js", () => ({
+  LANGUAGE: "LANGUAGE",
 }));
 
 vi.mock("@tolgee/react", async () => {
@@ -61,38 +66,36 @@ describe("Sources Component", () => {
   };
   
   const mockSourceData = {
-    search: {
-      text: "word that is being searched"
-    },
+    query: "word that is being searched",
     sources: [
       {
         text: {
-          text_id: "uuid()",
+          text_id: "uuid-1",
           language: "bo",
           title: "text title",
           published_date: "12-02-2025"
         },
-        segment_match: [
+        segment_matches: [
           {
-            segment_id: "uuid()",
+            segment_id: "segment-uuid-1",
             content: "segment content"
           },
           {
-            segment_id: "uuid()",
+            segment_id: "segment-uuid-2",
             content: "segment content"
           }
         ]
       },
       {
         text: {
-          text_id: "uuid()",
+          text_id: "uuid-2",
           language: "en",
           title: "text title",
           published_date: "12-02-2025"
         },
-        segment_match: [
+        segment_matches: [
           {
-            segment_id: "uuid()",
+            segment_id: "segment-uuid-3",
             content: "segment content"
           }
         ]
@@ -152,7 +155,7 @@ describe("Sources Component", () => {
   test("displays message when no results are found", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: {
-        search: { text: "word that is being searched" },
+        query: "word that is being searched",
         sources: [],
         skip: 0,
         limit: 10,
@@ -215,7 +218,7 @@ describe("Sources Component", () => {
     // Verify navigation was called with the correct URL format
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith(
-      "/chapter?text_id=uuid()&segment_id=uuid()&versionId="
+      "/chapter?text_id=uuid-1&segment_id=segment-uuid-1&versionId="
     );
   });
 });
