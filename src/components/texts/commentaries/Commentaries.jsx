@@ -21,7 +21,10 @@ const Commentaries = ({
   isLoading,
   isError,
   pagination,
-  setPagination
+  setPagination,
+  requiredInfo,
+  addChapter,
+  currentChapter
 }) => {
   const { t } = useTranslate();
 
@@ -75,17 +78,39 @@ const Commentaries = ({
       );
     };
 
-    return (
-      <div className="commentary-details" key={commentary.id}>
-        <div className="commentary-title-subtitle-container">
-          <Link
-            to={`/chapter?text_id=${commentary.id}`}
-            className="commentary-title"
+    const renderTitle = () => {
+      if (addChapter) {
+        return (
+          <button
+            className="commentary-title-button"
+            onClick={() => {
+              addChapter({
+                textId: commentary.id
+              }, currentChapter);
+            }}
           >
             <div className={`${getLanguageClass(commentary.language)} commentary-title`}>
               {commentary.title}
-            </div>  
-          </Link>
+            </div>
+          </button>
+        );
+      }
+      return (
+        <Link
+          to={`/chapter?text_id=${commentary.id}`}
+          className="commentary-title"
+        >
+          <div className={`${getLanguageClass(commentary.language)} commentary-title`}>
+            {commentary.title}
+          </div>  
+        </Link>
+      );
+    };
+
+    return (
+      <div className="commentary-details" key={commentary.id}>
+        <div className="commentary-title-subtitle-container">
+          {renderTitle()}
           {renderMetadata(commentary)}
         </div>
         {renderLanguage(commentary)}
