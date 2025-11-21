@@ -71,9 +71,14 @@ const Navigation = () => {
       setIsMobileMenuOpen((prev) => !prev);
       setIsLangDropdownOpen(false);
     };
+    const handleLogoClick = () => {
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
 const renderLogo=()=>{
     return(
-        <Link to="/" onClick={handleMobileMenuToggle}>
+        <Link to="/" onClick={handleLogoClick}>
          <img className="logo" src="/img/webuddhist_logo.svg" alt="Webuddhist"/>
        </Link>
     )
