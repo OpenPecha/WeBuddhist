@@ -198,7 +198,7 @@ body {
     gap:15px;
     padding:10px 16px;
     overflow-y:auto;
-    z-index:148;
+    z-index:1800;
     .nav-links{
       display:flex;
       flex-direction:column;
@@ -255,6 +255,7 @@ body {
         display: flex;
         align-items: center;
         gap: 10px;
+        margin-top: 1rem;
         padding: 5px;
         border-radius: 5px;
         border: 1px solid #e0e0e0;

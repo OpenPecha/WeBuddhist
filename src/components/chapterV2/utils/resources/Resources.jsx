@@ -218,7 +218,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
   return(
     <>
       {showPanel && <button className="panel-backdrop" onClick={() => closeResourcesPanel()}></button>}
-      <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
+      <div className={`right-panel navbaritems ${showPanel ? 'show' : ''} ${activeView === 'main' ? 'is-main' : ''}`}>
         {renderSidePanel()}
       </div>
     </>

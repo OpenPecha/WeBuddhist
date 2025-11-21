@@ -62,7 +62,7 @@ $text-color-title: #000000;
           color: #AB1A20;
         }
 
-        &:focus {
+        &:focus-visible {
           outline: 2px solid #AB1A20;
           outline-offset: 2px;
         }
@@ -98,7 +98,7 @@ $text-color-title: #000000;
         color: #AB1A20;
       }
 
-      &:focus {
+      &:focus-visible {
         outline: 2px solid #AB1A20;
         outline-offset: 2px;
       }
