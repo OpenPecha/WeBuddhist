@@ -5,7 +5,7 @@ import Seo from "../commons/seo/Seo.jsx";
 import "./Texts.scss"
 import {LANGUAGE, siteName} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
-import {useTranslate} from "@tolgee/react";
+import {useTolgee, useTranslate} from "@tolgee/react";
 import {Link, useParams, useSearchParams} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
@@ -65,7 +65,9 @@ const Texts = (props) => {
   const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
   const versionsSkip = useMemo(() => (versionsPagination?.currentPage - 1) * versionsPagination?.limit, [versionsPagination]);
   const commentariesSkip = useMemo(() => (commentariesPagination?.currentPage - 1) * commentariesPagination?.limit, [commentariesPagination]);
-  
+  const tolgee = useTolgee(['language']);
+  const currentLanguage = tolgee.getLanguage();
+  const isTibetan = currentLanguage === 'bo-IN';
   const textId = requiredInfo?.from === "compare-text" ? collection_id : urlId;
 
   const {data: tableOfContents, isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError} = useQuery(
@@ -125,7 +127,7 @@ const Texts = (props) => {
   }
 
   const renderContinueReadingButton = () => {
-    return <Link className="navbaritems continue-reading-button"
+    return <Link className={`navbaritems continue-reading-button ${isTibetan && 'pt-2'}`}
                  to={`/chapter?text_id=${tableOfContents?.text_detail?.id}&contentId=${tableOfContents?.contents[0]?.id}&versionId=&contentIndex=${0}`}>
       {t("text.button.continue_reading")}
     </Link>

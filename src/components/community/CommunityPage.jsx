@@ -131,7 +131,7 @@ const CommunityPage = () => {
 
       <div className='sidebar-community'>
         <div className='sidebar-section'>
-          <div className='sidebar-content content'>
+          <div className=' content sidebar-content '>
             <p>{t("side_nav.join_conversation.descriptions")}</p>
             <button className='make-sheet-btn content' onClick={() => 
               userIsLoggedIn ?(sessionStorage.removeItem('sheets-content'),sessionStorage.removeItem('sheet-title'), navigate("/sheets/new")) : navigate("/login")}>

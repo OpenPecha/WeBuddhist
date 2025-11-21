@@ -36,6 +36,9 @@ const Navigation = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
 
+    const currentLanguage = tolgee.getLanguage();
+    const isTibetan = currentLanguage === 'bo-IN';
+
     const routesWithoutColorBorder = ['/', '/collections', '/login', '/register', '/signup', '/community','/user'];
     const shouldHideColorBorder = routesWithoutColorBorder.includes(location.pathname);
    
@@ -85,7 +88,7 @@ const renderLogo=()=>{
 }
 const renderNavLinks=()=>{
     return(
-        <div className='nav-links navbaritems'>
+        <div className={`nav-links navbaritems ${isTibetan && 'mt-2'}`}>
             <Link to="/collections" onClick={handleMobileMenuToggle}>  {t("header.text")}</Link>
             {/* <Link to="/topics" onClick={handleMobileMenuToggle}>{t("header.topic")}</Link> */}
             <Link to="/community" onClick={handleMobileMenuToggle}> {t("header.community")}</Link>
@@ -103,7 +106,7 @@ const renderSearch = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           onFocus={() => setIsSearchFocused(true)}
           onBlur={() => setIsSearchFocused(false)}
-          className="search-input"
+          className={`search-input`}
         />
       </form>
     );
@@ -114,11 +117,11 @@ const renderAuthButtons = () => {
     }
     if (!isLoggedIn && !isAuthenticated) {
       return (
-        <div className='auth-buttons navbaritems'>
-          <Link className='auth-button-login'  to="/login" onClick={handleMobileMenuToggle} >
+        <div className={`auth-buttons navbaritems`}>
+          <Link className={`auth-button-login ${isTibetan && 'pt-2'}`}  to="/login" onClick={handleMobileMenuToggle} >
             {t("login.form.button.login_in")}
           </Link>
-          <Link className='auth-button-register' to="/register" onClick={handleMobileMenuToggle} >
+          <Link className={`auth-button-register ${isTibetan && 'pt-2'}`} to="/register" onClick={handleMobileMenuToggle} >
             {t("common.sign_up")}
           </Link>
         </div>
