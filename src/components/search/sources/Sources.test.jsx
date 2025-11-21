@@ -3,13 +3,14 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import Sources from "./Sources";
-import { mockTolgee } from "../../../test-utils/CommonMocks";
+import { mockTolgee, mockLocalStorage } from "../../../test-utils/CommonMocks";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import * as reactQuery from "react-query";
 import { MemoryRouter } from "react-router-dom";
 
 const mockNavigate = vi.fn();
+let localStorageMock;
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
@@ -109,6 +110,8 @@ describe("Sources Component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mockNavigate.mockReset();
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue("en");
   });
 
   test("renders sources when data is loaded successfully", () => {
