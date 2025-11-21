@@ -48,7 +48,7 @@ export const getLanguageClass = (language) => {
     case "bo":
       return "bo-text";
     case "en":
-      return "overalltext";
+      return "en-serif-text";
     case "sa":
       return "bo-text";
     case "bhu":
@@ -56,9 +56,9 @@ export const getLanguageClass = (language) => {
     case "tib":
       return "bo-text";
     case "it":
-      return "overalltext";
+      return "en-serif-text";
     default:
-      return "overalltext";
+      return "en-serif-text";
   }
 };
 

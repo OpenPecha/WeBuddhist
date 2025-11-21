@@ -60,8 +60,9 @@
   font-family: 'Inter', sans-serif;
   font-size: 18px;
 }
-.en-title-text{
+.en-serif-text{
   font-family: 'EBGaramond-Regular', sans-serif;
+  font-size: 20px;
 }
 .title {
   font-size: var(--title-font-size);
