@@ -144,7 +144,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
         canonical={canonicalUrl}
       />
       <PanelProvider>
-        {renderChapterHeader()}
+        {/* {renderChapterHeader()} */}
         {renderChapter()}
       </PanelProvider>
     </div>

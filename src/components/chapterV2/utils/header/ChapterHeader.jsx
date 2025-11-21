@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useRef} from 'react'
 import {LuPanelLeftClose, LuPanelLeftOpen} from "react-icons/lu";
 import {MdClose, MdOutlineVerticalSplit} from "react-icons/md";
 import { TbLetterA } from "react-icons/tb";
@@ -17,11 +17,28 @@ const ChapterHeader = (props) => {
   const tolgee = useTolgee(['language']);
   const currentLanguage = tolgee.getLanguage();
   const isTibetan = currentLanguage === 'bo-IN';
+  const viewSelectorIconRef = useRef(null);
+
   useEffect(() => {
     if (isResourcesPanelOpen) {
       setIsViewSelectorOpen(false);
     }
   }, [isResourcesPanelOpen, setIsViewSelectorOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isViewSelectorOpen && 
+          viewSelectorIconRef.current && 
+          !viewSelectorIconRef.current.contains(event.target)) {
+        setIsViewSelectorOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isViewSelectorOpen, setIsViewSelectorOpen]);
 
   const handleViewSelectorClick = () => {
     closeResourcesPanel();
@@ -49,7 +66,7 @@ const ChapterHeader = (props) => {
 
   const renderViewSelector = () => {
     const propsForViewSelectorComponent = { setShowViewSelector: () => setIsViewSelectorOpen(false), viewMode, setViewMode, layoutMode, setLayoutMode, versionSelected }
-    return <div className="view-selector-icon-container">
+    return <div className="view-selector-icon-container" ref={viewSelectorIconRef}>
       <img src={langicon} alt="view selector" onClick={handleViewSelectorClick}/>
       {isViewSelectorOpen && <ViewSelector {...propsForViewSelectorComponent}/>}
     </div>
@@ -66,6 +83,7 @@ const ChapterHeader = (props) => {
     <div className="chapter-header-container">
       {renderTableOfContentsIcon()}
       <div className="title-and-view-selector-container">
+        <div/>
         {renderChapterTitle()}
         {renderViewSelector()}
       </div>
