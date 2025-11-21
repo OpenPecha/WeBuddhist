@@ -44,7 +44,7 @@ export const updateSheetVisibility = async (sheetId, isPublished, sheetData) => 
       return {
         position: index,
         type: segment.type,
-        content: segment.content,
+        content: segment.key || segment.content,
       };
     }
     if (segment.type === "source") {
@@ -57,7 +57,7 @@ export const updateSheetVisibility = async (sheetId, isPublished, sheetData) => 
     return {
       position: index,
       type: "content", 
-      content: segment.content,
+      content: segment.key || segment.content,
     };
   });
   
