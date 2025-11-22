@@ -34,47 +34,35 @@ describe("ViewSelector Component", () => {
     vi.clearAllMocks();
   });
 
-  test("renders the options container and close icon", () => {
+  test("renders options container and layout radios", () => {
     setup();
-    expect(screen.getByRole("button")).toBeInTheDocument();
-    expect(screen.getByRole("button")).toHaveClass("view-selector-close-icon");
-    expect(screen.getByText("text.reader_option_menu.source")).toBeInTheDocument();
-    expect(screen.getByText("text.reader_option_menu.translation")).toBeInTheDocument();
-    expect(screen.getByText("text.reader_option_menu.source_with_translation")).toBeInTheDocument();
+    expect(document.querySelector('.view-selector-options-container')).toBeInTheDocument();
+    expect(screen.getByText('text.reader_option_menu.layout')).toBeInTheDocument();
+    const radios = screen.getAllByRole('radio');
+    expect(radios).toHaveLength(2);
   });
 
   test("renders all radio options with correct checked state", () => {
     setup(VIEW_MODES.TRANSLATIONS);
     const radios = screen.getAllByRole("radio");
-    expect(radios).toHaveLength(5);
+    expect(radios).toHaveLength(2);
     expect(radios[1]).toBeChecked();
     expect(radios[0]).not.toBeChecked();
-    expect(radios[2]).not.toBeChecked();
   });
 
-  test("calls setViewMode when a radio option is selected", () => {
-    setup(VIEW_MODES.SOURCE);
-    const radios = screen.getAllByRole("radio");
-    fireEvent.click(radios[1]);
-    expect(setViewMode).toHaveBeenCalledWith(VIEW_MODES.TRANSLATIONS);
-    fireEvent.click(radios[2]);
-    expect(setViewMode).toHaveBeenCalledWith(VIEW_MODES.SOURCE_AND_TRANSLATIONS);
-  });
 
-  test("calls setShowViewSelector(false) when close icon is clicked", () => {
+  test("outside click closes the selector", () => {
     setup();
-    const closeBtn = screen.getByRole("button");
-    fireEvent.click(closeBtn);
+    fireEvent.mouseDown(document.body);
     expect(setShowViewSelector).toHaveBeenCalledWith(false);
   });
 
   test("radio options are accessible", () => {
     setup();
     const radios = screen.getAllByRole("radio");
-    const viewModeRadios = radios.slice(0, 3);
-    viewModeRadios.forEach((radio) => {
+    radios.forEach((radio) => {
       expect(radio).toHaveAttribute("type", "radio");
-      expect(radio).toHaveAttribute("name", "view-mode");
+      expect(radio).toHaveAttribute("name", "layout-mode");
     });
   });
 
@@ -93,7 +81,7 @@ describe("ViewSelector Component", () => {
     );
     
     const radios = screen.getAllByRole("radio");
-    fireEvent.click(radios[3]);
+    fireEvent.click(radios[0]);
     expect(setLayoutMode).toHaveBeenCalledWith(LAYOUT_MODES.PROSE);
   });
 });

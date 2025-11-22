@@ -333,4 +333,23 @@ describe('CompareText Component', () => {
       expect(screen.getByTestId('collections-component')).toBeInTheDocument();
     });
   });
-});
+
+    it('calls handleNavigate when back clicked on collections view', () => {
+      const mockHandleNavigate = vi.fn();
+      const { container } = renderComponent({ handleNavigate: mockHandleNavigate });
+      const backBtn = container.querySelector('.back-icon');
+      fireEvent.click(backBtn);
+      expect(mockHandleNavigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('returns to previous renderer when back clicked after navigating forward', () => {
+      const mockHandleNavigate = vi.fn();
+      const { container } = renderComponent({ handleNavigate: mockHandleNavigate });
+      fireEvent.click(screen.getByText('Navigate to SubCollections'));
+      expect(screen.getByTestId('sub-collections-component')).toBeInTheDocument();
+      const backBtn = container.querySelector('.back-icon');
+      fireEvent.click(backBtn);
+      expect(screen.getByTestId('collections-component')).toBeInTheDocument();
+      expect(mockHandleNavigate).not.toHaveBeenCalled();
+    });
+  });

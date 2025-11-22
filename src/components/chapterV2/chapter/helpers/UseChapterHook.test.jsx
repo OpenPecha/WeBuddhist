@@ -35,6 +35,11 @@ vi.mock("../../utils/header/table-of-contents/TableOfContents.jsx", () => ({
   default: ({showTableOfContents}) => showTableOfContents ? <div data-testid="table-of-contents">TableOfContents</div> : null,
 }));
 
+vi.mock("../../utils/header/ChapterHeader.jsx", () => ({
+  __esModule: true,
+  default: () => <div data-testid="chapter-header-mock">ChapterHeader</div>,
+}));
+
 vi.mock("../../utils/resources/Resources.jsx", () => ({
   __esModule: true,
   default: ({ segmentId }) => <div data-testid="resources">Resources {segmentId}</div>,

@@ -430,4 +430,55 @@ describe('IndividualTextSearch Component', () => {
     
     expect(searchInput).toHaveClass('search-input');
   });
+
+  it('renders results and clicking a segment opens resources and navigates to segment', () => {
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set('text_id', 'text123');
+    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+
+    const openResourcesPanel = vi.fn();
+    usePanelContext.mockReturnValue({
+      openResourcesPanel,
+      closeResourcesPanel: vi.fn(),
+      isResourcesPanelOpen: true,
+    });
+
+    useQuery.mockReturnValue({
+      data: {
+        query: 'buddha',
+        total: 2,
+        sources: [
+          {
+            text: { language: 'en' },
+            segment_matches: [
+              { segment_id: 'seg1', content: 'One <em>the</em>' },
+              { segment_id: 'seg2', content: 'Two <em>the</em>' },
+            ],
+          },
+        ],
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    const handleSegmentNavigate = vi.fn();
+    const { getByPlaceholderText, container } = render(
+      <IndividualTextSearch
+        onClose={vi.fn()}
+        handleSegmentNavigate={handleSegmentNavigate}
+        handleNavigate={vi.fn()}
+      />
+    );
+
+    fireEvent.change(getByPlaceholderText('connection_panel.search_in_this_text'), {
+      target: { value: 'the' },
+    });
+
+    const items = container.querySelectorAll('.segment-item');
+    expect(items.length).toBeGreaterThan(0);
+    fireEvent.click(items[0]);
+
+    expect(handleSegmentNavigate).toHaveBeenCalledWith('seg1');
+    expect(openResourcesPanel).toHaveBeenCalled();
+  });
 });
