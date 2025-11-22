@@ -18,12 +18,14 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
+    "@tailwindcss/vite": "^4.1.17",
     "@tolgee/react": "^6.0.1",
     "@userback/widget": "^0.3.11",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "crypto-js": "^4.2.0",
+    "lucide-react": "^0.554.0",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
@@ -39,7 +41,10 @@
     "slate": "^0.114.0",
     "slate-history": "^0.113.1",
     "slate-react": "^0.114.2",
-    "use-debounce": "^10.0.4"
+    "tailwindcss": "^4.1.17",
+    "use-debounce": "^10.0.4",
+    "uuid": "^13.0.0",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

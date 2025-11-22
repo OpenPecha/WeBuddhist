@@ -1,4 +1,4 @@
-
+@import "tailwindcss";
 #root {
   text-align: center;
   --title-font-size: 16px;
