@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useRef, useEffect } from "react"
 import "./ViewSelector.scss"
 import {useTranslate} from "@tolgee/react";
 import {MdClose} from "react-icons/md";
@@ -31,6 +31,21 @@ const layoutOptions = [
 const ViewSelector = (props) => {
   const {setShowViewSelector, viewMode, setViewMode, versionSelected, layoutMode, setLayoutMode} = props;
   const {t} = useTranslate();
+  const viewSelectorRef = useRef(null);
+
+  // Handle click outside to close the view selector
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (viewSelectorRef.current && !viewSelectorRef.current.contains(event.target)) {
+        setShowViewSelector(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [setShowViewSelector]);
 
   // ----------------------------- renderers ----------------------------
   const renderCloseIcon = () => {
@@ -74,9 +89,8 @@ const ViewSelector = (props) => {
   }
 
   return (
-    <div className="view-selector-options-container">
-      {renderCloseIcon()}
-      {renderViewModeOptions()}
+    <div className="view-selector-options-container" ref={viewSelectorRef}>
+      {/* {renderViewModeOptions()} */}
       <div className={`layout-mode-options ${!versionSelected ? 'no-view-modes' : ''}`}>
         {renderLayoutModeOptions()}
       </div>

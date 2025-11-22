@@ -1,4 +1,3 @@
-import ChapterHeader from "../utils/header/ChapterHeader.jsx";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { VIEW_MODES, LAYOUT_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
 import { LAYOUT_MODE, siteName } from "../../../utils/constants.js";
@@ -107,11 +106,6 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
   const canShowTableOfContents = ((allContent?.content?.sections || []).length) > 1;
   
   // ------------------------ renderers ----------------------
-  const renderChapterHeader = () => {
-    const propsForChapterHeader = { viewMode, setViewMode, layoutMode, setLayoutMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!versionId, canShowTableOfContents };
-    return <ChapterHeader {...propsForChapterHeader} />;
-  };
-
   const renderChapter = () => {
     const propsForUseChapterHookComponent = {
       textId,
@@ -129,7 +123,13 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
       onCurrentSectionChange: handleCurrentSectionChange,
       currentSectionId,
       currentSegmentId,
-      scrollTrigger
+      scrollTrigger,
+      textdetail: allContent?.text_detail,
+      removeChapter,
+      totalChapters,
+      canShowTableOfContents,
+      setViewMode,
+      setLayoutMode
     };
     return (
         <UseChapterHook {...propsForUseChapterHookComponent} />
@@ -144,7 +144,6 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
         canonical={canonicalUrl}
       />
       <PanelProvider>
-        {renderChapterHeader()}
         {renderChapter()}
       </PanelProvider>
     </div>

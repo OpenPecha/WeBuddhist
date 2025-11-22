@@ -1,7 +1,7 @@
 .use-chapter-hook-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   .chapter-flex-row {
     display: flex;
     flex-direction: row;
@@ -9,10 +9,19 @@
     height: 100%;
   }
 
+  .main-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
   .main-content {
     overflow-y: auto;
     width: 100%;
     display: flex;
+    flex: 1;
     .outmost-container{
       width: 100%;
       
@@ -127,9 +136,9 @@
         background-color: #f0f7ff;
       }
 
-      &:hover span {
-        background-color: #f0f7ff;
-      }
+      // &:hover span {
+      //   background-color: #f0f7ff;
+      // }
 
       span {
         display: inline !important;
@@ -148,16 +157,16 @@
   }
 }
 
-@media (max-width: 992px) {
-  .single-chapter .use-chapter-hook-container {
-    padding-top: 63px;
-  }
-}
+// @media (max-width: 992px) {
+//   .single-chapter .use-chapter-hook-container {
+//     padding-top: 63px;
+//   }
+// }
 
 @media (min-width: 993px) {
-  .single-chapter .use-chapter-hook-container {
-    padding-top: 63px; 
-  }
+  // .single-chapter .use-chapter-hook-container {
+  //   padding-top: 63px; 
+  // }
   
   .split-screen .use-chapter-hook-container {
     overflow: hidden;
