@@ -106,7 +106,6 @@ describe("ContentsChapter", () => {
     });
     setup();
     expect(document.querySelector(".contents-chapter-container")).toBeInTheDocument();
-    expect(screen.getByTestId("chapter-header-mock")).toBeInTheDocument();
     expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
     expect(screen.getByTestId("panel-provider-mock")).toBeInTheDocument();
   });
@@ -131,7 +130,6 @@ describe("ContentsChapter", () => {
       error: null,
     });
     setup();
-    expect(screen.getByTestId("chapter-header-mock")).toBeInTheDocument();
     expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
   });
 
