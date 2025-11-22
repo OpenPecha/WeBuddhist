@@ -18,8 +18,8 @@ export function ChatArea() {
   
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const messagesEndRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   const activeThread = threads.find(t => t.id === activeThreadId);
 
