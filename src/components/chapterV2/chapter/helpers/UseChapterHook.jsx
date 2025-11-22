@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.jsx";
+import ChapterHeader from "../../utils/header/ChapterHeader.jsx";
 import "./ChapterHook.scss"
 import { VIEW_MODES, LAYOUT_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
 import { getLanguageClass, getCurrentSectionFromScroll } from "../../../../utils/helperFunctions.jsx";
@@ -9,7 +10,7 @@ import Resources from "../../utils/resources/Resources.jsx";
 import PropTypes from "prop-types";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, setShowTableOfContents, content, language, viewMode, layoutMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId, scrollTrigger} = props;
+  const { showTableOfContents, setShowTableOfContents, content, language, viewMode, layoutMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId, scrollTrigger, textdetail, removeChapter, totalChapters, canShowTableOfContents, setViewMode, setLayoutMode} = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -142,6 +143,11 @@ const UseChapterHook = (props) => {
   }, [content]);
 
   // -------------------------- renderers --------------------------
+  const renderChapterHeader = () => {
+    const propsForChapterHeader = { viewMode, setViewMode, layoutMode, setLayoutMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!currentChapter.versionId, canShowTableOfContents };
+    return <ChapterHeader {...propsForChapterHeader} />;
+  };
+
   const renderTableOfContents = () => {
     const propsForTableOfContents={textId, showTableOfContents, currentSectionId, onSegmentSelect: handleSegmentNavigate, language, onClose: () => setShowTableOfContents(false)}
     return <TableOfContents {...propsForTableOfContents} />
@@ -309,8 +315,11 @@ const UseChapterHook = (props) => {
     <div className="use-chapter-hook-container">
       <div className="chapter-flex-row">
         {renderTableOfContents()}
-        <div className="main-content" ref={contentsContainerRef}>
-          {renderContents()}
+        <div className="main-content-wrapper">
+          {renderChapterHeader()}
+          <div className="main-content" ref={contentsContainerRef}>
+            {renderContents()}
+          </div>
         </div>
         {renderResources()}
       </div>
@@ -349,6 +358,7 @@ UseChapterHook.propTypes = {
   addChapter: PropTypes.func.isRequired,
   currentChapter: PropTypes.shape({
     segmentId: PropTypes.string,
+    versionId: PropTypes.string,
   }).isRequired,
   setVersionId: PropTypes.func.isRequired,
   handleSegmentNavigate: PropTypes.func.isRequired,
@@ -365,4 +375,13 @@ UseChapterHook.propTypes = {
   textId: PropTypes.string.isRequired,
   currentSegmentId: PropTypes.string,
   scrollTrigger: PropTypes.number.isRequired,
+  textdetail: PropTypes.shape({
+    language: PropTypes.string,
+    title: PropTypes.string,
+  }),
+  removeChapter: PropTypes.func.isRequired,
+  totalChapters: PropTypes.number.isRequired,
+  canShowTableOfContents: PropTypes.bool,
+  setViewMode: PropTypes.func.isRequired,
+  setLayoutMode: PropTypes.func.isRequired,
 };

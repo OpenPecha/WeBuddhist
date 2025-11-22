@@ -1,8 +1,8 @@
 
 .view-selector-options-container {
   position: absolute;
-  top: 100%;
-  right: 0;
+  top: 130%;
+  left: 0;
   background: white;
   border-radius: 6px;
   padding: 0.75rem;
@@ -19,7 +19,7 @@
     border: none;
     position: absolute;
     top: 0.5rem;
-    right: 1rem;
+    left: 1rem;
     z-index: 10;
   }
 
@@ -43,19 +43,11 @@
     margin-top: 0.5rem;
     position: relative;
 
-    &.no-view-modes {
-      margin-top: 2rem;
-      
-      .layout-icons-container {
-        padding-top: 0.5rem;
-      }
-    }
     
     .layout-icons-container {
       display: flex;
       align-items: center;
-      justify-content: space-between; 
-      
+      justify-content: space-between;
       .layout-label {
         font-size: 14px;
         font-weight: 500;
