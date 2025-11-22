@@ -4,6 +4,9 @@ import { GrFormPrevious, GrFormNext } from "react-icons/gr";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import PropTypes from "prop-types";
 const PaginationComponent = ({ pagination, totalPages, handlePageChange, setPagination }) => {
+  if (totalPages === 0) {
+    return null;
+  }
   return (
     <div className="pagination-container">
       <div className="pagination">
