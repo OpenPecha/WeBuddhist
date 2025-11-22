@@ -44,6 +44,18 @@ describe("PaginationComponent", () => {
     expect(prevButton).toBeDisabled();
   });
 
+  test("renders nothing when totalPages is 0", () => {
+    const { container } = render(
+      <PaginationComponent
+        pagination={{ currentPage: 1, limit: 10 }}
+        totalPages={0}
+        handlePageChange={mockHandlePageChange}
+        setPagination={mockSetPagination}
+      />
+    );
+    expect(container.firstChild).toBeNull();
+  });
+
   test("disables next button on last page", () => {
     render(
       <PaginationComponent
