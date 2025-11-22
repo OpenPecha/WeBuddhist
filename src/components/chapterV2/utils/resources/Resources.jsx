@@ -43,7 +43,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
 
   const renderPanelHeader = () => (
     <div className="headerthing">
-      <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
+      <p className='mt-4 px-4 '>{t('panel.resources')}</p>
       <IoMdClose
         size={24}
         onClick={handleClosePanel}
