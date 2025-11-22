@@ -34,7 +34,6 @@ $font-size-content-sm: 14px;
     .browse-library-text {
       font-size: $font-size-title;
       font-weight: 600;
-      margin-left: 2.5rem;
       word-wrap: break-word;
       max-width: 100%;
       font-family: var(--listtitle-font-family);
@@ -66,10 +65,16 @@ $font-size-content-sm: 14px;
     margin: 0;
   }
   .left-section{
-    width: 65%;
+    width: 725px;
+    margin:0 auto;
+    min-height: 520px;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 70px;
+    padding-inline-start: 30px;
+    padding-inline-end: 30px;
     .collections-list-container{
       margin: 0 auto;
-      width: 90%;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
@@ -301,11 +306,6 @@ $font-size-content-sm: 14px;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin: 0 1rem;
-    .browse-section{
-      width: 100%;
-      padding: 0 1rem;
-    }
     .left-section, .right-section{
       width: 100%;
     }
