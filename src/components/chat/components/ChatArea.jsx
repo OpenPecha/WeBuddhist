@@ -7,6 +7,7 @@ import { SearchResults } from './SearchResults';
 import { Queries } from './Queries';
 import { WritingIndicator } from './WritingIndicator';
 import { NavbarIcon } from '../../../utils/Icon';
+import Questions from './questions/Questions';
 
 export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
   const { 
@@ -15,7 +16,8 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
     addMessage, 
     updateLastMessage, 
     isLoading, 
-    setLoading 
+    setLoading,
+    createThread 
   } = useChatStore();
   
   const [input, setInput] = useState('');
@@ -44,21 +46,27 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim() || !activeThreadId || isLoading) return;
+    if (!input.trim() || isLoading) return;
 
     const userMessageContent = input;
     setInput('');
     
+    let threadId = activeThreadId;
+    if (!threadId) {
+      threadId = createThread();
+    }
+    
     // Add user message
-    addMessage(activeThreadId, { role: 'user', content: userMessageContent });
+    addMessage(threadId, { role: 'user', content: userMessageContent });
     
     // Add placeholder assistant message
-    addMessage(activeThreadId, { role: 'assistant', content: '' });
+    addMessage(threadId, { role: 'assistant', content: '' });
     setLoading(true);
     setIsThinking(true);
 
-    const messagesForApi = activeThread 
-      ? [...activeThread.messages, { role: 'user', content: userMessageContent }]
+    const currentThread = threads.find(t => t.id === threadId);
+    const messagesForApi = currentThread 
+      ? [...currentThread.messages, { role: 'user', content: userMessageContent }]
       : [{ role: 'user', content: userMessageContent }];
 
     // Map to API format (remove id, timestamp, searchResults)
@@ -80,17 +88,17 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
       (chunk) => {
         setIsThinking(false);
         fullResponse += chunk;
-        updateLastMessage(activeThreadId, fullResponse, currentSearchResults, currentQueries);
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries);
       },
       (results) => {
         setIsThinking(false);
         currentSearchResults = [...currentSearchResults, ...results];
-        updateLastMessage(activeThreadId, fullResponse, currentSearchResults, currentQueries);
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries);
       },
       (queries) => {
         setIsThinking(false);
         currentQueries = queries;
-        updateLastMessage(activeThreadId, fullResponse, currentSearchResults, currentQueries);
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries);
       },
       () => {
         setLoading(false);
@@ -103,7 +111,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
           return;
         }
         console.error('Chat error:', error);
-        updateLastMessage(activeThreadId, fullResponse + '\n\n[Error: Failed to get response]');
+        updateLastMessage(threadId, fullResponse + '\n\n[Error: Failed to get response]');
         setLoading(false);
         setIsThinking(false);
         abortControllerRef.current = null;
@@ -115,7 +123,36 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
   if (!activeThreadId) {
     return (
       <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400">
-        Select a chat or create a new one
+        <div className="text-center h-full justify-center items-center flex flex-col gap-y-4 text-gray-400 ">
+{/* <Questions /> */}
+<div className="bg-linear-to-t   from-white via-white to-transparent">
+        <div className="border-2 border-[#f1f1f1] mx-auto rounded-2xl bg-[#F5F5F5] h-44">
+          <form onSubmit={handleSubmit} className="relative">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask a question about Buddhist texts..."
+              className=" w-2xl p-4  rounded-2xl border-2 border-[#F5F5F5] bg-white text-gray-900 focus:outline-none"
+              disabled={isLoading}
+            />
+            <button
+              type={isLoading ? "button" : "submit"}
+              onClick={isLoading ? handleStop : undefined}
+              disabled={!input.trim() && !isLoading}
+              className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded transition-colors ${
+                isLoading 
+                  ? 'text-[#18345D]' 
+                  : 'text-[#18345D] disabled:opacity-50 disabled:cursor-not-allowed'
+              }`}
+            >
+              {isLoading ? <Square size={20} fill="currentColor" /> : <Send size={20} />}
+            </button>
+          </form>
+        </div>
+      </div>
+        </div>
+        
       </div>
     );
   }
@@ -135,15 +172,18 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
       )}
       <div className="flex-1 overflow-y-auto p-4">
         <div className="max-w-3xl mx-auto">
-          {activeThread?.messages.map((message) => (
+          {activeThread?.messages.map((message, index) => (
             <div key={message.id} className="flex flex-col">
-              {message.role === 'assistant' && message.queries && (
+              {/* {message.role === 'assistant' && message.queries && (
                 <Queries queries={message.queries} />
-              )}
-              {message.role === 'assistant' && message.searchResults && message.searchResults.length > 0 && (
+              )} */}
+              {/* {message.role === 'assistant' && message.searchResults && message.searchResults.length > 0 && (
                 <SearchResults results={message.searchResults} />
-              )}
-              <MessageBubble message={message} />
+              )} */}
+              <MessageBubble 
+                message={message} 
+                isStreaming={isLoading && index === activeThread.messages.length - 1}
+              />
             </div>
           ))}
           

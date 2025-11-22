@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Bot, ChevronDown, ChevronUp, X } from 'lucide-react';
 import webuddhistlogo from "../../../assets/icons/pecha_icon.png";
 
-export function MessageBubble({ message }) {
+export function MessageBubble({ message, isStreaming = false }) {
   const isUser = message.role === 'user';
   const [showSources, setShowSources] = useState(false);
 
@@ -124,7 +124,7 @@ export function MessageBubble({ message }) {
             }
           `}>
             <div className="whitespace-pre-wrap wrap-break-word">
-              {(content.length===1 && content[0]==="")  && "We search but couldnt find anything , Seach something else?"}
+              {!isStreaming && (content.length===0 || content[0]==="")  && "I couldn't find an answer to this within my library of Buddhist texts. Please try rephrasing your question or asking about a different concept."}
               {Array.isArray(content) ? content : message.content}
             </div>
           </div>
