@@ -188,7 +188,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
           ))}
           
           {isThinking && (
-             <div className="flex items-center gap-2 text-gray-400 text-sm p-4 animate-pulse">
+             <div className="flex gap-2 text-gray-400 text-sm  animate-pulse">
                <Loader2 className="animate-spin" size={16} />
                Thinking...
              </div>
