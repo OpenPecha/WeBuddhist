@@ -26,8 +26,8 @@ const Versions = ({
 
   const earlyReturn = getEarlyReturn({isLoading: versionsIsLoading, error: versionsIsError, t});
   if (earlyReturn) return earlyReturn;
-  if(versions.versions.length === 0) return <div className="listtitle">
-    <p>{t("text.version.notfound")}</p>
+  if(versions.versions.length === 0) return <div className="content">
+    <p className='mt-2'>{t("global.not_found")}</p>
   </div>
   const languageMap = {
     "sa":"language.sanskrit",

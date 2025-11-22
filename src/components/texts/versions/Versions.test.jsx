@@ -146,7 +146,7 @@ describe("Versions Component", () => {
         versions: { versions: [], total: 0 } 
       });
 
-      expect(screen.getByText("text.version.notfound")).toBeInTheDocument();
+      expect(screen.getByText("global.not_found")).toBeInTheDocument();
     });
 
   });
