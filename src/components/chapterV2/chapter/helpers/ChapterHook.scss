@@ -9,10 +9,19 @@
     height: 100%;
   }
 
+  .main-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
   .main-content {
     overflow-y: auto;
     width: 100%;
     display: flex;
+    flex: 1;
     .outmost-container{
       width: 100%;
       
