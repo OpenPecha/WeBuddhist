@@ -29,7 +29,7 @@ const AuthorProfile = lazy(() => import("./components/author-profile/AuthorProfi
 const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword.jsx"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword.jsx"));
 const SearchResultsPage = lazy(() => import("./components/search/SearchResultsPage.jsx"));
-
+const Chat = lazy(() => import("./components/chat/base/Chat.jsx"));
 
 function App() {
     const navigate = useNavigate();
@@ -139,6 +139,7 @@ function App() {
               <Route path="/works/:id" element={<Works/>}/>
               <Route path="/chapter" element={<ChaptersV2/>}/>
               <Route path="/search" element={<SearchResultsPage/>}/>
+              <Route path="/explore" element={<Chat/>}/>
               <Route path="*" element={<Collections/>}/>
               <Route path="/sheets/:id" element={<Sheets/>}/>
               <Route path="/:username/:sheetSlugAndId" element={<SheetChapters/>}/>
