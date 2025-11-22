@@ -117,7 +117,7 @@ export function MessageBubble({ message, isStreaming = false }) {
         }
         <div className={`flex text-left flex-col min-w-0`}>
           <div className={`
-            p-3 text-sm leading-relaxed 
+            p-3 leading-relaxed 
             ${isUser 
               ? ' text-black ' 
               : 'bg-white text-gray-800'
@@ -144,7 +144,7 @@ export function MessageBubble({ message, isStreaming = false }) {
                   {usedSources.map(({ number, source }, index) => (
                     <div 
                       key={number}
-                      className="flex border-l border-[#abadb1] flex-col p-2 text-sm"
+                      className="flex border-l border-[#abadb1] flex-col p-2"
                       style={{
                         opacity: 0,
                         animation: 'fadeInUp 0.6s ease-out forwards',
