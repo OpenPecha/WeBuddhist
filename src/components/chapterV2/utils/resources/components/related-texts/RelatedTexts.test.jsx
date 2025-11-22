@@ -184,4 +184,43 @@ describe("CommentaryView", () => {
     expect(screen.getByText("text.commentary")).toBeInTheDocument();
     expect(screen.queryByText(/\(\d+\)/)).not.toBeInTheDocument();
   });
+
+  test("calls handleNavigate when back icon is clicked", () => {
+    const handleNavigate = vi.fn();
+    setup({ handleNavigate });
+    const backIcon = document.querySelector(".back-icon");
+    expect(backIcon).toBeInTheDocument();
+    fireEvent.click(backIcon);
+    expect(handleNavigate).toHaveBeenCalled();
+  });
+
+  test("executes query and clicking open text triggers addChapter", async () => {
+    const dataWithSegments = {
+      commentaries: [
+        {
+          text_id: "mock--1",
+          title: "Title",
+          language: "en",
+          segments: [{ segment_id: "seg-1", content: "the-text" }],
+        },
+      ],
+    };
+
+    axiosInstance.get.mockResolvedValueOnce({ data: dataWithSegments });
+    vi.spyOn(reactQuery, "useQuery").mockImplementationOnce((_, queryFn) => {
+      queryFn();
+      return { data: dataWithSegments, isLoading: false };
+    });
+
+    const addChapter = vi.fn();
+    setup({ addChapter, currentChapter: { id: 1 }, handleNavigate: vi.fn() });
+
+    const openBtn = screen.getByText("text.translation.open_text");
+    fireEvent.click(openBtn);
+
+    expect(addChapter).toHaveBeenCalledWith(
+      { textId: "mock--1", segmentId: "seg-1" },
+      { id: 1 }
+    );
+  });
 });
