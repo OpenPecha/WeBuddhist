@@ -2,20 +2,24 @@ export async function streamChat(
   messages,
   onChunk,
   onSearchResults,
+  onQueries,
   onFinish,
   onError,
   signal
 ) {
   try {
-    const response = await fetch("/api/chat/stream", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ messages }),
-      signal,
-    });
+    const response = await fetch(
+      "https://buddhist-consensus.onrender.com/api/chat/stream",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ messages }),
+        signal,
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -33,7 +37,7 @@ export async function streamChat(
       const { done, value } = await reader.read();
       if (done) {
         if (buffer.trim()) {
-          processLine(buffer, onChunk, onSearchResults, onFinish);
+          processLine(buffer, onChunk, onSearchResults, onQueries, onFinish);
         }
         break;
       }
@@ -43,7 +47,7 @@ export async function streamChat(
       buffer = lines.pop() || "";
 
       for (const line of lines) {
-        processLine(line, onChunk, onSearchResults, onFinish);
+        processLine(line, onChunk, onSearchResults, onQueries, onFinish);
       }
     }
 
@@ -53,7 +57,7 @@ export async function streamChat(
   }
 }
 
-function processLine(line, onChunk, onSearchResults, onFinish) {
+function processLine(line, onChunk, onSearchResults, onQueries, onFinish) {
   const trimmedLine = line.trim();
   if (!trimmedLine.startsWith("data:")) return;
 
@@ -63,6 +67,9 @@ function processLine(line, onChunk, onSearchResults, onFinish) {
 
     if (data.type === "search_results") {
       onSearchResults(data.data || []);
+      if (data.queries) {
+        onQueries(data.queries);
+      }
     } else if (data.type === "answer") {
       onChunk(data.data || "");
     } else if (data.type === "done") {

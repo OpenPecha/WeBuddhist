@@ -116,7 +116,8 @@ function App() {
     !!matchPath("/sheets/:id", location.pathname) ||
     !!matchPath("/chapter", location.pathname) ||
     !!matchPath("/login", location.pathname) ||
-    !!matchPath("/register", location.pathname);
+    !!matchPath("/register", location.pathname) ||
+    !!matchPath("/explore", location.pathname);
 
     return (
       <Suspense>

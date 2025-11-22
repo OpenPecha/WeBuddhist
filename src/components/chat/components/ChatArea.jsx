@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, Square } from 'lucide-react';
+import { Send, Loader2, Square, Menu } from 'lucide-react';
 import { useChatStore } from '../store/chatStore';
 import { streamChat } from '../api/chat';
 import { MessageBubble } from './MessageBubble';
 import { SearchResults } from './SearchResults';
+import { Queries } from './Queries';
 import { WritingIndicator } from './WritingIndicator';
+import { NavbarIcon } from '../../../utils/Icon';
 
-export function ChatArea() {
+export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
   const { 
     threads, 
     activeThreadId, 
@@ -67,6 +69,7 @@ export function ChatArea() {
 
     let fullResponse = '';
     let currentSearchResults = [];
+    let currentQueries = null;
 
     // Create new AbortController
     const abortController = new AbortController();
@@ -77,12 +80,17 @@ export function ChatArea() {
       (chunk) => {
         setIsThinking(false);
         fullResponse += chunk;
-        updateLastMessage(activeThreadId, fullResponse, currentSearchResults);
+        updateLastMessage(activeThreadId, fullResponse, currentSearchResults, currentQueries);
       },
       (results) => {
         setIsThinking(false);
         currentSearchResults = [...currentSearchResults, ...results];
-        updateLastMessage(activeThreadId, fullResponse, currentSearchResults);
+        updateLastMessage(activeThreadId, fullResponse, currentSearchResults, currentQueries);
+      },
+      (queries) => {
+        setIsThinking(false);
+        currentQueries = queries;
+        updateLastMessage(activeThreadId, fullResponse, currentSearchResults, currentQueries);
       },
       () => {
         setLoading(false);
@@ -106,18 +114,32 @@ export function ChatArea() {
 
   if (!activeThreadId) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-white text-gray-400">
+      <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400">
         Select a chat or create a new one
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-white relative">
-      <div className="flex-1 overflow-y-auto p-4 pb-24">
+    <div className="flex-1 overflow-y-scroll flex flex-col h-full bg-white relative">
+      {!isSidebarOpen && (
+        <button
+          onClick={onOpenSidebar}
+          className="absolute top-4 left-4  w-fit p-2 rounded-lg"
+          aria-label="Open sidebar"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && onOpenSidebar()}
+        >
+          <NavbarIcon/>
+        </button>
+      )}
+      <div className="flex-1 overflow-y-auto p-4">
         <div className="max-w-3xl mx-auto">
           {activeThread?.messages.map((message) => (
             <div key={message.id} className="flex flex-col">
+              {message.role === 'assistant' && message.queries && (
+                <Queries queries={message.queries} />
+              )}
               {message.role === 'assistant' && message.searchResults && message.searchResults.length > 0 && (
                 <SearchResults results={message.searchResults} />
               )}
@@ -140,7 +162,7 @@ export function ChatArea() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-white via-white to-transparent">
+      <div className="bg-linear-to-t from-white via-white to-transparent">
         <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="relative">
             <input
@@ -148,7 +170,7 @@ export function ChatArea() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question about Buddhist texts..."
-              className="w-full p-4 pr-12 rounded-xl border border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-sm"
+              className="w-full p-4  rounded-full border-2 border-gray-200 bg-white text-gray-900 focus:outline-none"
               disabled={isLoading}
             />
             <button
@@ -158,7 +180,7 @@ export function ChatArea() {
               className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded transition-colors ${
                 isLoading 
                   ? 'text-[#18345D]' 
-                  : 'text-[#18345D] hover:bg-[#18345D] disabled:opacity-50 disabled:cursor-not-allowed'
+                  : 'text-[#18345D] disabled:opacity-50 disabled:cursor-not-allowed'
               }`}
             >
               {isLoading ? <Square size={20} fill="currentColor" /> : <Send size={20} />}

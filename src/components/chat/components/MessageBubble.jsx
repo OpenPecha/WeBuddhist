@@ -1,9 +1,29 @@
-import { useState } from 'react';
-import { User, Bot, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Bot, ChevronDown, ChevronUp, X } from 'lucide-react';
+import webuddhistlogo from "../../../assets/icons/pecha_icon.png";
 
 export function MessageBubble({ message }) {
   const isUser = message.role === 'user';
   const [showSources, setShowSources] = useState(false);
+
+  // Close drawer on Escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && showSources) {
+        setShowSources(false);
+      }
+    };
+    
+    if (showSources) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+    
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [showSources]);
 
   // Process content for citations if it's an assistant message with search results
   const processContent = () => {
@@ -50,7 +70,7 @@ export function MessageBubble({ message }) {
             {numbers.map((num, idx) => (
               <span 
                 key={idx}
-                className="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-[#18345D] bg-[#18345D]/70 border border-red-200 rounded-full cursor-help align-super"
+                className="inline-flex items-center justify-center w-4 h-4 text-[#18345D] p-2 border border-red-200 rounded-full cursor-pointer"
                 title={usedSources.find(s => s.number === num)?.source.title}
               >
                 {num}
@@ -77,21 +97,30 @@ export function MessageBubble({ message }) {
   const { content, usedSources } = processContent();
 
   return (
-    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
-      <div className={`flex max-w-[90%] md:max-w-[80%] ${isUser ? 'flex-row-reverse' : 'flex-row'} gap-3`}>
-        <div className={`
-          w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1
-          ${isUser ? 'bg-[#18345D] text-white' : 'bg-gray-200 text-gray-600'}
+    <div className={`flex w-full`}>
+      <div className={`flex items-center`}>
+        {/* <div className={`
+          w-8 h-8 rounded-full border flex items-center justify-center shrink-0 mt-1
+          ${isUser ? 'bg-[#18345D]/80 text-white' : 'bg-gray-200 text-gray-600'}
         `}>
-          {isUser ? <User size={18} /> : <Bot size={18} />}
+          {isUser ? <User size={18} /> : <img src={webuddhistlogo} alt="Webuddhist" className="w-8 h-8" />}
+        </div> */}
+        {
+          isUser && (
+            <div className={`
+          w-8 h-8 rounded-full border flex items-center justify-center shrink-0 mt-1
+          bg-gray-200 text-gray-600
+        `}>
+           <img src={webuddhistlogo} alt="Webuddhist" className="w-8 h-8" />
         </div>
-        
-        <div className={`flex flex-col min-w-0 ${isUser ? 'items-end' : 'items-start'}`}>
+          )
+        }
+        <div className={`flex text-left flex-col min-w-0`}>
           <div className={`
-            p-3 rounded-2xl text-sm leading-relaxed shadow-sm
+            p-3 text-sm leading-relaxed 
             ${isUser 
-              ? 'bg-[#18345D] text-white rounded-tr-none' 
-              : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'
+              ? ' text-black ' 
+              : 'bg-white text-gray-800'
             }
           `}>
             <div className="whitespace-pre-wrap wrap-break-word">
@@ -101,21 +130,26 @@ export function MessageBubble({ message }) {
           </div>
 
           {!isUser && usedSources && usedSources.length > 0 && (
-            <div className="mt-2 w-full max-w-md">
+            <div className=" w-full max-w-md">
               <button
                 onClick={() => setShowSources(!showSources)}
-                className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-700 transition-colors mb-2"
+                className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors mb-2"
               >
                 {showSources ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 {showSources ? 'Hide' : 'View'} {usedSources.length} Sources
               </button>
 
               {showSources && (
-                <div className="grid gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                  {usedSources.map(({ number, source }) => (
+                <div className="grid gap-2">
+                  {usedSources.map(({ number, source }, index) => (
                     <div 
                       key={number}
-                      className="flex flex-col p-2 bg-gray-50 border border-gray-200 rounded-lg text-xs"
+                      className="flex border-l border-[#abadb1] flex-col p-2 text-sm"
+                      style={{
+                        opacity: 0,
+                        animation: 'fadeInUp 0.6s ease-out forwards',
+                        animationDelay: `${index * 0.1}s`
+                      }}
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="shrink-0 w-4 h-4 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 font-bold text-[10px]">
