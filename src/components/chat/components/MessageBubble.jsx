@@ -5,12 +5,18 @@ import webuddhistlogo from "../../../assets/icons/pecha_icon.png";
 export function MessageBubble({ message, isStreaming = false }) {
   const isUser = message.role === 'user';
   const [showSources, setShowSources] = useState(false);
+  const [activePopover, setActivePopover] = useState(null);
 
   // Close drawer on Escape key
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === 'Escape' && showSources) {
-        setShowSources(false);
+      if (e.key === 'Escape') {
+        if (showSources) {
+          setShowSources(false);
+        }
+        if (activePopover !== null) {
+          setActivePopover(null);
+        }
       }
     };
     
@@ -19,11 +25,37 @@ export function MessageBubble({ message, isStreaming = false }) {
       document.body.style.overflow = 'hidden'; // Prevent background scrolling
     }
     
+    if (activePopover !== null) {
+      document.addEventListener('keydown', handleEscape);
+    }
+    
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [showSources]);
+  }, [showSources, activePopover]);
+
+  // Close popover when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (activePopover !== null && !e.target.closest('.citation-popover') && !e.target.closest('.citation-number')) {
+        setActivePopover(null);
+      }
+    };
+
+    if (activePopover !== null) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [activePopover]);
+
+  const handleCitationClick = (num, e) => {
+    e.stopPropagation();
+    setActivePopover(activePopover === num ? null : num);
+  };
 
   // Process content for citations if it's an assistant message with search results
   const processContent = () => {
@@ -66,16 +98,41 @@ export function MessageBubble({ message, isStreaming = false }) {
 
       if (numbers.length > 0) {
         parts.push(
-          <sup key={offset} className="inline-flex gap-0.5 ml-0.5">
-            {numbers.map((num, idx) => (
-              <span 
-                key={idx}
-                className="inline-flex items-center justify-center w-4 h-4 text-[#18345D] p-2 border border-red-200 rounded-full cursor-pointer"
-                title={usedSources.find(s => s.number === num)?.source.title}
-              >
-                {num}
-              </span>
-            ))}
+          <sup key={offset} className="inline-flex gap-0.5 ml-0.5 relative">
+            {numbers.map((num, idx) => {
+              const sourceInfo = usedSources.find(s => s.number === num);
+              return (
+                <span key={idx} className="relative inline-block">
+                  <span 
+                    className="citation-number inline-flex items-center justify-center w-4 h-4 text-[#18345D] p-2 border border-blue-200 rounded-full cursor-pointer hover:bg-blue-50 transition-colors"
+                    onClick={(e) => handleCitationClick(num, e)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Show source ${num}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleCitationClick(num, e);
+                      }
+                    }}
+                  >
+                    {num}
+                  </span>
+                  {activePopover === num && sourceInfo && (
+                    <div 
+                      className="citation-popover absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2  bg-gray-50 text-xs rounded-md shadow-sm whitespace-nowrap z-50 min-w-max max-w-xs"
+                      style={{
+                        opacity: 0,
+                        animation: 'fadeInUp 0.4s ease-out forwards'
+                      }}>
+                      <div className="relative">
+                        {sourceInfo.source.title}
+                      </div>
+                    </div>
+                  )}
+                </span>
+              );
+            })}
           </sup>
         );
       } else {
