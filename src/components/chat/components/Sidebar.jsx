@@ -1,10 +1,37 @@
-import { BsThreeDots } from 'react-icons/bs';
+import { useState, useRef, useEffect } from 'react';
+import { BsThreeDots, BsTrash } from 'react-icons/bs';
 import { NavbarIcon } from '../../../utils/Icon';
 import { useChatStore } from '../store/chatStore';
 import { IoCreateOutline } from "react-icons/io5";
 
 export function Sidebar({ isOpen, onToggle }) {
   const { threads, activeThreadId, createThread, setActiveThread, deleteThread } = useChatStore();
+  const [openPopoverId, setOpenPopoverId] = useState(null);
+  const popoverRef = useRef(null);
+
+  const handleTogglePopover = (e, threadId) => {
+    e.stopPropagation();
+    setOpenPopoverId(openPopoverId === threadId ? null : threadId);
+  };
+
+  const handleDeleteClick = (e, threadId) => {
+    e.stopPropagation();
+    deleteThread(threadId);
+    setOpenPopoverId(null);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popoverRef.current && !popoverRef.current.contains(event.target)) {
+        setOpenPopoverId(null);
+      }
+    };
+
+    if (openPopoverId) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [openPopoverId]);
 
   return (
     <div className={`h-full bg-[#F5F5F5] flex flex-col rounded-r-2xl mt-3 transition-all duration-300 ease-in-out  ${
@@ -54,16 +81,28 @@ export function Sidebar({ isOpen, onToggle }) {
               </span>
             </div>
             
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteThread(thread.id);
-              }}
-              className=" group-hover:opacity-100 p-1  rounded text-gray-400 hover:text-[#18345D] transition-all"
-            >
-              {/* <Trash2 size={14} /> */}
-              <BsThreeDots size={14} />
-            </button>
+            <div className="relative">
+              <button
+                onClick={(e) => handleTogglePopover(e, thread.id)}
+                className="group-hover:opacity-100 p-1 rounded text-gray-400 hover:text-[#18345D] transition-all">
+                <BsThreeDots size={14} />
+              </button>
+              {openPopoverId === thread.id && (
+                <div
+                  ref={popoverRef}
+                  className="absolute text-sm right-0 mt-1 w-40 bg-[#FFFFFF] rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={(e) => handleDeleteClick(e, thread.id)}
+                    className="w-full flex items-center gap-2 px-2 py-1 transition-colors"
+                  >
+                    <BsTrash size={14} fill='red' />
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         ))}
         </div>
