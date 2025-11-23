@@ -1,13 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Loader2, Square, Menu } from 'lucide-react';
 import { useChatStore } from '../store/chatStore';
-import { streamChat } from '../api/chat';
+import { streamChat, saveChatToBackend } from '../api/chat';
 import { MessageBubble } from './MessageBubble';
 import { SearchResults } from './SearchResults';
 import { Queries } from './Queries';
 import { WritingIndicator } from './WritingIndicator';
 import { NavbarIcon } from '../../../utils/Icon';
 import Questions from './questions/Questions';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../../../config/AuthContext';
+import { useQuery } from 'react-query';
+import axiosInstance from '../../../config/axios-config';
+
+export const fetchUserInfo = async () => {
+  const { data } = await axiosInstance.get("/api/v1/users/info");
+  return data;
+};
 
 export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
   const { 
@@ -25,7 +34,19 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
 
+  // Get user information
+  const { user } = useAuth0();
+  const { isLoggedIn } = useAuth();
+  const { data: userInfo } = useQuery("userInfo", fetchUserInfo, { 
+    refetchOnWindowFocus: false, 
+    enabled: isLoggedIn 
+  });
+
   const activeThread = threads.find(t => t.id === activeThreadId);
+
+  const getUserEmail = () => {
+    return user?.email || userInfo?.email || 'test@webuddhist';
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -100,10 +121,30 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
         currentQueries = queries;
         updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries);
       },
-      () => {
+      async () => {
         setLoading(false);
         setIsThinking(false);
         abortControllerRef.current = null;
+
+        try {
+          const userEmail = getUserEmail();
+          await saveChatToBackend(
+            userEmail,
+            userMessageContent,
+            fullResponse,
+            threadId
+          );
+          console.log('Chat saved successfully');
+          console.log(fullResponse);
+          console.log("**"*10)
+          console.log(userEmail);
+          console.log("**"*10)
+          console.log(userMessageContent);
+          console.log("**"*10)
+          console.log(threadId);
+        } catch (error) {
+          console.error('Failed to save chat:', error);
+        }
       },
       (error) => {
         if (error.name === 'AbortError') {

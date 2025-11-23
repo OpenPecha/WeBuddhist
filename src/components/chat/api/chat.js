@@ -79,3 +79,32 @@ function processLine(line, onChunk, onSearchResults, onQueries, onFinish) {
     // Ignore parse errors for partial lines
   }
 }
+
+export async function saveChatToBackend(email, question, response, threadId) {
+  try {
+    const result = await fetch(
+      "https://pecha-tool-sync-editor-1.onrender.com/webuddhist",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          question,
+          response: [response], // Wrap response in array as per the API structure
+          threadId,
+        }),
+      }
+    );
+
+    if (!result.ok) {
+      throw new Error(`HTTP error! status: ${result.status}`);
+    }
+
+    return await result.json();
+  } catch (error) {
+    console.error("Error saving chat to backend:", error);
+    throw error;
+  }
+}
