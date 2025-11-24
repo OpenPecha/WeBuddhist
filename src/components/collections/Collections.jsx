@@ -16,7 +16,7 @@ export const fetchCollections = async () => {
   const {data} = await axiosInstance.get("/api/v1/collections", {
     params: {
       language,
-      limit: 10,
+      limit: 50,
       skip: 0
     }
   });
