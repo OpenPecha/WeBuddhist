@@ -117,7 +117,7 @@ function App() {
     !!matchPath("/chapter", location.pathname) ||
     !!matchPath("/login", location.pathname) ||
     !!matchPath("/register", location.pathname) ||
-    !!matchPath("/explore", location.pathname);
+    !!matchPath("/ai", location.pathname);
 
     return (
       <Suspense>
