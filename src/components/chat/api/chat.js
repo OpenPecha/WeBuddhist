@@ -70,7 +70,6 @@ function processLine(line, onChunk, onSearchResults, onQueries, onFinish) {
     } else if (data.type === "token") {
       onChunk(data.data || "");
     } else if (data.type === "done") {
-      onFinish();
     }
   } catch (e) {
     // Ignore parse errors for partial lines

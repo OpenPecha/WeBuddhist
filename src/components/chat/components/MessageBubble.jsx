@@ -3,7 +3,8 @@ import {  ChevronDown, ChevronUp } from 'lucide-react';
 import webuddhistlogo from "../../../assets/icons/pecha_icon.png";
 import { useMutation } from 'react-query';
 import axiosInstance from '../../../config/axios-config';
-
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 export const fetchURL = async (id) => {
   const {data} = await axiosInstance.get(`/api/v1/search/chat/${id}`);
   return data;
@@ -74,13 +75,14 @@ export function MessageBubble({ message, isStreaming = false }) {
 
   // Process content for citations if it's an assistant message with search results
   const processContent = () => {
-    if (isUser || !message.searchResults || message.searchResults.length === 0) {
-      return { content: message.content, usedSources: [] };
+    if (isUser || !message.searchResults || message.searchResults.length === 0 || !message.isFinalized) {
+      return { content: message.content, usedSources: [], citationMap: {} };
     }
 
     let processedContent = message.content;
     const usedSources = [];
     const idToNumber = {};
+    const citationMap = {};
     let citationCount = 0;
 
     const getNumberForId = (id) => {
@@ -93,79 +95,79 @@ export function MessageBubble({ message, isStreaming = false }) {
         citationCount++;
         idToNumber[trimmedId] = citationCount;
         usedSources.push({ number: citationCount, source });
+        citationMap[citationCount] = source;
         return citationCount;
       }
       return null;
     };
 
-    // Regex to match [id] patterns
-    const citationRegex = /\[([a-zA-Z0-9\-_,\s]+)\]/g;
+    // Replace citation IDs with numbered citations in markdown format
+    const citationRegex = /\[([a-zA-Z0-9\-_,\s]{15,})\]/g;
+    let citationIndex = 0;
     
-    const parts = [];
-    let lastIndex = 0;
-
-    processedContent.replace(citationRegex, (match, content, offset) => {
-      // Push text before the match
-      parts.push(processedContent.slice(lastIndex, offset));
-      
-      const ids = content.split(/[,\s]+/).filter((p) => p.trim().length > 0);
-      const numbers = ids.map((id) => getNumberForId(id)).filter((n) => n !== null);
+    processedContent = processedContent.replace(citationRegex, (match, idContent) => {
+      const ids = idContent.split(/[,\s]+/).filter(id => id.trim().length > 0);
+      const numbers = ids.map(id => getNumberForId(id)).filter(n => n !== null);
 
       if (numbers.length > 0) {
-        parts.push(
-          <sup key={offset} className="inline-flex gap-0.5 ml-0.5 relative">
-            {numbers.map((num, idx) => {
-              const sourceInfo = usedSources.find(s => s.number === num);
-              const uniqueId = `${offset}-${idx}`;
-              return (
-                <span key={idx} className="relative inline-block">
-                  <span 
-                    className="citation-number inline-flex items-center justify-center w-4 h-4 text-[#18345D] p-2 border border-blue-200 rounded-full cursor-pointer hover:bg-blue-50 transition-colors"
-                    onMouseEnter={() => handleCitationMouseEnter(uniqueId)}
-                    onMouseLeave={handleCitationMouseLeave}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Show source ${num}`}
-                  >
-                    {num}
-                  </span>
-                  {activePopover === uniqueId && sourceInfo && (
-                    <div 
-                      className="citation-popover absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2  bg-gray-50 text-xs rounded-md shadow-sm whitespace-nowrap z-50 min-w-max max-w-xs"
-                      style={{
-                        opacity: 0,
-                        animation: 'fadeInUp 0.2s ease-out forwards'
-                      }}
-                      onMouseEnter={() => handleCitationMouseEnter(uniqueId)}
-                      onMouseLeave={handleCitationMouseLeave}
-                    >
-                      <div className="relative">
-                        {sourceInfo.source.title}
-                      </div>
-                    </div>
-                  )}
-                </span>
-              );
-            })}
-          </sup>
-        );
-      } else {
-        // If no valid IDs found, keep original text if it looks like a citation
-        // Heuristic: if content is long, it might not be a citation ID
-        const looksLikeId = ids.some((p) => p.length > 15); 
-        parts.push(looksLikeId ? match : "");
+        const currentIndex = citationIndex++;
+        return `<cite data-citations="${numbers.join(',')}" data-cite-index="${currentIndex}">${numbers.join(',')}</cite>`;
       }
-
-      lastIndex = offset + match.length;
       return match;
     });
 
-    parts.push(processedContent.slice(lastIndex));
-
-    return { content: parts, usedSources: usedSources.sort((a, b) => a.number - b.number) };
+    return { 
+      content: processedContent, 
+      usedSources: usedSources.sort((a, b) => a.number - b.number),
+      citationMap 
+    };
   };
 
-  const { content, usedSources } = processContent();
+  const { content, usedSources, citationMap } = processContent();
+
+  const CitationComponent = ({ dataCitations, dataCiteIndex }) => {
+    const numbers = dataCitations.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+    const citeIndex = dataCiteIndex || 0;
+
+    return (
+      <sup className="inline-flex gap-0.5 ml-0.5 relative">
+        {numbers.map((number, idx) => {
+          const sourceInfo = citationMap[number];
+          const uniqueId = `citation-${citeIndex}-${number}-${idx}`;
+          
+          return (
+            <span key={idx} className="relative inline-block">
+              <span 
+                className="citation-number inline-flex items-center justify-center w-4 h-4 text-[#18345D] p-2 border border-blue-200 rounded-full cursor-pointer hover:bg-blue-50 transition-colors text-[10px] font-medium"
+                onMouseEnter={() => handleCitationMouseEnter(uniqueId)}
+                onMouseLeave={handleCitationMouseLeave}
+                role="button"
+                tabIndex={0}
+                aria-label={`Show source ${number}`}
+              >
+                {number}
+              </span>
+              {activePopover === uniqueId && sourceInfo && (
+                <div 
+                  className="citation-popover absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-gray-50 text-xs rounded-md shadow-lg whitespace-nowrap z-50 min-w-max max-w-xs border border-gray-200"
+                  style={{
+                    opacity: 0,
+                    animation: 'fadeInUp 0.2s ease-out forwards'
+                  }}
+                  onMouseEnter={() => handleCitationMouseEnter(uniqueId)}
+                  onMouseLeave={handleCitationMouseLeave}
+                >
+                  <div className="relative text-gray-700">
+                    {sourceInfo.title}
+                  </div>
+                </div>
+              )}
+            </span>
+          );
+        })}
+      </sup>
+    );
+  };
 
   return (
     <div className={`flex w-full`}>
@@ -196,7 +198,19 @@ export function MessageBubble({ message, isStreaming = false }) {
           `}>
             <div className="whitespace-pre-wrap wrap-break-word">
               {!isStreaming && (content.length===0 || content[0]==="")  && "I couldn't find an answer to this within my library of Buddhist texts. Please try rephrasing your question or asking about a different concept."}
-              {Array.isArray(content) ? content : message.content}
+              <ReactMarkdown
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  cite: ({ node, ...props }) => {
+                    return <CitationComponent 
+                      dataCitations={props['data-citations']} 
+                      dataCiteIndex={props['data-cite-index']}
+                    />;
+                  }
+                }}
+              >
+                {content}
+              </ReactMarkdown>
             </div>
           </div>
 

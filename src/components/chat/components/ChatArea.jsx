@@ -106,19 +106,20 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
       (chunk) => {
         setIsThinking(false);
         fullResponse += chunk;
-        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries);
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries, false);
       },
       (results) => {
         setIsThinking(false);
         currentSearchResults = [...currentSearchResults, ...results];
-        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries);
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries, false);
       },
       (queries) => {
         setIsThinking(false);
         currentQueries = queries;
-        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries);
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries, false);
       },
       async () => {
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries, true);
         setLoading(false);
         setIsThinking(false);
         abortControllerRef.current = null;
@@ -140,7 +141,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
           return;
         }
         console.error('Chat error:', error);
-        updateLastMessage(threadId, fullResponse + '\n\n[Error: Failed to get response]');
+        updateLastMessage(threadId, fullResponse + '\n\n[Error: Failed to get response]', currentSearchResults, currentQueries, true);
         setLoading(false);
         setIsThinking(false);
         abortControllerRef.current = null;

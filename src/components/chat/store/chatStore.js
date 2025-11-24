@@ -71,7 +71,13 @@ export const useChatStore = create()(
         }));
       },
 
-      updateLastMessage: (threadId, content, searchResults, queries) => {
+      updateLastMessage: (
+        threadId,
+        content,
+        searchResults,
+        queries,
+        isFinalized = false
+      ) => {
         set((state) => ({
           threads: state.threads.map((t) => {
             if (t.id !== threadId) return t;
@@ -84,6 +90,7 @@ export const useChatStore = create()(
               content,
               ...(searchResults ? { searchResults } : {}),
               ...(queries ? { queries } : {}),
+              isFinalized,
             };
 
             return { ...t, messages: updatedMessages };
