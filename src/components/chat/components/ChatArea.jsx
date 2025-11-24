@@ -238,9 +238,18 @@ Explore Buddhist Wisdom
         <div className="max-w-3xl mx-auto">
           {activeThread?.messages.map((message, index) => (
             <div key={message.id} className="flex flex-col">
-              {message.role === 'assistant' && message.queries && isLoading && !isThinking && index === activeThread.messages.length - 1 && (
-                <Queries queries={message.queries} />
-              )} 
+              <div 
+                style={{
+                  maxHeight: message.role === 'assistant' && message.queries && isLoading && !isThinking && index === activeThread.messages.length - 1 ? '500px' : '0',
+                  opacity: message.role === 'assistant' && message.queries && isLoading && !isThinking && index === activeThread.messages.length - 1 ? '1' : '0',
+                  overflow: 'hidden',
+                  transition: 'max-height 0.4s ease-in-out, opacity 0.3s ease-in-out'
+                }}
+              >
+                {message.role === 'assistant' && message.queries && (
+                  <Queries queries={message.queries} />
+                )}
+              </div>
               <MessageBubble 
                 message={message} 
                 isStreaming={isLoading && index === activeThread.messages.length - 1}
