@@ -191,13 +191,13 @@ export function MessageBubble({ message, isStreaming = false }) {
         }
         <div className={`flex text-left flex-col min-w-0`}>
           <div className={`
-            p-3 leading-relaxed 
+            p-2 leading-relaxed 
             ${isUser 
               ? ' text-black ' 
               : 'bg-white text-gray-800'
             }
           `}>
-            <div className="wrap-break-word">
+            <div className='mt-3'>
               {!isStreaming && (content.length===0 || content[0]==="")  && "I couldn't find an answer to this within my library of Buddhist texts. Please try rephrasing your question or asking about a different concept."}
               <ReactMarkdown
                 rehypePlugins={[rehypeRaw]}

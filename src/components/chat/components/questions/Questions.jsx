@@ -15,11 +15,11 @@ const questions = [
     },
     {
         id: 4,
-        question: 'Who are the eight students of the Buddha?',
+        question: 'What are some ways we can learn Buddhism?',
     },
     {
         id: 5,
-        question: 'What is the Buddha\'s teaching?',
+        question: 'What is the Buddha\'s teaching about the compassion?',
     }
 ]
 
