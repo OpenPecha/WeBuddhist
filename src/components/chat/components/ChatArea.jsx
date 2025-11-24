@@ -131,21 +131,12 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
             fullResponse,
             threadId
           );
-          console.log('Chat saved successfully');
-          console.log(fullResponse);
-          console.log("**"*10)
-          console.log(userEmail);
-          console.log("**"*10)
-          console.log(userMessageContent);
-          console.log("**"*10)
-          console.log(threadId);
         } catch (error) {
           console.error('Failed to save chat:', error);
         }
       },
       (error) => {
         if (error.name === 'AbortError') {
-          console.log('Chat aborted');
           return;
         }
         console.error('Chat error:', error);
