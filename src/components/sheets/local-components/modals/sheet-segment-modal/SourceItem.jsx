@@ -12,7 +12,7 @@ const SourceItem = ({ source, onSegment }) => {
         <img src={pechaIcon} alt="source icon" />
       </div>
       <div className="segment-matches">
-        {source.segment_match.map((segment) => (
+        {source.segment_matches.map((segment) => (
           <SegmentItem
             key={segment.segment_id}
             segment={segment}
@@ -27,11 +27,11 @@ const SourceItem = ({ source, onSegment }) => {
 SourceItem.propTypes = {
   source: PropTypes.shape({
     text: PropTypes.shape({
-      text_id: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
       language: PropTypes.string.isRequired,
     }).isRequired,
-    segment_match: PropTypes.arrayOf(
+    segment_matches: PropTypes.arrayOf(
       PropTypes.shape({
         segment_id: PropTypes.string.isRequired,
         content: PropTypes.string.isRequired,
