@@ -150,7 +150,7 @@ export function MessageBubble({ message, isStreaming = false }) {
               </span>
               {activePopover === uniqueId && sourceInfo && (
                 <div 
-                  className="citation-popover absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-gray-50 text-xs rounded-md shadow-lg whitespace-nowrap z-50 min-w-max max-w-xs border border-gray-200"
+                  className="citation-popover absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-gray-50 text-xs rounded-md shadow-sm whitespace-nowrap z-50 min-w-max max-w-xs border border-gray-200"
                   style={{
                     opacity: 0,
                     animation: 'fadeInUp 0.2s ease-out forwards'

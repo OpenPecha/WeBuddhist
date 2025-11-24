@@ -180,8 +180,15 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
           </button>
         )}
         <div className="text-center h-full justify-center items-center flex flex-col gap-y-4 text-gray-400 ">
-{/* <Questions /> */}
-<div className="bg-linear-to-t   from-white via-white to-transparent m-4 md:m-0 ">
+<p style={{
+              opacity: 0,
+              animation: 'fadeInUp 0.6s ease-out forwards',
+              animationDelay: `0.1s`
+            } }
+            className="text-gray-400 text-lg md:text-2xl">
+Explore Buddhist Wisdom
+</p>
+<div className="bg-linear-to-t   from-white via-white to-transparent mx-4 md:m-0 ">
         <div className="border-2 border-[#f1f1f1] mx-auto rounded-2xl w-full md:w-2xl bg-[#F5F5F5]">
           <form onSubmit={handleSubmit} className="relative">
             <input
@@ -231,12 +238,9 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
         <div className="max-w-3xl mx-auto">
           {activeThread?.messages.map((message, index) => (
             <div key={message.id} className="flex flex-col">
-              {/* {message.role === 'assistant' && message.queries && (
+              {message.role === 'assistant' && message.queries && isLoading && !isThinking && index === activeThread.messages.length - 1 && (
                 <Queries queries={message.queries} />
-              )} */}
-              {/* {message.role === 'assistant' && message.searchResults && message.searchResults.length > 0 && (
-                <SearchResults results={message.searchResults} />
-              )} */}
+              )} 
               <MessageBubble 
                 message={message} 
                 isStreaming={isLoading && index === activeThread.messages.length - 1}
