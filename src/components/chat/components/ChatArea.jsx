@@ -163,18 +163,29 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
 
   if (!activeThreadId) {
     return (
-      <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400">
+      <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400 relative">
+        {!isSidebarOpen && (
+          <button
+            onClick={onOpenSidebar}
+            className="absolute top-4 left-4 w-fit p-2 rounded-lg"
+            aria-label="Open sidebar"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && onOpenSidebar()}
+          >
+            <NavbarIcon/>
+          </button>
+        )}
         <div className="text-center h-full justify-center items-center flex flex-col gap-y-4 text-gray-400 ">
 {/* <Questions /> */}
-<div className="bg-linear-to-t   from-white via-white to-transparent">
-        <div className="border-2 border-[#f1f1f1] mx-auto rounded-2xl bg-[#F5F5F5] h-44">
+<div className="bg-linear-to-t   from-white via-white to-transparent m-4 md:m-0 ">
+        <div className="border-2 border-[#f1f1f1] mx-auto rounded-2xl w-full md:w-2xl bg-[#F5F5F5]">
           <form onSubmit={handleSubmit} className="relative">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question about Buddhist texts..."
-              className=" w-2xl p-4  rounded-2xl border-2 border-[#F5F5F5] bg-white text-gray-900 focus:outline-none"
+              className="  w-full p-4  rounded-2xl border-2 border-[#F5F5F5] bg-white text-gray-900 focus:outline-none"
               disabled={isLoading}
             />
             <button
@@ -190,6 +201,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
               {isLoading ? <Square size={20} fill="currentColor" /> : <Send size={20} />}
             </button>
           </form>
+          <Questions/>
         </div>
       </div>
         </div>
@@ -203,7 +215,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
       {!isSidebarOpen && (
         <button
           onClick={onOpenSidebar}
-          className="absolute top-4 left-4  w-fit p-2 rounded-lg"
+          className="md:absolute p-4 md:left-4 md:top-4  w-fit md:p-2"
           aria-label="Open sidebar"
           tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && onOpenSidebar()}
@@ -244,7 +256,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
       </div>
 
       <div className="bg-linear-to-t from-white via-white to-transparent">
-        <div className="max-w-3xl mx-auto">
+        <div className="p-2 md:max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="relative">
             <input
               type="text"
@@ -260,7 +272,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
               disabled={!input.trim() && !isLoading}
               className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded transition-colors ${
                 isLoading 
-                  ? 'text-[#18345D]' 
+                  ? 'text-[#9daabd]' 
                   : 'text-[#18345D] disabled:opacity-50 disabled:cursor-not-allowed'
               }`}
             >

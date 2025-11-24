@@ -7,28 +7,28 @@ const questions = [
     },
     {
         id: 2,
-        question: 'Who are the eight students of the Buddha?',
+        question: ' what is self?',
     },
     {
         id: 3,
-        question: 'What is the name of the first king of Tibet?',
+        question: 'How one can attain enlightenment?',
     },
     {
         id: 4,
-        question: 'what is self.',
+        question: 'Who are the eight students of the Buddha?',
     },
     {
         id: 5,
-        question: 'What is the name of the first queen of Tibet?',
-    },
+        question: 'What is the Buddha\'s teaching?',
+    }
 ]
 const Questions = () => {
   return (
-    <div className="grid grid-cols-2 gap-3 rounded-2xl p-2">
+    <div className="flex flex-wrap gap-3 text-sm rounded-2xl p-2">
         {questions.map((question) => (
             <div
                 key={question.id}
-                className="flex items-center bg-gray-50  p-2"
+                className="flex items-center border-y border-x border-[#c0c0c0] bg-white rounded-2xl border-dashed p-2"
             >
                 <span>{question.question}</span>
             </div>

@@ -92,7 +92,7 @@ export async function saveChatToBackend(email, question, response, threadId) {
         body: JSON.stringify({
           email,
           question,
-          response: [response], // Wrap response in array as per the API structure
+          response: [response],
           threadId,
         }),
       }

@@ -90,7 +90,7 @@ export function Sidebar({ isOpen, onToggle }) {
               {openPopoverId === thread.id && (
                 <div
                   ref={popoverRef}
-                  className="absolute text-sm right-0 mt-1 w-40 bg-[#FFFFFF] rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+                  className="absolute text-sm right-0  w-40 bg-[#FFFFFF] rounded-lg shadow-sm border border-gray-200 py-1 z-50"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
