@@ -140,7 +140,7 @@ function App() {
               <Route path="/works/:id" element={<Works/>}/>
               <Route path="/chapter" element={<ChaptersV2/>}/>
               <Route path="/search" element={<SearchResultsPage/>}/>
-              <Route path="/explore" element={<Chat/>}/>
+              <Route path="/ai" element={<AuthenticationGuard component={Chat}/>}/>
               <Route path="*" element={<Collections/>}/>
               <Route path="/sheets/:id" element={<Sheets/>}/>
               <Route path="/:username/:sheetSlugAndId" element={<SheetChapters/>}/>
