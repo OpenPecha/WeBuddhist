@@ -19,6 +19,11 @@
     width: fit-content;
     position: relative;
     cursor: pointer;
+    flex-shrink: 0;
+    img {
+      width: 17px;
+      height: 16px;
+    }
   }
   .bookmark-icon-container button {
     background: none;
