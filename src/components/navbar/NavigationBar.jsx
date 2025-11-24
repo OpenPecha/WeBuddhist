@@ -94,7 +94,7 @@ const renderNavLinks=()=>{
             {/* <Link to="/topics" onClick={handleMobileMenuToggle}>{t("header.topic")}</Link> */}
             <Link to="/community" onClick={handleMobileMenuToggle}> {t("header.community")}</Link>
 
-            <button onClick={() => 
+            <button className=" text-[#5B5B5B]" onClick={() => 
               userisLoggedIn ?( navigate("/explore")) : (navigate("/login"))}> {t("header.ai_mode")}</button>
         </div>
     )
