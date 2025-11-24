@@ -5,6 +5,7 @@ import { useMutation } from 'react-query';
 import axiosInstance from '../../../config/axios-config';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+
 export const fetchURL = async (id) => {
   const {data} = await axiosInstance.get(`/api/v1/search/chat/${id}`);
   return data;
@@ -196,7 +197,7 @@ export function MessageBubble({ message, isStreaming = false }) {
               : 'bg-white text-gray-800'
             }
           `}>
-            <div className="whitespace-pre-wrap wrap-break-word">
+            <div className="wrap-break-word">
               {!isStreaming && (content.length===0 || content[0]==="")  && "I couldn't find an answer to this within my library of Buddhist texts. Please try rephrasing your question or asking about a different concept."}
               <ReactMarkdown
                 rehypePlugins={[rehypeRaw]}
