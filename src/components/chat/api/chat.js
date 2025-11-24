@@ -8,18 +8,15 @@ export async function streamChat(
   signal
 ) {
   try {
-    const response = await fetch(
-      "https://buddhist-consensus.onrender.com/api/chat/stream",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ messages }),
-        signal,
-      }
-    );
+    const response = await fetch("/chat/api/chat/stream", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ messages }),
+      signal,
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -82,21 +79,18 @@ function processLine(line, onChunk, onSearchResults, onQueries, onFinish) {
 
 export async function saveChatToBackend(email, question, response, threadId) {
   try {
-    const result = await fetch(
-      "https://pecha-tool-sync-editor-1.onrender.com/webuddhist",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          question,
-          response: [response],
-          threadId,
-        }),
-      }
-    );
+    const result = await fetch("/webuddhist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        question,
+        response: [response],
+        threadId,
+      }),
+    });
 
     if (!result.ok) {
       throw new Error(`HTTP error! status: ${result.status}`);

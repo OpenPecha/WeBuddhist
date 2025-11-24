@@ -18,6 +18,18 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: true,
         },
+        "/chat": {
+          target: "https://buddhist-consensus.onrender.com",
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/chat/, ""),
+        },
+        "/webuddhist": {
+          target: "https://pecha-tool-sync-editor-1.onrender.com/webuddhist",
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/webuddhist/, ""),
+        },
       },
     },
     test: {
