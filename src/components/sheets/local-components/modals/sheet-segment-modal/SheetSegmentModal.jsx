@@ -7,14 +7,19 @@ import axiosInstance from "../../../../../config/axios-config";
 import PaginationComponent from '../../../../../components/commons/pagination/PaginationComponent';
 import SourceItem from './SourceItem';
 import PropTypes from 'prop-types';
+import { LANGUAGE } from '../../../../../utils/constants.js';
+import { mapLanguageCode } from '../../../../../utils/helperFunctions.jsx';
 
-export const fetchSegments = async (searchFilter, limit, skip) => {
-  const { data } = await axiosInstance.get(`/api/v1/search?query=${searchFilter}&search_type=${'SOURCE'}`, {
+export const fetchSegments = async (query, language, skip, pagination) => {
+  const { data } = await axiosInstance.get('/api/v1/search/multilingual', {
     params: {
-      limit,
-      skip,
-    },
-  }); 
+      query,
+      search_type: 'exact',
+      language,
+      limit: pagination.limit,
+      skip: skip
+    }
+  });
   return data;
 };
 
@@ -23,10 +28,12 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
   const [debouncedSearchFilter] = useDebounce(searchFilter, 500);
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
   const { data: searchData, isLoading } = useQuery(
-    ["topics", debouncedSearchFilter, pagination.currentPage, pagination.limit],
-    () => fetchSegments(debouncedSearchFilter, pagination.limit, skip),
-    { refetchOnWindowFocus: false }
+    ["sheetSegmentSearch", debouncedSearchFilter, language, skip, pagination],
+    () => fetchSegments(debouncedSearchFilter, language, skip, pagination),
+    { refetchOnWindowFocus: false, retry: 1, enabled: !!(debouncedSearchFilter.trim() !== "") }
   );
 
   const totalSegments = searchData?.total || 0;
@@ -78,6 +85,7 @@ const SheetSegmentModal = ({ onClose, onSegment }) => {
           value={searchFilter}
           onChange={(e) => setSearchFilter(e.target.value)}
           className="search-segment-input"
+          aria-label="Search segments"
         />  
         <div className='segment-list-container'>
           {isLoading ? (
