@@ -173,6 +173,7 @@ const Texts = (props) => {
           <div className="tab-panel">
             <Versions 
               textId={textId} 
+              contentId={tableOfContents?.contents[0]?.id}
               requiredInfo={requiredInfo} 
               addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} 
               currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}
@@ -254,7 +255,7 @@ const Texts = (props) => {
       />
       <div className="left-section">
         {!requiredInfo.from && renderTextTitleAndType()}
-        {!requiredInfo.from && renderContinueReadingButton()}
+        {/* {!requiredInfo.from && renderContinueReadingButton()} */}
         {renderTabs()}
       </div>
       <div className="right-section">

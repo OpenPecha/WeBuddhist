@@ -16,7 +16,7 @@ export const fetchCollections = async () => {
   const {data} = await axiosInstance.get("/api/v1/collections", {
     params: {
       language,
-      limit: 10,
+      limit: 50,
       skip: 0
     }
   });
@@ -138,8 +138,8 @@ const Collections = (props) => {
   return (
     <div className={`${!requiredInfo.from ? "collections-container" : "collections-container no-margin"}`}>
       <Seo
-        title={`${siteName} - Tibetan Buddhism in your own words`}
-        description="Explore Tibetan Buddhist texts, collections, and community discussions. Create notes, track your studies, and share insights."
+        title={`${siteName} - Buddhism in your own words`}
+        description="Explore Buddhist texts, collections, and community discussions. Create notes, track your studies, and share insights."
         canonical={canonicalUrl}
       />
       <div className={`${!requiredInfo.from ? "left-section" : "minified-left-section"}`}>

@@ -21,10 +21,10 @@ export function Queries({ queries }) {
               animation: 'fadeInUp 0.6s ease-out forwards',
               animationDelay: `${index * 0.1}s`
             }}
-            className="flex items-center gap-2 px-3 py-2 bg-[#E5F3FE] border-blue-200 rounded text-[#00457D]"
+            className="flex items-center gap-2 p-1 bg-[#E5F3FE] border-blue-200 rounded text-[#00457D]"
           >
             <Search size={14} className="shrink-0" />
-            <span className="font-medium text-left">{query}</span>
+            <span className="text-left">{query}</span>
           </div>
         ))}
       </div>

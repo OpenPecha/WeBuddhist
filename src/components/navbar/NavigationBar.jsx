@@ -28,6 +28,7 @@ const Navigation = () => {
     const { t } = useTranslate();
     const { isLoggedIn, logout: pechaLogout, isAuthLoading } = useAuth();
     const { isAuthenticated, logout, isLoading: isAuth0Loading } = useAuth0();
+    const userisLoggedIn = isLoggedIn || isAuthenticated;
     const tolgee = useTolgee(['language']);
     const queryClient = useQueryClient();
     const { collectionColor } = useCollectionColor();
@@ -92,7 +93,9 @@ const renderNavLinks=()=>{
             <Link to="/collections" onClick={handleMobileMenuToggle}>  {t("header.text")}</Link>
             {/* <Link to="/topics" onClick={handleMobileMenuToggle}>{t("header.topic")}</Link> */}
             <Link to="/community" onClick={handleMobileMenuToggle}> {t("header.community")}</Link>
-            <Link to="/explore" onClick={handleMobileMenuToggle}> {t("header.ai_mode")}</Link>
+
+            <button className=" text-[#5B5B5B]" onClick={() => 
+              userisLoggedIn ?( navigate("/ai")) : (navigate("/login"))}> {t("header.ai_mode")}</button>
         </div>
     )
 }

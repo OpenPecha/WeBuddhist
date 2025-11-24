@@ -39,7 +39,6 @@ export const UserbackProvider = ({ children }) => {
           }
         };
         const instance = await Userback(usebackId, options);
-        console.log('Userback initialized successfully:', instance);
         setUserback(instance);
         
         

@@ -1,13 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Loader2, Square, Menu } from 'lucide-react';
 import { useChatStore } from '../store/chatStore';
-import { streamChat } from '../api/chat';
+import { streamChat, saveChatToBackend } from '../api/chat';
 import { MessageBubble } from './MessageBubble';
 import { SearchResults } from './SearchResults';
 import { Queries } from './Queries';
 import { WritingIndicator } from './WritingIndicator';
 import { NavbarIcon } from '../../../utils/Icon';
 import Questions from './questions/Questions';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from '../../../config/AuthContext';
+import { useQuery } from 'react-query';
+import axiosInstance from '../../../config/axios-config';
+
+export const fetchUserInfo = async () => {
+  const { data } = await axiosInstance.get("/api/v1/users/info");
+  return data;
+};
 
 export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
   const { 
@@ -25,7 +34,19 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
 
+  // Get user information
+  const { user } = useAuth0();
+  const { isLoggedIn } = useAuth();
+  const { data: userInfo } = useQuery("userInfo", fetchUserInfo, { 
+    refetchOnWindowFocus: false, 
+    enabled: isLoggedIn 
+  });
+
   const activeThread = threads.find(t => t.id === activeThreadId);
+
+  const getUserEmail = () => {
+    return user?.email || userInfo?.email || 'test@webuddhist';
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -44,18 +65,15 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+  const handleQuestionClick = (questionText) => {
+    if (isLoading) return;
+    
+    const newThreadId = createThread();
+    
+    submitQuestion(questionText, newThreadId);
+  };
 
-    const userMessageContent = input;
-    setInput('');
-    
-    let threadId = activeThreadId;
-    if (!threadId) {
-      threadId = createThread();
-    }
-    
+  const submitQuestion = async (userMessageContent, threadId) => {
     // Add user message
     addMessage(threadId, { role: 'user', content: userMessageContent });
     
@@ -88,30 +106,42 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
       (chunk) => {
         setIsThinking(false);
         fullResponse += chunk;
-        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries);
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries, false);
       },
       (results) => {
         setIsThinking(false);
         currentSearchResults = [...currentSearchResults, ...results];
-        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries);
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries, false);
       },
       (queries) => {
         setIsThinking(false);
         currentQueries = queries;
-        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries);
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries, false);
       },
-      () => {
+      async () => {
+        updateLastMessage(threadId, fullResponse, currentSearchResults, currentQueries, true);
         setLoading(false);
         setIsThinking(false);
         abortControllerRef.current = null;
+
+        try {
+          const userEmail = getUserEmail();
+          await saveChatToBackend(
+            userEmail,
+            userMessageContent,
+            fullResponse,
+            threadId
+          );
+        } catch (error) {
+          console.error('Failed to save chat:', error);
+        }
       },
       (error) => {
         if (error.name === 'AbortError') {
-          console.log('Chat aborted');
           return;
         }
         console.error('Chat error:', error);
-        updateLastMessage(threadId, fullResponse + '\n\n[Error: Failed to get response]');
+        updateLastMessage(threadId, fullResponse + '\n\n[Error: Failed to get response]', currentSearchResults, currentQueries, true);
         setLoading(false);
         setIsThinking(false);
         abortControllerRef.current = null;
@@ -120,20 +150,53 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
     );
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessageContent = input;
+    setInput('');
+    
+    let threadId = activeThreadId;
+    if (!threadId) {
+      threadId = createThread();
+    }
+    
+    await submitQuestion(userMessageContent, threadId);
+  };
+
   if (!activeThreadId) {
     return (
-      <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400">
+      <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400 relative">
+        {!isSidebarOpen && (
+          <button
+            onClick={onOpenSidebar}
+            className="absolute top-4 left-4 w-fit p-2 rounded-lg"
+            aria-label="Open sidebar"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && onOpenSidebar()}
+          >
+            <NavbarIcon/>
+          </button>
+        )}
         <div className="text-center h-full justify-center items-center flex flex-col gap-y-4 text-gray-400 ">
-{/* <Questions /> */}
-<div className="bg-linear-to-t   from-white via-white to-transparent">
-        <div className="border-2 border-[#f1f1f1] mx-auto rounded-2xl bg-[#F5F5F5] h-44">
+<p style={{
+              opacity: 0,
+              animation: 'fadeInUp 0.6s ease-out forwards',
+              animationDelay: `0.1s`
+            } }
+            className="text-gray-400 text-lg md:text-2xl">
+Explore Buddhist Wisdom
+</p>
+<div className="bg-linear-to-t   from-white via-white to-transparent mx-4 md:m-0 ">
+        <div className="border-2 border-[#f1f1f1] mx-auto rounded-2xl w-full md:w-2xl bg-[#F5F5F5]">
           <form onSubmit={handleSubmit} className="relative">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question about Buddhist texts..."
-              className=" w-2xl p-4  rounded-2xl border-2 border-[#F5F5F5] bg-white text-gray-900 focus:outline-none"
+              className="  w-full p-4  rounded-2xl border-2 border-[#F5F5F5] bg-white text-gray-900 focus:outline-none"
               disabled={isLoading}
             />
             <button
@@ -149,6 +212,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
               {isLoading ? <Square size={20} fill="currentColor" /> : <Send size={20} />}
             </button>
           </form>
+          <Questions onQuestionClick={handleQuestionClick} />
         </div>
       </div>
         </div>
@@ -162,7 +226,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
       {!isSidebarOpen && (
         <button
           onClick={onOpenSidebar}
-          className="absolute top-4 left-4  w-fit p-2 rounded-lg"
+          className="md:absolute p-4 md:left-4 md:top-4  w-fit md:p-2"
           aria-label="Open sidebar"
           tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && onOpenSidebar()}
@@ -174,12 +238,9 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
         <div className="max-w-3xl mx-auto">
           {activeThread?.messages.map((message, index) => (
             <div key={message.id} className="flex flex-col">
-              {/* {message.role === 'assistant' && message.queries && (
+              {message.role === 'assistant' && message.queries && isLoading && !isThinking && index === activeThread.messages.length - 1 && (
                 <Queries queries={message.queries} />
-              )} */}
-              {/* {message.role === 'assistant' && message.searchResults && message.searchResults.length > 0 && (
-                <SearchResults results={message.searchResults} />
-              )} */}
+              )} 
               <MessageBubble 
                 message={message} 
                 isStreaming={isLoading && index === activeThread.messages.length - 1}
@@ -203,7 +264,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
       </div>
 
       <div className="bg-linear-to-t from-white via-white to-transparent">
-        <div className="max-w-3xl mx-auto">
+        <div className="p-2 md:max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="relative">
             <input
               type="text"
@@ -219,7 +280,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
               disabled={!input.trim() && !isLoading}
               className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded transition-colors ${
                 isLoading 
-                  ? 'text-[#18345D]' 
+                  ? 'text-[#9daabd]' 
                   : 'text-[#18345D] disabled:opacity-50 disabled:cursor-not-allowed'
               }`}
             >
