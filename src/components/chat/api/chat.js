@@ -67,7 +67,7 @@ function processLine(line, onChunk, onSearchResults, onQueries, onFinish) {
       if (data.queries) {
         onQueries(data.queries);
       }
-    } else if (data.type === "answer") {
+    } else if (data.type === "token") {
       onChunk(data.data || "");
     } else if (data.type === "done") {
       onFinish();
