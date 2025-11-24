@@ -53,16 +53,18 @@ $font-size-content: 18px;
     gap: 16px;
 
     .community-dropdown {
+      position: relative;
       background-color: #fff;
       color: #0b0b0b ;
-      border: 1px solid #18345D ;
-      box-shadow: none ;
-      border-radius: 4px ;
-      padding: 8px 16px ;
+      border: 1px solid #18345D;
+      box-shadow: none;
+      border-radius: 4px;
+      border-width: 1px;
+      height: 36px;
+      padding: 0 10px;
       font-size: 16px;
       font-weight: 500;
-      display: flex;
-      align-items: center;
+      display: inline-block;
       cursor: pointer;
     }
   }
@@ -83,7 +85,6 @@ $font-size-content: 18px;
 }
 
 .section-title {
-  margin-top: 1rem;
   text-align: start;
   font-size: 20px;
   color: #333;

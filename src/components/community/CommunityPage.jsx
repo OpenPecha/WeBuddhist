@@ -68,7 +68,7 @@ const CommunityPage = () => {
       <div className='sheet-community'>
         <div className='community-header'>
         <h2 className='section-title listtitle'> {t("community.sheets.recently_published")}</h2>
-        {/* {
+        {
           sheetsData?.sheets?.length > 0 && (
             <select
             className="community-dropdown navbaritems"
@@ -79,7 +79,7 @@ const CommunityPage = () => {
             <option value="desc">{t("community.sheets.descending")}</option>
           </select>
         )
-        } */}
+        }
 
         </div>
        
