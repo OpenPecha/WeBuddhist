@@ -63,7 +63,7 @@ describe("SearchResultsPage", () => {
     
     expect(screen.getByText("Sources")).toBeInTheDocument();
     // expect(screen.getByText("Sheets")).toBeInTheDocument();
-    expect(screen.getByText("Sort")).toBeInTheDocument();
+    expect(screen.queryByText("Sort")).not.toBeInTheDocument();
     expect(screen.getByTestId("sources-component")).toBeInTheDocument();
     // expect(screen.queryByTestId("sheets-component")).not.toBeInTheDocument();
   });
@@ -80,10 +80,10 @@ describe("SearchResultsPage", () => {
   test("changes sort options correctly", () => {
     setup();
     
-    fireEvent.click(screen.getByText("Sort"));
-    expect(screen.getByText("Relevance")).toBeInTheDocument();
-    expect(screen.getByText("Chronological")).toBeInTheDocument();
-    fireEvent.click(screen.getByText("Relevance"));
+    // Sort UI is currently hidden in the component
+    expect(screen.queryByText("Sort")).not.toBeInTheDocument();
+    expect(screen.queryByText("Relevance")).not.toBeInTheDocument();
+    expect(screen.queryByText("Chronological")).not.toBeInTheDocument();
     // fireEvent.click(screen.getByText("Sheets"));
     // fireEvent.click(screen.getByText("Sort"));
     // expect(screen.getByText("Relevance")).toBeInTheDocument();
@@ -104,14 +104,14 @@ describe("SearchResultsPage", () => {
   test("maintains sort option state within the same tab", () => {
     setup();
     
-    fireEvent.click(screen.getByText("Sort"));
-    fireEvent.click(screen.getByText("Chronological"));
+    // Sort UI is currently hidden in the component, nothing to maintain
+    expect(screen.queryByText("Sort")).not.toBeInTheDocument();
+    expect(screen.queryByText("Chronological")).not.toBeInTheDocument();
     // fireEvent.click(screen.getByText("Sheets"));
     // fireEvent.click(screen.getByText("Sort"));
     // fireEvent.click(screen.getByText("Views"));
-    fireEvent.click(screen.getByText("Sources"));
-    fireEvent.click(screen.getByText("Sort"));
-    
-    expect(screen.getByText("Chronological")).toBeInTheDocument();
+    // fireEvent.click(screen.getByText("Sources"));
+    // fireEvent.click(screen.getByText("Sort"));
+    // expect(screen.getByText("Chronological")).toBeInTheDocument();
   });
 });
