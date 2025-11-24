@@ -65,18 +65,15 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+  const handleQuestionClick = (questionText) => {
+    if (isLoading) return;
+    
+    const newThreadId = createThread();
+    
+    submitQuestion(questionText, newThreadId);
+  };
 
-    const userMessageContent = input;
-    setInput('');
-    
-    let threadId = activeThreadId;
-    if (!threadId) {
-      threadId = createThread();
-    }
-    
+  const submitQuestion = async (userMessageContent, threadId) => {
     // Add user message
     addMessage(threadId, { role: 'user', content: userMessageContent });
     
@@ -161,6 +158,21 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
     );
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessageContent = input;
+    setInput('');
+    
+    let threadId = activeThreadId;
+    if (!threadId) {
+      threadId = createThread();
+    }
+    
+    await submitQuestion(userMessageContent, threadId);
+  };
+
   if (!activeThreadId) {
     return (
       <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400 relative">
@@ -201,7 +213,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
               {isLoading ? <Square size={20} fill="currentColor" /> : <Send size={20} />}
             </button>
           </form>
-          <Questions/>
+          <Questions onQuestionClick={handleQuestionClick} />
         </div>
       </div>
         </div>

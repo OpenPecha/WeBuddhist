@@ -22,16 +22,32 @@ const questions = [
         question: 'What is the Buddha\'s teaching?',
     }
 ]
-const Questions = () => {
+
+const Questions = ({ onQuestionClick }) => {
+  const handleQuestionClick = (questionText) => {
+    if (onQuestionClick) {
+      onQuestionClick(questionText);
+    }
+  };
+
+  const handleKeyDown = (e, questionText) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleQuestionClick(questionText);
+    }
+  };
+
   return (
     <div className="flex flex-wrap gap-3 text-sm rounded-2xl p-2">
         {questions.map((question) => (
-            <div
+            <button
                 key={question.id}
-                className="flex items-center border-y border-x border-[#c0c0c0] bg-white rounded-2xl border-dashed p-2"
+                onClick={() => handleQuestionClick(question.question)}
+                onKeyDown={(e) => handleKeyDown(e, question.question)}
+                className="flex items-center border-y border-x border-[#c0c0c0] bg-white rounded border-dashed p-2 cursor-pointer"
             >
                 <span>{question.question}</span>
-            </div>
+            </button>
         ))}
     </div>
   ) 
