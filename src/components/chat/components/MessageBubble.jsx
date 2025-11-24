@@ -1,11 +1,29 @@
 import { useState, useEffect } from 'react';
-import { User, Bot, ChevronDown, ChevronUp, X } from 'lucide-react';
+import {  ChevronDown, ChevronUp } from 'lucide-react';
 import webuddhistlogo from "../../../assets/icons/pecha_icon.png";
+import { useMutation } from 'react-query';
+import axiosInstance from '../../../config/axios-config';
+
+export const fetchURL = async (id) => {
+  const {data} = await axiosInstance.get(`/api/v1/search/chat/${id}`);
+  return data;
+}
 
 export function MessageBubble({ message, isStreaming = false }) {
   const isUser = message.role === 'user';
   const [showSources, setShowSources] = useState(false);
   const [activePopover, setActivePopover] = useState(null);
+
+  const urlMutation = useMutation(fetchURL, {
+    onSuccess: (data) => {
+      if (data) {
+        window.open(data, '_blank', 'noopener,noreferrer');
+      }
+    },
+    onError: (error) => {
+      console.error('Error fetching URL:', error);
+    }
+  });
 
   // Close drawer on Escape key
   useEffect(() => {
@@ -41,6 +59,17 @@ export function MessageBubble({ message, isStreaming = false }) {
 
   const handleCitationMouseLeave = () => {
     setActivePopover(null);
+  };
+
+  const handleSourceClick = (sourceId) => {
+    urlMutation.mutate(sourceId);
+  };
+
+  const handleSourceKeyDown = (event, sourceId) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleSourceClick(sourceId);
+    }
   };
 
   // Process content for citations if it's an assistant message with search results
@@ -186,12 +215,15 @@ export function MessageBubble({ message, isStreaming = false }) {
                   {usedSources.map(({ number, source }, index) => (
                     <div 
                       key={number}
-                      className="flex border-l border-[#abadb1] flex-col p-2"
+                      className="flex border-l border-[#abadb1] flex-col p-2 cursor-pointer hover:bg-gray-50 transition-colors"
                       style={{
                         opacity: 0,
                         animation: 'fadeInUp 0.6s ease-out forwards',
                         animationDelay: `${index * 0.1}s`
                       }}
+                      onClick={() => handleSourceClick(source.id)}
+                      onKeyDown={(e) => handleSourceKeyDown(e, source.id)}
+                      role="button"
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="shrink-0 w-4 h-4 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 font-bold text-[10px]">
