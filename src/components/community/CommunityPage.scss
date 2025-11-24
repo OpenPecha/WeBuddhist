@@ -58,7 +58,7 @@ $font-size-content: 18px;
       border: 1px solid #18345D ;
       box-shadow: none ;
       border-radius: 4px ;
-      padding: 8px 16px ;
+      padding: 0 7px ;
       font-size: 16px;
       font-weight: 500;
       display: flex;
@@ -83,7 +83,6 @@ $font-size-content: 18px;
 }
 
 .section-title {
-  margin-top: 1rem;
   text-align: start;
   font-size: 20px;
   color: #333;
