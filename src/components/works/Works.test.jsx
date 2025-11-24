@@ -195,7 +195,7 @@ describe("Works Component", () => {
 
     expect(reactQuery.useQuery).toHaveBeenCalled();
     const queryKey = reactQuery.useQuery.mock.calls[0][0];
-    expect(queryKey).toEqual(["works", "works-id"]);
+    expect(queryKey).toEqual(["works", "works-id", 0, 10]);
   });
 
   test("uses pagination parameters correctly", () => {

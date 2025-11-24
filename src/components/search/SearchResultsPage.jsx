@@ -81,7 +81,7 @@ const SearchResultsPage = () => {
   const renderTabsContainer = () => (
     <div className="tabs-container">
       {renderTabNavigation()}
-      {renderSortDropdown()}
+      {/* {renderSortDropdown()} */}
     </div>
   );
 
