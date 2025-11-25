@@ -72,7 +72,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
   // ----------------------------- renderers -------------------------------------
   const renderHeader = () => {
     return (
-      <div className="search-header">
+      <div className="search-header mt-2">
         <IoChevronBackSharp size={24} onClick={() => handleNavigate()} className="back-icon" />
         <h2>{t('connection_panel.search_in_this_text')}</h2>
         <IoMdClose
