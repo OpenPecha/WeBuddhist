@@ -226,7 +226,7 @@ describe("Collections Component", () => {
     expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections", {
       params: {
         language: "en",
-        limit: 10,
+        limit: 50,
         skip: 0
       }
     });
