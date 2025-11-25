@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="footer-column">
         <h3 className="footer-column-title">{t("footer.about")}</h3>
         <ul className="footer-links">
-          <li><a href="https://dharmaduta.in/about" target="_blank" rel="noopener noreferrer">{t('footer.about_us')}</a></li>
+          <li><a href="https://dharmaduta.in/about" target="_blank" rel="noopener noreferrer">About Us</a></li>
           <li><a href="https://dharmaduta.in/team" target="_blank" rel="noopener noreferrer">{t('footer.team')}</a></li>
           <li><a href="https://dharmaduta.in/projects" target="_blank" rel="noopener noreferrer">{t('footer.products')}</a></li>
         </ul>
