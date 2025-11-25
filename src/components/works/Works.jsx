@@ -48,7 +48,7 @@ const Works = (props) => {
   const id = requiredInfo.from === "compare-text" ? props.collection_id : paramId;
   const isCompareText = requiredInfo.from === "compare-text";
 
-  const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
+  const [pagination, setPagination] = useState({ currentPage: 1, limit: 70 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
 
   const {data: worksData, isLoading: worksDataIsLoading, error: worksDataIsError} = useQuery(
