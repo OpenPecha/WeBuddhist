@@ -195,7 +195,7 @@ describe("Works Component", () => {
 
     expect(reactQuery.useQuery).toHaveBeenCalled();
     const queryKey = reactQuery.useQuery.mock.calls[0][0];
-    expect(queryKey).toEqual(["works", "works-id", 0, 10]);
+    expect(queryKey).toEqual(["works", "works-id", 0, 12]);
   });
 
   test("uses pagination parameters correctly", () => {
@@ -261,7 +261,7 @@ describe("Works Component", () => {
         params: expect.objectContaining({
           collection_id: "works-id",
           language: "en",
-          limit: 10,
+          limit: 12,
           skip: 0,
         }),
       })
@@ -315,7 +315,7 @@ describe("Works Component", () => {
       "/api/v1/texts",
       expect.objectContaining({
         params: expect.objectContaining({
-          limit: 10,
+          limit: 12,
           skip: 0,
         }),
       })
