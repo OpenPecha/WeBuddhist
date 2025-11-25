@@ -70,6 +70,11 @@ const EditorInput = (prop) => {
           editor.insertText('\n')
           return
         }
+        if (event.key === 'Backspace') {
+          if (customEditor.handleBackspaceAtListStart(editor, event)) {
+            return
+          }
+        }
         if (!(event.metaKey || event.ctrlKey)) {
           return
         }
