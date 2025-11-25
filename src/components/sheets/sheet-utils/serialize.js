@@ -59,7 +59,8 @@ export const serialize = (content) => {
       }
       case "list-item": {
         const liHtml = content.children.map(serialize).join("");
-        return `<li>${liHtml}</li>`;
+        const alignAttr = content.align ? ` style='text-align: ${content.align}'` : "";
+        return `<li${alignAttr}>${liHtml}</li>`;
       }
       case "ordered-list": {
         const olHtml = content.children.map(serialize).join("");

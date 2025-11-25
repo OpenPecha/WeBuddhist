@@ -2,4 +2,14 @@
   overflow-wrap: break-word;
   max-width: 100%;
   overflow-x: hidden;
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: decimal;
+  }
+  li {
+    display: list-item;
+    white-space: pre-wrap;
+  }
 }
