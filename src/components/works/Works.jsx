@@ -198,14 +198,14 @@ const Works = (props) => {
         <div className="commentary-text-container">
           {renderCommentaryTexts()}
         </div>
-        {texts.length > 9 && (
+        {/* {texts.length > 9 && (
           <PaginationComponent
             pagination={pagination}
             totalPages={totalPages}
             handlePageChange={handlePageChange}
             setPagination={setPagination}
           />
-        )}
+        )} */}
       </div>
     </div>
   );
