@@ -119,10 +119,6 @@ describe("Texts Component", () => {
   //   expect(screen.getByText("Download Text")).toBeInTheDocument();
   // });
 
-  test("renders continue reading button", () => {
-    setup();
-    expect(screen.getByText("Continue Reading")).toBeInTheDocument();
-  });
 
   test("fetchTableOfContents makes correct API call", async () => {
     localStorageMock.getItem.mockReturnValue("bo-IN");

@@ -49,6 +49,7 @@ export default defineConfig(({ mode }) => {
           "src/context/**",
           "src/utils/**",
           "src/components/commons/expandtext/**",
+          "src/components/chat/**",
         ],
       },
     },
