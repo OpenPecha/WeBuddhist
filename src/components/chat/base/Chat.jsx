@@ -1,9 +1,17 @@
-import { useState } from "react";
-import {Sidebar} from "../components/Sidebar";
-import {ChatArea} from "../components/ChatArea";
-
+import { useState, useEffect } from "react";
+import { Sidebar } from "../components/Sidebar";
+import { ChatArea } from "../components/ChatArea";
+import { useChatStore } from "../store/chatStore";
 export default function Chat() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const resetToNewChat = useChatStore((state) => state.resetToNewChat);
+  useEffect(() => {
+    const newChat = new URLSearchParams(window.location.search).get("new");
+    if (newChat) {
+      resetToNewChat();
+      window.history.replaceState({}, '', '/ai');
+    }
+  }, [resetToNewChat]);
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);

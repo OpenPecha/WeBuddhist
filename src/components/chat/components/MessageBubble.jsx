@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import {  ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Copy, Check } from 'lucide-react';
 import webuddhistlogo from "../../../assets/icons/pecha_icon.png";
 import { useMutation } from 'react-query';
 import axiosInstance from '../../../config/axios-config';
@@ -15,6 +15,7 @@ export function MessageBubble({ message, isStreaming = false }) {
   const isUser = message.role === 'user';
   const [showSources, setShowSources] = useState(false);
   const [activePopover, setActivePopover] = useState(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   const urlMutation = useMutation(fetchURL, {
     onSuccess: (data) => {
@@ -123,8 +124,32 @@ export function MessageBubble({ message, isStreaming = false }) {
       citationMap 
     };
   };
-
   const { content, usedSources, citationMap } = processContent();
+
+  const handleCopyMessage = async () => {
+    try {
+      // Remove citation IDs from content before copying
+      const citationRegex = /\[([a-zA-Z0-9\-_,\s]{15,})\]/g;
+      const cleanContent = message.content.replace(citationRegex, '');
+      
+      // Build the copy text with sources if available
+      let copyText = cleanContent.trim();
+      
+      if (usedSources && usedSources.length > 0) {
+        copyText += '\n\nSources:';
+        usedSources.forEach(({ number, source }) => {
+          copyText += `\n\n${number}. ${source.title}`;
+          copyText += `\n${source.text}`;
+        });
+      }
+      
+      await navigator.clipboard.writeText(copyText);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy message:', error);
+    }
+  };
 
   const CitationComponent = ({ dataCitations, dataCiteIndex }) => {
     const numbers = dataCitations.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
@@ -255,7 +280,31 @@ export function MessageBubble({ message, isStreaming = false }) {
                   ))}
                 </div>
               )}
+
+              {!isStreaming && (
+                <button
+                  onClick={handleCopyMessage}
+                  className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors mt-2"
+                  aria-label={isCopied ? 'Copied to clipboard' : 'Copy message'}
+                  tabIndex={0}
+                >
+                  {isCopied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                  {isCopied ? 'Copied!' : 'Copy'}
+                </button>
+              )}
             </div>
+          )}
+
+          {!isUser && !isStreaming && (!usedSources || usedSources.length === 0) && message.content && (
+            <button
+              onClick={handleCopyMessage}
+              className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors mt-2"
+              aria-label={isCopied ? 'Copied to clipboard' : 'Copy message'}
+              tabIndex={0}
+            >
+              {isCopied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+              {isCopied ? 'Copied!' : 'Copy'}
+            </button>
           )}
         </div>
       </div>

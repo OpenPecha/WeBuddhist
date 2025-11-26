@@ -165,7 +165,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
     await submitQuestion(userMessageContent, threadId);
   };
 
-  if (!activeThreadId) {
+  if (!activeThread?.messages?.length) {
     return (
       <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400 relative">
         {!isSidebarOpen && (

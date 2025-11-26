@@ -40,6 +40,10 @@ export const useChatStore = create()(
         set({ activeThreadId: id });
       },
 
+      resetToNewChat: () => {
+        set({ activeThreadId: null });
+      },
+
       addMessage: (threadId, message) => {
         set((state) => ({
           threads: state.threads.map((t) => {

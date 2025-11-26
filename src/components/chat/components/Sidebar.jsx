@@ -5,7 +5,7 @@ import { useChatStore } from '../store/chatStore';
 import { IoCreateOutline } from "react-icons/io5";
 
 export function Sidebar({ isOpen, onToggle }) {
-  const { threads, activeThreadId, createThread, setActiveThread, deleteThread } = useChatStore();
+  const { threads, activeThreadId, setActiveThread, deleteThread, resetToNewChat } = useChatStore();
   const [openPopoverId, setOpenPopoverId] = useState(null);
   const popoverRef = useRef(null);
 
@@ -41,7 +41,7 @@ export function Sidebar({ isOpen, onToggle }) {
         
       <div className="p-2 rounded-2xl">
         <button
-          onClick={() => createThread()}
+          onClick={() => resetToNewChat(null)}
           className="w-full flex justify-left items-center px-2 py-2 hover:bg-gray-50 transition-colors cursor-pointer gap-2 text-[#18345D] text-sm rounded"
         >
           <IoCreateOutline size={18} />
