@@ -40,6 +40,8 @@ export const mapLanguageCode = (languageCode) => {
     "en": "en",
     "zh-Hans-CN": "zh",
     "bo-IN": "bo",
+    "bo": "bo",
+    "zh": "zh",
   }
   return languageMap[languageCode]
 };

@@ -15,6 +15,11 @@ $primary-color: #18345D;
     width: 70%;
     margin-top: 4rem;
 
+    .breadcrumbs-container {
+      margin-top: -2rem;
+      margin-bottom: 1rem;
+    }
+
     .title-type-container{
       display: flex;
       flex-direction: column;

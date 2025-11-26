@@ -37,7 +37,13 @@ vi.mock("react-router-dom", async () => {
   return {
     ...actual,
     useParams: vi.fn(),
-    useSearchParams: () => [new URLSearchParams("?type=works"), vi.fn()]
+    useSearchParams: () => [new URLSearchParams("?type=works"), vi.fn()],
+    useLocation: () => ({
+      pathname: '/texts/123',
+      state: {
+        parentCollection: { id: 'collection-123', title: 'Test Collection' }
+      }
+    })
   };
 });
 
@@ -121,7 +127,7 @@ describe("Texts Component", () => {
 
 
   test("fetchTableOfContents makes correct API call", async () => {
-    localStorageMock.getItem.mockReturnValue("bo-IN");
+    sessionStorage.setItem('textLanguage', 'bo-IN');
     const result = await fetchTableOfContents("123", 0, 10);
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
@@ -136,6 +142,7 @@ describe("Texts Component", () => {
     );
 
     expect(result).toEqual(mockTextDetailData);
+    sessionStorage.removeItem('textLanguage');
   });
 
   test("switches to versions tab when clicked", () => {
@@ -150,8 +157,7 @@ describe("Texts Component", () => {
   });
 
   test("fetchVersions makes correct API call", async () => {
-    const local = mockLocalStorage();
-    local.getItem.mockReturnValue("bo-IN");
+    sessionStorage.setItem('textLanguage', 'bo-IN');
     axiosInstance.get.mockResolvedValueOnce({ data: { versions: [] } });
     const result = await fetchVersions("123", 0, 10);
     expect(axiosInstance.get).toHaveBeenCalledWith(
@@ -165,6 +171,7 @@ describe("Texts Component", () => {
       }
     );
     expect(result).toEqual({ versions: [] });
+    sessionStorage.removeItem('textLanguage');
   });
 
   test("switches back to contents from versions tab", () => {

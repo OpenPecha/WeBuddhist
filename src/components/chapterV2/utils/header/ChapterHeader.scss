@@ -8,6 +8,20 @@
   border-bottom: 1px solid #e0e0e0;
   background: rgb(248, 248, 248);
   flex-shrink: 0;
+
+  .back-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    color: #555;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
   .title-and-view-selector-container{
     display: flex;
     align-items: center;

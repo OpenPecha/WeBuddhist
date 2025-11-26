@@ -18,6 +18,7 @@ export const invalidateQueries = async (queryClient) => {
   };
  export const changeLanguage = async (lng,queryClient,tolgee) => {
     await tolgee.changeLanguage(lng);
+    sessionStorage.setItem('textLanguage', lng);
     localStorage.setItem(LANGUAGE, lng);
     setFontVariables(lng);
     await invalidateQueries(queryClient)
@@ -110,7 +111,7 @@ const renderSearch = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           onFocus={() => setIsSearchFocused(true)}
           onBlur={() => setIsSearchFocused(false)}
-          className={`search-input`}
+          className={`search-input p-2`}
         />
       </form>
     );
