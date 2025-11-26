@@ -3,7 +3,6 @@ import { Send, Loader2, Square, Menu } from 'lucide-react';
 import { useChatStore } from '../store/chatStore';
 import { streamChat, saveChatToBackend } from '../api/chat';
 import { MessageBubble } from './MessageBubble';
-import { SearchResults } from './SearchResults';
 import { Queries } from './Queries';
 import { WritingIndicator } from './WritingIndicator';
 import { NavbarIcon } from '../../../utils/Icon';
@@ -12,6 +11,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useAuth } from '../../../config/AuthContext';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../../config/axios-config';
+import { useLocation } from 'react-router-dom';
 
 export const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
@@ -26,13 +26,19 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
     updateLastMessage, 
     isLoading, 
     setLoading,
-    createThread 
+    createThread,
+    resetToNewChat
   } = useChatStore();
   
   const [input, setInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    resetToNewChat();
+  }, [location.pathname, resetToNewChat]);
 
   // Get user information
   const { user } = useAuth0();
@@ -165,7 +171,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
     await submitQuestion(userMessageContent, threadId);
   };
 
-  if (!activeThreadId) {
+  if (!activeThread?.messages?.length) {
     return (
       <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400 relative">
         {!isSidebarOpen && (
@@ -173,7 +179,6 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
             onClick={onOpenSidebar}
             className="absolute top-4 left-4 w-fit p-2 rounded-lg"
             aria-label="Open sidebar"
-            tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && onOpenSidebar()}
           >
             <NavbarIcon/>
@@ -228,7 +233,6 @@ Explore Buddhist Wisdom
           onClick={onOpenSidebar}
           className="md:absolute p-4 md:left-4 md:top-4  w-fit md:p-2"
           aria-label="Open sidebar"
-          tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && onOpenSidebar()}
         >
           <NavbarIcon/>

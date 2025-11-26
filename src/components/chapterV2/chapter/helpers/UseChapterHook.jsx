@@ -217,7 +217,6 @@ const UseChapterHook = (props) => {
                       handleSegmentClick(segment.segment_id);
                     }
                   }}
-                  tabIndex={0}
                   role="button"
                 >
                   {(viewMode === VIEW_MODES.SOURCE ||

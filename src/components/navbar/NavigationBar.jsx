@@ -111,7 +111,6 @@ const renderSearch = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           onFocus={() => setIsSearchFocused(true)}
           onBlur={() => setIsSearchFocused(false)}
-          className={`search-input p-2`}
         />
       </form>
     );
@@ -133,7 +132,7 @@ const renderAuthButtons = () => {
       );
     }
     return (
-      <button className='logout-button navbaritems' onClick={handleLogout}>
+      <button className={`logout-button navbaritems ${isTibetan && 'pt-2'}`} onClick={handleLogout}>
         {t("profile.log_out")}
       </button>
     );
