@@ -50,6 +50,10 @@
         font-weight: bold;
         z-index: 2;
         padding: 0 2px;
+        
+        &:empty::before {
+          content: '*';
+        }
       }
       .footnote {
         display: none;
