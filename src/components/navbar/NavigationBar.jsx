@@ -18,6 +18,7 @@ export const invalidateQueries = async (queryClient) => {
   };
  export const changeLanguage = async (lng,queryClient,tolgee) => {
     await tolgee.changeLanguage(lng);
+    sessionStorage.setItem('textLanguage', lng);
     localStorage.setItem(LANGUAGE, lng);
     setFontVariables(lng);
     await invalidateQueries(queryClient)
