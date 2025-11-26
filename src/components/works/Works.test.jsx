@@ -145,6 +145,9 @@ describe("Works Component", () => {
         title: "Text Category",
         description: "Text Category Description",
       },
+      collection: {
+        title: "Text Category",
+      },
       texts: [
         { id: "text1", title: "Root Text 1", type: "root_text", language: "en" },
         { id: "text2", title: "Root Text 2", type: "root_text", language: "en"},
@@ -159,9 +162,10 @@ describe("Works Component", () => {
 
     setup();
     const links = screen.getAllByTestId("router-link");
-    expect(links).toHaveLength(3);
-    expect(links[0].getAttribute("href")).toBe("/texts/text1?type=root_text&language=en");
-    expect(links[1].getAttribute("href")).toBe("/texts/text2?type=root_text&language=en");
+    // 1 breadcrumb link + 3 text links = 4 total
+    expect(links).toHaveLength(4);
+    expect(links[1].getAttribute("href")).toBe("/texts/text1?type=root_text");
+    expect(links[2].getAttribute("href")).toBe("/texts/text2?type=root_text");
   });
 
 

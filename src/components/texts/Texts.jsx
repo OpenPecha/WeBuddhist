@@ -6,12 +6,13 @@ import "./Texts.scss"
 import {LANGUAGE, siteName} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useTolgee, useTranslate} from "@tolgee/react";
-import {Link, useParams, useSearchParams} from "react-router-dom";
+import {Link, useParams, useSearchParams, useLocation} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
 import Commentaries from "./commentaries/Commentaries.jsx";
 import PropTypes from "prop-types";
+import Breadcrumbs from "../commons/breadcrumbs/Breadcrumbs.jsx";
 
 export const fetchTableOfContents = async (textId, skip, limit) => {
   const language=sessionStorage.getItem('textLanguage');
@@ -55,6 +56,7 @@ const Texts = (props) => {
   const { t } = useTranslate();
   const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const type = searchParams.get('type') || "";
   const [activeTab, setActiveTab] = useState('contents');
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
@@ -102,6 +104,19 @@ const Texts = (props) => {
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const dynamicTitle = versions?.text?.title ? `${versions.text.title} | ${siteName}` : `Text | ${siteName}`;
   const description = "Read Buddhist texts with translations and related resources.";
+
+  const parentCollection = location.state?.parentCollection || null;
+
+  const breadcrumbItems = useMemo(() => {
+    const items = [{ label: t('header.text'), path: '/' }];
+    if (parentCollection?.title) {
+      items.push({ label: parentCollection.title, path: `/works/${parentCollection.id}` });
+    }
+    if (versions?.text?.title) {
+      items.push({ label: versions.text.title });
+    }
+    return items;
+  }, [parentCollection, versions?.text?.title, t]);
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
     const renderTitle = () => {
@@ -252,6 +267,7 @@ const Texts = (props) => {
         canonical={canonicalUrl}
       />
       <div className="left-section">
+        {!requiredInfo.from && <Breadcrumbs items={breadcrumbItems} />}
         {!requiredInfo.from && renderTextTitleAndType()}
         {/* {!requiredInfo.from && renderContinueReadingButton()} */}
         {renderTabs()}
