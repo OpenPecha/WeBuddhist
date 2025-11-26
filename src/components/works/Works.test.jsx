@@ -146,9 +146,9 @@ describe("Works Component", () => {
         description: "Text Category Description",
       },
       texts: [
-        { id: "text1", title: "Root Text 1", type: "root_text" },
-        { id: "text2", title: "Root Text 2", type: "root_text"},
-        { id: "text3", title: "Commentary 1", type: "commentary" }
+        { id: "text1", title: "Root Text 1", type: "root_text", language: "en" },
+        { id: "text2", title: "Root Text 2", type: "root_text", language: "en"},
+        { id: "text3", title: "Commentary 1", type: "commentary", language: "en" }
       ],
     };
 
@@ -160,9 +160,8 @@ describe("Works Component", () => {
     setup();
     const links = screen.getAllByTestId("router-link");
     expect(links).toHaveLength(3);
-    expect(links[0].getAttribute("href")).toBe("/texts/text1?type=root_text");
-    expect(links[1].getAttribute("href")).toBe("/texts/text2?type=root_text");
-    expect(links[2].getAttribute("href")).toBe("/texts/text3?type=commentary");
+    expect(links[0].getAttribute("href")).toBe("/texts/text1?type=root_text&language=en");
+    expect(links[1].getAttribute("href")).toBe("/texts/text2?type=root_text&language=en");
   });
 
 
