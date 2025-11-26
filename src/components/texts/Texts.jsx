@@ -57,7 +57,7 @@ const Texts = (props) => {
   const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type') || "";
-  const language = searchParams.get('language') || "";
+  const languagefromparams = searchParams.get('language');
   const [activeTab, setActiveTab] = useState('contents');
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
@@ -73,7 +73,7 @@ const Texts = (props) => {
 
   const {data: tableOfContents, isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError} = useQuery(
     ["table-of-contents", textId, skip, pagination.limit],   
-    () => fetchTableOfContents(textId, skip, pagination.limit, language),
+    () => fetchTableOfContents(textId, skip, pagination.limit, languagefromparams),
     {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
   );
 

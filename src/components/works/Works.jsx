@@ -99,7 +99,7 @@ const Works = (props) => {
       <p>{text.title}</p>
     </button>
   ) : (
-    <Link key={text.id} to={`/texts/${text.id}?type=root_text?language=${text.language}`}
+    <Link key={text.id} to={`/texts/${text.id}?type=root_text&language=${text.language}`}
           className={`${getLanguageClass(text.language)} root-text`}>
       <div className="divider"></div>
       <p>{text.title}</p>
