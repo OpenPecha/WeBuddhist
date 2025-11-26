@@ -11,6 +11,7 @@ import PropTypes from "prop-types";
 import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
 import { changeLanguage } from '../navbar/NavigationBar.jsx';
 import pechaIcon from "../../assets/icons/pecha_icon.png";
+
 const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
@@ -98,7 +99,7 @@ const Works = (props) => {
       <p>{text.title}</p>
     </button>
   ) : (
-    <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
+    <Link key={text.id} to={`/texts/${text.id}?type=root_text?language=${text.language}`}
           className={`${getLanguageClass(text.language)} root-text`}>
       <div className="divider"></div>
       <p>{text.title}</p>
