@@ -99,7 +99,7 @@ const Works = (props) => {
       <p>{text.title}</p>
     </button>
   ) : (
-    <Link onClick={sessionStorage.setItem('textLanguage', text.language)} key={text.id} to={`/texts/${text.id}?type=root_text`}
+    <Link onClick={()=>sessionStorage.setItem('textLanguage', text.language)} key={text.id} to={`/texts/${text.id}?type=root_text`}
           className={`${getLanguageClass(text.language)} root-text`}>
       <div className="divider"></div>
       <p>{text.title}</p>
