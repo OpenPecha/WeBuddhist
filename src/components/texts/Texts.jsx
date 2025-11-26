@@ -102,14 +102,13 @@ const Texts = (props) => {
   const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
-  const dynamicTitle = tableOfContents?.text_detail?.title ? `${tableOfContents.text_detail.title} | ${siteName}` : `Text | ${siteName}`;
+  const dynamicTitle = versions?.text?.title ? `${versions.text.title} | ${siteName}` : `Text | ${siteName}`;
   const description = "Read Buddhist texts with translations and related resources.";
-
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
     const renderTitle = () => {
-      return <h1 className={`${getLanguageClass(tableOfContents?.text_detail.language)}`}>
-        {tableOfContents?.text_detail.title}
+      return <h1 className={`${getLanguageClass(versions?.text?.language)}`}>
+        {versions?.text?.title}
       </h1>
     }
 
