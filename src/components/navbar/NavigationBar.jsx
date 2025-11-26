@@ -111,7 +111,7 @@ const renderSearch = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           onFocus={() => setIsSearchFocused(true)}
           onBlur={() => setIsSearchFocused(false)}
-          className={`search-input`}
+          className={`search-input p-2`}
         />
       </form>
     );
