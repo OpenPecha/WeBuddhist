@@ -168,7 +168,6 @@ export function MessageBubble({ message, isStreaming = false }) {
                 onMouseEnter={() => handleCitationMouseEnter(uniqueId)}
                 onMouseLeave={handleCitationMouseLeave}
                 role="button"
-                tabIndex={0}
                 aria-label={`Show source ${number}`}
               >
                 {number}
@@ -284,27 +283,13 @@ export function MessageBubble({ message, isStreaming = false }) {
               {!isStreaming && (
                 <button
                   onClick={handleCopyMessage}
-                  className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors mt-2"
-                  aria-label={isCopied ? 'Copied to clipboard' : 'Copy message'}
-                  tabIndex={0}
+                  className="flex items-center p-2 text-gray-500 hover:text-gray-700 transition-colors mt-2"
                 >
-                  {isCopied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
-                  {isCopied ? 'Copied!' : 'Copy'}
+                  {isCopied ? <Check size={14} className="text-green-800" /> : <Copy size={14} />}
+                 
                 </button>
               )}
             </div>
-          )}
-
-          {!isUser && !isStreaming && (!usedSources || usedSources.length === 0) && message.content && (
-            <button
-              onClick={handleCopyMessage}
-              className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors mt-2"
-              aria-label={isCopied ? 'Copied to clipboard' : 'Copy message'}
-              tabIndex={0}
-            >
-              {isCopied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
-              {isCopied ? 'Copied!' : 'Copy'}
-            </button>
           )}
         </div>
       </div>
