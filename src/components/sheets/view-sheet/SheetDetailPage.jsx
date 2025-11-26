@@ -217,7 +217,7 @@ const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
           </div>
         </div>
         <div className="view-toolbar-item">
-          <FiPrinter onClick={() => window.print()}/>
+          {/* <FiPrinter onClick={() => window.print()}/> */}
           <SheetShare />         
           {sheetData.publisher.email === userInfo?.email && (
             <>
