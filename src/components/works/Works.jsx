@@ -91,11 +91,14 @@ const Works = (props) => {
 
   const handleTextClick = (text) => {
     sessionStorage.setItem('textLanguage', text.language);
-    sessionStorage.setItem('parentCollection', JSON.stringify({
+  };
+
+  const getParentCollectionState = () => ({
+    parentCollection: {
       id: id,
       title: worksData?.collection?.title
-    }));
-  };
+    }
+  });
 
   const renderRootTextItem = (text) => isCompareText ? (
     <button 
@@ -113,8 +116,13 @@ const Works = (props) => {
       <p>{text.title}</p>
     </button>
   ) : (
-    <Link onClick={() => handleTextClick(text)} key={text.id} to={`/texts/${text.id}?type=root_text`}
-          className={`${getLanguageClass(text.language)} root-text`}>
+    <Link 
+      onClick={() => handleTextClick(text)} 
+      key={text.id} 
+      to={`/texts/${text.id}?type=root_text`}
+      state={getParentCollectionState()}
+      className={`${getLanguageClass(text.language)} root-text`}
+    >
       <div className="divider"></div>
       <p>{text.title}</p>
     </Link>
@@ -155,8 +163,13 @@ const Works = (props) => {
       <p>{text.title}</p>
     </button>
   ) : (
-    <Link onClick={() => handleTextClick(text)} key={text.id} to={`/texts/${text.id}?type=commentary`}
-          className={`${getLanguageClass(text.language)} commentary-text`}>
+    <Link 
+      onClick={() => handleTextClick(text)} 
+      key={text.id} 
+      to={`/texts/${text.id}?type=commentary`}
+      state={getParentCollectionState()}
+      className={`${getLanguageClass(text.language)} commentary-text`}
+    >
       <div className="divider"></div>
       <p>{text.title}</p>
     </Link>

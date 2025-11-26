@@ -6,7 +6,7 @@ import "./Texts.scss"
 import {LANGUAGE, siteName} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
 import {useTolgee, useTranslate} from "@tolgee/react";
-import {Link, useParams, useSearchParams} from "react-router-dom";
+import {Link, useParams, useSearchParams, useLocation} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
@@ -56,6 +56,7 @@ const Texts = (props) => {
   const { t } = useTranslate();
   const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const type = searchParams.get('type') || "";
   const [activeTab, setActiveTab] = useState('contents');
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
@@ -104,10 +105,7 @@ const Texts = (props) => {
   const dynamicTitle = versions?.text?.title ? `${versions.text.title} | ${siteName}` : `Text | ${siteName}`;
   const description = "Read Buddhist texts with translations and related resources.";
 
-  const parentCollection = useMemo(() => {
-    const stored = sessionStorage.getItem('parentCollection');
-    return stored ? JSON.parse(stored) : null;
-  }, []);
+  const parentCollection = location.state?.parentCollection || null;
 
   const breadcrumbItems = useMemo(() => {
     const items = [{ label: t('header.text'), path: '/' }];

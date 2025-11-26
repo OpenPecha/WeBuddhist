@@ -37,7 +37,13 @@ vi.mock("react-router-dom", async () => {
   return {
     ...actual,
     useParams: vi.fn(),
-    useSearchParams: () => [new URLSearchParams("?type=works"), vi.fn()]
+    useSearchParams: () => [new URLSearchParams("?type=works"), vi.fn()],
+    useLocation: () => ({
+      pathname: '/texts/123',
+      state: {
+        parentCollection: { id: 'collection-123', title: 'Test Collection' }
+      }
+    })
   };
 });
 
