@@ -28,9 +28,10 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
 
 }
 
-export const fetchVersions = async (textId, skip, limit) => {
+export const fetchVersions = async (textId, skip, limit, languageFromContent) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
+  const fallbackLanguage = (storedLanguage ? mapLanguageCode(storedLanguage) : "en");
+  const language = languageFromContent || fallbackLanguage;
   const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/versions`, {
     params: {
       language,
@@ -79,7 +80,7 @@ const Texts = (props) => {
 
   const {data: versions, isLoading: versionsIsLoading, error: versionsIsError} = useQuery(
     ["versions", textId, versionsSkip, versionsPagination.limit],   
-    () => fetchVersions(textId, versionsSkip, versionsPagination.limit),
+    () => fetchVersions(textId, versionsSkip, versionsPagination.limit, languagefromparams),
     {refetchOnWindowFocus: false, enabled: !!textId}
   );
 
