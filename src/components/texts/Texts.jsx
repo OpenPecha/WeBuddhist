@@ -12,6 +12,7 @@ import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
 import Commentaries from "./commentaries/Commentaries.jsx";
 import PropTypes from "prop-types";
+import Breadcrumbs from "../commons/breadcrumbs/Breadcrumbs.jsx";
 
 export const fetchTableOfContents = async (textId, skip, limit) => {
   const language=sessionStorage.getItem('textLanguage');
@@ -102,6 +103,22 @@ const Texts = (props) => {
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const dynamicTitle = versions?.text?.title ? `${versions.text.title} | ${siteName}` : `Text | ${siteName}`;
   const description = "Read Buddhist texts with translations and related resources.";
+
+  const parentCollection = useMemo(() => {
+    const stored = sessionStorage.getItem('parentCollection');
+    return stored ? JSON.parse(stored) : null;
+  }, []);
+
+  const breadcrumbItems = useMemo(() => {
+    const items = [{ label: t('header.text'), path: '/' }];
+    if (parentCollection?.title) {
+      items.push({ label: parentCollection.title, path: `/works/${parentCollection.id}` });
+    }
+    if (versions?.text?.title) {
+      items.push({ label: versions.text.title });
+    }
+    return items;
+  }, [parentCollection, versions?.text?.title, t]);
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
     const renderTitle = () => {
@@ -252,6 +269,7 @@ const Texts = (props) => {
         canonical={canonicalUrl}
       />
       <div className="left-section">
+        {!requiredInfo.from && <Breadcrumbs items={breadcrumbItems} />}
         {!requiredInfo.from && renderTextTitleAndType()}
         {/* {!requiredInfo.from && renderContinueReadingButton()} */}
         {renderTabs()}

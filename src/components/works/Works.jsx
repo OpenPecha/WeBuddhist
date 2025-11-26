@@ -11,6 +11,7 @@ import PropTypes from "prop-types";
 import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
 import { changeLanguage } from '../navbar/NavigationBar.jsx';
 import pechaIcon from "../../assets/icons/pecha_icon.png";
+import Breadcrumbs from "../commons/breadcrumbs/Breadcrumbs.jsx";
 
 const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -77,11 +78,24 @@ const Works = (props) => {
   const rootTexts = groupedTexts["root_text"] || [];
   const commentaryTexts = groupedTexts["commentary"] || [];
 
+  const breadcrumbItems = [
+    { label: t('header.text'), path: '/' },
+    { label: worksData?.collection?.title || '' }
+  ];
+
   // ---------------------------------- renderers ---------------------------------
   const renderWorksTitle = () => {
 
     return <h1 className="overalltext">{worksData.term?.title}</h1>
   }
+
+  const handleTextClick = (text) => {
+    sessionStorage.setItem('textLanguage', text.language);
+    sessionStorage.setItem('parentCollection', JSON.stringify({
+      id: id,
+      title: worksData?.collection?.title
+    }));
+  };
 
   const renderRootTextItem = (text) => isCompareText ? (
     <button 
@@ -99,7 +113,7 @@ const Works = (props) => {
       <p>{text.title}</p>
     </button>
   ) : (
-    <Link onClick={sessionStorage.setItem('textLanguage', text.language)} key={text.id} to={`/texts/${text.id}?type=root_text`}
+    <Link onClick={() => handleTextClick(text)} key={text.id} to={`/texts/${text.id}?type=root_text`}
           className={`${getLanguageClass(text.language)} root-text`}>
       <div className="divider"></div>
       <p>{text.title}</p>
@@ -141,7 +155,7 @@ const Works = (props) => {
       <p>{text.title}</p>
     </button>
   ) : (
-    <Link key={text.id} to={`/texts/${text.id}?type=commentary`}
+    <Link onClick={() => handleTextClick(text)} key={text.id} to={`/texts/${text.id}?type=commentary`}
           className={`${getLanguageClass(text.language)} commentary-text`}>
       <div className="divider"></div>
       <p>{text.title}</p>
@@ -182,6 +196,7 @@ const Works = (props) => {
           !requiredInfo.from ? "left-section" : "minified-left-section"
         }`}
       >
+        {!requiredInfo.from && <Breadcrumbs items={breadcrumbItems} />}
         <div className="works-title-container">{renderWorksTitle()}</div>
         {texts.length == 0 && (
           <div className="no-content-container">
