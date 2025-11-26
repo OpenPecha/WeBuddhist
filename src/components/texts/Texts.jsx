@@ -13,7 +13,7 @@ import Versions from "./versions/Versions.jsx";
 import Commentaries from "./commentaries/Commentaries.jsx";
 import PropTypes from "prop-types";
 
-export const fetchTableOfContents = async (textId, skip, limit, languageFromContent = null) => {
+export const fetchTableOfContents = async (textId, skip, limit, languageFromContent) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const fallbackLanguage = (storedLanguage ? mapLanguageCode(storedLanguage) : "en");
   const language = languageFromContent || fallbackLanguage;
@@ -57,6 +57,7 @@ const Texts = (props) => {
   const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();
   const type = searchParams.get('type') || "";
+  const languagefromparams = searchParams.get('language');
   const [activeTab, setActiveTab] = useState('contents');
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
@@ -72,7 +73,7 @@ const Texts = (props) => {
 
   const {data: tableOfContents, isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError} = useQuery(
     ["table-of-contents", textId, skip, pagination.limit],   
-    () => fetchTableOfContents(textId, skip, pagination.limit),
+    () => fetchTableOfContents(textId, skip, pagination.limit, languagefromparams),
     {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
   );
 
@@ -101,14 +102,13 @@ const Texts = (props) => {
   const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
-  const dynamicTitle = tableOfContents?.text_detail?.title ? `${tableOfContents.text_detail.title} | ${siteName}` : `Text | ${siteName}`;
+  const dynamicTitle = versions?.text?.title ? `${versions.text.title} | ${siteName}` : `Text | ${siteName}`;
   const description = "Read Buddhist texts with translations and related resources.";
-
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
     const renderTitle = () => {
-      return <h1 className={`${getLanguageClass(tableOfContents?.text_detail.language)}`}>
-        {tableOfContents?.text_detail.title}
+      return <h1 className={`${getLanguageClass(versions?.text?.language)}`}>
+        {versions?.text?.title}
       </h1>
     }
 
