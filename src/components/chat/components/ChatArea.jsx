@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Loader2, Square, Menu } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useChatStore } from '../store/chatStore';
 import { streamChat, saveChatToBackend } from '../api/chat';
 import { MessageBubble } from './MessageBubble';
@@ -11,7 +12,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useAuth } from '../../../config/AuthContext';
 import { useQuery } from 'react-query';
 import axiosInstance from '../../../config/axios-config';
-import { useLocation } from 'react-router-dom';
 
 export const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
@@ -19,6 +19,8 @@ export const fetchUserInfo = async () => {
 };
 
 export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
+  const navigate = useNavigate();
+  const { threadId } = useParams();
   const { 
     threads, 
     activeThreadId, 
@@ -34,13 +36,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
   const [isThinking, setIsThinking] = useState(false);
   const messagesEndRef = useRef(null);
   const abortControllerRef = useRef(null);
-  const location = useLocation();
 
-  useEffect(() => {
-    resetToNewChat();
-  }, [location.pathname, resetToNewChat]);
-
-  // Get user information
   const { user } = useAuth0();
   const { isLoggedIn } = useAuth();
   const { data: userInfo } = useQuery("userInfo", fetchUserInfo, { 
@@ -75,15 +71,14 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
     if (isLoading) return;
     
     const newThreadId = createThread();
+    navigate(`/ai/${newThreadId}`);
     
     submitQuestion(questionText, newThreadId);
   };
 
   const submitQuestion = async (userMessageContent, threadId) => {
-    // Add user message
     addMessage(threadId, { role: 'user', content: userMessageContent });
     
-    // Add placeholder assistant message
     addMessage(threadId, { role: 'assistant', content: '' });
     setLoading(true);
     setIsThinking(true);
@@ -93,7 +88,6 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
       ? [...currentThread.messages, { role: 'user', content: userMessageContent }]
       : [{ role: 'user', content: userMessageContent }];
 
-    // Map to API format (remove id, timestamp, searchResults)
     const apiMessages = messagesForApi.map(m => ({
       role: m.role,
       content: m.content
@@ -166,6 +160,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
     let threadId = activeThreadId;
     if (!threadId) {
       threadId = createThread();
+      navigate(`/ai/${threadId}`);
     }
     
     await submitQuestion(userMessageContent, threadId);

@@ -1,9 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
 import { ChatArea } from "../components/ChatArea";
+import { useChatStore } from "../store/chatStore";
 
 export default function Chat() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { threadId } = useParams();
+  const navigate = useNavigate();
+  const { setActiveThread, threads, resetToNewChat } = useChatStore();
+
+  useEffect(() => {
+    if (threadId === 'new') {
+      resetToNewChat();
+    } else if (threadId) {
+      const threadExists = threads.some(t => t.id === threadId);
+      if (threadExists) {
+        setActiveThread(threadId);
+      } else {
+        navigate('/ai/new', { replace: true });
+      }
+    }
+  }, [threadId, threads, setActiveThread, resetToNewChat, navigate]);
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);

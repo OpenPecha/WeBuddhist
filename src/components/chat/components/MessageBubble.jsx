@@ -16,6 +16,7 @@ export function MessageBubble({ message, isStreaming = false }) {
   const [showSources, setShowSources] = useState(false);
   const [activePopover, setActivePopover] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
+  const [hoverTimeout, setHoverTimeout] = useState(null);
 
   const urlMutation = useMutation(fetchURL, {
     onSuccess: (data) => {
@@ -43,7 +44,7 @@ export function MessageBubble({ message, isStreaming = false }) {
     
     if (showSources) {
       document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+      document.body.style.overflow = 'hidden';
     }
     
     if (activePopover !== null) {
@@ -57,11 +58,18 @@ export function MessageBubble({ message, isStreaming = false }) {
   }, [showSources, activePopover]);
 
   const handleCitationMouseEnter = (uniqueId) => {
+    if (hoverTimeout) {
+      clearTimeout(hoverTimeout);
+      setHoverTimeout(null);
+    }
     setActivePopover(uniqueId);
   };
 
   const handleCitationMouseLeave = () => {
-    setActivePopover(null);
+    const timeout = setTimeout(() => {
+      setActivePopover(null);
+    }, 100);
+    setHoverTimeout(timeout);
   };
 
   const handleSourceClick = (sourceId) => {
@@ -75,7 +83,6 @@ export function MessageBubble({ message, isStreaming = false }) {
     }
   };
 
-  // Process content for citations if it's an assistant message with search results
   const processContent = () => {
     if (isUser || !message.searchResults || message.searchResults.length === 0 || !message.isFinalized) {
       return { content: message.content, usedSources: [], citationMap: {} };
@@ -162,28 +169,39 @@ export function MessageBubble({ message, isStreaming = false }) {
           const uniqueId = `citation-${citeIndex}-${number}-${idx}`;
           
           return (
-            <span key={idx} className="relative inline-block">
+            <span 
+              key={idx} 
+              className="relative inline-block group"
+              onMouseEnter={() => handleCitationMouseEnter(uniqueId)}
+              onMouseLeave={handleCitationMouseLeave}
+            >
               <span 
                 className="citation-number inline-flex items-center justify-center w-4 h-4 text-[#18345D] p-2 border border-blue-200 rounded-full cursor-pointer hover:bg-blue-50 transition-colors text-[10px] font-medium"
-                onMouseEnter={() => handleCitationMouseEnter(uniqueId)}
-                onMouseLeave={handleCitationMouseLeave}
                 role="button"
                 aria-label={`Show source ${number}`}
               >
                 {number}
               </span>
               {activePopover === uniqueId && sourceInfo && (
-                <div 
-                  className="citation-popover absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-2 bg-gray-50 text-xs rounded-md shadow-sm whitespace-nowrap z-50 min-w-max max-w-xs border border-gray-200"
-                  style={{
-                    opacity: 0,
-                    animation: 'fadeInUp 0.2s ease-out forwards'
-                  }}
-                  onMouseEnter={() => handleCitationMouseEnter(uniqueId)}
-                  onMouseLeave={handleCitationMouseLeave}
-                >
-                  <div className="relative text-gray-700">
-                    {sourceInfo.title}
+                <div className="absolute left-1/2 transform -translate-x-1/2 z-50" style={{ top: '100%' }}>
+                  <div className="px-3 py-2 mt-1 bg-gray-50 text-xs rounded-md whitespace-nowrap min-w-max max-w-xs border border-gray-200">
+                  <span className="text-gray-400 text-sm">Source</span>
+                    <div 
+                      className="text-gray-700 cursor-pointer hover:text-black py-2 transition-colors max-w-[200px] truncate"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSourceClick(sourceInfo.id);
+                      }}
+                      role="button"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleSourceClick(sourceInfo.id);
+                        }
+                      }}
+                    >
+                      {sourceInfo.title}
+                    </div>
                   </div>
                 </div>
               )}
@@ -197,12 +215,6 @@ export function MessageBubble({ message, isStreaming = false }) {
   return (
     <div className={`flex w-full`}>
       <div className={`flex items-center`}>
-        {/* <div className={`
-          w-8 h-8 rounded-full border flex items-center justify-center shrink-0 mt-1
-          ${isUser ? 'bg-[#18345D]/80 text-white' : 'bg-gray-200 text-gray-600'}
-        `}>
-          {isUser ? <User size={18} /> : <img src={webuddhistlogo} alt="Webuddhist" className="w-8 h-8" />}
-        </div> */}
         {
           isUser && (
             <div className={`
