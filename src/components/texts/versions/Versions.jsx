@@ -36,7 +36,8 @@ const Versions = ({
     "en":"language.english",
     "zh":"language.chinese",
     "it":"language.italian",
-    "tib":"language.tibetan"
+    "tib":"language.tibetan",
+    "tibphono":"language.tibetan"
   }
 
   const totalVersions = versions?.versions.length || 0;

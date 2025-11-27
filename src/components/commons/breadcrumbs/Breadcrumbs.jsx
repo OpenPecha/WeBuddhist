@@ -8,7 +8,7 @@ const Breadcrumbs = ({ items }) => {
   if (!items || items.length === 0) return null;
 
   return (
-    <nav className="breadcrumbs-container navbaritems" aria-label="Breadcrumb">
+    <nav className="breadcrumbs-container mt-2 navbaritems" aria-label="Breadcrumb">
       <ol className="breadcrumbs-list">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;

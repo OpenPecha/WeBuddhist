@@ -1,13 +1,25 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BsThreeDots, BsTrash } from 'react-icons/bs';
 import { NavbarIcon } from '../../../utils/Icon';
 import { useChatStore } from '../store/chatStore';
 import { IoCreateOutline } from "react-icons/io5";
 
 export function Sidebar({ isOpen, onToggle }) {
+  const navigate = useNavigate();
   const { threads, activeThreadId, setActiveThread, deleteThread, resetToNewChat } = useChatStore();
   const [openPopoverId, setOpenPopoverId] = useState(null);
   const popoverRef = useRef(null);
+
+  const handleThreadClick = (threadId) => {
+    setActiveThread(threadId);
+    navigate(`/ai/${threadId}`);
+  };
+
+  const handleNewChat = () => {
+    resetToNewChat();
+    navigate('/ai/new');
+  };
 
   const handleTogglePopover = (e, threadId) => {
     e.stopPropagation();
@@ -41,7 +53,7 @@ export function Sidebar({ isOpen, onToggle }) {
         
       <div className="p-2 rounded-2xl">
         <button
-          onClick={() => resetToNewChat(null)}
+          onClick={handleNewChat}
           className="w-full flex justify-left items-center px-2 py-2 hover:bg-gray-50 transition-colors cursor-pointer gap-2 text-[#18345D] text-sm rounded"
         >
           <IoCreateOutline size={18} />
@@ -73,7 +85,7 @@ export function Sidebar({ isOpen, onToggle }) {
                 : 'hover:bg-gray-50'
               }
             `}
-            onClick={() => setActiveThread(thread.id)}
+            onClick={() => handleThreadClick(thread.id)}
           >
             <div className="flex items-center gap-3 overflow-hidden">
               <span className={`text-sm truncate ${activeThreadId === thread.id ? ' border-l-2 border-[#78797c] pl-2' : 'text-gray-400'}`}>

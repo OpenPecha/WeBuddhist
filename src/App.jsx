@@ -1,5 +1,5 @@
 import "./App.css";
-import { Route, Routes, useLocation, useNavigate,matchPath } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate, matchPath, Navigate } from "react-router-dom";
 import NavigationBar from "./components/navbar/NavigationBar.jsx";
 import { useMutation } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.jsx";
@@ -117,7 +117,8 @@ function App() {
     !!matchPath("/chapter", location.pathname) ||
     !!matchPath("/login", location.pathname) ||
     !!matchPath("/register", location.pathname) ||
-    !!matchPath("/ai", location.pathname);
+    !!matchPath("/ai", location.pathname) ||
+    !!matchPath("/ai/:threadId", location.pathname);
 
     return (
       <Suspense>
@@ -140,7 +141,9 @@ function App() {
               <Route path="/works/:id" element={<Works/>}/>
               <Route path="/chapter" element={<ChaptersV2/>}/>
               <Route path="/search" element={<SearchResultsPage/>}/>
-              <Route path="/ai" element={<AuthenticationGuard component={Chat}/>}/>
+              <Route path="/ai" element={<Navigate to="/ai/new" replace />}/>
+              <Route path="/ai/new" element={<AuthenticationGuard component={Chat}/>}/>
+              <Route path="/ai/:threadId" element={<AuthenticationGuard component={Chat}/>}/>
               <Route path="*" element={<Collections/>}/>
               <Route path="/sheets/:id" element={<Sheets/>}/>
               <Route path="/:username/:sheetSlugAndId" element={<SheetChapters/>}/>
