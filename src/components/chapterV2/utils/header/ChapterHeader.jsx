@@ -53,7 +53,6 @@ const ChapterHeader = (props) => {
   // ----------------------- renderers --------------------------
 
   const renderBackIcon = () => {
-    if (!contentId) return null;
     return (
       <button className="back-icon-container" onClick={handleBackClick} aria-label="Back">
         <IoChevronBackSharp size={20} />
