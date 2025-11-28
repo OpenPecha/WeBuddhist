@@ -99,11 +99,14 @@ $primary-color: #18345D;
 
       @media (max-width: $tablet-breakpoint) {
         .tab-nav {
-          flex-direction: column;
+          border-bottom: 0px;
+          display:flex;
+          width: 100%;
         }
 
         .tab-button {
           text-align: left;
+          flex:1;
           border-bottom: 1px solid $border-color;
           border-left: 2px solid transparent;
 
@@ -222,7 +225,7 @@ $primary-color: #18345D;
     display: flex;
     flex-direction: column;
     margin: 1rem;
-    justify-content: space-around;
+    // justify-content: space-around;
     .left-section, .right-section{
       width: 100%;
     }

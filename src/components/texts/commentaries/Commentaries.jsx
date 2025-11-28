@@ -34,7 +34,7 @@ const Commentaries = ({
   if (!items || items.length === 0) {
     return (
       <div className="content">
-        <p className='mt-2'>{t('global.not_found')}</p>
+        <p className='mt-4 text-gray-400'>{t('global.not_found')}</p>
       </div>
     );
   }

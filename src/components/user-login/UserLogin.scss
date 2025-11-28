@@ -138,10 +138,11 @@ $black-color: black;
 
   .login-links {
     text-align: center;
-
+    display: flex;
+    flex-direction: column;
     .forgot-password,
     .create-account {
-      color: $black-color;
+      color: #676767;
       text-decoration: none;
 
       &:hover {
