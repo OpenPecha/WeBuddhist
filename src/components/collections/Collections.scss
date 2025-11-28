@@ -37,6 +37,7 @@ $font-size-content-sm: 14px;
       word-wrap: break-word;
       max-width: 100%;
       font-family: var(--listtitle-font-family);
+      color: #656565;
 
       @media (max-width: 576px) {
         font-size: $font-size-title-sm;

@@ -25,7 +25,21 @@
           font-weight: 400;
           a{
               text-decoration: none;
-              color: #5b5b5b;
+              color: #676767;
+              letter-spacing: 0.02em;
+          }
+          button{
+            text-decoration: none;
+              color: #676767;
+              letter-spacing: 0.02em;
+          }
+          a:hover{
+            text-decoration: 2px solid #676767 underline;
+
+          }
+          button:hover{
+            text-decoration: 2px solid #676767 underline;
+
           }
       }
   }
@@ -64,35 +78,40 @@
           display: flex;
           align-items: center;
           gap: 10px;
-          font-size: 15px;
+          font-size: 14px;
           button{
               border: none;
           }
           a{
               text-decoration: none;
-              color: #2f2f2f;
+              color: #676767;
           }
           .auth-button-login{
-              color: #2b2b2b;
+              color: #676767;
               padding: 5px 10px;
               border-radius: 5px;
               transition: all 0.3s ease;
               &:hover{
                 background-color: #f5f5f5;
+                text-decoration: 2px solid #676767 underline;
               }
           }
           .auth-button-register{
               border: 1px solid #dbdbdb;
-              color: #2b2b2b;
+              color: #676767;
               padding: 5px 10px;
               border-radius: 5px;
               transition: all 0.3s ease;
+              &:hover{
+                background-color: #f5f5f5;
+                text-decoration: 2px solid #676767 underline;
+              }
           }
       }
       .logout-button{
               border: 1px solid #dbdbdb;
               background-color: transparent;
-              color: #2b2b2b;
+              color: #676767;
               padding: 5px 10px;
               border-radius: 5px;
               transition: all 0.3s ease;
