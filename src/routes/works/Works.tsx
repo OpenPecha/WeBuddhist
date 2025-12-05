@@ -1,16 +1,14 @@
-import React, {useMemo, useState} from 'react';
+import { useMemo, useState } from 'react';
 import axiosInstance from '../../config/axios-config.ts';
 import { LANGUAGE, siteName } from "../../utils/constants.ts";
-import './Works.scss';
-import { useTolgee, useTranslate } from '@tolgee/react';
-import { useQuery, useQueryClient } from 'react-query';
-import { useParams,Link } from 'react-router-dom';
+import { useTranslate } from '@tolgee/react';
+import { useQuery } from 'react-query';
+import { useParams, Link } from 'react-router-dom';
 import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.tsx";
 import Seo from "../commons/seo/Seo.tsx";
 import PaginationComponent from "../commons/pagination/PaginationComponent.tsx";
-import { changeLanguage } from '../navbar/NavigationBar.tsx';
-import pechaIcon from "../../assets/icons/pecha_icon.png";
 import Breadcrumbs from "../commons/breadcrumbs/Breadcrumbs.tsx";
+import TwoColumnLayout from "../../components/layout/TwoColumnLayout";
 
 const fetchWorks = async (bookId: string, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
@@ -27,29 +25,18 @@ const fetchWorks = async (bookId: string, limit = 10, skip = 0) => {
   return data;
 };
 
-const useGroupedTexts = (texts = []) => {
-  return useMemo(() => {
-    const textTypes = {};
-    for (const item of texts) {
-      const type = item.type;
-      if (!textTypes[type]) textTypes[type] = [];
-      textTypes[type].push(item);
-    }
-    return textTypes;
-  }, [texts]);
+type TextItem = {
+  id: string;
+  title: string;
+  language: string;
 };
 
-
-const Works = (props) => {
+const Works = () => {
   const {id: paramId} = useParams();
   const {t} = useTranslate();
-  const {requiredInfo = {}, setRendererInfo} = props
-  const queryClient = useQueryClient();
-  const tolgee = useTolgee(['language']);
-  const id = requiredInfo.from === "compare-text" ? props.collection_id : paramId;
-  const isCompareText = requiredInfo.from === "compare-text";
+  const id = paramId ?? "";
 
-  const [pagination, setPagination] = useState({ currentPage: 1, limit: 12});
+  const [pagination, setPagination] = useState<{ currentPage: number; limit: number }>({ currentPage: 1, limit: 12});
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
 
   const {data: worksData, isLoading: worksDataIsLoading, error: worksDataIsError} = useQuery(
@@ -60,8 +47,7 @@ const Works = (props) => {
 
   // ---------------------------------- helpers ----------------------------------
 
-  const texts = worksData?.texts || [];
-  const groupedTexts = useGroupedTexts(texts);
+  const texts: TextItem[] = (worksData?.texts as TextItem[]) || [];
 
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
@@ -70,25 +56,18 @@ const Works = (props) => {
   if (earlyReturn) return earlyReturn;
 
   const totalPages = Math.ceil((worksData?.total || 0) / pagination.limit);
-  const handlePageChange = (pageNumber) => {
-    setPagination(prev => ({ ...prev, currentPage: pageNumber }));
+  const handlePageChange = (pageNumber: number) => {
+    setPagination((prev: { currentPage: number; limit: number }) => ({ ...prev, currentPage: pageNumber }));
   };
 
-  const rootTexts = groupedTexts["root_text"] || [];
-  const commentaryTexts = groupedTexts["commentary"] || [];
+  const rootTexts = texts;
 
   const breadcrumbItems = [
     { label: t('header.text'), path: '/' },
     { label: worksData?.collection?.title || '' }
   ];
 
-  // ---------------------------------- renderers ---------------------------------
-  const renderWorksTitle = () => {
-
-    return <h1 className="overalltext">{worksData.term?.title}</h1>
-  }
-
-  const handleTextClick = (text) => {
+  const handleTextClick = (text: TextItem) => {
     sessionStorage.setItem('textLanguage', text.language);
   };
 
@@ -99,93 +78,27 @@ const Works = (props) => {
     }
   });
 
-  const renderRootTextItem = (text) => isCompareText ? (
-    <button 
-      key={text.id} 
-      className={`${getLanguageClass(text.language)} text-item root-text`}
-      onClick={() => {
-        setRendererInfo(prev => ({
-          ...prev,
-          requiredId: text.id,
-          renderer: "texts"
-        }));
-      }}
-    >
-      <div className="divider"></div>
-      <p>{text.title}</p>
-    </button>
-  ) : (
-    <Link 
-      onClick={() => handleTextClick(text)} 
-      key={text.id} 
-      to={`/texts/${text.id}?type=root_text`}
-      state={getParentCollectionState()}
-      className={`${getLanguageClass(text.language)} root-text`}
-    >
-      <div className="divider"></div>
-      <p>{text.title}</p>
-    </Link>
-  )
-
-  const renderRootTexts = () => {
-    const renderTitle = () => <h1 className="title">{worksData?.collection?.title}</h1>;
-  
+  const renderRootTexts = () => {  
     return (
-      <div className="root-text-section">
+      <div className="space-y-2">
         {rootTexts.length !== 0 && (
           <>
-          {renderTitle()}
-          <div className={isCompareText ? "minified-root-text-list" : "root-text-list"}>
-            {rootTexts.map((text) => 
-              renderRootTextItem(text)
-            )}
-          </div>
-          </>
-        )}
-      </div>
-    );
-  }
-
-  const renderCommentaryTextItem = (text) => isCompareText ? (
-    <button 
-      key={text.id} 
-      className={`${getLanguageClass(text.language)} text-item commentary-text`}
-      onClick={() => {
-        setRendererInfo(prev => ({
-          ...prev,
-          requiredId: text.id,
-          renderer: "texts"
-        }));
-      }}
-    >
-      <div className="divider"></div>
-      <p>{text.title}</p>
-    </button>
-  ) : (
-    <Link 
-      onClick={() => handleTextClick(text)} 
-      key={text.id} 
-      to={`/texts/${text.id}?type=commentary`}
-      state={getParentCollectionState()}
-      className={`${getLanguageClass(text.language)} commentary-text`}
-    >
-      <div className="divider"></div>
-      <p>{text.title}</p>
-    </Link>
-  )
-
-  const renderCommentaryTexts = () => {
-    const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.commentary")}</h2>;
-    return (
-      <div className="commentary-section">
-        {commentaryTexts.length !== 0 && (
-          <>
-          {renderTitle()}
-          <div className={isCompareText ? "minified-commentary-list" : "commentary-list"}>
-            {commentaryTexts.map((text) => 
-              renderCommentaryTextItem(text)
-            )}
-          </div>
+        <h1 className="text-xl font-semibold tracking-wide text-gray-700">
+        {worksData?.collection?.title}
+         </h1>
+            <div className="grid grid-cols-1 gap-6 pr-0 sm:grid-cols-2 lg:grid-cols-2 md:gap-8">
+              {rootTexts.map((text) =>
+                  <Link
+                  onClick={() => handleTextClick(text)}
+                  key={text.id}
+                  to={`/texts/${text.id}?type=root_text`}
+                  state={getParentCollectionState()}
+                  className={`${getLanguageClass(text.language)} flex flex-col gap-2 text-left text-gray-800 transition-colors hover:text-gray-600`}
+                >
+                  <p className="text-lg pt-4 border-t">{text.title}</p>
+                </Link>
+              )}
+            </div>
           </>
         )}
       </div>
@@ -193,47 +106,29 @@ const Works = (props) => {
   }
 
   return (
-    <div
-      className={`${
-        !requiredInfo.from ? "works-container" : "works-container no-margin"
-      }`}
-    >
-      <Seo
-        title={pageTitle}
-        description="Browse texts grouped by type within this collection."
-        canonical={canonicalUrl}
-      />
-      <div
-        className={`${
-          !requiredInfo.from ? "left-section" : "minified-left-section"
-        }`}
-      >
-        {!requiredInfo.from && <Breadcrumbs items={breadcrumbItems} />}
-        <div className="works-title-container">{renderWorksTitle()}</div>
-        {texts.length == 0 && (
-          <div className="no-content-container">
-            <img src={pechaIcon} alt="pecha icon" width={80} height={80} />
-            <div className="no-content">{t("work.no_text.change")}</div>
-            <button
-              className="no-language-alert"
-              onClick={() => changeLanguage("bo-IN", queryClient, tolgee)}
-            >
-              {t("work.no_text.button")}
-            </button>
-          </div>
-        )}
-        <div className="root-text-container">{renderRootTexts()}</div>
-        <div className="commentary-text-container">
-          {renderCommentaryTexts()}
-        </div>
+    <TwoColumnLayout
+      main={
+        <div className="mx-auto flex w-full max-w-2xl flex-col pt-10">
+        <div className="flex w-full flex-col space-y-4 text-left">
+          <Seo
+            title={pageTitle}
+            description="Browse texts within this collection."
+            canonical={canonicalUrl}
+          />
+          <Breadcrumbs items={breadcrumbItems} />
+          <h1 className="overalltext text-left text-2xl font-semibold text-gray-700">{worksData.term?.title}</h1>
+          {renderRootTexts()}
           <PaginationComponent
             pagination={pagination}
             totalPages={totalPages}
             handlePageChange={handlePageChange}
             setPagination={setPagination}
           />
-      </div>
-    </div>
+        </div>
+        </div>
+      }
+      sidebar={<div className="h-full w-full bg-[#FBFBFA]" />}
+    />
   );
 
 };

@@ -46,7 +46,7 @@ const PaginationComponent: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="flex justify-between  w-full items-center">
+    <div className="flex justify-between mt-4  w-full items-center">
       <Pagination className="w-fit justify-center">
         <PaginationContent>
           <PaginationItem>

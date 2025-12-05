@@ -1,30 +1,61 @@
-import { Link } from 'react-router-dom';
-import { IoChevronForwardSharp } from 'react-icons/io5';
-import './Breadcrumbs.scss';
+import { Link } from "react-router-dom";
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
-const Breadcrumbs = ({ items }: { items: any[] }) => {
+export type BreadcrumbItemType = {
+  label: string;
+  path?: string;
+};
+
+const Breadcrumbs = ({ items }: { items: BreadcrumbItemType[] }) => {
   if (!items || items.length === 0) return null;
 
   return (
-    <nav className="breadcrumbs-container mt-2 navbaritems" aria-label="Breadcrumb">
-      <ol className="breadcrumbs-list">
+    <Breadcrumb>
+      <BreadcrumbList>
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
+          const isSecondLast = index === items.length - 2;
+          const shouldEllipsize =
+            items.length > 3 && index > 0 && !isLast && !isSecondLast;
+
+          if (shouldEllipsize) {
+            if (index === 1) {
+              return (
+                <BreadcrumbItem key="ellipsis">
+                  <BreadcrumbEllipsis />
+                  <BreadcrumbSeparator />
+                </BreadcrumbItem>
+              );
+            }
+            return null;
+          }
+
           return (
-            <li key={item.path || index} className="breadcrumbs-item">
-              {!isLast ? (
-                <>
-                  <Link to={item.path} className="breadcrumbs-link">{item.label}</Link>
-                  <IoChevronForwardSharp className="breadcrumbs-separator" />
-                </>
+            <BreadcrumbItem key={item.path || index}>
+              {isLast ? (
+                <BreadcrumbPage>{item.label}</BreadcrumbPage>
               ) : (
-                <span className="breadcrumbs-current">{item.label}</span>
+                <>
+                  <BreadcrumbLink asChild>
+                    <Link to={item.path || "#"}>{item.label}</Link>
+                  </BreadcrumbLink>
+                  <BreadcrumbSeparator />
+                </>
               )}
-            </li>
+            </BreadcrumbItem>
           );
         })}
-      </ol>
-    </nav>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 };
+
 export default Breadcrumbs;

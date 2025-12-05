@@ -1,212 +1,110 @@
-import React from 'react'
-import {getEarlyReturn, getLanguageClass} from "../../../utils/helperFunctions.tsx";
-import {Link, useParams} from "react-router-dom";
-import {useTranslate} from "@tolgee/react";
-import PaginationComponent from "../../commons/pagination/PaginationComponent.tsx";
-import "./Versions.scss"
+import React from 'react';
+import { getEarlyReturn } from "../../../utils/helperFunctions.tsx";
+import { Link } from "react-router-dom";
+import { useTranslate } from "@tolgee/react";
+import { Badge } from '@/components/ui/badge.tsx';
+
+type VersionItem = {
+  id: string;
+  title: string;
+  language: keyof typeof languageMap;
+  table_of_contents?: string[];
+  source_link?: string | null;
+  license?: string | null;
+};
+
+type VersionsData = {
+  versions: VersionItem[];
+  text?: VersionItem;
+};
+
+type VersionsProps = {
+  contentId?: string;
+  versions: VersionsData;
+  versionsIsLoading: boolean;
+  versionsIsError: unknown;
+};
+
+const languageMap = {
+  sa: "language.sanskrit",
+  bo: "language.tibetan",
+  en: "language.english",
+  zh: "language.chinese",
+  it: "language.italian",
+  tib: "language.tibetan",
+  tibphono: "language.tibetan",
+};
+
+const CommonCard = ({
+  version,
+  contentId,
+}: {
+  version: VersionItem;
+  contentId?: string;
+}) => {
+  const { t } = useTranslate();
+  return (
+    <div className="w-full flex items-center bg-white py-1 border-t">
+      <div className="flex flex-1 flex-col gap-2">
+          <Link
+            to={`/chapter?text_id=${version.id}&content_id=${contentId}`}
+            className="text-left"
+          >
+            <div className={` text-lg font-medium text-zinc-600`}>
+              {version.title}
+            </div>
+          </Link>
+        <div className="space-y-1 text-sm text-zinc-600">
+          {version.source_link && (
+            <div className="flex gap-2">
+              <span className="font-medium">Source: {version.source_link}</span>
+            </div>
+          )}
+          {version.license && (
+            <div className="flex gap-2">
+              <span className="font-medium">License: {version.license}</span>
+            </div>
+          )}
+        </div>
+      </div>
+        <Badge variant="outline" className='w-fit py-2 px-4'>{t(languageMap[version.language])}</Badge>
+    </div>
+  );
+};
+
 
 const Versions = ({ 
-  textId: propTextId, 
-  contentId:propContentId,
-  requiredInfo, 
-  addChapter, 
-  currentChapter, 
+  contentId: propContentId,
   versions, 
   versionsIsLoading, 
   versionsIsError, 
-  versionsPagination, 
-  setVersionsPagination 
-}) => {
-  const { id: urlId } = useParams();
+}: VersionsProps) => {
   const { t } = useTranslate();
-  
-  const textId = propTextId || urlId;
-
-  // -------------------------------------------- helpers ----------------------------------------------
 
   const earlyReturn = getEarlyReturn({isLoading: versionsIsLoading, error: versionsIsError, t});
   if (earlyReturn) return earlyReturn;
-  if(versions.versions.length === 0 && !versions.text) return <div className="content">
-    <p className='mt-2'>{t("global.not_found")}</p>
-  </div>
-  const languageMap = {
-    "sa":"language.sanskrit",
-    "bo":"language.tibetan",
-    "en":"language.english",
-    "zh":"language.chinese",
-    "it":"language.italian",
-    "tib":"language.tibetan",
-    "tibphono":"language.tibetan"
-  }
-
-  const totalVersions = versions?.versions.length || 0;
-  const totalPages = Math.ceil(totalVersions / versionsPagination.limit);
-
-  const handlePageChange = (pageNumber) => {
-    setVersionsPagination(prev => ({ ...prev, currentPage: pageNumber }));
-  };
-
-
-  // --------------------------------------------- renderers -------------------------------------------
-
-
-  const renderVersions = () => {
-    const renderTitle = (version) => {
-      if (addChapter) {
-        return (
-          <button className="version-title-button" onClick={() => {
-            const contentId = version.table_of_contents[0];
-            if (contentId) {
-              addChapter({
-                textId: version.id,
-                contentId: contentId,
-              }, currentChapter);
-            }
-          }}>
-            <div className={`${getLanguageClass(version.language)} version-title`}>
-              {version.title}
-            </div>
-          </button>
-        )
-      }
-      return <Link
-        to={`/chapter?text_id=${version.id}&content_id=${version.table_of_contents[0]}`}
-        className="version-title"
-      >
-        <div className={`${getLanguageClass(version.language)} version-title`}>
-          {version.title}
-        </div>
-      </Link>
-    }
-
-    const renderMetadata = (version) => {
-      const source = version.source_link || "";
-      const license = version.license || "";
-      return (
-        <div className={`version-metadata en-text`}>
-          {source && (
-            <div className="metadata-row">
-              <span>Source:</span>
-              <span>
-                {source}
-              </span>
-            </div>
-          )}
-          {license && (
-            <div className="metadata-row">
-              <span>License:</span>
-              <span>{license}</span>
-            </div>
-          )}
-        </div>
-      )
-    }
-    
-    const renderLanguage = (version) => {
-      return <div className="version-language subtitle border">
-        <p>{t(languageMap[version.language])}</p>
-      </div>
-    }
-
-    return versions?.versions.map((version) => (
-        <div className="version-details" key={version.id}>
-          <div className="version-title-subtitle-container">
-            {renderTitle(version)}
-            {renderMetadata(version)}
-          </div>
-          {renderLanguage(version)}
-        </div>
-    ))
-  }
-  
-  const renderTexts = () => {
-    const renderTitle = (version) => {
-      if (addChapter) {
-        return (
-          <button className="version-title-button" onClick={() => {
-            const contentId = propContentId;
-            if (contentId) {
-              addChapter({
-                textId: version.id,
-                contentId: contentId,
-              }, currentChapter);
-            }
-          }}>
-            <div className={`${getLanguageClass(version.language)} version-title`}>
-              {version.title}
-            </div>
-          </button>
-        )
-      }
-      return <Link
-        to={`/chapter?text_id=${version.id}&content_id=${propContentId}&versionId=&contentIndex=${0}`}
-        className="version-title"
-      >
-        <div className={`${getLanguageClass(version.language)} version-title`}>
-          {version.title}
-        </div>
-      </Link>
-    }
-
-    const renderMetadata = (version) => {
-      const source = version.source_link || "";
-      const license = version.license || "";
-      return (
-        <div className={`version-metadata en-text`}>
-          {source && (
-            <div className="metadata-row">
-              <span>Source:</span>
-              <span>
-                {source}
-              </span>
-            </div>
-          )}
-          {license && (
-            <div className="metadata-row">
-              <span>License:</span>
-              <span>{license}</span>
-            </div>
-          )}
-        </div>
-      )
-    }
-    
-    const renderLanguage = (version) => {
-      return <div className="version-language subtitle border">
-        <p>{t(languageMap[version.language])}</p>
-      </div>
-    }
-
-    if (!versions?.text) return null;
-    
-    const textVersion = versions.text;
+  if (versions.versions.length === 0 && !versions.text) {
     return (
-      <div className="version-details" key={textVersion.id}>
-        <div className="version-title-subtitle-container">
-          {renderTitle(textVersion)}
-          {renderMetadata(textVersion)}
-        </div>
-        {renderLanguage(textVersion)}
+      <div className="rounded border border-dashed border-gray-300 bg-white p-4 text-sm text-gray-600">
+        <p className='mt-2'>{t("global.not_found")}</p>
       </div>
-    )
-  }
-  const renderPagination = () => {
-    return versions?.versions?.length > 0 ?
-      <PaginationComponent
-        pagination={versionsPagination}
-        totalPages={totalPages}
-        handlePageChange={handlePageChange}
-        setPagination={setVersionsPagination}
-      /> :<></>
+    );
   }
 
-  return <div className="versions-container">
-    {
-      renderTexts()
-    }
-    {renderVersions()}
-    {/* {renderPagination()} */}
-  </div>
-}
+  return (
+    <div className="flex flex-col gap-2">
+      {versions.text && (
+        <CommonCard version={versions.text} contentId={propContentId} />
+      )}
 
-export default React.memo(Versions)
+      {versions?.versions.map((version) => {
+        const firstContentId = version.table_of_contents?.[0];
+        return (
+          <CommonCard key={version.id} version={version} contentId={firstContentId} />
+        );
+      })}
+    </div>
+  );
+};
+
+export default React.memo(Versions);

@@ -23,7 +23,6 @@ const Topics = lazy(() => import("./routes/topics/Topics.tsx"));
 const CommunityPage = lazy(() => import("./routes/community/CommunityPage.tsx"));
 const Texts = lazy(() => import("./routes/texts/Texts.tsx"));
 const Works = lazy(() => import("./routes/works/Works.tsx"));
-const SubCollections = lazy(() => import("./routes/sub-collections/SubCollections.tsx"));
 const ChaptersV2 = lazy(() => import("./routes/chapterV2/Chapters.tsx"));
 const AuthorProfile = lazy(() => import("./routes/author-profile/AuthorProfile.tsx"));
 const ResetPassword = lazy(() => import("./routes/reset-password/ResetPassword.tsx"));
@@ -137,7 +136,6 @@ function App() {
               <Route path="/topics/:id" element={<Topics/>}/>
               <Route path="/note" element={<CommunityPage/>}/>
               <Route path="/texts/:id" element={<Texts/>}/>
-              <Route path="/collections/:id" element={<SubCollections/>}/>
               <Route path="/works/:id" element={<Works/>}/>
               <Route path="/chapter" element={<ChaptersV2/>}/>
               <Route path="/search" element={<SearchResultsPage/>}/>

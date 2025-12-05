@@ -15,45 +15,6 @@ vi.mock('@tolgee/react', async () => {
   };
 });
 
-vi.mock('../../../collections/Collections', () => ({
-  default: ({ setRendererInfo, showDescription }) => (
-    <div data-testid="collections-component">
-      <div>Collections View</div>
-      <div>Show Description: {showDescription ? 'true' : 'false'}</div>
-      <button onClick={() => {
-        setRendererInfo(prev => ({
-          ...prev,
-          requiredId: 'collection-123',
-          renderer: 'sub-collections'
-        }));
-      }}>
-        Navigate to SubCollections
-      </button>
-    </div>
-  )
-}));
-
-vi.mock('../../../sub-collections/SubCollections', () => ({
-  default: ({ from, setRendererInfo, parent_id }) => (
-    <div data-testid="sub-collections-component">
-      <div>SubCollections View</div>
-      <div>From: {from}</div>
-      <div>Parent ID: {parent_id}</div>
-      <button onClick={() => {
-        setRendererInfo(prev => ({
-          ...prev,
-          requiredId: 'subcollection-456',
-          renderer: 'works'
-        }));
-      }}>
-        Navigate to Works
-      </button>
-      <button onClick={() => setRendererInfo(prev => ({ ...prev, renderer: 'collections' }))}>
-        Back to Collections
-      </button>
-    </div>
-  )
-}));
 
 vi.mock('../../../works/Works', () => ({
   default: ({ requiredInfo, setRendererInfo, collection_id }) => (
@@ -69,9 +30,6 @@ vi.mock('../../../works/Works', () => ({
         }));
       }}>
         Navigate to Texts
-      </button>
-      <button onClick={() => setRendererInfo(prev => ({ ...prev, renderer: 'sub-collections' }))}>
-        Back to SubCollections
       </button>
     </div>
   )
@@ -182,30 +140,15 @@ describe('CompareText Component', () => {
       
       expect(screen.getByTestId('collections-component')).toBeInTheDocument();
       
-      const navButton = screen.getByText('Navigate to SubCollections');
-      fireEvent.click(navButton);
-      
-      expect(screen.getByTestId('sub-collections-component')).toBeInTheDocument();
-      expect(screen.getByText('SubCollections View')).toBeInTheDocument();
-      expect(screen.getByText('Parent ID: collection-123')).toBeInTheDocument();
-    });
-
-    it('navigates from sub-collections to works', () => {
-      renderComponent();
-      
-      fireEvent.click(screen.getByText('Navigate to SubCollections'));
-      
       fireEvent.click(screen.getByText('Navigate to Works'));
       
       expect(screen.getByTestId('works-component')).toBeInTheDocument();
       expect(screen.getByText('Works View')).toBeInTheDocument();
-      expect(screen.getByText('Collection ID: subcollection-456')).toBeInTheDocument();
     });
 
     it('navigates from works to texts', () => {
       renderComponent();
       
-      fireEvent.click(screen.getByText('Navigate to SubCollections'));
       fireEvent.click(screen.getByText('Navigate to Works'));
       fireEvent.click(screen.getByText('Navigate to Texts'));
       
@@ -217,12 +160,7 @@ describe('CompareText Component', () => {
     it('supports backward navigation', () => {
       renderComponent();
       
-      fireEvent.click(screen.getByText('Navigate to SubCollections'));
       fireEvent.click(screen.getByText('Navigate to Works'));
-      
-      fireEvent.click(screen.getByText('Back to SubCollections'));
-      
-      expect(screen.getByTestId('sub-collections-component')).toBeInTheDocument();
       
       fireEvent.click(screen.getByText('Back to Collections'));
       
@@ -234,7 +172,6 @@ describe('CompareText Component', () => {
     it('passes addChapter and currentChapter props to Texts component', () => {
       renderComponent({ currentChapter: 2 });
       
-      fireEvent.click(screen.getByText('Navigate to SubCollections'));
       fireEvent.click(screen.getByText('Navigate to Works'));
       fireEvent.click(screen.getByText('Navigate to Texts'));
       
@@ -245,7 +182,6 @@ describe('CompareText Component', () => {
     it('handles missing addChapter prop gracefully', () => {
       renderComponent({ addChapter: undefined });
       
-      fireEvent.click(screen.getByText('Navigate to SubCollections'));
       fireEvent.click(screen.getByText('Navigate to Works'));
       fireEvent.click(screen.getByText('Navigate to Texts'));
       
@@ -256,7 +192,6 @@ describe('CompareText Component', () => {
     it('handles missing currentChapter prop gracefully', () => {
       renderComponent({ currentChapter: undefined });
       
-      fireEvent.click(screen.getByText('Navigate to SubCollections'));
       fireEvent.click(screen.getByText('Navigate to Works'));
       fireEvent.click(screen.getByText('Navigate to Texts'));
       
@@ -266,7 +201,6 @@ describe('CompareText Component', () => {
     it('calls addChapter when button is clicked in texts view', () => {
       renderComponent();
       
-      fireEvent.click(screen.getByText('Navigate to SubCollections'));
       fireEvent.click(screen.getByText('Navigate to Works'));
       fireEvent.click(screen.getByText('Navigate to Texts'));
       
@@ -283,7 +217,6 @@ describe('CompareText Component', () => {
     it('passes compare-text flag to downstream components', () => {
       renderComponent();
       
-      fireEvent.click(screen.getByText('Navigate to SubCollections'));
       expect(screen.getByText('From: compare-text')).toBeInTheDocument();
       
       fireEvent.click(screen.getByText('Navigate to Works'));
@@ -295,9 +228,6 @@ describe('CompareText Component', () => {
 
     it('maintains state consistency during navigation', () => {
       renderComponent();
-      
-      fireEvent.click(screen.getByText('Navigate to SubCollections'));
-      expect(screen.getByText('Parent ID: collection-123')).toBeInTheDocument();
       
       fireEvent.click(screen.getByText('Navigate to Works'));
       expect(screen.getByText('Collection ID: subcollection-456')).toBeInTheDocument();
@@ -340,12 +270,10 @@ describe('CompareText Component', () => {
 
     it('returns to previous renderer when back clicked after navigating forward', () => {
       const mockHandleNavigate = vi.fn();
-      const { container } = renderComponent({ handleNavigate: mockHandleNavigate });
-      fireEvent.click(screen.getByText('Navigate to SubCollections'));
-      expect(screen.getByTestId('sub-collections-component')).toBeInTheDocument();
+      const { container } = renderComponent({ handleNavigate: mockHandleNavigate });  
       const backBtn = container.querySelector('.back-icon');
       fireEvent.click(backBtn);
-      expect(screen.getByTestId('collections-component')).toBeInTheDocument();
-      expect(mockHandleNavigate).not.toHaveBeenCalled();
-    });
+    expect(screen.getByTestId('collections-component')).toBeInTheDocument();
+    expect(mockHandleNavigate).not.toHaveBeenCalled();
   });
+});

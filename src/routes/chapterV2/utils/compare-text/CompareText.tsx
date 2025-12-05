@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import { useTranslate } from "@tolgee/react";
 import Collections from "../../../collections/Collections";
-import SubCollections from "../../../sub-collections/SubCollections";
 import Works from "../../../works/Works";
 import Texts from "../../../texts/Texts";
 import { IoChevronBackSharp } from "react-icons/io5";
@@ -51,12 +50,6 @@ const CompareText = ({ setIsCompareTextView, addChapter, currentChapter, handleN
                 return <Collections 
                     setRendererInfo={handleSetRendererInfo} 
                     showDescription={false}
-                />;
-            case "sub-collections": 
-                return <SubCollections 
-                    from={"compare-text"} 
-                    setRendererInfo={handleSetRendererInfo} 
-                    parent_id={rendererInfo.requiredId}
                 />;
             case "works":
                 return <Works
