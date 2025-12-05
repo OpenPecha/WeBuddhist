@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslate } from '@tolgee/react';
-import { getEarlyReturn, getLanguageClass } from '../../../utils/helperFunctions.tsx';
+import { getEarlyReturn } from '../../../utils/helperFunctions.tsx';
 import PaginationComponent from '../../commons/pagination/PaginationComponent.tsx';
 import { Link } from 'react-router-dom';
-import './Commentaries.scss';
+import { Badge } from '@/components/ui/badge.tsx';
 
 const LANGUAGE_MAP = {
   sa: 'language.sanskrit',
@@ -13,17 +13,32 @@ const LANGUAGE_MAP = {
   it: 'language.italian'
 };
 
+type CommentaryItem = {
+  id: string;
+  title: string;
+  language: keyof typeof LANGUAGE_MAP;
+  source_link?: string | null;
+  license?: string | null;
+};
+
+type PaginationState = { currentPage: number; limit: number };
+
+type CommentariesProps = {
+  textId?: string;
+  items?: CommentaryItem[];
+  isLoading: boolean;
+  isError: unknown;
+  pagination: PaginationState;
+  setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
+};
+
 const Commentaries = ({
-  textId,
   items = [],
   isLoading,
   isError,
   pagination,
   setPagination,
-  requiredInfo,
-  addChapter,
-  currentChapter
-}) => {
+}: CommentariesProps) => {
   const { t } = useTranslate();
 
   const earlyReturn = getEarlyReturn({ isLoading, error: isError, t });
@@ -39,98 +54,54 @@ const Commentaries = ({
 
   const totalPages = Math.ceil((items?.length || 0) / pagination.limit);
 
-  const handlePageChange = (pageNumber) => {
+  const handlePageChange = (pageNumber: number) => {
     setPagination((prev) => ({ ...prev, currentPage: pageNumber }));
   };
 
-  const renderLanguage = (commentary) => {
-    return (
-      <div className="commentary-language subtitle border">
-        <p>{t(LANGUAGE_MAP[commentary.language])}</p>
-      </div>
-    );
-  };
-
-  const renderItem = (commentary) => {
-    const renderMetadata = (item) => {
-      const source = item.source_link || "";
-      const license = item.license || "";
-      if (!source && !license) return null;
-      return (
-        <div className="commentary-metadata en-text">
-          {source && (
-            <div className="metadata-row">
-              <span>Source:</span>
-              <span>{source}</span>
-            </div>
-          )}
-          {license && (
-            <div className="metadata-row">
-              <span>License:</span>
-              <span>{license}</span>
-            </div>
-          )}
+  const CommentaryCard = ({ commentary }: { commentary: CommentaryItem }) => (
+    <div className="w-full flex items-center bg-white py-1 border-t">
+      <div className="flex flex-1 flex-col gap-2">
+      <Link
+        to={`/chapter?text_id=${commentary.id}`}
+        className="text-left"
+      >
+        <div className={` text-lg font-medium text-zinc-600`}>
+          {commentary.title}
         </div>
-      );
-    };
+      </Link>
 
-    const renderTitle = () => {
-      if (addChapter) {
-        return (
-          <button
-            className="commentary-title-button"
-            onClick={() => {
-              addChapter({
-                textId: commentary.id
-              }, currentChapter);
-            }}
-          >
-            <div className={`${getLanguageClass(commentary.language)} commentary-title`}>
-              {commentary.title}
-            </div>
-          </button>
-        );
-      }
-      return (
-        <Link
-          to={`/chapter?text_id=${commentary.id}`}
-          className="commentary-title"
-        >
-          <div className={`${getLanguageClass(commentary.language)} commentary-title`}>
-            {commentary.title}
-          </div>  
-        </Link>
-      );
-    };
-
-    return (
-      <div className="commentary-details" key={commentary.id}>
-        <div className="commentary-title-subtitle-container">
-          {renderTitle()}
-          {renderMetadata(commentary)}
-        </div>
-        {renderLanguage(commentary)}
+      <div className="space-y-1 text-sm text-gray-600">
+        {commentary.source_link && (
+          <div className="flex gap-2">
+            <span className="font-medium">Source: {commentary.source_link}</span>
+          </div>
+        )}
+        {commentary.license && (
+          <div className="flex gap-2">
+            <span className="font-medium">License: {commentary.license}</span>
+          </div>
+        )}
       </div>
-    );
-  };
-
-  const renderPagination = () => {
-    return items?.length > 0 ? (
-      <PaginationComponent
-        pagination={pagination}
-        totalPages={totalPages}
-        handlePageChange={handlePageChange}
-        setPagination={setPagination}
-      />
-    ) : (
-      <></>
-    );
-  };
+      </div>
+      <Badge variant="outline" className="w-fit px-4 py-2">
+        {t(LANGUAGE_MAP[commentary.language])}
+      </Badge>
+    </div>
+  );
 
   return (
-    <div className="commentaries-container">
-      {items.map((commentary) => renderItem(commentary))}
-      {/* {renderPagination()} */}
+    <div className="flex flex-col gap-2">
+      {items.map((commentary) => (
+        <CommentaryCard key={commentary.id} commentary={commentary as CommentaryItem} />
+      ))}
+      {items.length > 0 && totalPages > 1 && (
+        <PaginationComponent
+          pagination={pagination}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          setPagination={setPagination}
+        />
+      )}
     </div>
   );
 };

@@ -166,9 +166,6 @@ const Texts = () => {
             isError={commentariesIsError}
             pagination={commentariesPagination}
             setPagination={setCommentariesPagination}
-            requiredInfo={undefined as any}
-            addChapter={undefined as any}
-            currentChapter={undefined as any}
           />
         </TabsContent>
       </Tabs>
