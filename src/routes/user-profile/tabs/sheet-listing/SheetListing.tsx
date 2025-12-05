@@ -7,7 +7,6 @@ import axiosInstance from "../../../../config/axios-config.ts";
 import { LANGUAGE } from "../../../../utils/constants.ts";
 import { getLanguageClass, mapLanguageCode } from "../../../../utils/helperFunctions.tsx";
 import PaginationComponent from "../../../commons/pagination/PaginationComponent.tsx";
-import { SheetDeleteModal } from "../../../sheets/local-components/modals/sheet-delete-modal/SheetDeleteModal.tsx";
 import { deleteSheet } from "../../../sheets/view-sheet/SheetDetailPage.tsx";
 
 export const fetchsheet = async (email: string, limit: number, skip: number) => {
@@ -109,12 +108,6 @@ const SheetListing = ({ userInfo }) => {
           setPagination={setPagination}
         />
       )}
-
-      <SheetDeleteModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onDelete={deleteSheetMutation}
-      />
     </div>
   );
 };

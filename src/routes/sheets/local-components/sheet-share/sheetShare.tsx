@@ -1,14 +1,24 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { FiShare2 } from 'react-icons/fi';
-import { FaFacebook, FaTwitter } from 'react-icons/fa';
+import { FaFacebook  } from 'react-icons/fa';
+import { FaSquareXTwitter } from "react-icons/fa6";
 import { useQuery } from 'react-query';
 import axiosInstance from '../../../../config/axios-config.js';
-import './SheetShare.scss';
 import { useParams } from 'react-router-dom';
 import { IoCopy } from 'react-icons/io5';
 import { IoMdCheckmark } from 'react-icons/io';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.tsx';
 
-export const fetchShortUrl = async (url, textId) => {
+type ShortUrlResponse = {
+  shortUrl: string;
+};
+
+export const fetchShortUrl = async (url: string, textId: string): Promise<ShortUrlResponse> => {
   const { data } = await axiosInstance.post('/api/v1/share', { 
     text_id: textId,
     language: "bo",
@@ -19,88 +29,75 @@ export const fetchShortUrl = async (url, textId) => {
 
 
 const SheetShare = () => {
-  const url = window.location.href
+  const url = typeof window !== 'undefined' ? window.location.href : '';
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const dropdownRef = useRef(null);
-  const { sheetSlugAndId } = useParams();
-  const textId = sheetSlugAndId.split('_').pop();
+  const { sheetSlugAndId } = useParams<{ sheetSlugAndId?: string }>();
+  const textId = sheetSlugAndId?.split('_').pop() ?? '';
 
   const { data: shorturlData, isLoading } = useQuery(
     ["shortUrl", url, textId, isOpen],
     () => fetchShortUrl(url, textId),
     {
       refetchOnWindowFocus: false,
-      enabled: isOpen,
+      enabled: isOpen && Boolean(textId),
       retry: false,
     }
   );
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
+  const handleCopy = () => {
+    const shareUrl = shorturlData?.shortUrl || url;
+    if (!shareUrl || !navigator?.clipboard) return;
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  // ----------------------------- renderers -------------------------------------
+  const shareUrl = shorturlData?.shortUrl || url;
 
   return (
-    <div className="sheet-share-container" ref={dropdownRef}>
-      <button 
-        className="share-button" 
-        onClick={()=>setIsOpen(!isOpen)}
-      >
-        <FiShare2 />
-      </button>
-
-      {isOpen && (
-        <div className="share-dropdown">
-          <button 
-            className="share-option" 
-            onClick={()=>{
-              navigator.clipboard.writeText(shorturlData?.shortUrl || url);
-              setCopied(true);
-              setTimeout(() => {
-                setCopied(false);
-              }, 3000);
-            }}
-            disabled={isLoading}
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+      <button
+            className="flex items-center justify-center py-2 rounded hover:bg-accent transition-colors"
+            aria-label="Change language"
           >
-            {copied ? <IoMdCheckmark className='share-icon' size={16}/> : <IoCopy className='share-icon' size={16}/>}
-            <span>{isLoading ? "Loading..." : "Copy link"}</span>
-          </button>
-          
+        <FiShare2 className="size-4" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuItem asChild>
           <a 
-            className="share-option" 
-            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shorturlData?.shortUrl ||  url)}`}
+            className="flex w-full items-center gap-2"
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
             target="_blank"
             rel="noopener noreferrer"
           >
-              <FaFacebook className="share-icon" />
+              <FaFacebook className="text-blue-600" />
               <span>Share on Facebook</span>
-           
           </a>
-          
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <a 
-            className="share-option" 
-            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shorturlData?.shortUrl || url)}`}
+            className="flex w-full items-center gap-2"
+            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}`}
             target="_blank"
             rel="noopener noreferrer"
           >
-           <FaTwitter className="share-icon" />
+           <FaSquareXTwitter />
            <span>Share on X</span>
           </a>
-          
-        </div>
-      )}
-    </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={handleCopy}
+          disabled={isLoading || !shareUrl}
+          className="flex items-center gap-2"
+        >
+          {copied ? <IoMdCheckmark className="text-green-600" size={16}/> : <IoCopy size={16} />}
+          <span>{isLoading ? "Loading..." : copied ? "Copied!" : "Copy link"}</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
