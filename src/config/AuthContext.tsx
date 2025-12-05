@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { createContext, useContext, useMemo, useState, useEffect } from "react";
 import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "../utils/constants.js";
 
 const AuthContext = createContext();
@@ -45,8 +44,4 @@ export const PechaAuthProvider = ({ children }) => {
 
 export const useAuth = () => {
     return useContext(AuthContext);
-};
-
-PechaAuthProvider.propTypes = {
-    children: PropTypes.any,
 };

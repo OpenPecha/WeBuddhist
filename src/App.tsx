@@ -1,35 +1,35 @@
 import "./App.css";
 import { Route, Routes, useLocation, useNavigate, matchPath, Navigate } from "react-router-dom";
-import NavigationBar from "./components/navbar/NavigationBar.jsx";
+import NavigationBar from "./routes/navbar/NavigationBar.tsx";
 import { useMutation } from "react-query";
-import { AuthenticationGuard } from "./config/AuthenticationGuard.jsx";
+import { AuthenticationGuard } from "./config/AuthenticationGuard.tsx";
 import { useEffect, useState , Suspense, lazy} from "react";
-import axiosInstance from "./config/axios-config.js";
-import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "./utils/constants.js";
-import { useAuth } from "./config/AuthContext.jsx";
-import EditUserProfile from "./components/edit-user-profile/EditUserProfile.jsx";
-import UserProfile from "./components/user-profile/UserProfile.jsx";
+import axiosInstance from "./config/axios-config.ts";
+import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "./utils/constants.ts";
+import { useAuth } from "./config/AuthContext.tsx";
+import EditUserProfile from "./routes/edit-user-profile/EditUserProfile.tsx";
+import UserProfile from "./routes/user-profile/UserProfile.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
-import { setFontVariables } from "./config/commonConfigs.js";
-import Sheets from "./components/sheets/Sheets.jsx";
-import SheetChapters from "./components/chapterV2/SheetChapters.jsx";
-import Footer from "./components/footer/Footer.jsx";
+import { setFontVariables } from "./config/commonConfigs.ts";
+import Sheets from "./routes/sheets/Sheets.tsx";
+import SheetChapters from "./routes/chapterV2/SheetChapters.tsx";
+import Footer from "./routes/footer/Footer.tsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
-const Collections = lazy(() => import("./components/collections/Collections.jsx"));
-const UserLogin = lazy(() => import("./components/user-login/UserLogin.jsx"));
-const UserRegistration = lazy(() => import("./components/user-registration/UserRegistration.jsx"));
-const Topics = lazy(() => import("./components/topics/Topics.jsx"));
-const CommunityPage = lazy(() => import("./components/community/CommunityPage.jsx"));
-const Texts = lazy(() => import("./components/texts/Texts"));
-const Works = lazy(() => import("./components/works/Works.jsx"));
-const SubCollections = lazy(() => import("./components/sub-collections/SubCollections.jsx"));
-const ChaptersV2 = lazy(() => import("./components/chapterV2/Chapters"));
-const AuthorProfile = lazy(() => import("./components/author-profile/AuthorProfile.jsx"));
-const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword.jsx"));
-const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword.jsx"));
-const SearchResultsPage = lazy(() => import("./components/search/SearchResultsPage.jsx"));
-const Chat = lazy(() => import("./components/chat/base/Chat.jsx"));
+const Collections = lazy(() => import("./routes/collections/Collections.tsx"));
+const UserLogin = lazy(() => import("./routes/user-login/UserLogin.tsx"));
+const UserRegistration = lazy(() => import("./routes/user-registration/UserRegistration.tsx"));
+const Topics = lazy(() => import("./routes/topics/Topics.tsx"));
+const CommunityPage = lazy(() => import("./routes/community/CommunityPage.tsx"));
+const Texts = lazy(() => import("./routes/texts/Texts.tsx"));
+const Works = lazy(() => import("./routes/works/Works.tsx"));
+const SubCollections = lazy(() => import("./routes/sub-collections/SubCollections.tsx"));
+const ChaptersV2 = lazy(() => import("./routes/chapterV2/Chapters.tsx"));
+const AuthorProfile = lazy(() => import("./routes/author-profile/AuthorProfile.tsx"));
+const ResetPassword = lazy(() => import("./routes/reset-password/ResetPassword.tsx"));
+const ForgotPassword = lazy(() => import("./routes/forgot-password/ForgotPassword.tsx"));
+const SearchResultsPage = lazy(() => import("./routes/search/SearchResultsPage.tsx"));
+const Chat = lazy(() => import("./routes/chat/base/Chat.tsx"));
 
 function App() {
     const navigate = useNavigate();
@@ -135,7 +135,7 @@ function App() {
               <Route path="/login" element={<UserLogin/>}/>
               <Route path="/topics" element={<Topics/>}/>
               <Route path="/topics/:id" element={<Topics/>}/>
-              <Route path="/community" element={<CommunityPage/>}/>
+              <Route path="/note" element={<CommunityPage/>}/>
               <Route path="/texts/:id" element={<Texts/>}/>
               <Route path="/collections/:id" element={<SubCollections/>}/>
               <Route path="/works/:id" element={<Works/>}/>

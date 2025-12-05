@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
-import PropTypes from 'prop-types';
+import { createContext, useContext, useState, useMemo } from 'react';
 
 const CollectionColorContext = createContext({
   collectionColor: null,
@@ -19,10 +18,6 @@ export const CollectionColorProvider = ({ children }) => {
       {children}
     </CollectionColorContext.Provider>
   );
-};
-
-CollectionColorProvider.propTypes = {
-  children: PropTypes.node.isRequired
 };
 
 export const useCollectionColor = () => useContext(CollectionColorContext);

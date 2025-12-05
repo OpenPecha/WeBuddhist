@@ -2,7 +2,6 @@ import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { useAuth } from "./AuthContext.jsx";
 import { Navigate } from "react-router-dom";
 import { LOGGED_IN_VIA } from "../utils/constants.js";
-import PropTypes from "prop-types";
 import { useTranslate } from "@tolgee/react";
 
 export const AuthenticationGuard = ({component}) => {
@@ -31,8 +30,4 @@ export const AuthenticationGuard = ({component}) => {
             }
         </>
     );
-};
-
-AuthenticationGuard.propTypes = {
-    component: PropTypes.func,
 };

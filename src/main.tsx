@@ -1,18 +1,17 @@
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css'
+import App from './App.tsx'
 import { BrowserRouter as Router } from "react-router-dom";
-import { Auth0ProviderWithNavigate } from "./config/Auth0ProviderWithNavigate.jsx";
+import { Auth0ProviderWithNavigate } from "./config/Auth0ProviderWithNavigate.tsx";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { PechaAuthProvider } from "./config/AuthContext.jsx";
+import { PechaAuthProvider } from "./config/AuthContext.tsx";
 import { BackendFetch, DevTools, FormatSimple, Tolgee, TolgeeProvider } from "@tolgee/react";
 import localeEn from "./i18n/en.json";
 import localeBoIn from "./i18n/bo-IN.json";
-import { LANGUAGE } from "./utils/constants.js";
+import { LANGUAGE } from "./utils/constants.ts";
 import { HelmetProvider } from "react-helmet-async";
-import { UserbackProvider } from "./context/UserBackProvider.jsx";
-import { CollectionColorProvider } from "./context/CollectionColorContext.jsx";
+import { UserbackProvider } from "./context/UserBackProvider.tsx";
+import { CollectionColorProvider } from "./context/CollectionColorContext.tsx";
 const queryClient = new QueryClient();
 const defaultLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE || "en";
 
