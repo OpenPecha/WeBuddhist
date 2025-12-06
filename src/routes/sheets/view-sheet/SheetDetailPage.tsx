@@ -318,10 +318,11 @@ const SheetDetailPage = ({ addChapter, currentChapter }: SheetDetailPageProps) =
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          
+
         <SheetShare />
           </>
         )}
+        <SheetShare />
         </div>
       </div>
     )

@@ -1,77 +1,138 @@
 import { useState } from "react";
-import "./ForgotPassword.scss";
 import { useMutation } from "react-query";
-import axiosInstance from "../../config/axios-config.ts";
 import { useNavigate } from "react-router-dom";
 import { useTranslate } from "@tolgee/react";
-import pechaIcon from "../../assets/icons/pecha_icon.png";
+import { IoAlertCircleOutline } from "react-icons/io5";
+
+import { Button } from "@/components/ui/button";
+import AuthCard from "../commons/auth/AuthCard";
+import axiosInstance from "../../config/axios-config.ts";
 
 const ForgotPassword = () => {
-    const { t } = useTranslate();
-    const [email, setEmail] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
-    const forgotPasswordMutation = useMutation(async (email) => {
-        const response = await axiosInstance.post("api/v1/auth/request-reset-password", email)
-        return response.data
-    }, {
-        onSuccess: () => {
-            alert("Email with reset password link is sent to your email address")
-            navigate("/")
-        },
-        onError: (error) => {
-            console.error("Forgot password failed", error);
-            const errorMsg = (error as any)?.response?.data?.message || (error as any)?.response?.data?.detail || "Request failed";
-            setError(errorMsg);
+  const { t } = useTranslate();
+  const navigate = useNavigate();
+
+  type FormErrors = {
+    email?: string;
+    general?: string;
+  };
+
+  const [email, setEmail] = useState("");
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const forgotPasswordMutation = useMutation(
+    async (payload: { email: string }) => {
+      const response = await axiosInstance.post(
+        "api/v1/auth/request-reset-password",
+        payload
+      );
+      return response.data;
+    },
+    {
+      onSuccess: () => {
+        alert(t("common.forgot_password.reset.success"));
+        navigate("/");
+      },
+      onError: (error: any) => {
+        const errorMsg =
+          error?.response?.data?.message ||
+          error?.response?.data?.detail ||
+          t("user.validation.login_failed");
+        setErrors((prev) => ({ ...prev, general: errorMsg }));
+      },
+    }
+  );
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!email) {
+      setErrors({ email: t("user.validation.required") });
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      setErrors({ email: t("user.validation.invalid_email") });
+      return;
+    }
+
+    setErrors({});
+    forgotPasswordMutation.mutate({ email });
+  };
+
+  return (
+    <div className="flex min-h-svh items-center justify-center">
+      <AuthCard
+        title={t("common.forgot_password.reset.title")}
+        description={t("user.forgot_password")}
+        footer={
+          <div className="w-full text-center text-sm text-muted-foreground">
+            <Button
+              type="button"
+              variant="link"
+              className="px-1 text-primary"
+              onClick={() => navigate("/login")}
+            >
+              {t("login.form.button.login_in")}
+            </Button>
+          </div>
         }
-    })
-
-    const validateEmail = (email: string) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
-
-    const handleSubmit = (e: any) => {
-        e.preventDefault();
-        if (!email) {
-            setError(t("user.validation.required"));
-        } else if (!validateEmail(email)) {
-            setError(t("user.validation.invalid_email"));
-        } else {
-            setError("");
-            forgotPasswordMutation.mutate({email} as any)
-        }
-    };
-
-    return (
-    <div className="auth-page">
-      <div className="forgot-password-container">
-        <form onSubmit={handleSubmit}>
-          <div className="header">
-            <img src={pechaIcon}  className="logo" alt="Webuddhist"/>
-            <h4>{t("common.forgot_password.reset.title")}</h4>
+      >
+        <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-foreground">
+                  {t("common.email")}
+                </span>
+              </div>
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base shadow-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                aria-invalid={Boolean(errors.email)}
+                aria-describedby={errors.email ? "email-error" : undefined}
+                required
+              />
+              {errors.email && (
+                <div
+                  id="email-error"
+                  className="flex items-center gap-2 text-sm text-destructive"
+                >
+                  <IoAlertCircleOutline className="size-4" />
+                  <span>{errors.email}</span>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="text-content">
-            <p>{t("user.forgot_password")}</p>
-          </div>
-          <div className="content">
-            <label className="form-label" htmlFor="email">{ t("common.email") }</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={`form-control ${error ? "is-invalid" : ""}`}
-            />
-            {error && <div className="error-message">{error}</div>}
-          </div>
-          <button type="submit" className="btn">
-            { t("common.button.submit") }
-          </button>
+
+          {errors.general && (
+            <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+              <IoAlertCircleOutline className="size-4" />
+              <span>{errors.general}</span>
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            variant="secondary"
+            className="w-full cursor-pointer"
+            disabled={forgotPasswordMutation.isLoading}
+            aria-disabled={forgotPasswordMutation.isLoading}
+          >
+            {forgotPasswordMutation.isLoading
+              ? t("common.loading")
+              : t("common.button.submit")}
+          </Button>
         </form>
-      </div>
+      </AuthCard>
     </div>
-    );
+  );
 };
 
 export default ForgotPassword;

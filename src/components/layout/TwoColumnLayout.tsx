@@ -29,7 +29,7 @@ const TwoColumnLayout: React.FC<TwoColumnLayoutProps> = ({
         <div className={clsx("flex-3 w-full p-4", mainClassName)}>{main}</div>
         <div
           className={clsx(
-            "flex-1 w-full border-[#F0F0EF] bg-[#FBFBFA] p-6 md:border-l md:p-10",
+            "flex-1 w-full border-[#F0F0EF] bg-[#F6F6F6] p-6 md:border-l md:p-10",
             sidebarClassName
           )}
         >

@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from "react-query";
 import { getLanguageClass, mapLanguageCode } from "../../utils/helperFunctions.tsx"; 
 import Seo from "../commons/seo/Seo.tsx";
@@ -6,7 +6,6 @@ import { siteName } from "../../utils/constants.ts";
 import axiosInstance from "../../config/axios-config.ts";
 import { useTranslate } from "@tolgee/react";
 import { useParams, useLocation, Link } from "react-router-dom";
-import TableOfContents from "./table-of-contents/TableOfContents.tsx";
 import Versions from "./versions/Versions.tsx";
 import Commentaries from "./commentaries/Commentaries.tsx";
 import Breadcrumbs, { type BreadcrumbItemType } from "../commons/breadcrumbs/Breadcrumbs.tsx";
@@ -55,7 +54,6 @@ const Texts = () => {
   const { id: urlId } = useParams();
   const location = useLocation();
   const textId = urlId ?? "";
-  const [activeTab, setActiveTab] = useState('contents');
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const [versionsPagination] = useState({ currentPage: 1, limit: 10 });
   const [commentariesPagination, setCommentariesPagination] = useState({ currentPage: 1, limit: 10 });
@@ -63,7 +61,7 @@ const Texts = () => {
   const versionsSkip = useMemo(() => (versionsPagination?.currentPage - 1) * versionsPagination?.limit, [versionsPagination]);
   const commentariesSkip = useMemo(() => (commentariesPagination?.currentPage - 1) * commentariesPagination?.limit, [commentariesPagination]);
 
-  const {data: tableOfContents, isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError} = useQuery(
+  const {data: tableOfContents} = useQuery(
     ["table-of-contents", textId, skip, pagination.limit],   
     () => fetchTableOfContents(textId, skip, pagination.limit),
     {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
@@ -80,15 +78,6 @@ const Texts = () => {
     () => fetchCommentaries(textId, commentariesSkip, commentariesPagination.limit),
     {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
   );
-
-  useEffect(() => {
-    const hasMultipleSections = tableOfContents?.contents[0]?.sections?.length > 1;
-    if (hasMultipleSections) {
-      setActiveTab('contents');
-    } else if (tableOfContents?.contents) {
-      setActiveTab('versions');
-    }
-  }, [tableOfContents]);
 
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
@@ -109,17 +98,9 @@ const Texts = () => {
   }, [parentCollection, versions?.text?.title, t]);
 
   const renderTabs = () => {
-    const showContents = tableOfContents?.contents[0]?.sections?.length > 1;
     return (
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-4">
+      <Tabs className="w-full space-y-4" defaultValue="versions">
         <TabsList>
-          {showContents && (
-            <TabsTrigger
-              value="contents"
-            >
-              {t("text.contents")}
-            </TabsTrigger>
-          )}
           <TabsTrigger
             value="versions"
           >
@@ -131,24 +112,6 @@ const Texts = () => {
             {t("text.type.commentary")}
           </TabsTrigger>
         </TabsList>
-
-        {showContents && (
-          <TabsContent value="contents">
-            <TableOfContents
-              tableOfContents={tableOfContents}
-              pagination={pagination}
-              setPagination={setPagination}
-              textId={tableOfContents?.text_detail?.id}
-              error={tableOfContentsIsError}
-              loading={tableOfContentsIsLoading}
-              t={t}
-              requiredInfo={undefined as any}
-              addChapter={undefined as any}
-              currentChapter={undefined as any}
-            />
-          </TabsContent>
-        )}
-
         <TabsContent value="versions">
           <Versions 
             contentId={tableOfContents?.contents[0]?.id}

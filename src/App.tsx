@@ -111,17 +111,25 @@ function App() {
         setFontVariables(localStorage.getItem(LANGUAGE) || "en");
     }, []);
 
-    const hideFooter =
-    !!matchPath("/sheets/:id", location.pathname) ||
-    !!matchPath("/chapter", location.pathname) ||
+    const hideNavigation =
     !!matchPath("/login", location.pathname) ||
     !!matchPath("/register", location.pathname) ||
-    !!matchPath("/ai", location.pathname) ||
-    !!matchPath("/ai/:threadId", location.pathname);
+    !!matchPath("/forgot-password", location.pathname)
+    || !!matchPath("/reset-password", location.pathname);
+
+    const hideFooter =
+      !!matchPath("/sheets/:id", location.pathname) ||
+      !!matchPath("/chapter", location.pathname) ||
+      !!matchPath("/login", location.pathname) ||
+      !!matchPath("/register", location.pathname) ||
+      !!matchPath("/ai", location.pathname) ||
+      !!matchPath("/ai/:threadId", location.pathname)
+      || !!matchPath("/forgot-password", location.pathname)
+      || !!matchPath("/reset-password", location.pathname);
 
     return (
       <Suspense>
-          <NavigationBar/>
+          {!hideNavigation && <NavigationBar/>}
           <Routes>
               <Route path="/" element={<Collections/>}/>
               <Route path="/collections" element={<Collections/>}/>
