@@ -12,14 +12,14 @@ const SearchResultsPage: React.FC = () => {
   return (
     <TwoColumnLayout
       main={
-        <div className="flex max-w-2xl mx-auto pt-10 flex-col gap-6 text-left">
-          <h2 className="text-xl font-semibold text-[#4B4B4B]">
+        <div className="flex max-w-2xl mx-auto pt-10 flex-col gap-4 text-left">
+          <h2 className="text-xl font-medium text-[#4B4B4B]">
             {t("search_page.results_for", "Results for: ( {searchedItem} )", {
               searchedItem: query,
             })}
           </h2>
 
-          <div className="border-b border-[#DEE2E6] pb-2">
+          <div className="border-b border-[#DEE2E6]">
             <span className="text-sm font-medium uppercase tracking-wide text-[#495057]">
               {t("sheet.sources", "Sources")}
             </span>
