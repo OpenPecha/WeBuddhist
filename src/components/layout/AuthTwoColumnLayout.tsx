@@ -43,7 +43,7 @@ const AuthTwoColumnLayout: React.FC<AuthTwoColumnLayoutProps> = ({
       <div className="flex h-full w-full flex-col md:flex-row">
         <aside
           className={clsx(
-            "flex w-full flex-1 flex-col justify-between space-y-6 px-8 py-10",
+            "hidden w-full flex-1 flex-col justify-between space-y-6 px-8 py-10 md:flex",
             sidebarClassName
           )}
         >
