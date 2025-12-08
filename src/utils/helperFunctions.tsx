@@ -1,5 +1,5 @@
 import pechaLogo from "../assets/icons/pecha_icon.png";
-export const getFirstSegmentId = (sections) => {
+export const getFirstSegmentId = (sections:any[]):string | null => {
   if (!sections?.length) {
     return null;
   }
@@ -9,7 +9,7 @@ export const getFirstSegmentId = (sections) => {
   );
 };
 
-export const getLastSegmentId = (sections) => {
+export const getLastSegmentId = (sections:any[]):string | null => {
   if (!sections?.length) {
     return null;
   }
@@ -19,14 +19,14 @@ export const getLastSegmentId = (sections) => {
   );
 };
 
-export const getEarlyReturn = ({ isLoading, error, t }) => {
+export const getEarlyReturn = ({ isLoading, error, t }: { isLoading: boolean, error: any, t: any }) => {
   if (isLoading) {
-    return <div className="global-container search-message">{t("common.loading")}</div>;
+    return <div className=" w-full h-svh flex flex-col justify-center items-center">{t("common.loading")}</div>;
   }
 
   if (error) {
     return (
-      <div className="global-container">
+      <div className=" w-full h-svh flex flex-col justify-center items-center">
         <img src={pechaLogo} alt="Not Found" width={100} height={100} />
         <div className="no-content">{t("global.not_found")}</div>
       </div>
@@ -35,7 +35,7 @@ export const getEarlyReturn = ({ isLoading, error, t }) => {
 
   return null;
 };
-export const mapLanguageCode = (languageCode) => {
+export const mapLanguageCode = (languageCode:string):string => {
   const languageMap={
     "en": "en",
     "zh-Hans-CN": "zh",
@@ -43,9 +43,9 @@ export const mapLanguageCode = (languageCode) => {
     "bo": "bo",
     "zh": "zh",
   }
-  return languageMap[languageCode]
+  return languageMap[languageCode as keyof typeof languageMap] || languageMap.en;
 };
-export const getLanguageClass = (language) => {
+export const getLanguageClass = (language:string):string => {
   switch (language) {
     case "bo":
       return "bo-text";
@@ -64,7 +64,7 @@ export const getLanguageClass = (language) => {
   }
 };
 
-export const mergeSections = (existingSections, newSections) => {
+export const mergeSections = (existingSections:any[], newSections:any[]):any[] => {
   if (!existingSections || existingSections.length === 0) return newSections;
   if (!newSections || newSections.length === 0) return existingSections;
 
@@ -75,7 +75,7 @@ export const mergeSections = (existingSections, newSections) => {
       const existingSection = mergedSections[existingIndex];
       // Merge segments
       const mergedSegments = [...(existingSection.segments || [])];
-      (newSection.segments || []).forEach(newSegment => {
+      (newSection.segments || []).forEach((newSegment:any) => {
         if (!mergedSegments.some(segment => segment.segment_id === newSegment.segment_id)) {
           mergedSegments.push(newSegment);
         }
@@ -94,12 +94,12 @@ export const mergeSections = (existingSections, newSections) => {
   return mergedSections;
 };
 
-export const getCurrentSectionFromScroll = (sections, containerRect, sectionRefs) => {
+export const getCurrentSectionFromScroll = (sections:any[], containerRect:any, sectionRefs:any):string | null => {
   if (!sections || sections.length === 0) return null;
 
-  const flatSections = [];
-  const walk = (secs, depth = 0) => {
-    secs.forEach((sec) => {
+  const flatSections:any[] = [];
+  const walk = (secs:any[], depth = 0) => {
+    secs.forEach((sec:any) => {
       flatSections.push({ sec, depth });
       if (sec.sections && sec.sections.length > 0) {
         walk(sec.sections, depth + 1);

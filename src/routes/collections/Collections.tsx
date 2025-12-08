@@ -89,7 +89,7 @@ const Collections = (props: CollectionsProps) => {
   const renderCollectionNames = (collection: Collection, index: number) => {
     const sharedClasses = clsx(
       "block w-full text-left wrap-break-word",
-      getLanguageClass(collection.language)
+      getLanguageClass(collection.language || "en")
     );
 
     if (setRendererInfo) {
