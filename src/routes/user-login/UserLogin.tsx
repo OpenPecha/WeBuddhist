@@ -123,7 +123,7 @@ const UserLogin = () => {
   };
 
   return (
-    <div className="flex min-h-svh items-center justify-center">
+    <div className="flex min-h-[95vh] bg-[#FAFAF9] items-center justify-center">
       <AuthCard
         title={"Welcome to WeBuddhist"}
         description={t("studio.login.title")}
@@ -183,7 +183,7 @@ const UserLogin = () => {
               <input
                 type="email"
                 autoComplete="email"
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base shadow-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                 placeholder={t("common.email")}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
@@ -210,7 +210,7 @@ const UserLogin = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base shadow-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                   placeholder={t("common.password")}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -257,7 +257,7 @@ const UserLogin = () => {
 
           <Button
             type="submit"
-            variant="secondary"
+            variant="outline"
             className="w-full cursor-pointer"
             disabled={loginMutation.isLoading}
             aria-disabled={loginMutation.isLoading}

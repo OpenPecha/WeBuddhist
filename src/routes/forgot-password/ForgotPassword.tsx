@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "react-query";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslate } from "@tolgee/react";
 import { IoAlertCircleOutline } from "react-icons/io5";
 
@@ -63,25 +63,23 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="flex min-h-svh items-center justify-center">
+    <div className="flex min-h-[95vh] bg-[#FAFAF9] items-center justify-center">
       <AuthCard
         title={t("common.forgot_password.reset.title")}
         description={t("user.forgot_password")}
         footer={
           <div className="w-full text-center text-sm text-muted-foreground">
-            <Button
-              type="button"
-              variant="link"
-              className="px-1 text-primary"
-              onClick={() => navigate("/login")}
-            >
-              {t("login.form.button.login_in")}
-            </Button>
-          </div>
+          <span>{t("sign_up.already_have_account")} </span>
+          <Link
+            to="/login"
+            className="text-primary transition hover:underline"
+          >
+            {t("login.form.button.login_in")}
+          </Link>
+        </div>
         }
       >
-        <form className="space-y-6" onSubmit={handleSubmit} noValidate>
-          <div className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit} noValidate>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-foreground">
@@ -92,7 +90,7 @@ const ForgotPassword = () => {
                 id="email"
                 type="email"
                 autoComplete="email"
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base shadow-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 aria-invalid={Boolean(errors.email)}
@@ -109,7 +107,6 @@ const ForgotPassword = () => {
                 </div>
               )}
             </div>
-          </div>
 
           {errors.general && (
             <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
@@ -120,7 +117,7 @@ const ForgotPassword = () => {
 
           <Button
             type="submit"
-            variant="secondary"
+            variant="outline"
             className="w-full cursor-pointer"
             disabled={forgotPasswordMutation.isLoading}
             aria-disabled={forgotPasswordMutation.isLoading}

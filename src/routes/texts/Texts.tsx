@@ -156,7 +156,7 @@ const Texts = () => {
         </div>
         </div>
       }
-      sidebar={<div className="h-full w-full bg-[#FBFBFA]" />}
+      sidebar={<div className="h-full w-full" />}
     />
   )
 }

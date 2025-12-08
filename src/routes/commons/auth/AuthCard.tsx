@@ -26,13 +26,13 @@ const AuthCard = ({
   className,
 }: AuthCardProps) => {
   return (
-    <Card className={cn("w-full max-w-md shadow-none border-3 border-[#EAEAEB]", className)}>
+    <Card className={cn("w-full max-w-md shadow-none border border-[#E7E5E4]", className)}>
       <CardHeader >
-        <CardTitle className="text-center text-xl font-semibold">
+        <CardTitle className="text-center text-lg font-semibold">
           {title}
         </CardTitle>
         {description && (
-          <CardDescription className="text-center text-base">
+          <CardDescription className="text-center text-sm">
             {description}
           </CardDescription>
         )}

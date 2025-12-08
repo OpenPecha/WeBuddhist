@@ -113,7 +113,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex min-h-svh items-center justify-center">
+    <div className="flex min-h-[95vh] bg-[#FAFAF9] items-center justify-center">
       <AuthCard
         title={t("common.reset_password")}
         description={t("common.reset_password_description") || ""}

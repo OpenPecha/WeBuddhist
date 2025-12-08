@@ -155,7 +155,7 @@ const UserRegistration = () => {
   };
 
   return (
-    <div className="flex min-h-svh items-center justify-center">
+    <div className="flex min-h-[95vh] bg-[#FAFAF9] items-center justify-center">
       <AuthCard
         title={t("common.sign_up")}
         description={t("studio.signup.title") || ""}
@@ -205,7 +205,7 @@ const UserRegistration = () => {
               </div>
               <input
                 type="text"
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base shadow-sm outline-none transition"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none transition"
                 placeholder={t("sign_up.form.first_name")}
                 value={firstName}
                 onChange={(event) => setFirstName(event.target.value)}
@@ -230,7 +230,7 @@ const UserRegistration = () => {
               </div>
               <input
                 type="text"
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base shadow-sm outline-none transition"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none transition"
                 placeholder={t("sign_up.form.last_name")}
                 value={lastName}
                 onChange={(event) => setLastName(event.target.value)}
@@ -257,7 +257,7 @@ const UserRegistration = () => {
               <input
                 type="email"
                 autoComplete="email"
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base shadow-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                 placeholder={t("common.email")}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
@@ -284,7 +284,7 @@ const UserRegistration = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base shadow-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                   placeholder={t("common.password")}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -331,7 +331,7 @@ const UserRegistration = () => {
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   autoComplete="new-password"
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base shadow-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                   placeholder={t("common.confirm_password")}
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
@@ -381,7 +381,7 @@ const UserRegistration = () => {
 
           <Button
             type="submit"
-            variant="secondary"
+            variant="outline"
             className="w-full cursor-pointer"
             disabled={registerMutation.isLoading}
             aria-disabled={registerMutation.isLoading}

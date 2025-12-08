@@ -73,10 +73,10 @@ const renderAuthButtons = () => {
     if (!isLoggedIn && !isAuthenticated) {
       return (
         <div className="hidden md:flex items-center gap-2.5 text-sm">
-          <Button variant="ghost" onClick={() => navigate("/login")} className=" rounded text-[#676767]">
+          <Button variant="outline" onClick={() => navigate("/login")} className=" rounded text-[#676767]">
             {t("login.form.button.login_in")}
           </Button>
-          <Button variant="outline" onClick={() => navigate("/register")} className=" rounded text-[#676767]">
+          <Button variant="ghost" onClick={() => navigate("/register")} className=" rounded text-[#676767]">
             {t("common.sign_up")}
           </Button>
         </div>
@@ -126,9 +126,9 @@ const renderAuthButtons = () => {
 
   return (
       <div 
-        className=' bg-white flex justify-between items-center h-[60px] w-full px-7 shadow-2xs'
+        className=' bg-[#FAFAF9] flex justify-between items-center h-[60px] w-full px-7'
         style={{
-          borderBottom: `4px solid ${shouldHideColorBorder ? '#ffffff' : (collectionColor || '#ffffff')}`
+          borderBottom: `2px solid ${shouldHideColorBorder ? '#E7E5E4' : (collectionColor || '#E7E5E4')}`
         }}
       >
           <div className='flex items-center gap-x-6'>
