@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import AuthCard from "../commons/auth/AuthCard";
 import axiosInstance from "../../config/axios-config.ts";
 import { useAuth } from "../../config/AuthContext.tsx";
+import AuthTwoColumnLayout from "@/components/layout/AuthTwoColumnLayout";
 
 const UserRegistration = () => {
   const { t } = useTranslate();
@@ -155,7 +156,7 @@ const UserRegistration = () => {
   };
 
   return (
-    <div className="flex min-h-[95vh] bg-[#FAFAF9] items-center justify-center">
+    <AuthTwoColumnLayout>
       <AuthCard
         title={t("common.sign_up")}
         description={t("studio.signup.title") || ""}
@@ -392,7 +393,7 @@ const UserRegistration = () => {
           </Button>
         </form>
       </AuthCard>
-    </div>
+    </AuthTwoColumnLayout>
   );
 };
 

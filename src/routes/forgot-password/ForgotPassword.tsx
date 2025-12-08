@@ -7,6 +7,7 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import AuthCard from "../commons/auth/AuthCard";
 import axiosInstance from "../../config/axios-config.ts";
+import AuthTwoColumnLayout from "@/components/layout/AuthTwoColumnLayout";
 
 const ForgotPassword = () => {
   const { t } = useTranslate();
@@ -63,7 +64,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="flex min-h-[95vh] bg-[#FAFAF9] items-center justify-center">
+    <AuthTwoColumnLayout>
       <AuthCard
         title={t("common.forgot_password.reset.title")}
         description={t("user.forgot_password")}
@@ -128,7 +129,7 @@ const ForgotPassword = () => {
           </Button>
         </form>
       </AuthCard>
-    </div>
+    </AuthTwoColumnLayout>
   );
 };
 

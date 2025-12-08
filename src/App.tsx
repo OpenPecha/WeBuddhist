@@ -111,6 +111,12 @@ function App() {
         setFontVariables(localStorage.getItem(LANGUAGE) || "en");
     }, []);
 
+    const hideNavigationBar = !!matchPath("/ai/new", location.pathname) || !!matchPath("/ai/:threadId", location.pathname)
+    || !!matchPath("/login", location.pathname)
+    || !!matchPath("/register", location.pathname)
+    || !!matchPath("/forgot-password", location.pathname)
+    || !!matchPath("/reset-password", location.pathname);
+
     const hideFooter =
       !!matchPath("/sheets/:id", location.pathname) ||
       !!matchPath("/chapter", location.pathname) ||
@@ -123,7 +129,7 @@ function App() {
 
     return (
       <Suspense>
-        <NavigationBar/>
+        {!hideNavigationBar && <NavigationBar/>}
           <Routes>
               <Route path="/" element={<Collections/>}/>
               <Route path="/collections" element={<Collections/>}/>
@@ -142,8 +148,8 @@ function App() {
               <Route path="/chapter" element={<ChaptersV2/>}/>
               <Route path="/search" element={<SearchResultsPage/>}/>
               <Route path="/ai" element={<Navigate to="/ai/new" replace />}/>
-              <Route path="/ai/new" element={<AuthenticationGuard component={Chat}/>}/>
-              <Route path="/ai/:threadId" element={<AuthenticationGuard component={Chat}/>}/>
+              <Route path="/ai/new" element={<Chat/>}/>
+              <Route path="/ai/:threadId" element={<Chat/>}/>
               <Route path="*" element={<Collections/>}/>
               <Route path="/sheets/:id" element={<Sheets/>}/>
               <Route path="/:username/:sheetSlugAndId" element={<SheetChapters/>}/>

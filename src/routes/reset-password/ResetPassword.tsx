@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import AuthCard from "../commons/auth/AuthCard";
 import axiosInstance from "../../config/axios-config.ts";
 import { RESET_PASSWORD_TOKEN } from "../../utils/constants.ts";
+import AuthTwoColumnLayout from "@/components/layout/AuthTwoColumnLayout";
 
 const ResetPassword = () => {
   const { t } = useTranslate();
@@ -113,7 +114,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex min-h-[95vh] bg-[#FAFAF9] items-center justify-center">
+    <AuthTwoColumnLayout>
       <AuthCard
         title={t("common.reset_password")}
         description={t("common.reset_password_description") || ""}
@@ -247,7 +248,7 @@ const ResetPassword = () => {
           </Button>
         </form>
       </AuthCard>
-    </div>
+    </AuthTwoColumnLayout>
   );
 };
 

@@ -28,7 +28,6 @@ const Navigation = () => {
     const { t } = useTranslate();
     const { isLoggedIn, logout: pechaLogout, isAuthLoading } = useAuth() as { isLoggedIn: boolean, logout: () => void, isAuthLoading: boolean };
     const { isAuthenticated, logout, isLoading: isAuth0Loading } = useAuth0();
-    const userisLoggedIn = isLoggedIn || isAuthenticated;
     const tolgee = useTolgee(['language']);
     const queryClient = useQueryClient();
     const { collectionColor } = useCollectionColor();
@@ -136,24 +135,31 @@ const renderAuthButtons = () => {
          <img className="h-[30px]" src="/img/webuddhist_logo.svg" alt="Webuddhist"/>
        </Link>            
         <div className={` space-x-8 ${isTibetan ? 'mt-2' : ''}`}>
-            <Link 
-            className="no-underline text-[#676767] font-medium hover:underline transition-all"
-              to="/collections" 
-            >
-              {t("header.text")}
-            </Link>
-            <Link 
-             className="no-underline text-[#676767] font-medium hover:underline transition-all"
-              to="/note" 
-            >
-              {t("header.community")}
-            </Link>
-            <button 
-              className="text-[#676767] font-medium hover:underline transition-all cursor-pointer" 
-              onClick={() => userisLoggedIn ? navigate("/ai/new") : navigate("/login")}
-            >
-              {t("header.ai_mode")}
-            </button>
+            {[
+              {
+                to: "/collections",
+                label: t("header.text"),
+                key: "collections",
+              },
+              {
+                to: "/note",
+                label: t("header.community"),
+                key: "community",
+              },
+              {
+                to: "/ai/new",
+                label: t("header.ai_mode"),
+                key: "ai_mode",
+              },
+            ].map((navItem) => (
+              <Link
+                key={navItem.key}
+                className="no-underline text-[#676767] font-medium hover:underline transition-all"
+                to={navItem.to}
+              >
+                {navItem.label}
+              </Link>
+            ))}
         </div>          
         </div>
           <div className='flex items-center space-x-2'>
