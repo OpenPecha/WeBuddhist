@@ -20,7 +20,6 @@ const tokenRefreshIntervalMs = Number(import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC
 const Collections = lazy(() => import("./routes/collections/Collections.tsx"));
 const UserLogin = lazy(() => import("./routes/user-login/UserLogin.tsx"));
 const UserRegistration = lazy(() => import("./routes/user-registration/UserRegistration.tsx"));
-const Topics = lazy(() => import("./routes/topics/Topics.tsx"));
 const CommunityPage = lazy(() => import("./routes/community/CommunityPage.tsx"));
 const Texts = lazy(() => import("./routes/texts/Texts.tsx"));
 const Works = lazy(() => import("./routes/works/Works.tsx"));
@@ -146,8 +145,6 @@ function App() {
                   <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
                   <Route path="/user/:username" element={<AuthorProfile/>}/>
                   <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
-                  <Route path="/topics" element={<Topics/>}/>
-                  <Route path="/topics/:id" element={<Topics/>}/>
                   <Route path="/note" element={<CommunityPage/>}/>
                   <Route path="/texts/:id" element={<Texts/>}/>
                   <Route path="/works/:id" element={<Works/>}/>
