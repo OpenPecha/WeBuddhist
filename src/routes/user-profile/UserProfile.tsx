@@ -13,7 +13,6 @@ import { MapPin, GraduationCap, Users, UserPlus } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import axiosInstance from "../../config/axios-config.ts";
 import SheetListing from "./tabs/sheet-listing/SheetListing.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
@@ -100,6 +99,7 @@ const UserProfile = () => {
   return (
     <TwoColumnLayout
       containerClassName="min-h-screen"
+      stackOrder="sidebar-first"
       main={
         userInfoIsLoading ? (
           <div className="flex items-center max-w-2xl space-y-4 mx-auto pt-10 justify-center px-6 py-24">
@@ -117,7 +117,7 @@ const UserProfile = () => {
       }
       sidebar={
         <div>
-          <div className="relative">
+          <div className="relative mx-auto flex items-center justify-center md:block">
             <Avatar className="size-24">
               <AvatarImage
                 src={userInfo?.avatar_url}
@@ -130,7 +130,7 @@ const UserProfile = () => {
             </Avatar>
           </div>
           <div className="flex flex-1 flex-col mt-2 items-center gap-3 text-center md:items-start md:text-left">
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <h1 className="text-lg font-medium text-foreground">
                 {userInfo?.firstname} {userInfo?.lastname}
               </h1>
