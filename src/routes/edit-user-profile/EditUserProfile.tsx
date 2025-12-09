@@ -1,38 +1,41 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./EditUserProfile.scss";
 import { useMutation } from "react-query";
 import axiosInstance from "../../config/axios-config.ts";
 import { useTranslate } from "@tolgee/react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const EditUserProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslate();
 
-  const [activeTab, setActiveTab] = useState("personalDetails");
-
   const userInfo = location.state?.userInfo || {};
-
 
   const getSocialProfileUrl = (account: string) => {
     if (!userInfo.social_profiles) return "";
-    const profile = userInfo.social_profiles.find((p: any) => p.account === account);
+    const profile = userInfo.social_profiles.find(
+      (p: any) => p.account === account,
+    );
     return profile ? profile.url : "";
   };
 
-  const updateProfileMutation = useMutation(async (updateProfileData) => {
-      const response = await axiosInstance.post("/api/v1/users/info", updateProfileData)
+  const updateProfileMutation = useMutation(
+    async (updateProfileData) => {
+      const response = await axiosInstance.post(
+        "/api/v1/users/info",
+        updateProfileData,
+      );
       return response.data;
     },
     {
-      onSuccess: (data) => {
-        navigate("/profile")
-      }
-    }
-  )
-
-  // Initialize state with default values or data from userInfo
+      onSuccess: () => {
+        navigate("/profile");
+      },
+    },
+  );
   const [formData, setFormData] = useState({
     firstname: userInfo.firstname || "",
     lastname: userInfo.lastname || "",
@@ -43,7 +46,10 @@ const EditUserProfile = () => {
     about_me: userInfo.about_me || "",
     avatar_url: userInfo.avatar_url || "",
     social_profiles: [
-      { account: "email", url: getSocialProfileUrl("email") || userInfo.email || "" },
+      {
+        account: "email",
+        url: getSocialProfileUrl("email") || userInfo.email || "",
+      },
       { account: "x.com", url: getSocialProfileUrl("x.com") },
       { account: "linkedin", url: getSocialProfileUrl("linkedin") },
       { account: "facebook", url: getSocialProfileUrl("facebook") },
@@ -51,13 +57,13 @@ const EditUserProfile = () => {
     ],
   });
 
-  // Handle input change for simple fields
-  const handleChange = (e: any) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle education changes
   const handleEducationChange = (index: number, value: string) => {
     const updatedEducation = [...formData.educations];
     updatedEducation[index] = value;
@@ -69,205 +75,215 @@ const EditUserProfile = () => {
   };
 
   const removeEducation = (indexToRemove: number) => {
-    const updatedEducation = formData.educations.filter((_: any, i: number) => i !== indexToRemove);
+    const updatedEducation = formData.educations.filter(
+      (_: any, i: number) => i !== indexToRemove,
+    );
     setFormData({ ...formData, educations: updatedEducation });
   };
 
-  // Handle social profile changes
   const handleSocialProfileChange = (account: string, value: string) => {
     const updatedProfiles = formData.social_profiles.map((profile) =>
-      profile.account === account ? { ...profile, url: value } : profile
+      profile.account === account ? { ...profile, url: value } : profile,
     );
     setFormData({ ...formData, social_profiles: updatedProfiles });
   };
 
-  // Handle form submission
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    updateProfileMutation.mutateAsync(formData as any)
+    updateProfileMutation.mutateAsync(formData as any);
   };
-
-  const renderTabNavigation = () => (
-    <div className="nav-tabs">
-      <button type="button" className={`nav-link ${ activeTab === "personalDetails" ? "active" : "" }`} onClick={() => setActiveTab("personalDetails")}>
-        {t("profile.personal_details")}
-        </button>
-      <button type="button" className={`nav-link ${ activeTab === "contactDetails" ? "active" : "" }`} onClick={() => setActiveTab("contactDetails")}>
-        {t("profile.contact_details")}
-      </button>
-    </div>
-  );
-
-  const renderNameFields = () => {
-    const nameFields = [
-      { name: 'firstname', labelKey: 'sign_up.form.first_name', placeholderKey: 'profile.enter-your-first-name' },
-      { name: 'lastname', labelKey: 'sign_up.form.last_name', placeholderKey: 'profile.enter-your-last-name' }
-    ];
-
-    return (
-      <div className="row">
-        {nameFields.map((field) => (
-          <div className="col" key={field.name}>
-            <div className="form-group">
-              <label htmlFor={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}>
-                {t(field.labelKey)}
-              </label>
-              <input 
-                id={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}
-                className="form-control" 
-                type="text" 
-                name={field.name} 
-                value={formData[field.name as keyof typeof formData]} 
-                onChange={handleChange} 
-                placeholder={t(field.placeholderKey)}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-  const renderTitleOrgFields = () => {
-    const titleOrgFields = [
-      { name: 'title', labelKey: 'topic.admin.title', placeholderKey: 'profile.enter-your-title' },
-      { name: 'organization', labelKey: 'edit_profile.organization', placeholderKey: 'profile.enter-your-organization' }
-    ];
-
-    return (
-      <div className="row">
-        {titleOrgFields.map((field) => (
-          <div className="col" key={field.name}>
-            <div className="form-group">
-              <label htmlFor={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}>
-                {t(field.labelKey)}
-              </label>
-              <input 
-                id={`form${field.name.charAt(0).toUpperCase() + field.name.slice(1)}`}
-                className="form-control" 
-                type="text" 
-                name={field.name} 
-                value={formData[field.name as keyof typeof formData]} 
-                onChange={handleChange} 
-                placeholder={t(field.placeholderKey)}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-  const renderLocationField = () => (
-      <div className="row">
-        <div className="col">
-          <div className="form-group">
-            <label htmlFor="formLocation">{t("edit_profile.location")}</label>
-            <input id="formLocation" className="form-control" type="text" name="location" value={formData.location} onChange={handleChange} placeholder={t("profile.enter-your-location")}/>
-          </div>
-        </div>
-      </div>
-    );
-  const renderEducationSection = () => (
-      <div className="row">
-        <div className="form-group">
-          <label htmlFor="formEducation">
-            {t("edit_profile.education_info")}
-          </label>
-          {formData.educations.map((edu: any, index: number) => (
-            <div className="form-education" key={index}> 
-              <div className="col">
-                <input className="form-control" type="text" value={edu} onChange={(e) => handleEducationChange(index, e.target.value)} placeholder={t("profile.enter-your-education")}/>
-                {index !== 0 && (
-                  <button
-                    type="button"
-                    className="remove-icon"
-                    onClick={() => {
-                      removeEducation(index);
-                    }}
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-          <button type="button" className="add-education-btn" onClick={addEducation}>
-            {t("edit_profile.line_add")}
-          </button>
-        </div>
-      </div>
-    );
-    const renderAboutMeField = () => (
-      <div className="row">
-        <div className="form-group">
-          <label htmlFor="formAboutMe">{t("edit_profile.about_me")}</label>
-          <textarea id="formAboutMe" className="form-control" rows={3} name="about_me" value={formData.about_me} onChange={handleChange} placeholder={t("profile.tell-us-about-yourself")}/>
-        </div>
-      </div>
-  );
-  const renderPersonalDetailsFields = () => (
-    <div className="tab-panel">
-      {renderNameFields()}
-      {renderTitleOrgFields()}
-      {renderLocationField()}
-      {renderEducationSection()}
-      {renderAboutMeField()}
-    </div>
-  );
-  const renderContactDetailsFields = () => (
-    <div className="tab-panel">
-      <div className="row">
-        {formData.social_profiles.map((profile) => (
-          <div className="col" key={profile.account}>
-            <div className="form-group">
-              <label htmlFor={`form${profile.account}`}>
-                {t(`common.${profile.account}`)}
-              </label>
-              <input
-                id={`form${profile.account}`}
-                className="form-control"
-                type="text"
-                value={profile.url}
-                onChange={(e) =>
-                  handleSocialProfileChange(profile.account, e.target.value)
-                }
-                placeholder={t(`profile.enter-your-${profile.account}`)}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderTabContent = () => (
-    <div className="tab-content">
-      {activeTab === "personalDetails" && renderPersonalDetailsFields()}
-      {activeTab === "contactDetails" && renderContactDetailsFields()}
-    </div>
-  );
-
-  const renderFormButtons = () => (
-    <div className="form-buttons">
-      <button className="cancel-btn" type="button" onClick={() => navigate(-1)}>
-        {t("common.button.cancel")}
-      </button>
-      <button className="submit-btn" type="submit">
-        {t("common.button.save")}
-      </button>
-    </div>
-  );
 
   return (
-    <div className="profile-page">
-      <div className="edit-user-profile listtitle">
-        <h2>{t("edit_profile.header")}</h2>
-        <hr />
-        <form onSubmit={handleSubmit} className="textalign">
-          <div className="custom-tabs">
-            {renderTabNavigation()}
-            {renderTabContent()}
+    <div className="mx-auto max-w-5xl min-h-screen px-4 py-8">
+      <div className="space-y-6 p-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold text-start text-foreground">
+            {t("edit_profile.header")}
+          </h2>
+          <Separator />
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <Tabs defaultValue="personalDetails" className="space-y-4">
+            <TabsList className="w-full justify-start gap-2 bg-muted/60">
+              <TabsTrigger value="personalDetails" className="px-4 py-2">
+                {t("profile.personal_details")}
+              </TabsTrigger>
+              <TabsTrigger value="contactDetails" className="px-4 py-2">
+                {t("profile.contact_details")}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="personalDetails" className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[
+                  {
+                    name: "firstname",
+                    labelKey: "sign_up.form.first_name",
+                    placeholderKey: "profile.enter-your-first-name",
+                  },
+                  {
+                    name: "lastname",
+                    labelKey: "sign_up.form.last_name",
+                    placeholderKey: "profile.enter-your-last-name",
+                  },
+                ].map((field) => (
+                  <label
+                    key={field.name}
+                    className="space-y-2 text-start w-full"
+                  >
+                    <span className="text-sm font-medium text-foreground">
+                      {t(field.labelKey)}
+                    </span>
+                    <input
+                      id={`form${field.name}`}
+                      name={field.name}
+                      value={formData[field.name as keyof typeof formData]}
+                      onChange={handleChange}
+                      placeholder={t(field.placeholderKey)}
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    />
+                  </label>
+                ))}
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[
+                  {
+                    name: "title",
+                    labelKey: "topic.admin.title",
+                    placeholderKey: "profile.enter-your-title",
+                  },
+                  {
+                    name: "organization",
+                    labelKey: "edit_profile.organization",
+                    placeholderKey: "profile.enter-your-organization",
+                  },
+                ].map((field) => (
+                  <label
+                    key={field.name}
+                    className="space-y-2 text-start w-full"
+                  >
+                    <span className="text-sm font-medium text-foreground">
+                      {t(field.labelKey)}
+                    </span>
+                    <input
+                      id={`form${field.name}`}
+                      name={field.name}
+                      value={formData[field.name as keyof typeof formData]}
+                      onChange={handleChange}
+                      placeholder={t(field.placeholderKey)}
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    />
+                  </label>
+                ))}
+              </div>
+
+              <div className="space-y-2 text-start w-full">
+                <label className="text-sm font-medium text-foreground">
+                  {t("edit_profile.location")}
+                </label>
+                <input
+                  id="formLocation"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder={t("profile.enter-your-location")}
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                />
+              </div>
+
+              <div className="space-y-3 text-start w-full">
+                <span className="text-sm font-medium text-foreground">
+                  {t("edit_profile.education_info")}
+                </span>
+                <div className="space-y-3">
+                  {formData.educations.map((edu: any, index: number) => (
+                    <div key={index} className="flex gap-3">
+                      <input
+                        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        type="text"
+                        value={edu}
+                        onChange={(e) =>
+                          handleEducationChange(index, e.target.value)
+                        }
+                        placeholder={t("profile.enter-your-education")}
+                      />
+                      {index !== 0 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="shrink-0 text-destructive hover:text-destructive"
+                          onClick={() => removeEducation(index)}
+                        >
+                          ✕
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addEducation}
+                  >
+                    {t("edit_profile.line_add")}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-start w-full">
+                <label className="text-sm font-medium text-foreground">
+                  {t("edit_profile.about_me")}
+                </label>
+                <textarea
+                  id="formAboutMe"
+                  name="about_me"
+                  rows={3}
+                  value={formData.about_me}
+                  onChange={handleChange}
+                  placeholder={t("profile.tell-us-about-yourself")}
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="contactDetails" className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {formData.social_profiles.map((profile) => (
+                  <label
+                    key={profile.account}
+                    className="space-y-2 text-start w-full"
+                  >
+                    <span className="text-sm font-medium text-foreground">
+                      {t(`common.${profile.account}`)}
+                    </span>
+                    <input
+                      id={`form${profile.account}`}
+                      value={profile.url}
+                      onChange={(e) =>
+                        handleSocialProfileChange(
+                          profile.account,
+                          e.target.value,
+                        )
+                      }
+                      placeholder={t(`profile.enter-your-${profile.account}`)}
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    />
+                  </label>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex justify-end gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate(-1)}
+            >
+              {t("common.button.cancel")}
+            </Button>
+            <Button type="submit">{t("common.button.save")}</Button>
           </div>
-          {renderFormButtons()}
         </form>
       </div>
     </div>
