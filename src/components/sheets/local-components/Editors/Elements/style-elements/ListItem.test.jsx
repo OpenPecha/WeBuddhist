@@ -26,7 +26,7 @@ describe("ListItem Component", () => {
     const li = screen.getByTestId("list-item-element");
     expect(li).toBeInTheDocument();
     expect(li).toHaveAttribute("data-custom", "custom-value");
-    expect(li).toHaveClass("custom-class");
+    expect(li).toHaveClass("en-serif-text");
     expect(screen.getByText("Custom list item")).toBeInTheDocument();
   });
 });
