@@ -2,7 +2,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useTranslate } from "@tolgee/react";
-import { BsEnvelope, BsFacebook, BsLinkedin, BsTwitter, BsYoutube } from "react-icons/bs";
+import {
+  BsEnvelope,
+  BsFacebook,
+  BsLinkedin,
+  BsTwitter,
+  BsYoutube,
+} from "react-icons/bs";
 import { MapPin, GraduationCap, Users, UserPlus } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,7 +23,6 @@ type SocialProfile = {
   account: string;
   url: string;
 };
-
 
 export const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
@@ -56,8 +61,11 @@ const UserProfile = () => {
     navigate("/edit-profile", { state: { userInfo } });
   };
 
-  const education = userInfo?.educations?.length ? userInfo.educations.join(" ") : "";
-  const initials = `${userInfo?.firstname?.[0] ?? ""}${userInfo?.lastname?.[0] ?? ""}`.toUpperCase();
+  const education = userInfo?.educations?.length
+    ? userInfo.educations.join(" ")
+    : "";
+  const initials =
+    `${userInfo?.firstname?.[0] ?? ""}${userInfo?.lastname?.[0] ?? ""}`.toUpperCase();
 
   const socialIcons = {
     linkedin: { icon: BsLinkedin, color: "#454545" },
@@ -68,7 +76,8 @@ const UserProfile = () => {
   };
 
   const socialProfiles: SocialProfile[] = (() => {
-    const rawProfiles = (userInfo?.social_profiles as SocialProfile[] | undefined) ?? [];
+    const rawProfiles =
+      (userInfo?.social_profiles as SocialProfile[] | undefined) ?? [];
 
     if (!rawProfiles.length) {
       return userInfo?.email ? [{ account: "email", url: userInfo.email }] : [];
@@ -77,7 +86,9 @@ const UserProfile = () => {
     const withUrls = rawProfiles.filter(
       (profile: SocialProfile) => profile.url && profile.url.trim() !== "",
     );
-    const hasEmailProfile = withUrls.some((profile: SocialProfile) => profile.account === "email");
+    const hasEmailProfile = withUrls.some(
+      (profile: SocialProfile) => profile.account === "email",
+    );
 
     if (!hasEmailProfile && userInfo?.email) {
       withUrls.push({ account: "email", url: userInfo.email });
@@ -93,7 +104,9 @@ const UserProfile = () => {
         userInfoIsLoading ? (
           <div className="flex items-center max-w-2xl space-y-4 mx-auto pt-10 justify-center px-6 py-24">
             <div className="flex flex-col items-center gap-3">
-              <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("common.loading")}
+              </p>
             </div>
           </div>
         ) : (
@@ -106,104 +119,131 @@ const UserProfile = () => {
           </div>
         )
       }
-      sidebar={<div>
-                  <div className="relative">
-                    <Avatar className="size-24">
-                      <AvatarImage src={userInfo?.avatar_url} alt="avatar" className="object-cover" />
-                      <AvatarFallback className="text-lg border font-bold text-primary">
-                        {initials}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div className="flex flex-1 flex-col mt-2 items-center gap-3 text-center md:items-start md:text-left">
-                    <div className="space-y-2">
-                      <h1 className="text-lg font-medium text-foreground">
-                        {userInfo?.firstname} {userInfo?.lastname}
-                      </h1>
-                      <div className="flex items-start flex-col text-start ">
-                        {userInfo?.title && (
-                          <span className="text-sm text-muted-foreground capitalize">{userInfo.title}</span>
-                        )}
-                        {userInfo?.organization && (
-                          <span className="text-sm text-muted-foreground capitalize">{userInfo.organization}</span>
-                        )}
-                      </div>
-                      
-                         <div className="flex items-center">
-                      <Badge variant="secondary" className="p-0">
-                        <Users className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                        <span className="text-sm font-semibold text-foreground">
-                          {userInfo?.followers}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {t("common.followers")}
-                        </span>
-                      </Badge>
-                      <Badge variant="secondary">
-                        <UserPlus className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                        <span className="text-sm font-semibold text-foreground">
-                          {userInfo?.following}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {t("common.following")}
-                        </span>
-                      </Badge>
+      sidebar={
+        <div>
+          <div className="relative">
+            <Avatar className="size-24">
+              <AvatarImage
+                src={userInfo?.avatar_url}
+                alt="avatar"
+                className="object-cover"
+              />
+              <AvatarFallback className="text-lg border font-bold text-primary">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="flex flex-1 flex-col mt-2 items-center gap-3 text-center md:items-start md:text-left">
+            <div className="space-y-2">
+              <h1 className="text-lg font-medium text-foreground">
+                {userInfo?.firstname} {userInfo?.lastname}
+              </h1>
+              <div className="flex items-start flex-col text-start ">
+                {userInfo?.title && (
+                  <span className="text-sm text-muted-foreground capitalize">
+                    {userInfo.title}
+                  </span>
+                )}
+                {userInfo?.organization && (
+                  <span className="text-sm text-muted-foreground capitalize">
+                    {userInfo.organization}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center">
+                <Badge variant="secondary" className="p-0">
+                  <Users
+                    className="h-4 w-4 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                  <span className="text-sm font-semibold text-foreground">
+                    {userInfo?.followers}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {t("common.followers")}
+                  </span>
+                </Badge>
+                <Badge variant="secondary">
+                  <UserPlus
+                    className="h-4 w-4 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                  <span className="text-sm font-semibold text-foreground">
+                    {userInfo?.following}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {t("common.following")}
+                  </span>
+                </Badge>
+              </div>
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-4">
+                  {userInfo?.location && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span className="capitalize">{userInfo.location}</span>
                     </div>
-                    <div className="space-y-4">
-                  <div className="flex flex-wrap items-center gap-4">
-                    {userInfo?.location && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
-                        <span className="capitalize">{userInfo.location}</span>
-                      </div>
-                    )}
-                    {education && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <GraduationCap className="h-4 w-4" />
-                        <span className="capitalize">{education}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {socialProfiles.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-2">
-                      {socialProfiles.map((profile: SocialProfile) => {
-                        const iconEntry = socialIcons[profile.account as keyof typeof socialIcons];
-                        const Icon = iconEntry?.icon;
-
-                        if (!Icon) return null;
-
-                        return (
-                          <a
-                            key={profile.account}
-                            href={profile.account === "email" ? `mailto:${profile.url}` : profile.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={profile.account}
-                            className="group relative flex h-10 w-10 items-center justify-center rounded-full border bg-background transition-all hover:scale-110  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                          >
-                            <Icon className="h-4 w-4 transition-colors" style={{ color: iconEntry.color }} />
-                          </a>
-                        );
-                      })}
+                  )}
+                  {education && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <GraduationCap className="h-4 w-4" />
+                      <span className="capitalize">{education}</span>
                     </div>
                   )}
                 </div>
-                    </div>
-                    
-                    {userInfo?.about_me && (
-                      <p className="text-sm leading-relaxed text-muted-foreground">
-                        <div className=" my-2 h-px bg-linear-to-r from-transparent via-border to-transparent" />
 
-                        {userInfo.about_me}
-                      </p>
-                    )}
-                 
+                {socialProfiles.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {socialProfiles.map((profile: SocialProfile) => {
+                      const iconEntry =
+                        socialIcons[
+                          profile.account as keyof typeof socialIcons
+                        ];
+                      const Icon = iconEntry?.icon;
+
+                      return (
+                        <a
+                          key={profile.account}
+                          href={
+                            profile.account === "email"
+                              ? `mailto:${profile.url}`
+                              : profile.url
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={profile.account}
+                          className="group relative flex h-10 w-10 items-center justify-center rounded-full border bg-background transition-all hover:scale-110  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <Icon
+                            className="h-4 w-4 transition-colors"
+                            style={{ color: iconEntry.color }}
+                          />
+                        </a>
+                      );
+                    })}
                   </div>
-                    <Button variant="outline" className=" mt-2 w-full" onClick={handleEditProfile}>
-                      {t("profile.edit_profile")}
-                    </Button>               
-        </div>}
+                )}
+              </div>
+            </div>
+
+            {userInfo?.about_me && (
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                <div className=" my-2 h-px bg-linear-to-r from-transparent via-border to-transparent" />
+
+                {userInfo.about_me}
+              </p>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            className=" mt-2 w-full"
+            onClick={handleEditProfile}
+          >
+            {t("profile.edit_profile")}
+          </Button>
+        </div>
+      }
     />
   );
 };
