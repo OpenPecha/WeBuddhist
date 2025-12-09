@@ -15,7 +15,7 @@ export const fetchsheet = async (email, limit, skip) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
   const accessToken = sessionStorage.getItem('accessToken');
-  const { data } = await axiosInstance.get("api/v1/sheets", {
+  const { data } = await axiosInstance.get("/api/v1/sheets", {
     headers: {
       Authorization: accessToken ? `Bearer ${accessToken}` : "Bearer None"
     },
@@ -57,7 +57,7 @@ const SheetListing = ({ userInfo }) => {
     data: sheetsData, 
     isLoading: sheetsIsLoading 
   } = useQuery(
-    ["sheets-user-profile", pagination.currentPage, pagination.limit], 
+    ["sheets-user-profile", userInfo?.email, pagination.currentPage, pagination.limit], 
     () => fetchsheet(userInfo?.email, pagination.limit, skip), 
     { refetchOnWindowFocus: false, enabled: !!userInfo?.email }
   );

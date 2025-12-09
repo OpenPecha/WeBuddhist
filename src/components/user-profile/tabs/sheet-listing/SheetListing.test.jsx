@@ -166,7 +166,7 @@ describe("SheetListing Component", () => {
 
   test("fetches sheet data successfully", async () => {
     const result = await fetchsheet("test@example.com", 10, 0);
-    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/sheets", {
       headers: {
         Authorization: "Bearer mock-token",
       },
