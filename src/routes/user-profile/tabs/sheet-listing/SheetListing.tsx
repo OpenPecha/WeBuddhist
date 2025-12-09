@@ -3,19 +3,27 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "react-query";
 import { useTranslate } from "@tolgee/react";
 import { MdDeleteOutline } from "react-icons/md";
+import { FiEye, FiClock } from "react-icons/fi";
 
 import axiosInstance from "../../../../config/axios-config.ts";
 import { LANGUAGE } from "../../../../utils/constants.ts";
-import { getLanguageClass, mapLanguageCode } from "../../../../utils/helperFunctions.tsx";
+import {
+  getLanguageClass,
+  mapLanguageCode,
+} from "../../../../utils/helperFunctions.tsx";
 import PaginationComponent from "../../../commons/pagination/PaginationComponent.tsx";
 import { deleteSheet } from "../../../sheets/view-sheet/SheetDetailPage.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { Badge } from "@/components/ui/badge.tsx";
 
 type Sheet = {
   id: string;
   title: string;
   language: string;
   views: number;
-  published_date?: string;
+  time_passed?: string;
+  is_published?: boolean;
+  summary?: string;
   publisher: { username: string };
 };
 
@@ -29,7 +37,11 @@ type PaginationState = {
   limit: number;
 };
 
-export const fetchsheet = async (email: string, limit: number, skip: number) => {
+export const fetchsheet = async (
+  email: string,
+  limit: number,
+  skip: number,
+) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
   const accessToken = sessionStorage.getItem("accessToken");
@@ -54,9 +66,15 @@ type SheetListingProps = {
 const SheetListing = ({ userInfo }: SheetListingProps) => {
   const navigate = useNavigate();
   const { t } = useTranslate();
-  const [pagination, setPagination] = useState<PaginationState>({ currentPage: 1, limit: 10 });
+  const [pagination, setPagination] = useState<PaginationState>({
+    currentPage: 1,
+    limit: 10,
+  });
 
-  const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
+  const skip = useMemo(
+    () => (pagination.currentPage - 1) * pagination.limit,
+    [pagination],
+  );
 
   const handlePageChange = (pageNumber: number) => {
     setPagination((prev) => ({ ...prev, currentPage: pageNumber }));
@@ -70,67 +88,95 @@ const SheetListing = ({ userInfo }: SheetListingProps) => {
     },
   });
 
-  const {
-    data: sheetsData,
-    isLoading: sheetsIsLoading,
-  } = useQuery(
-    ["sheets-user-profile", pagination.currentPage, pagination.limit, userInfo?.email],
+  const { data: sheetsData, isLoading: sheetsIsLoading } = useQuery(
+    [
+      "sheets-user-profile",
+      pagination.currentPage,
+      pagination.limit,
+      userInfo?.email,
+    ],
     () => fetchsheet(userInfo?.email ?? "", pagination.limit, skip),
     { refetchOnWindowFocus: false, enabled: !!userInfo?.email },
   );
 
   const totalPages = Math.ceil((sheetsData?.total || 0) / pagination.limit);
 
-  if (!userInfo?.email) {
-    return <p className="text-sm text-muted-foreground">{t("sheet.not_found")}</p>;
-  }
-
   if (sheetsIsLoading) {
-    return <p className="text-sm text-muted-foreground">{t("common.loading")}</p>;
+    return (
+      <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
+    );
   }
 
   if (!sheetsData?.sheets?.length) {
-    return <p className="text-sm text-muted-foreground">{t("sheet.not_found")}</p>;
+    return (
+      <section className="flex w-full flex-col h-[80vh] items-center justify-center bg-muted/10">
+        <p className="text-lg font-semibold text-foreground">
+          {t("sheet.not_found")}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          {t("community_empty_story")}
+        </p>
+      </section>
+    );
   }
 
   return (
     <div className="space-y-4">
+      <p className="text-lg font-medium w-full text-start text-foreground">
+        Notes
+      </p>
       <div className="grid gap-3">
         {sheetsData.sheets.map((sheet) => (
-          <div
-            key={sheet.id}
-            className="rounded-lg border bg-card p-4 shadow-sm transition hover:shadow-md"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="space-y-2">
-                <Link
-                  to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, "-").toLowerCase()}_${sheet.id}`}
-                  className="group"
-                >
-                  <h4
-                    className={`text-base font-semibold leading-snug text-foreground group-hover:text-primary ${getLanguageClass(sheet.language)}`}
+          <div key={sheet.id}>
+            <div className="group flex items-start justify-between py-4 last:border-0 hover:bg-muted/50 rounded-lg transition-colors">
+              <div className="space-y-1.5 flex-1">
+                <div className="flex items-center gap-2">
+                  <Link
+                    to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, "-").toLowerCase()}_${sheet.id}`}
+                    className="font-semibold text-lg text-foreground hover:text-primary transition-colors flex items-center gap-2"
                   >
-                    {sheet.title}
-                  </h4>
-                </Link>
-                <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                  <span>
-                    {sheet.views} {t("sheet.view_count")}
-                  </span>
-                  <span className="text-muted-foreground/60">•</span>
-                  <span>{sheet.published_date?.split(" ")[0]}</span>
+                    <span className={getLanguageClass(sheet.language)}>
+                      {sheet.title}
+                    </span>
+                  </Link>
+
+                  <Badge
+                    variant={sheet.is_published ? "default" : "secondary"}
+                    className="h-5 px-2 text-[10px] uppercase tracking-wider"
+                  >
+                    {sheet.is_published ? "Published" : "Draft"}
+                  </Badge>
+                </div>
+
+                <p className="text-sm text-start text-muted-foreground line-clamp-2 leading-relaxed">
+                  {sheet.summary}
+                </p>
+
+                <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1">
+                  <div className="flex items-center gap-1">
+                    <FiEye className="size-3" />
+                    <span>
+                      {sheet.views} {t("sheet.view_count")}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FiClock className="size-3" />
+                    <span>{sheet.time_passed}</span>
+                  </div>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => deleteSheetMutation(sheet.id)}
-                aria-label={t("sheet.delete")}
-                className="rounded-full p-2 text-muted-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={(e) => {
+                  e.preventDefault();
+                  deleteSheetMutation(sheet.id);
+                }}
                 disabled={isDeleting}
               >
                 <MdDeleteOutline className="size-5" />
-              </button>
+              </Button>
             </div>
           </div>
         ))}

@@ -110,12 +110,8 @@ const UserProfile = () => {
             </div>
           </div>
         ) : (
-          <div className="mx-auto max-w-2xl space-y-4 pt-10 flex flex-col gap-6">
-            <Card className="border-none">
-              <CardContent className="p-6">
-                <SheetListing userInfo={userInfo} />
-              </CardContent>
-            </Card>
+          <div className="mx-auto max-w-2xl space-y-4 pt-10">
+            <SheetListing userInfo={userInfo} />
           </div>
         )
       }

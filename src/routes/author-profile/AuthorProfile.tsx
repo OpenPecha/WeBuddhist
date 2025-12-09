@@ -1,9 +1,15 @@
-import "../user-profile/UserProfile.scss";
 import { useQuery } from "react-query";
 import axiosInstance from "../../config/axios-config.ts";
 import { useTranslate } from "@tolgee/react";
 import SheetListing from "../user-profile/tabs/sheet-listing/SheetListing.tsx";
-import { BsFileEarmark, BsLinkedin, BsTwitter, BsFacebook, BsYoutube, BsEnvelope } from "react-icons/bs";
+import {
+  BsFileEarmark,
+  BsLinkedin,
+  BsTwitter,
+  BsFacebook,
+  BsYoutube,
+  BsEnvelope,
+} from "react-icons/bs";
 import { useParams } from "react-router-dom";
 import { getEarlyReturn } from "../../utils/helperFunctions.tsx";
 import noImageUrl from "../../assets/noprofile.jpg";
@@ -19,10 +25,17 @@ const AuthorProfile = () => {
     data: authorInfo,
     isLoading: authorInfoIsLoading,
     error: authorInfoError,
-  } = useQuery("userInfo", () => fetchAuthorInfo(username || ""), { retry:false,refetchOnWindowFocus: false });
+  } = useQuery("userInfo", () => fetchAuthorInfo(username || ""), {
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
   const { t } = useTranslate();
-  const earlyReturn = getEarlyReturn({ isLoading: authorInfoIsLoading, error: authorInfoError, t });
-  if (earlyReturn) return earlyReturn; 
+  const earlyReturn = getEarlyReturn({
+    isLoading: authorInfoIsLoading,
+    error: authorInfoError,
+    t,
+  });
+  if (earlyReturn) return earlyReturn;
 
   const renderAuthorBasicInfo = () => (
     <>
@@ -41,10 +54,12 @@ const AuthorProfile = () => {
           <span className="separator">·</span>
         </>
       )}
-        {authorInfo?.educations?.length ? (
+      {authorInfo?.educations?.length ? (
         <>
           <span className="degree">
-            {authorInfo.educations.reduce((acc: string, curr: string) => acc + " " + curr)}
+            {authorInfo.educations.reduce(
+              (acc: string, curr: string) => acc + " " + curr,
+            )}
           </span>{" "}
           <span className="separator">·</span>
         </>
@@ -53,8 +68,6 @@ const AuthorProfile = () => {
       )}
     </p>
   );
-
-
 
   const renderAuthorFollowersInfo = () => (
     <div className="followers">
@@ -76,8 +89,12 @@ const AuthorProfile = () => {
       email: { icon: BsEnvelope, color: "#4a4a4a" },
     };
 
-    const profilesWithUrls = socialProfiles.filter((profile: any) => profile.url && profile.url.trim() !== '');
-    const hasEmail = profilesWithUrls.some((profile: any) => profile.account === "email");
+    const profilesWithUrls = socialProfiles.filter(
+      (profile: any) => profile.url && profile.url.trim() !== "",
+    );
+    const hasEmail = profilesWithUrls.some(
+      (profile: any) => profile.account === "email",
+    );
     if (!hasEmail && authorInfo?.email) {
       profilesWithUrls.push({ account: "email", url: authorInfo.email });
     }
@@ -86,7 +103,8 @@ const AuthorProfile = () => {
     return (
       <div className="social-links">
         {profilesToDisplay.map((profile: any) => {
-          const { icon: Icon, color } = socialIcons[profile.account as keyof typeof socialIcons] || {};
+          const { icon: Icon, color } =
+            socialIcons[profile.account as keyof typeof socialIcons] || {};
           return Icon ? (
             <a
               key={profile.account}
@@ -120,15 +138,21 @@ const AuthorProfile = () => {
 
   const renderAuthorProfileImage = () => (
     <div className="profile-image-container">
-      <img src={authorInfo.avatar_url} onError={(e: any) => {(e.target as HTMLImageElement).onerror = null; (e.target as HTMLImageElement).src = noImageUrl;}} alt="Profile" className="profile-image" />
+      <img
+        src={authorInfo.avatar_url}
+        onError={(e: any) => {
+          (e.target as HTMLImageElement).onerror = null;
+          (e.target as HTMLImageElement).src = noImageUrl;
+        }}
+        alt="Profile"
+        className="profile-image"
+      />
     </div>
   );
 
   const renderAuthorProfileRightSection = () => (
     <div className="profile-right">
-    <div className="profile-picture">
-       {renderAuthorProfileImage()}
-    </div>
+      <div className="profile-picture">{renderAuthorProfileImage()}</div>
     </div>
   );
 
@@ -142,10 +166,10 @@ const AuthorProfile = () => {
   const renderAuthorTabsContainer = () => (
     <div className="tabs-container">
       <div>
-      <button className="nav-sheet ">
-      <BsFileEarmark />
-      {t("profile.tab.stories")}
-    </button>
+        <button className="nav-sheet ">
+          <BsFileEarmark />
+          {t("profile.tab.stories")}
+        </button>
       </div>
       <div className="tab-content">
         <SheetListing userInfo={authorInfo} />
@@ -165,9 +189,7 @@ const AuthorProfile = () => {
   );
 
   const renderAuthorProfileContent = () => (
-    <div className="user-profile listtitle">
-      {renderAuthorMainProfile()}
-    </div>
+    <div className="user-profile listtitle">{renderAuthorMainProfile()}</div>
   );
 
   return (
