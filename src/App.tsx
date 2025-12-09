@@ -1,6 +1,5 @@
 import "./App.css";
-import { Route, Routes, useLocation, useNavigate, matchPath, Navigate } from "react-router-dom";
-import NavigationBar from "./routes/navbar/NavigationBar.tsx";
+import { Route, Routes, useNavigate, Navigate } from "react-router-dom";
 import { useMutation } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.tsx";
 import { useEffect, useState , Suspense, lazy} from "react";
@@ -13,9 +12,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.ts";
 import Sheets from "./routes/sheets/Sheets.tsx";
 import SheetChapters from "./routes/chapterV2/SheetChapters.tsx";
-import Footer from "./routes/footer/Footer.tsx";
+import { MainLayout } from "./layouts/MainLayout";
+import { AuthLayout } from "./layouts/AuthLayout";
+import { NoFooterLayout } from "./layouts/NoFooterLayout";
 
-const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
+const tokenRefreshIntervalMs = Number(import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC) || 0;
 const Collections = lazy(() => import("./routes/collections/Collections.tsx"));
 const UserLogin = lazy(() => import("./routes/user-login/UserLogin.tsx"));
 const UserRegistration = lazy(() => import("./routes/user-registration/UserRegistration.tsx"));
@@ -30,12 +31,22 @@ const ForgotPassword = lazy(() => import("./routes/forgot-password/ForgotPasswor
 const SearchResultsPage = lazy(() => import("./routes/search/SearchResultsPage.tsx"));
 const Chat = lazy(() => import("./routes/chat/base/Chat.tsx"));
 
+type Auth0UserType = {
+    getIdTokenClaims: () => Promise<any>;
+    isAuthenticated: boolean;
+    logout: (options?: { logoutParams?: { returnTo: string } }) => Promise<void>;
+};
+
+type AuthUserType={
+    login:(token:string)=>void;
+    isLoggedIn:boolean;
+    logout:()=>void;
+};
 function App() {
     const navigate = useNavigate();
-    const { login, isLoggedIn, logout: pechaLogout } = useAuth();
-    const [intervalId, setIntervalId] = useState(null);
-    const location = useLocation();
-    const { getIdTokenClaims, isAuthenticated, logout } = useAuth0();
+    const { login, isLoggedIn, logout: pechaLogout } = useAuth() as AuthUserType;
+    const [intervalId, setIntervalId] = useState<ReturnType<typeof setInterval> | null>(null);
+    const { getIdTokenClaims, isAuthenticated, logout }: Auth0UserType = useAuth0() as Auth0UserType;
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -65,7 +76,7 @@ function App() {
     }, [isAuthenticated]);
 
     const loginMutation = useMutation(
-        async (refreshToken) => {
+        async (refreshToken: string) => {
             const response = await axiosInstance.post(
                 "/api/v1/auth/refresh-token",
                 { 'token': refreshToken }
@@ -95,7 +106,7 @@ function App() {
             if (refreshToken) {
                 loginMutation.mutate(refreshToken);
             }
-        }, tokenExpiryTime);
+        }, tokenRefreshIntervalMs);
         setIntervalId(interval);
     }
 
@@ -111,50 +122,40 @@ function App() {
         setFontVariables(localStorage.getItem(LANGUAGE) || "en");
     }, []);
 
-    const hideNavigationBar = !!matchPath("/ai/new", location.pathname) || !!matchPath("/ai/:threadId", location.pathname)
-    || !!matchPath("/login", location.pathname)
-    || !!matchPath("/register", location.pathname)
-    || !!matchPath("/forgot-password", location.pathname)
-    || !!matchPath("/reset-password", location.pathname);
-
-    const hideFooter =
-      !!matchPath("/sheets/:id", location.pathname) ||
-      !!matchPath("/chapter", location.pathname) ||
-      !!matchPath("/login", location.pathname) ||
-      !!matchPath("/register", location.pathname) ||
-      !!matchPath("/ai", location.pathname) ||
-      !!matchPath("/ai/:threadId", location.pathname)
-      || !!matchPath("/forgot-password", location.pathname)
-      || !!matchPath("/reset-password", location.pathname);
-
     return (
       <Suspense>
-        {!hideNavigationBar && <NavigationBar/>}
           <Routes>
-              <Route path="/" element={<Collections/>}/>
-              <Route path="/collections" element={<Collections/>}/>
-              <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
-              <Route path="/user/:username" element={<AuthorProfile/>}/>
-              <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
-              <Route path="/reset-password" element={<ResetPassword/>}/>
-              <Route path="/forgot-password" element={<ForgotPassword/>}/>
-              <Route path="/register" element={<UserRegistration/>}/>
-              <Route path="/login" element={<UserLogin/>}/>
-              <Route path="/topics" element={<Topics/>}/>
-              <Route path="/topics/:id" element={<Topics/>}/>
-              <Route path="/note" element={<CommunityPage/>}/>
-              <Route path="/texts/:id" element={<Texts/>}/>
-              <Route path="/works/:id" element={<Works/>}/>
-              <Route path="/chapter" element={<ChaptersV2/>}/>
-              <Route path="/search" element={<SearchResultsPage/>}/>
-              <Route path="/ai" element={<Navigate to="/ai/new" replace />}/>
-              <Route path="/ai/new" element={<Chat/>}/>
-              <Route path="/ai/:threadId" element={<Chat/>}/>
-              <Route path="*" element={<Collections/>}/>
-              <Route path="/sheets/:id" element={<Sheets/>}/>
-              <Route path="/:username/:sheetSlugAndId" element={<SheetChapters/>}/>
+              <Route element={<AuthLayout />}>
+                  <Route path="/login" element={<UserLogin/>}/>
+                  <Route path="/register" element={<UserRegistration/>}/>
+                  <Route path="/forgot-password" element={<ForgotPassword/>}/>
+                  <Route path="/reset-password" element={<ResetPassword/>}/>
+              </Route>
+
+              <Route element={<NoFooterLayout />}>
+                  <Route path="/sheets/:id" element={<Sheets/>}/>
+                  <Route path="/chapter" element={<ChaptersV2/>}/>
+                  <Route path="/ai" element={<Navigate to="/ai/new" replace />}/>
+                  <Route path="/ai/new" element={<Chat/>}/>
+                  <Route path="/ai/:threadId" element={<Chat/>}/>
+              </Route>
+
+              <Route element={<MainLayout />}>
+                  <Route path="/" element={<Collections/>}/>
+                  <Route path="/collections" element={<Collections/>}/>
+                  <Route path="/profile" element={<AuthenticationGuard component={UserProfile}/>}/>
+                  <Route path="/user/:username" element={<AuthorProfile/>}/>
+                  <Route path="/edit-profile" element={<AuthenticationGuard component={EditUserProfile}/>}/>
+                  <Route path="/topics" element={<Topics/>}/>
+                  <Route path="/topics/:id" element={<Topics/>}/>
+                  <Route path="/note" element={<CommunityPage/>}/>
+                  <Route path="/texts/:id" element={<Texts/>}/>
+                  <Route path="/works/:id" element={<Works/>}/>
+                  <Route path="/search" element={<SearchResultsPage/>}/>
+                  <Route path="/:username/:sheetSlugAndId" element={<SheetChapters/>}/>
+                  <Route path="*" element={<Collections/>}/>
+              </Route>
           </Routes>
-          {!hideFooter && <Footer/>}
       </Suspense>
     );
 }

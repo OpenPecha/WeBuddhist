@@ -35,7 +35,7 @@ const tolgee = Tolgee()
       "bo-IN": async () => localeBoIn
     }
   });
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById('root') as HTMLElement).render(
   <Router>
 
     <QueryClientProvider client={ queryClient }>
