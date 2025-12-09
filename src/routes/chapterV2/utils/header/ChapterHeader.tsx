@@ -8,7 +8,7 @@ import {getLanguageClass} from "../../../../utils/helperFunctions.tsx";
 import { usePanelContext } from "../../../../context/PanelContext.tsx";
 import { useTolgee } from '@tolgee/react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import langicon from "../../../../assets/langicon.svg"
+import langicon from "@/assets/icons/langicon.svg"
 
 const ChapterHeader = (props) => {
 

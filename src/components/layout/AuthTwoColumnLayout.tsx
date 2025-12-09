@@ -52,7 +52,7 @@ const AuthTwoColumnLayout: React.FC<AuthTwoColumnLayoutProps> = ({
           </div>
           <div className="flex w-full flex-col space-y-2 text-start">
             <div className="flex items-center space-x-2">
-              <p className="text-2xl font-medium">{title}</p>
+              <p className="text-2xl font-medium serif-title-text">{title}</p>
               <Badge variant="outline" className="text-sm text-muted-foreground">
                 {badgeText}
               </Badge>

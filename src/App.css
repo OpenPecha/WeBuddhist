@@ -77,6 +77,9 @@
   font-family: 'EBGaramond-Regular', sans-serif;
   font-size: 20px;
 }
+.serif-title-text{
+  font-family: 'EBGaramond-Regular', sans-serif;
+}
 .title {
   font-size: var(--title-font-size);
   font-family: var(--title-font-family);
