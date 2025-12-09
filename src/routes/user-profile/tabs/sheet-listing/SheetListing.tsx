@@ -45,7 +45,7 @@ export const fetchsheet = async (
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
   const accessToken = sessionStorage.getItem("accessToken");
-  const { data } = await axiosInstance.get("api/v1/sheets", {
+  const { data } = await axiosInstance.get("/api/v1/sheets", {
     headers: {
       Authorization: accessToken ? `Bearer ${accessToken}` : "Bearer None",
     },
@@ -61,9 +61,10 @@ export const fetchsheet = async (
 
 type SheetListingProps = {
   userInfo: { email?: string };
+  isOwnProfile: boolean;
 };
 
-const SheetListing = ({ userInfo }: SheetListingProps) => {
+const SheetListing = ({ userInfo, isOwnProfile }: SheetListingProps) => {
   const navigate = useNavigate();
   const { t } = useTranslate();
   const [pagination, setPagination] = useState<PaginationState>({
@@ -91,9 +92,9 @@ const SheetListing = ({ userInfo }: SheetListingProps) => {
   const { data: sheetsData, isLoading: sheetsIsLoading } = useQuery(
     [
       "sheets-user-profile",
+      userInfo?.email,
       pagination.currentPage,
       pagination.limit,
-      userInfo?.email,
     ],
     () => fetchsheet(userInfo?.email ?? "", pagination.limit, skip),
     { refetchOnWindowFocus: false, enabled: !!userInfo?.email },
@@ -128,12 +129,12 @@ const SheetListing = ({ userInfo }: SheetListingProps) => {
       <div className="grid gap-3">
         {sheetsData.sheets.map((sheet) => (
           <div key={sheet.id}>
-            <div className="group flex items-start justify-between py-4 last:border-0 hover:bg-muted/50 rounded-lg transition-colors">
+            <div className="group flex items-start justify-between hover:cursor-pointer py-4 hover:bg-muted/50 rounded-lg transition-colors">
               <div className="space-y-1.5 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <Link
                     to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, "-").toLowerCase()}_${sheet.id}`}
-                    className="font-semibold text-lg text-foreground hover:text-primary transition-colors flex items-center gap-2"
+                    className="font-semibold text-lg text-start w-full text-foreground"
                   >
                     <span className={getLanguageClass(sheet.language)}>
                       {sheet.title}
@@ -148,7 +149,7 @@ const SheetListing = ({ userInfo }: SheetListingProps) => {
                   </Badge>
                 </div>
 
-                <p className="text-sm text-start text-muted-foreground line-clamp-2 leading-relaxed">
+                <p className="text-sm text-start  text-muted-foreground line-clamp-2 leading-relaxed">
                   {sheet.summary}
                 </p>
 
@@ -165,18 +166,19 @@ const SheetListing = ({ userInfo }: SheetListingProps) => {
                   </div>
                 </div>
               </div>
-
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={(e) => {
-                  e.preventDefault();
-                  deleteSheetMutation(sheet.id);
-                }}
-                disabled={isDeleting}
-              >
-                <MdDeleteOutline className="size-5" />
-              </Button>
+              {isOwnProfile && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    deleteSheetMutation(sheet.id);
+                  }}
+                  disabled={isDeleting}
+                >
+                  <MdDeleteOutline className="size-5" />
+                </Button>
+              )}
             </div>
           </div>
         ))}

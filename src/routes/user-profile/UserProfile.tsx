@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -23,18 +23,30 @@ type SocialProfile = {
   url: string;
 };
 
-export const fetchUserInfo = async () => {
-  const { data } = await axiosInstance.get("/api/v1/users/info");
+export const fetchUserInfo = async (username?: string) => {
+  const endpoint = username
+    ? `/api/v1/users/${username}`
+    : "/api/v1/users/info";
+  const { data } = await axiosInstance.get(endpoint);
   return data;
 };
 
 const UserProfile = () => {
   const navigate = useNavigate();
+  const { username } = useParams();
+  const isOwnProfile = !username;
   const {
     data: userInfo,
     isLoading: userInfoIsLoading,
     refetch: userInfoRefetch,
-  } = useQuery("userInfo", fetchUserInfo, { refetchOnWindowFocus: false });
+  } = useQuery(
+    ["userInfo", username ?? "self"],
+    () => fetchUserInfo(username),
+    {
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  );
   const { t } = useTranslate();
   const [isImageUploadModalOpen, setIsImageUploadModalOpen] = useState(false);
 
@@ -57,6 +69,7 @@ const UserProfile = () => {
   };
 
   const handleEditProfile = () => {
+    if (!isOwnProfile) return;
     navigate("/edit-profile", { state: { userInfo } });
   };
 
@@ -111,7 +124,7 @@ const UserProfile = () => {
           </div>
         ) : (
           <div className="mx-auto max-w-2xl space-y-4 pt-10">
-            <SheetListing userInfo={userInfo} />
+            <SheetListing userInfo={userInfo} isOwnProfile={isOwnProfile} />
           </div>
         )
       }
@@ -231,13 +244,15 @@ const UserProfile = () => {
               </p>
             )}
           </div>
-          <Button
-            variant="outline"
-            className=" mt-2 w-full"
-            onClick={handleEditProfile}
-          >
-            {t("profile.edit_profile")}
-          </Button>
+          {isOwnProfile && (
+            <Button
+              variant="outline"
+              className=" mt-2 w-full"
+              onClick={handleEditProfile}
+            >
+              {t("profile.edit_profile")}
+            </Button>
+          )}
         </div>
       }
     />
