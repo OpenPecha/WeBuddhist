@@ -88,7 +88,11 @@
               width: 100%;
             }
             &.highlighted-segment {
-              background-color: #f0f7ff;
+              .segment-content {
+                background-color: #f0f7ff;
+                padding: 4px 12px;
+                border-radius: 4px;
+              }
             }
             .segment-number{
               margin-right: 2rem;
