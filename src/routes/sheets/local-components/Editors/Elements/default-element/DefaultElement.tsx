@@ -14,10 +14,10 @@ const DefaultElement = (props: any) => {
     <p
       style={style}
       {...attributes}
-      className={` relative pl-1.2 ${getLanguageClass("en")}`}
+      className={` relative pl-5 ${getLanguageClass("en")}`}
     >
       {selected && (
-        <MdDragIndicator className="absolute mt-0.3 left-0 w-4 h-4 inline-block text-gray-500" />
+        <MdDragIndicator className="absolute mt-1.5  left-0 size-5 inline-block text-gray-300" />
       )}
       {children}
     </p>

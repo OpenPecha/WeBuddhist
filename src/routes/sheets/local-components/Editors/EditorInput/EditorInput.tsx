@@ -56,7 +56,7 @@ const EditorInput = ({ editor }: any) => {
       autoFocus
       spellCheck
       disableDefaultStyles
-      className="w-full max-w-full overflow-x-hidden wrap-break-word [ul]:list-disc [ol]:list-decimal [li]:list-item [li]:whitespace-pre-wrap"
+      className="w-full max-w-full border-none ring-0 outline-none overflow-x-hidden wrap-break-word"
       renderElement={renderElement}
       renderLeaf={renderLeaf}
       onPaste={(event) => {

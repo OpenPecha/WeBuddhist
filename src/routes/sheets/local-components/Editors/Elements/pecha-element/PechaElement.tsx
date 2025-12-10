@@ -52,21 +52,16 @@ const PechaElement = ({ attributes, element }: PechaElementProps) => {
     <div {...attributes}>
       <div
         contentEditable={false}
-        className="my-2 rounded border border-dashed border-[#d7d7d7] p-4"
+        className="my-2 rounded border text-left border-dashed border-[#d7d7d7] p-4"
       >
         {isLoading ? (
           <div>Loading...</div>
         ) : (
           <div
-            className={`${getLanguageClass(segmentData?.text.language ?? "")}`}
+            className={` border-l-2 border-red-900 pl-2 ${getLanguageClass(segmentData?.text.language ?? "")}`}
           >
-            <img
-              src={pechaIcon}
-              className="mb-2.5 h-12 w-12"
-              alt="source icon"
-            />
             <div dangerouslySetInnerHTML={{ __html: cleanContent }} />
-            <p className="mt-2.5 text-[1.1rem] font-semibold text-[#A9080E]">
+            <p className="mt-2.5 text-base font-semibold text-[#A9080E]">
               {segmentData?.text.title}
             </p>
           </div>

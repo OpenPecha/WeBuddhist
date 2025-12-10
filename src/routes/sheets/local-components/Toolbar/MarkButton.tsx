@@ -6,17 +6,16 @@ import { Button } from "@/components/ui/button";
 type MarkButtonProps = {
   format: string;
   children: ReactNode;
-  className?: string;
   title?: string;
 };
 
 const MarkButton = (prop: MarkButtonProps) => {
-  const { format, children, className, title } = prop;
+  const { format, children, title } = prop;
   const editor = useSlate();
   const customEditor = useCustomEditor();
   const isActive = customEditor.isMarkActive(editor, format);
   const buttonClasses =
-    `${"w-7 h-7 md:w-8 md:h-8 text-gray-600 text-sm hover:bg-gray-200 hover:text-gray-800 active:bg-gray-300 active:text-black"} ${isActive ? "active bg-gray-300 text-black" : ""}`.trim();
+    `${"w-7 h-7 md:w-8 md:h-8 text-gray-500 text-sm"} ${isActive && "active bg-gray-200"}`.trim();
 
   return (
     <Button

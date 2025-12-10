@@ -25,17 +25,7 @@ import AlertModal from "../modals/alert-modal/AlertModal";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
-type SaveStatus = "idle" | "saving" | "saved";
-
-type ToolsbarProps = {
-  editor: any;
-  value: any;
-  title?: string;
-  sheetId?: string;
-  saveStatus?: SaveStatus;
-};
-
-const Toolsbar = (prop: ToolsbarProps) => {
+const Toolsbar = (prop: any) => {
   const { editor, value, title, sheetId, saveStatus } = prop;
   const customEditor = useCustomEditor();
   const { t } = useTranslate();
@@ -88,7 +78,7 @@ const Toolsbar = (prop: ToolsbarProps) => {
           : "bg-gray-300";
     return (
       <span
-        className={`inline-block w-3 h-3 rounded-full ml-2.5 align-middle transition-colors duration-300${statusClass}`}
+        className={`inline-block w-3 h-3 rounded-full ml-2.5 align-middle transition-colors duration-300 ${statusClass}`}
       />
     );
   };
@@ -97,16 +87,13 @@ const Toolsbar = (prop: ToolsbarProps) => {
     return (
       <div className="flex items-center gap-0.5">
         <MarkButton format="bold" title={t("Bold")}>
-          {" "}
-          <FaBold />{" "}
+          <FaBold />
         </MarkButton>
         <MarkButton format="italic" title={t("Italic")}>
-          {" "}
-          <FaItalic />{" "}
+          <FaItalic />
         </MarkButton>
         <MarkButton format="underline" title={t("Underline")}>
-          {" "}
-          <FaUnderline />{" "}
+          <FaUnderline />
         </MarkButton>
       </div>
     );
@@ -153,20 +140,16 @@ const Toolsbar = (prop: ToolsbarProps) => {
     return (
       <div className="flex items-center gap-0.5">
         <BlockButton format="left" title={t("Align Left")}>
-          {" "}
-          <FaAlignLeft />{" "}
+          <FaAlignLeft />
         </BlockButton>
         <BlockButton format="center" title={t("Align Center")}>
-          {" "}
-          <FaAlignCenter />{" "}
+          <FaAlignCenter />
         </BlockButton>
         <BlockButton format="right" title={t("Align Right")}>
-          {" "}
-          <FaAlignRight />{" "}
+          <FaAlignRight />
         </BlockButton>
         <BlockButton format="justify" title={t("Justify")}>
-          {" "}
-          <FaAlignJustify />{" "}
+          <FaAlignJustify />
         </BlockButton>
       </div>
     );
@@ -176,8 +159,7 @@ const Toolsbar = (prop: ToolsbarProps) => {
     return (
       <div className="flex items-center gap-0.5">
         <BlockButton format="block-quote" title={t("Block Quote")}>
-          {" "}
-          <FaQuoteLeft />{" "}
+          <FaQuoteLeft />
         </BlockButton>
         <Button
           type="button"

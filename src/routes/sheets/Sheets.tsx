@@ -57,10 +57,9 @@ const Sheets = () => {
       <div className=" w-full mb-3">
         <input
           type="text"
-          style={{ fontFamily: "serif" }}
           value={title}
           onChange={handleTitleChange}
-          className={` text-4xl w-full py-3 border-none border-b-2 outline-none bg-transparent transition-colors placeholder:text-gray-400 placeholder:opacity-70 ${titleError && " border-red-600"}`}
+          className={` text-2xl w-full py-3 serif-title-text outline-none bg-transparent placeholder:text-gray-400 placeholder:opacity-70`}
           placeholder={t("sheet.title.placeholder")}
         />
         {titleError && (

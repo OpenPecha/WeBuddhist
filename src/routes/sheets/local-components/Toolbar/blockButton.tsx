@@ -15,7 +15,7 @@ const BlockButton = (prop: BlockButtonProps) => {
   const customEditor = useCustomEditor();
   const isActive = customEditor.isBlockActive(editor, format);
   const buttonClasses =
-    `${"w-7 h-7 md:w-8 md:h-8 text-gray-600 text-sm hover:bg-gray-200 hover:text-gray-800 active:bg-gray-300 active:text-black"} ${isActive ? "active bg-gray-300 text-black" : ""}`.trim();
+    `${"w-7 h-7 md:w-8 md:h-8 text-gray-600 text-sm"} ${isActive && "active bg-gray-200"}`.trim();
 
   return (
     <Button
