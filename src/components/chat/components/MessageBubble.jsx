@@ -262,7 +262,7 @@ export function MessageBubble({ message, isStreaming = false }) {
               </button>
 
               {showSources && (
-                <div className="grid gap-2">
+                <div className="grid gap-2 content">
                   {usedSources.map(({ number, source }, index) => (
                     <div 
                       key={number}

@@ -24,7 +24,7 @@ export function Queries({ queries }) {
             className="flex items-center gap-2 p-1 bg-[#E5F3FE] border-blue-200 rounded text-[#00457D]"
           >
             <Search size={14} className="shrink-0" />
-            <span className="text-left">{query}</span>
+            <span className="text-left content">{query}</span>
           </div>
         ))}
       </div>
