@@ -41,17 +41,17 @@ export default defineConfig(({ mode }) => {
     test: {
       environment: "jsdom",
       globals: true,
-      setupFiles: "./src/test-utils/CommonMocks.js",
+      setupFiles: "./src/test-utils/CommonMocks.ts",
       coverage: {
         provider: "istanbul",
         reporter: ["text", "json", "html", "lcov"],
         reportsDirectory: "./coverage",
         exclude: [
-          "**/*.js",
-          "**/*test.jsx",
+          "**/*.ts",
+          "**/*test.tsx",
           "src/config/**",
-          "src/main.jsx",
-          "src/App.jsx",
+          "src/main.tsx",
+          "src/App.tsx",
           "src/context/**",
           "src/utils/**",
           "src/components/commons/expandtext/**",

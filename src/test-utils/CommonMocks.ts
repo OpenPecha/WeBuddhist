@@ -36,8 +36,8 @@ export const mockUseAuth0 = () => {
 export const mockReactQuery = () => {
   vi.mock("react-query", async () => {
     const actual = await vi.importActual("react-query");
-    const defaultUseMutation = (mutationFn, options) => {
-      const mutate = async (args) => {
+    const defaultUseMutation = (mutationFn: any, options: any) => {
+      const mutate = async (args: any) => {
         try {
           const result = await mutationFn(args);
           if (options?.onSuccess) {
@@ -74,8 +74,9 @@ export const mockTolgee = Tolgee().init({
 });
 
 vi.mock("react-helmet-async", () => ({
-  Helmet: ({ children }) => children ?? null,
-  HelmetProvider: ({ children }) => children ?? null,
+  Helmet: ({ children }: { children: React.ReactNode }) => children ?? null,
+  HelmetProvider: ({ children }: { children: React.ReactNode }) =>
+    children ?? null,
 }));
 
 window.alert = vi.fn();
@@ -87,11 +88,11 @@ export const mockLocalStorage = () => {
     removeItem: vi.fn(),
     clear: vi.fn(),
   };
-  
-  Object.defineProperty(window, 'localStorage', {
+
+  Object.defineProperty(window, "localStorage", {
     value: localStorageMock,
     writable: true,
   });
-  
+
   return localStorageMock;
 };

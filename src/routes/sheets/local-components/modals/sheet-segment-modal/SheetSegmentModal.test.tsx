@@ -55,14 +55,13 @@ vi.mock(
         </span>
       </div>
     ),
-  })
+  }),
 );
 
 vi.mock("react-icons/io5", () => ({
   IoClose: () => <span data-testid="close-icon">Close</span>,
 }));
 
-vi.mock("./SheetSegmentModal.scss", () => ({}));
 import { useQuery } from "react-query";
 
 describe("SheetSegmentModal", () => {
@@ -101,7 +100,7 @@ describe("SheetSegmentModal", () => {
     expect(screen.getByText("Search Segment")).toBeInTheDocument();
     expect(screen.getByTestId("close-icon")).toBeInTheDocument();
     expect(
-      screen.getByPlaceholderText("Search Segments...")
+      screen.getByPlaceholderText("Search Segments..."),
     ).toBeInTheDocument();
   });
 
@@ -176,18 +175,15 @@ describe("SheetSegmentModal", () => {
 
     const result = await fetchSegments("test query", "en", 0, { limit: 10 });
 
-    expect(mockAxios.get).toHaveBeenCalledWith(
-      "/api/v1/search/multilingual",
-      {
-        params: {
-          query: "test query",
-          search_type: "exact",
-          language: "en",
-          limit: 10,
-          skip: 0,
-        },
-      }
-    );
+    expect(mockAxios.get).toHaveBeenCalledWith("/api/v1/search/multilingual", {
+      params: {
+        query: "test query",
+        search_type: "exact",
+        language: "en",
+        limit: 10,
+        skip: 0,
+      },
+    });
     expect(result).toEqual(mockResponse.data);
   });
 
