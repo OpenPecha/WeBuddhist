@@ -1,38 +1,56 @@
-import {useQuery} from "react-query";
-import {IoMdClose} from "react-icons/io";
-import { IoLanguage, IoNewspaperOutline,} from "react-icons/io5";
-// import {FiInfo} from "react-icons/fi";
-import {BiSearch, BiBookOpen} from "react-icons/bi";
-import {useState} from "react";
-import {useTranslate} from "@tolgee/react";
+import { useQuery } from "react-query";
+import { IoMdClose } from "react-icons/io";
+import { IoLanguage, IoNewspaperOutline } from "react-icons/io5";
+import { BiSearch, BiBookOpen } from "react-icons/bi";
+import { useState } from "react";
+import { useTranslate } from "@tolgee/react";
 import ShareView from "./components/share-view/ShareView.tsx";
 import TranslationView from "./components/translation-view/TranslationView.tsx";
 import CommentaryView from "./components/related-texts/RelatedTexts.tsx";
 import RootTextView from "./components/root-texts/RootText.tsx";
 import axiosInstance from "../../../../config/axios-config.ts";
-import {usePanelContext} from "../../../../context/PanelContext.tsx";
-import {MENU_ITEMS} from "../../../../utils/constants.ts";
+import { usePanelContext } from "../../../../context/PanelContext.tsx";
+import { MENU_ITEMS } from "../../../../utils/constants.ts";
 import IndividualTextSearch from "./components/individual-text-search/IndividualTextSearch.tsx";
-import "./Resources.scss"
 import CompareText from "../compare-text/CompareText.tsx";
+import { Button } from "@/components/ui/button";
 
-export const fetchSidePanelData = async (segmentId) => {
-  const {data} = await axiosInstance.get(`/api/v1/segments/${segmentId}/info`);
+type PanelContextValue = {
+  isResourcesPanelOpen: boolean;
+  closeResourcesPanel: () => void;
+};
+
+export const fetchSidePanelData = async (segmentId: string) => {
+  const { data } = await axiosInstance.get(
+    `/api/v1/segments/${segmentId}/info`,
+  );
   return data;
 };
 
-const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersionId, handleSegmentNavigate}) => {
-  const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
+const Resources = ({
+  segmentId,
+  addChapter,
+  handleClose,
+  currentChapter,
+  setVersionId,
+  handleSegmentNavigate,
+}: any) => {
+  const { isResourcesPanelOpen, closeResourcesPanel } =
+    usePanelContext() as PanelContextValue;
   const showPanel = isResourcesPanelOpen;
   const [activeView, setActiveView] = useState("main");
-  const {t} = useTranslate();
+  const isMainView = activeView === "main";
+  const buttonLayoutClasses = isMainView
+    ? "justify-center sm:justify-start text-center sm:text-left"
+    : "justify-start text-left";
+  const { t } = useTranslate();
 
-  const {data: sidePanelData} = useQuery(
+  const { data: sidePanelData } = useQuery(
     ["sidePanel", segmentId],
     () => fetchSidePanelData(segmentId),
     {
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   const handleClosePanel = () => {
@@ -41,61 +59,91 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
   };
 
   const renderPanelHeader = () => (
-    <div className="headerthing">
-      <p className='mt-4 px-4 '>{t('panel.resources')}</p>
-      <IoMdClose
-        size={24}
+    <div
+      className={`sticky top-0 z-20 flex items-center bg-[#EDEDED] border-b border-[#e0e0e0] px-3 py-3 ${isMainView ? "justify-center sm:justify-between" : "justify-between"} relative`}
+    >
+      <p className="text-base font-medium text-gray-800">
+        {t("panel.resources")}
+      </p>
+      <Button
+        type="button"
+        aria-label={t("common.close")}
+        variant="secondary"
+        size="icon-sm"
         onClick={handleClosePanel}
-        className="close-icon"
-      />
+      >
+        <IoMdClose size={20} />
+      </Button>
     </div>
   );
 
   const renderAboutSection = () => (
     <>
-      {/* <p><FiInfo className="m-2"/> {t("side_nav.about_text")}</p> */}
-      <button onClick={() => setActiveView("search")}>
-        <BiSearch className='m-2'/>{t("connection_panel.search_in_this_text")}
-      </button>
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={() => setActiveView("search")}
+        className="w-full flex justify-start"
+      >
+        <BiSearch className="mr-2 text-lg" />
+        {t("connection_panel.search_in_this_text")}
+      </Button>
     </>
   );
 
-  const renderTranslationsSection = () => (
+  const renderTranslationsSection = () =>
     sidePanelData?.segment_info?.translations > 0 && (
-      <button type="button" onClick={() => setActiveView("translation")}>
-        <IoLanguage className="m-2"/>
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={() => setActiveView("translation")}
+        className="w-full flex justify-start"
+      >
+        <IoLanguage className="mr-2 text-lg" />
         {`${t("connection_pannel.translations")} (${sidePanelData.segment_info.translations})`}
-      </button>
-    )
-  );
+      </Button>
+    );
 
-  const renderCommentaryButton = () => (
+  const renderCommentaryButton = () =>
     sidePanelData?.segment_info?.related_text?.commentaries > 0 && (
-      <button className='related-text-item' onClick={() => setActiveView("commentary")}>
-        <BiBookOpen className="m-2"/>
+      <Button
+        type="button"
+        variant="ghost"
+        className="w-full flex justify-start"
+        onClick={() => setActiveView("commentary")}
+      >
+        <BiBookOpen className="mr-2 text-lg" />
         {`${t("text.commentary")} (${sidePanelData.segment_info.related_text.commentaries})`}
-      </button>
-    )
-  );
+      </Button>
+    );
 
-  const renderRootTextButton = () => (
+  const renderRootTextButton = () =>
     sidePanelData?.segment_info?.related_text?.root_text > 0 && (
-      <button className='related-text-item' onClick={() => setActiveView("root_text")}>
-        <BiBookOpen className="m-2"/>
+      <Button
+        type="button"
+        variant="ghost"
+        className="w-full flex justify-start"
+        onClick={() => setActiveView("root_text")}
+      >
+        <BiBookOpen className="mr-2 text-lg" />
         {`${t("text.root_text")} (${sidePanelData.segment_info.related_text.root_text})`}
-      </button>
-    )
-  );
+      </Button>
+    );
 
   const renderRelatedTextsSection = () => {
-    const hasCommentaries = sidePanelData?.segment_info?.related_text?.commentaries > 0;
-    const hasRootTexts = sidePanelData?.segment_info?.related_text?.root_text > 0;
+    const hasCommentaries =
+      sidePanelData?.segment_info?.related_text?.commentaries > 0;
+    const hasRootTexts =
+      sidePanelData?.segment_info?.related_text?.root_text > 0;
 
     return (
-      sidePanelData?.segment_info?.related_text && (hasCommentaries || hasRootTexts) && (
+      sidePanelData?.segment_info?.related_text &&
+      (hasCommentaries || hasRootTexts) && (
         <>
-          <p className='text-great'>{t("text.related_texts")}</p>
-          <div className='related-texts-container'>
+          <p className="text-great w-full border-b border-[#f0f0f0] text-sm font-medium text-gray-500">
+            {t("text.related_texts")}
+          </p>
+          <div className="related-texts-container flex flex-col gap-2">
             {renderCommentaryButton()}
             {renderRootTextButton()}
           </div>
@@ -104,43 +152,46 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
     );
   };
 
-  const renderResourcesSection = () => (
+  const renderResourcesSection = () =>
     sidePanelData?.segment_info?.resources?.sheets > 0 && (
       <>
-        <p className='text-great'>{t("panel.resources")}</p>
-        <p>
-          <IoNewspaperOutline className="m-2"/>
-          {` ${t("common.sheets")} (${sidePanelData.segment_info.resources.sheets})`}
+        <p className="w-full border-b border-[#f0f0f0] text-sm font-medium text-gray-500">
+          {t("panel.resources")}
+        </p>
+        <p
+          className={`flex w-full items-center py-3 text-gray-700 transition hover:text-gray-600 hover:bg-gray-50 ${isMainView ? "justify-center sm:justify-start text-center sm:text-left" : "justify-start"}`}
+        >
+          <IoNewspaperOutline className="mr-2 text-lg" />
+          {`${t("common.sheets")} (${sidePanelData.segment_info.resources.sheets})`}
         </p>
       </>
-    )
-  );
+    );
 
-  const handleMenuItemClick = (item) => {
-    if (item.label === 'common.share') {
+  const handleMenuItemClick = (item: any) => {
+    if (item.label === "common.share") {
       setActiveView("share");
-    }else if (item.label === 'connection_panel.compare_text') {
+    } else if (item.label === "connection_panel.compare_text") {
       setActiveView("compare_text");
     }
   };
 
   const renderMenuItems = () => (
     <>
-      {MENU_ITEMS
-      .filter(item => 
-        item.label !== 'sheet.add_to_sheet' && 
-        item.label !== 'connection_panel.notes'
-      )
-      .map((item) => (
-        <button
+      {MENU_ITEMS.filter(
+        (item) =>
+          item.label !== "sheet.add_to_sheet" &&
+          item.label !== "connection_panel.notes",
+      ).map((item) => (
+        <Button
           type="button"
+          variant="ghost"
           key={item.label}
-          className={item.isHeader ? 'text-great' : ''}
+          className="w-full flex justify-start"
           onClick={() => handleMenuItemClick(item)}
         >
-          {item.icon && <item.icon className='m-2'/>}
+          {item.icon && <item.icon className="mr-2 text-lg" />}
           {t(`${item.label}`)}
-        </button>
+        </Button>
       ))}
     </>
   );
@@ -148,7 +199,9 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
   const renderMainPanel = () => (
     <>
       {renderPanelHeader()}
-      <div className="panel-content p-3">
+      <div
+        className={`p-4 transition-opacity duration-300 ${showPanel ? "opacity-100" : "opacity-0 sm:opacity-0 lg:opacity-100"} ${isMainView ? "text-center sm:text-left" : "text-left"}`}
+      >
         {renderAboutSection()}
         {renderTranslationsSection()}
         {renderRelatedTextsSection()}
@@ -198,8 +251,15 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
             handleNavigate={() => setActiveView("main")}
           />
         );
-      case "compare_text": 
-        return <CompareText setIsCompareTextView={setActiveView} addChapter={addChapter} currentChapter={currentChapter} handleNavigate={() => setActiveView("main")}/>;
+      case "compare_text":
+        return (
+          <CompareText
+            setIsCompareTextView={setActiveView}
+            addChapter={addChapter}
+            currentChapter={currentChapter}
+            handleNavigate={() => setActiveView("main")}
+          />
+        );
       case "root_text":
         return (
           <RootTextView
@@ -207,6 +267,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
             setIsRootTextView={setActiveView}
             addChapter={addChapter}
             currentChapter={currentChapter}
+            handleNavigate={() => setActiveView("main")}
           />
         );
       default:
@@ -214,14 +275,15 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
     }
   };
 
-  return(
+  return (
     <>
-      {showPanel && <button className="panel-backdrop" onClick={() => closeResourcesPanel()}></button>}
-      <div className={`right-panel navbaritems ${showPanel ? 'show' : ''} ${activeView === 'main' ? 'is-main' : ''}`}>
+      <div
+        className={`flex flex-col text-left bg-[#FBFBFA] transition-all duration-300 overflow-y-auto ${showPanel ? "block" : "hidden"}  fixed inset-x-0 bottom-0 h-[45vh] w-full border-t border-gray-200 bg-white z-1500 lg:static lg:h-full lg:min-w-[420px] lg:w-[350px] lg:max-w-full lg:bg-[#FBFBFA] lg:shadow-none lg:translate-x-0 lg:transform-none lg:z-auto xl:w-[580px] ${isMainView ? "is-main" : ""}`}
+      >
         {renderSidePanel()}
       </div>
     </>
-  )
-}
+  );
+};
 
 export default Resources;
