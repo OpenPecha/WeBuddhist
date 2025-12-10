@@ -1,63 +1,195 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
-import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.js";
-import ChapterHeader from "../../utils/header/ChapterHeader.js";
-import "./ChapterHook.scss"
-import { VIEW_MODES, LAYOUT_MODES } from "../../utils/header/view-selector/ViewSelector.js";
-import { getLanguageClass, getCurrentSectionFromScroll } from "../../../../utils/helperFunctions.js";
-import { usePanelContext } from "../../../../context/PanelContext.js";
-import Resources from "../../utils/resources/Resources.js";
+import TableOfContents from "../../utils/header/table-of-contents/TableOfContents";
+import ChapterHeader from "../../utils/header/ChapterHeader";
+import {
+  VIEW_MODES,
+  LAYOUT_MODES,
+} from "../../utils/header/view-selector/ViewSelector";
+import {
+  getLanguageClass,
+  getCurrentSectionFromScroll,
+} from "../../../../utils/helperFunctions";
+import { usePanelContext } from "../../../../context/PanelContext";
+import Resources from "../../utils/resources/Resources";
 
-const UseChapterHook = (props) => {
-  const { showTableOfContents, setShowTableOfContents, content, language, viewMode, layoutMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId, scrollTrigger, textdetail, removeChapter, totalChapters, canShowTableOfContents, setViewMode, setLayoutMode} = props;
-  const [selectedSegmentId, setSelectedSegmentId] = useState(null)
-  const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
-  const contentsContainerRef = useRef(null);
+type ViewMode = (typeof VIEW_MODES)[keyof typeof VIEW_MODES];
+type LayoutMode = (typeof LAYOUT_MODES)[keyof typeof LAYOUT_MODES];
+
+type Translation = {
+  language: string;
+  content: string;
+};
+
+type Segment = {
+  segment_id: string;
+  segment_number?: number;
+  content: string;
+  translation?: Translation | null;
+};
+
+type Section = {
+  id?: string;
+  title?: string;
+  segments?: Segment[];
+  sections?: Section[];
+};
+
+type Content = {
+  sections: Section[];
+};
+
+type TextDetail = {
+  language?: string;
+  [key: string]: unknown;
+};
+
+type ChapterMeta = {
+  segmentId?: string;
+  versionId?: string;
+  [key: string]: unknown;
+};
+
+type InfiniteQueryControls = {
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+  isFetchingNextPage?: boolean;
+  isFetchingPreviousPage?: boolean;
+  fetchNextPage: () => void;
+  fetchPreviousPage: () => void;
+};
+
+type PanelContextValue = {
+  isResourcesPanelOpen: boolean;
+  openResourcesPanel: () => void;
+  closeResourcesPanel: () => void;
+};
+
+type UseChapterHookProps = {
+  textId?: string;
+  showTableOfContents: boolean;
+  setShowTableOfContents: React.Dispatch<React.SetStateAction<boolean>>;
+  content?: Content | null;
+  language?: string;
+  viewMode: ViewMode;
+  layoutMode: LayoutMode;
+  addChapter: (chapter: unknown) => void;
+  currentChapter: ChapterMeta;
+  setVersionId: (versionId: unknown) => void;
+  handleSegmentNavigate: (segmentId: string) => void;
+  infiniteQuery: InfiniteQueryControls;
+  onCurrentSectionChange: (sectionId: string | null) => void;
+  currentSectionId: string | null;
+  currentSegmentId: string | null;
+  scrollTrigger: number;
+  textdetail?: TextDetail;
+  removeChapter: (chapterId: unknown) => void;
+  totalChapters: number;
+  canShowTableOfContents: boolean;
+  setViewMode: (mode: ViewMode) => void;
+  setLayoutMode: (mode: LayoutMode) => void;
+};
+
+const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
+  const {
+    showTableOfContents,
+    setShowTableOfContents,
+    content,
+    language,
+    viewMode,
+    layoutMode,
+    addChapter,
+    currentChapter,
+    setVersionId,
+    handleSegmentNavigate,
+    infiniteQuery,
+    onCurrentSectionChange,
+    currentSectionId,
+    textId,
+    currentSegmentId,
+    scrollTrigger,
+    textdetail,
+    removeChapter,
+    totalChapters,
+    canShowTableOfContents,
+    setViewMode,
+    setLayoutMode,
+  } = props;
+  const [selectedSegmentId, setSelectedSegmentId] = useState<string | null>(
+    null,
+  );
+  const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } =
+    usePanelContext() as PanelContextValue;
+  const contentsContainerRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef({ isRestoring: false, previousScrollHeight: 0 });
-  const sectionRefs = useRef(new Map());
-  const { ref: topSentinelRef, inView: isTopSentinelVisible } = useInView({threshold: 0.1, rootMargin: '50px',});
-  const { ref: sentinelRef, inView: isBottomSentinelVisible } = useInView({threshold: 0.1, rootMargin: '50px'});
+  const sectionRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
+  const { ref: topSentinelRef, inView: isTopSentinelVisible } = useInView({
+    threshold: 0.1,
+    rootMargin: "50px",
+  });
+  const { ref: sentinelRef, inView: isBottomSentinelVisible } = useInView({
+    threshold: 0.1,
+    rootMargin: "50px",
+  });
   const lastScrollTriggerRef = useRef(0);
+  const {
+    hasNextPage = false,
+    hasPreviousPage = false,
+    isFetchingNextPage = false,
+    isFetchingPreviousPage = false,
+    fetchNextPage,
+    fetchPreviousPage,
+  } = infiniteQuery;
 
   useEffect(() => {
+    if (!content?.sections) return;
     const container = contentsContainerRef.current;
     const handleScroll = () => {
       if (!container) return;
       const containerRect = container.getBoundingClientRect();
-      const currentSection = getCurrentSectionFromScroll(content.sections, containerRect, sectionRefs);
+      const currentSection = getCurrentSectionFromScroll(
+        content.sections,
+        containerRect,
+        sectionRefs,
+      );
       currentSection && onCurrentSectionChange(currentSection);
     };
     if (container) {
-      container.addEventListener('scroll', handleScroll, { passive: true });
+      container.addEventListener("scroll", handleScroll, { passive: true });
       handleScroll();
     }
     return () => {
       if (container) {
-        container.removeEventListener('scroll', handleScroll);
+        container.removeEventListener("scroll", handleScroll);
       }
     };
   }, [content?.sections, onCurrentSectionChange]);
 
   useEffect(() => {
-    if (isBottomSentinelVisible && infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage) {
-      infiniteQuery.fetchNextPage();
+    if (isBottomSentinelVisible && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
-  }, [isBottomSentinelVisible, infiniteQuery.hasNextPage, infiniteQuery.isFetchingNextPage, infiniteQuery.fetchNextPage]);
+  }, [isBottomSentinelVisible, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   useEffect(() => {
-    if (isTopSentinelVisible && infiniteQuery.hasPreviousPage && !infiniteQuery.isFetchingPreviousPage) {
+    if (isTopSentinelVisible && hasPreviousPage && !isFetchingPreviousPage) {
       const scrollContainer = contentsContainerRef.current;
       if (scrollContainer) {
         scrollRef.current.isRestoring = true;
         scrollRef.current.previousScrollHeight = scrollContainer.scrollHeight;
       }
-      infiniteQuery.fetchPreviousPage();
+      fetchPreviousPage();
     }
-  }, [isTopSentinelVisible, infiniteQuery.hasPreviousPage, infiniteQuery.isFetchingPreviousPage, infiniteQuery.fetchPreviousPage]);
-  
+  }, [
+    isTopSentinelVisible,
+    hasPreviousPage,
+    isFetchingPreviousPage,
+    fetchPreviousPage,
+  ]);
+
   useEffect(() => {
     if (currentChapter.segmentId) {
-      setSelectedSegmentId(currentChapter.segmentId);
+      setSelectedSegmentId(currentChapter.segmentId ?? null);
     }
   }, [currentChapter.segmentId]);
 
@@ -70,22 +202,27 @@ const UseChapterHook = (props) => {
   useEffect(() => {
     const container = contentsContainerRef.current;
     if (!container) return;
-    const handleDocumentClick = (event) => {
-      if (event.target.classList.contains('footnote-marker')) 
-        {
-        event.stopPropagation();
-        event.preventDefault();
-        const footnoteMarker = event.target;
-        const footnote = footnoteMarker.nextElementSibling;
-        if (footnote?.classList?.contains('footnote')) {
-          footnote.classList.toggle('active');
-        }
-        return false;
-      }
+    const toggleFootnoteVisibility = (target: HTMLElement) => {
+      const footnote = target.nextElementSibling as HTMLElement | null;
+      if (!footnote?.classList?.contains("footnote")) return;
+      const isHidden =
+        footnote.style.display === "" || footnote.style.display === "none";
+      footnote.style.display = isHidden ? "inline" : "none";
+      footnote.classList.toggle("active");
     };
-    container.addEventListener('click', handleDocumentClick);
+
+    const handleDocumentClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target?.classList?.contains("footnote-marker")) return;
+      event.stopPropagation();
+      event.preventDefault();
+      toggleFootnoteVisibility(target);
+      return false;
+    };
+
+    container.addEventListener("click", handleDocumentClick);
     return () => {
-      container.removeEventListener('click', handleDocumentClick);
+      container.removeEventListener("click", handleDocumentClick);
     };
   }, []);
 
@@ -96,8 +233,38 @@ const UseChapterHook = (props) => {
     const activeFootnotes = container.querySelectorAll(".footnote.active");
     activeFootnotes.forEach((footnote) => {
       footnote.classList.remove("active");
+      (footnote as HTMLElement).style.display = "none";
     });
   }, [layoutMode]);
+
+  useEffect(() => {
+    const container = contentsContainerRef.current;
+    if (!container) return;
+
+    const footnoteMarkers =
+      container.querySelectorAll<HTMLElement>(".footnote-marker");
+    footnoteMarkers.forEach((marker) => {
+      marker.style.cursor = "pointer";
+      marker.style.color = "#007bff";
+      marker.style.fontWeight = "700";
+      marker.style.zIndex = "2";
+      marker.style.padding = "0 2px";
+      if (!marker.textContent?.trim()) {
+        marker.textContent = "*";
+      }
+    });
+
+    const footnotes = container.querySelectorAll<HTMLElement>(".footnote");
+    footnotes.forEach((footnote) => {
+      footnote.style.display = "none";
+      footnote.style.color = "#484848";
+      footnote.style.margin = "4px";
+      footnote.style.fontSize = "0.9rem";
+      footnote.style.backgroundColor = "#f7f7f7";
+      footnote.style.padding = "2px 5px";
+      footnote.style.borderRadius = "3px";
+    });
+  }, [content?.sections, layoutMode]);
 
   useEffect(() => {
     if (scrollTrigger === lastScrollTriggerRef.current) return;
@@ -107,12 +274,12 @@ const UseChapterHook = (props) => {
     const container = contentsContainerRef.current;
     if (!container) return;
 
-    const findSectionWithSegment = (sections) => {
+    const findSectionWithSegment = (sections: Section[]): string | null => {
       for (const section of sections) {
         if (
           section.segments?.some((seg) => seg.segment_id === currentSegmentId)
         ) {
-          return section.id;
+          return section.id ?? null;
         }
         if (section.sections?.length) {
           const found = findSectionWithSegment(section.sections);
@@ -130,12 +297,13 @@ const UseChapterHook = (props) => {
       sectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [currentSegmentId, content?.sections, scrollTrigger]);
-  
+
   useLayoutEffect(() => {
     const scrollContainer = contentsContainerRef.current;
     if (scrollContainer && scrollRef.current.isRestoring) {
       const newScrollHeight = scrollContainer.scrollHeight;
-      const heightDifference = newScrollHeight - scrollRef.current.previousScrollHeight;
+      const heightDifference =
+        newScrollHeight - scrollRef.current.previousScrollHeight;
       scrollContainer.scrollTop += heightDifference;
       scrollRef.current.isRestoring = false;
     }
@@ -143,48 +311,78 @@ const UseChapterHook = (props) => {
 
   // -------------------------- renderers --------------------------
   const renderChapterHeader = () => {
-    const propsForChapterHeader = { viewMode, setViewMode, layoutMode, setLayoutMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!currentChapter.versionId, canShowTableOfContents };
+    const propsForChapterHeader = {
+      viewMode,
+      setViewMode,
+      layoutMode,
+      setLayoutMode,
+      textdetail,
+      showTableOfContents,
+      setShowTableOfContents,
+      removeChapter,
+      currentChapter,
+      totalChapters,
+      currentSectionId,
+      versionSelected: !!currentChapter.versionId,
+      canShowTableOfContents,
+    };
     return <ChapterHeader {...propsForChapterHeader} />;
   };
 
   const renderTableOfContents = () => {
-    const propsForTableOfContents={textId, showTableOfContents, currentSectionId, onSegmentSelect: handleSegmentNavigate, language, onClose: () => setShowTableOfContents(false)}
-    return <TableOfContents {...propsForTableOfContents} />
-  }
+    const propsForTableOfContents = {
+      textId,
+      showTableOfContents,
+      currentSectionId,
+      onSegmentSelect: handleSegmentNavigate,
+      language,
+      onClose: () => setShowTableOfContents(false),
+    };
+    return <TableOfContents {...propsForTableOfContents} />;
+  };
 
-  const renderLoadingIndicator = (message) => (
+  const renderLoadingIndicator = (message: string) => (
     <div className="loading-indicator">
       <p>{message}</p>
     </div>
   );
 
   const renderScrollSentinelTop = () => {
-    if (!infiniteQuery.hasPreviousPage || infiniteQuery.isFetchingPreviousPage) {
+    if (!hasPreviousPage || isFetchingPreviousPage) {
       return null;
     }
-    return <div ref={topSentinelRef} className="scroll-sentinel-top" />;
+    return (
+      <div
+        ref={topSentinelRef}
+        className="h-5 w-full opacity-0 pointer-events-none"
+      />
+    );
   };
 
   const renderScrollSentinelBottom = () => {
-    if (!infiniteQuery.hasNextPage || infiniteQuery.isFetchingNextPage) {
+    if (!hasNextPage || isFetchingNextPage) {
       return null;
     }
-    return <div ref={sentinelRef} className="scroll-sentinel" />;
+    return (
+      <div
+        ref={sentinelRef}
+        className="h-5 w-full opacity-0 pointer-events-none"
+      />
+    );
   };
 
-  const handleSegmentClick = (segmentId) => {
+  const handleSegmentClick = (segmentId: string) => {
     setSelectedSegmentId(segmentId);
     openResourcesPanel();
   };
 
-
-  const renderSectionRecursive = (section) => {
+  const renderSectionRecursive = (section: Section | undefined) => {
     if (!section) return null;
     const isProse = layoutMode === LAYOUT_MODES.PROSE;
-    const languageClass = getLanguageClass(language);
+    const languageClass = getLanguageClass(language || "en");
     return (
       <div
-        className={`contents-container ${isProse ? "prose-layout" : ""}`}
+        className="flex flex-col items-center w-full"
         key={section.title || "root"}
         ref={(sectionRef) => {
           sectionRef &&
@@ -193,93 +391,104 @@ const UseChapterHook = (props) => {
         }}
       >
         {section.title && (
-          <h2 className={`${languageClass} mt-2`}>
+          <h2
+            className={`${languageClass} mt-2 w-fit border-b-4 border-zinc-500 p-2.5`}
+          >
             {section.title}
           </h2>
         )}
-
-        <div className="outer-container">
+        <div
+          className={`flex flex-col w-full px-2.5 items-center mx-auto ${isProse && "block max-w-[800px]"}`}
+        >
           {isProse ? (
-            <p className="prose-paragraph">
-              {section.segments?.map((segment) => (
-                <span
+            <p className="leading-7 text-justify m-0">
+              {section.segments?.map((segment) => {
+                const isSelected = selectedSegmentId === segment.segment_id;
+                return (
+                  <span
+                    key={segment.segment_id}
+                    className={`inline cursor-pointer mr-0.5 ${
+                      isSelected && "bg-blue-50"
+                    }`}
+                    onClick={() => handleSegmentClick(segment.segment_id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleSegmentClick(segment.segment_id);
+                      }
+                    }}
+                    role="button"
+                  >
+                    {(viewMode === VIEW_MODES.SOURCE ||
+                      viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                      <span
+                        className={languageClass}
+                        dangerouslySetInnerHTML={{ __html: segment.content }}
+                      />
+                    )}
+                    {segment.translation &&
+                      (viewMode === VIEW_MODES.TRANSLATIONS ||
+                        viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                        <span
+                          className={getLanguageClass(
+                            segment.translation.language || "en",
+                          )}
+                          dangerouslySetInnerHTML={{
+                            __html: segment.translation.content,
+                          }}
+                        />
+                      )}
+                  </span>
+                );
+              })}
+            </p>
+          ) : (
+            section.segments?.map((segment) => {
+              const isSelected = selectedSegmentId === segment.segment_id;
+              return (
+                <div
                   key={segment.segment_id}
-                  className={`segment-text ${
-                    selectedSegmentId === segment.segment_id
-                      ? "highlighted-segment"
-                      : ""
+                  className={`cursor-pointer flex items-baseline mt-2.5 w-[700px] max-w-full gap-4 ${
+                    isSelected && "bg-blue-50"
                   }`}
                   onClick={() => handleSegmentClick(segment.segment_id)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
                       handleSegmentClick(segment.segment_id);
                     }
                   }}
                   role="button"
                 >
-                  {(viewMode === VIEW_MODES.SOURCE ||
-                    viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
-                    <span
-                      className={languageClass}
-                      dangerouslySetInnerHTML={{ __html: segment.content }}
-                    />
-                  )}
-                  {segment.translation &&
-                    (viewMode === VIEW_MODES.TRANSLATIONS ||
-                      viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
-                      <span
-                        className={getLanguageClass(
-                          segment.translation.language
-                        )}
-                        dangerouslySetInnerHTML={{
-                          __html: segment.translation.content,
-                        }}
-                      />
-                    )}
-                </span>
-              ))}
-            </p>
-          ) : (
-            section.segments?.map((segment) => (
-              <div
-                key={segment.segment_id}
-                className={`segment-container ${
-                  selectedSegmentId === segment.segment_id
-                    ? "highlighted-segment"
-                    : ""
-                }`}
-                onClick={() => handleSegmentClick(segment.segment_id)}
-                style={{ cursor: 'pointer' }}
-              >
-                <p className="segment-number">{segment.segment_number}</p>
-                <div className="segment-content">
-                  {(viewMode === VIEW_MODES.SOURCE ||
-                    viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
-                    <p
-                      className={languageClass}
-                      dangerouslySetInnerHTML={{ __html: segment.content }}
-                    />
-                  )}
-                  {segment.translation &&
-                    (viewMode === VIEW_MODES.TRANSLATIONS ||
+                  <p className="mr-8 text-xs">{segment.segment_number}</p>
+                  <div className="flex flex-col items-start w-full text-justify">
+                    {(viewMode === VIEW_MODES.SOURCE ||
                       viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
                       <p
-                        className={getLanguageClass(
-                          segment.translation.language
-                        )}
-                        dangerouslySetInnerHTML={{
-                          __html: segment.translation.content,
-                        }}
+                        className={languageClass}
+                        dangerouslySetInnerHTML={{ __html: segment.content }}
                       />
                     )}
+                    {segment.translation &&
+                      (viewMode === VIEW_MODES.TRANSLATIONS ||
+                        viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+                        <p
+                          className={getLanguageClass(
+                            segment.translation.language || "en",
+                          )}
+                          dangerouslySetInnerHTML={{
+                            __html: segment.translation.content,
+                          }}
+                        />
+                      )}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
 
           {section.sections?.map((nestedSection) =>
-            renderSectionRecursive(nestedSection)
+            renderSectionRecursive(nestedSection),
           )}
         </div>
       </div>
@@ -288,15 +497,15 @@ const UseChapterHook = (props) => {
 
   const renderContents = () => {
     if (!content?.sections || content.sections.length === 0) return null;
-    
+
     return (
-      <div className="outmost-container">
+      <div className="w-full">
         {renderScrollSentinelTop()}
-        {infiniteQuery.isFetchingPreviousPage && renderLoadingIndicator("Loading previous content...")}
-        {content.sections.map((section) => 
-          renderSectionRecursive(section)
-        )}
-        {infiniteQuery.isFetchingNextPage && renderLoadingIndicator("Loading more content...")}
+        {isFetchingPreviousPage &&
+          renderLoadingIndicator("Loading previous content...")}
+        {content.sections.map((section) => renderSectionRecursive(section))}
+        {isFetchingNextPage &&
+          renderLoadingIndicator("Loading more content...")}
         {renderScrollSentinelBottom()}
       </div>
     );
@@ -304,25 +513,37 @@ const UseChapterHook = (props) => {
 
   const renderResources = () => {
     if (isResourcesPanelOpen && selectedSegmentId) {
-      return <Resources segmentId={selectedSegmentId} addChapter={addChapter} currentChapter={currentChapter} setVersionId={setVersionId} handleSegmentNavigate={handleSegmentNavigate} />
+      return (
+        <Resources
+          segmentId={selectedSegmentId}
+          addChapter={addChapter}
+          handleClose={closeResourcesPanel}
+          currentChapter={currentChapter}
+          setVersionId={setVersionId}
+          handleSegmentNavigate={handleSegmentNavigate}
+        />
+      );
     }
     return null;
-  }
+  };
 
   return (
-    <div className="use-chapter-hook-container">
-      <div className="chapter-flex-row">
+    <div className="flex flex-col w-full min-h-full flex-1">
+      <div className="flex w-full h-full min-h-0">
         {renderTableOfContents()}
-        <div className="main-content-wrapper">
+        <div className="flex flex-col w-full h-full overflow-hidden min-h-0">
           {renderChapterHeader()}
-          <div className="main-content" ref={contentsContainerRef}>
+          <div
+            className="flex flex-1 min-h-0 w-full overflow-y-auto"
+            ref={contentsContainerRef}
+          >
             {renderContents()}
           </div>
         </div>
         {renderResources()}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default React.memo(UseChapterHook)
+export default React.memo(UseChapterHook);
