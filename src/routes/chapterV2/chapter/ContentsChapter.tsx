@@ -1,15 +1,23 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
-import { VIEW_MODES, LAYOUT_MODES } from "../utils/header/view-selector/ViewSelector.js";
-import { LAYOUT_MODE, siteName } from "../../../utils/constants.js";
-import UseChapterHook from "./helpers/UseChapterHook.js";
-import axiosInstance from "../../../config/axios-config.js";
+import {
+  VIEW_MODES,
+  LAYOUT_MODES,
+} from "@/routes/chapterV2/utils/header/view-selector/ViewSelector.tsx";
+import { LAYOUT_MODE, siteName } from "@/utils/constants.ts";
+import UseChapterHook from "./helpers/UseChapterHook.tsx";
+import axiosInstance from "@/config/axios-config.ts";
 import { useInfiniteQuery } from "react-query";
-import { PanelProvider } from '../../../context/PanelContext.js';
-import { getEarlyReturn, getFirstSegmentId, getLastSegmentId, mergeSections } from "../../../utils/helperFunctions.js";
-import Seo from "../../commons/seo/Seo.js";
+import { PanelProvider } from "@/context/PanelContext.tsx";
+import {
+  getEarlyReturn,
+  getFirstSegmentId,
+  getLastSegmentId,
+  mergeSections,
+} from "@/utils/helperFunctions.tsx";
 import { useTranslate } from "@tolgee/react";
+import Seo from "@/routes/commons/seo/Seo.tsx";
 
-const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
+const fetchContentDetails = async ({ pageParam = null, queryKey }: any) => {
   const [_, textId, contentId, versionId, size, initialSegmentId] = queryKey;
   const segmentId = pageParam?.segmentId ?? initialSegmentId;
   const direction = pageParam?.direction ?? "next";
@@ -23,7 +31,18 @@ const fetchContentDetails = async ({ pageParam = null, queryKey }) => {
   return data;
 };
 
-const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => {
+const ContentsChapter = ({
+  textId,
+  contentId,
+  segmentId,
+  isFromSheet = false,
+  versionId,
+  addChapter,
+  removeChapter,
+  currentChapter,
+  totalChapters,
+  setVersionId,
+}: any) => {
   const [viewMode, setViewMode] = useState(VIEW_MODES.SOURCE);
   const [layoutMode, setLayoutMode] = useState(() => {
     const stored = localStorage.getItem(LAYOUT_MODE);
@@ -33,7 +52,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
     return LAYOUT_MODES.SEGMENTED;
   });
   const [showTableOfContents, setShowTableOfContents] = useState(false);
-  const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
+  const [currentSegmentId, setCurrentSegmentId] = useState(segmentId);
   const [currentSectionId, setCurrentSectionId] = useState(null);
   const [scrollTrigger, setScrollTrigger] = useState(0);
   const size = 20;
@@ -52,58 +71,81 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
   const { t } = useTranslate();
 
   useEffect(() => {
-      localStorage.setItem(LAYOUT_MODE, layoutMode);
+    localStorage.setItem(LAYOUT_MODE, layoutMode);
   }, [layoutMode]);
 
   const infiniteQuery = useInfiniteQuery(
     ["content", textId, contentId, versionId, size, currentSegmentId],
     fetchContentDetails,
     {
-      getNextPageParam: isFromSheet ? undefined : (lastPage) => {
-        if (lastPage?.current_segment_position === lastPage?.total_segments) return null;
-        const lastSegmentId = getLastSegmentId(lastPage.content.sections);
-        return { segmentId: lastSegmentId, direction: "next" };
-      },
-      getPreviousPageParam: isFromSheet ? undefined : (firstPage) => {
-        if (firstPage?.current_segment_position === 1) return null;
-        const firstSegmentId = getFirstSegmentId(firstPage.content.sections);
-        return { segmentId: firstSegmentId, direction: "previous" };
-      },
+      getNextPageParam: isFromSheet
+        ? undefined
+        : (lastPage) => {
+            if (lastPage?.current_segment_position === lastPage?.total_segments)
+              return null;
+            const lastSegmentId = getLastSegmentId(lastPage.content.sections);
+            return { segmentId: lastSegmentId, direction: "next" };
+          },
+      getPreviousPageParam: isFromSheet
+        ? undefined
+        : (firstPage) => {
+            if (firstPage?.current_segment_position === 1) return null;
+            const firstSegmentId = getFirstSegmentId(
+              firstPage.content.sections,
+            );
+            return { segmentId: firstSegmentId, direction: "previous" };
+          },
       enabled: !!textId,
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   // Merge all loaded sections for rendering
   const allContent = useMemo(() => {
-    if (!infiniteQuery?.data?.pages || infiniteQuery.data.pages.length === 0) return null;
-    let mergedSections = [];
+    if (!infiniteQuery?.data?.pages || infiniteQuery.data.pages.length === 0)
+      return null;
+    let mergedSections: any[] = [];
     let text_detail = infiniteQuery.data.pages[0]?.text_detail;
 
     infiniteQuery.data.pages.forEach((page, index) => {
-      mergedSections = index === 0 ? page.content.sections : mergeSections(mergedSections, page.content.sections);
+      mergedSections =
+        index === 0
+          ? page.content.sections
+          : mergeSections(mergedSections, page.content.sections);
     });
     return {
-      content: { ...infiniteQuery.data.pages[0].content, sections: mergedSections },text_detail};
+      content: {
+        ...infiniteQuery.data.pages[0].content,
+        sections: mergedSections,
+      },
+      text_detail,
+    };
   }, [infiniteQuery.data?.pages]);
 
-  const handleSegmentNavigate = useCallback((newSegmentId) => {
+  const handleSegmentNavigate = useCallback((newSegmentId: any) => {
     setCurrentSegmentId(newSegmentId);
-    setScrollTrigger(prev => prev + 1);
+    setScrollTrigger((prev) => prev + 1);
   }, []);
 
-  const handleCurrentSectionChange = useCallback((sectionId) => {
+  const handleCurrentSectionChange = useCallback((sectionId: any) => {
     setCurrentSectionId(sectionId);
   }, []);
 
   // ----------------------------- helpers ---------------------------------------
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
-  const pageTitle = allContent?.text_detail?.title ? `${allContent.text_detail.title} | ${siteName}` : `Chapter | ${siteName}`;
-  const earlyReturn = getEarlyReturn({ isLoading: infiniteQuery.isLoading, error: infiniteQuery.error, t });
+  const pageTitle = allContent?.text_detail?.title
+    ? `${allContent.text_detail.title} | ${siteName}`
+    : `Chapter | ${siteName}`;
+  const earlyReturn = getEarlyReturn({
+    isLoading: infiniteQuery.isLoading,
+    error: infiniteQuery.error,
+    t,
+  });
   if (earlyReturn) return earlyReturn;
-  const canShowTableOfContents = ((allContent?.content?.sections || []).length) > 1;
-  
+  const canShowTableOfContents =
+    (allContent?.content?.sections || []).length > 1;
+
   // ------------------------ renderers ----------------------
   const renderChapter = () => {
     const propsForUseChapterHookComponent = {
@@ -128,25 +170,21 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
       totalChapters,
       canShowTableOfContents,
       setViewMode,
-      setLayoutMode
+      setLayoutMode,
     };
-    return (
-        <UseChapterHook {...propsForUseChapterHookComponent} />
-    );
-  }
+    return <UseChapterHook {...propsForUseChapterHookComponent} />;
+  };
 
   return (
-    <div className={`contents-chapter-container ${totalChapters > 1 ? 'split-screen' : 'single-chapter'}`}>
+    <div className="flex flex-col min-h-full">
       <Seo
         title={pageTitle}
         description="Read chapter content with source and translations."
         canonical={canonicalUrl}
       />
-      <PanelProvider>
-        {renderChapter()}
-      </PanelProvider>
+      <PanelProvider>{renderChapter()}</PanelProvider>
     </div>
-  )
-}
+  );
+};
 
 export default React.memo(ContentsChapter);

@@ -5,26 +5,25 @@ import SheetDetailPage from "../sheets/view-sheet/SheetDetailPage";
 
 const SheetChapters = () => {
   const { username, sheetSlugAndId } = useParams();
-  
-  const initialChapters = [{
-    type: 'sheet',
-    sheetSlugAndId: sheetSlugAndId,
-    username: username,
-    segmentId: `sheet-${sheetSlugAndId}` 
-  }];
 
-  const renderChapter = (chapter, index, { versionId, addChapter, removeChapter, setVersionId }) => {
-    if (chapter.type === 'sheet') {
-      
+  const initialChapters = [
+    {
+      type: "sheet",
+      sheetSlugAndId: sheetSlugAndId,
+      username: username,
+      segmentId: `sheet-${sheetSlugAndId}`,
+    },
+  ];
+
+  const renderChapter = (
+    chapter: any,
+    { versionId, addChapter, removeChapter, setVersionId }: any,
+  ) => {
+    if (chapter.type === "sheet") {
       return (
-        <SheetDetailPage
-          addChapter={addChapter}
-          currentChapter={chapter}
-          setVersionId={setVersionId}
-        />
+        <SheetDetailPage addChapter={addChapter} currentChapter={chapter} />
       );
     } else {
-      
       return (
         <ContentsChapter
           textId={chapter.textId}
@@ -34,7 +33,7 @@ const SheetChapters = () => {
           addChapter={addChapter}
           removeChapter={removeChapter}
           currentChapter={chapter}
-          totalChapters={3} 
+          totalChapters={3}
           setVersionId={setVersionId}
           isFromSheet={true}
         />
@@ -43,7 +42,7 @@ const SheetChapters = () => {
   };
 
   return (
-    <Chapters 
+    <Chapters
       initialChapters={initialChapters}
       maxChapters={3}
       renderChapter={renderChapter}
