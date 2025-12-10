@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { MouseEvent } from "react";
 import {
   FaBold,
@@ -21,28 +20,20 @@ import pechaIcon from "../../../../assets/icons/pecha_icon.png";
 import { useTranslate } from "@tolgee/react";
 import { createPayload } from "../../sheet-utils/Constant";
 import { updateSheet } from "../Editors/EditorWrapper";
-import AlertModal from "../modals/alert-modal/AlertModal";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const Toolsbar = (prop: any) => {
   const { editor, value, title, sheetId, saveStatus } = prop;
   const customEditor = useCustomEditor();
   const { t } = useTranslate();
   const navigate = useNavigate();
-  const [alert, setAlert] = useState({
-    open: false,
-    type: "success",
-    message: "",
-  });
-  const handleCloseAlert = () => {
-    setAlert({ ...alert, open: false });
-  };
 
   const handlePublish = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!sheetId) {
-      setAlert({ open: true, type: "error", message: t("Sheet id missing.") });
+      toast.error(t("Sheet id missing."));
       return;
     }
     try {
@@ -52,20 +43,12 @@ const Toolsbar = (prop: any) => {
         true,
       );
       await updateSheet(sheetId, payload);
-      setAlert({
-        open: true,
-        type: "success",
-        message: t("Sheet published successfully!"),
-      });
+      toast.success(t("Sheet published successfully!"));
       setTimeout(() => {
         navigate("/community");
       }, 2000);
     } catch (error) {
-      setAlert({
-        open: true,
-        type: "error",
-        message: t("Failed to publish sheet."),
-      });
+      toast.error(t("Failed to publish sheet."));
     }
   };
 
@@ -210,28 +193,19 @@ const Toolsbar = (prop: any) => {
   };
 
   return (
-    <>
-      <div className="flex items-center p-[6px] md:p-2 mx-auto mb-3 flex-wrap gap-1">
-        {renderMarkButtons()}
-        <div className="w-px h-5 md:h-6 bg-gray-200 mx-1.5" />
-        {renderWebuddhistIconSection()}
-        <div className="w-px h-5 md:h-6 bg-gray-200 mx-1.5" />
-        {renderListButtons()}
-        <div className="w-px h-5 md:h-6 bg-gray-200 mx-1.5" />
-        {renderAlignmentButtons()}
-        <div className="w-px h-5 md:h-6 bg-gray-200 mx-1.5" />
-        {renderUtilityButtons()}
-        <div className="w-px h-5 md:h-6 bg-gray-200 mx-1.5" />
-        {renderActionButtons()}
-      </div>
-      {alert.open && (
-        <AlertModal
-          type={alert.type}
-          message={alert.message}
-          onClose={handleCloseAlert}
-        />
-      )}
-    </>
+    <div className="flex items-center p-[6px] md:p-2 mx-auto mb-3 flex-wrap gap-1">
+      {renderMarkButtons()}
+      <div className="w-px h-5 md:h-6 bg-gray-200 mx-1.5" />
+      {renderWebuddhistIconSection()}
+      <div className="w-px h-5 md:h-6 bg-gray-200 mx-1.5" />
+      {renderListButtons()}
+      <div className="w-px h-5 md:h-6 bg-gray-200 mx-1.5" />
+      {renderAlignmentButtons()}
+      <div className="w-px h-5 md:h-6 bg-gray-200 mx-1.5" />
+      {renderUtilityButtons()}
+      <div className="w-px h-5 md:h-6 bg-gray-200 mx-1.5" />
+      {renderActionButtons()}
+    </div>
   );
 };
 

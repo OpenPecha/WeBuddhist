@@ -1,5 +1,4 @@
 import { Editor, Transforms, Element, Path, Range, Node } from "slate";
-import "../local-components/modals/image-upload-modal/ImageUpload.scss";
 import { createPortal } from "react-dom";
 import React from "react";
 import { createRoot } from "react-dom/client";
