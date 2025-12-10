@@ -1,17 +1,32 @@
-import './CustomPecha.scss';
+type CustomPechaProps = {
+  attributes: any;
+  element: {
+    src?: string;
+    url?: string;
+    segmentId?: string;
+  };
+};
 
-const CustomPecha = props => {
-    const {attributes, element} = props
-    if (!element.src) return null
-    return (
-      <div {...attributes} className="custom-webuddhist-container">
-        <div contentEditable={false} className="custom-webuddhist-wrapper">
-            <a href={element.url} target="_blank" rel="noopener noreferrer" className="custom-webuddhist-link">
-                <img src={element.src} alt={element.segmentId} className="custom-webuddhist-image" />
-            </a>
-        </div>
+const CustomPecha = ({ attributes, element }: CustomPechaProps) => {
+  if (!element.src) return null;
+  return (
+    <div {...attributes} className="my-4">
+      <div contentEditable={false} className="max-w-full overflow-hidden">
+        <a
+          href={element.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block no-underline hover:opacity-90"
+        >
+          <img
+            src={element.src}
+            alt={element.segmentId}
+            className="mx-auto block h-auto max-w-full"
+          />
+        </a>
       </div>
-    )
-  }
-  
-  export default CustomPecha
+    </div>
+  );
+};
+
+export default CustomPecha;

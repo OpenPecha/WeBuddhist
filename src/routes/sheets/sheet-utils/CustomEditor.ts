@@ -1,4 +1,4 @@
-import { Editor, Transforms, Element, Path, Range } from "slate";
+import { Editor, Transforms, Element, Path, Range, Node } from "slate";
 import "../local-components/modals/image-upload-modal/ImageUpload.scss";
 import { createPortal } from "react-dom";
 import React from "react";
@@ -14,10 +14,32 @@ import SheetSegmentModal from "../local-components/modals/sheet-segment-modal/Sh
 import { QueryClientProvider, useQueryClient } from "react-query";
 import axios from "axios";
 
-const fetchShortUrlContent = async (shortId) => {
+type CustomEditorInstance = Editor;
+type CustomText = { text: string };
+type CustomElement = {
+  type: string;
+  align?: string;
+  url?: string;
+  src?: string;
+  segmentId?: string;
+  youtubeId?: string;
+  alt?: string;
+  children: CustomNode[];
+};
+type CustomNode = CustomElement | CustomText;
+
+type UploadedImage = { url: string; key: string };
+type SegmentData = { segment_id?: string };
+type TypedElement = Element & {
+  type?: string;
+  align?: string;
+  [key: string]: unknown;
+};
+
+const fetchShortUrlContent = async (shortId: string) => {
   try {
     const response = await axios.get(
-      `https://url-shortening-14682653622-b69c6fd.onrender.com/api/v1/shorten/${shortId}`
+      `https://url-shortening-14682653622-b69c6fd.onrender.com/api/v1/shorten/${shortId}`,
     );
     const parser = new DOMParser();
     const doc = parser.parseFromString(response.data, "text/html");
@@ -35,7 +57,10 @@ export const useCustomEditor = () => {
   const queryClient = useQueryClient();
 
   return {
-    async handleEmbeds(editor, event) {
+    async handleEmbeds(
+      editor: CustomEditorInstance,
+      event: React.ClipboardEvent,
+    ) {
       const text = event.clipboardData.getData("text/plain");
 
       const shortUrlMatch = text.match(/\/shorten\/([a-zA-Z0-9]+)$/);
@@ -53,17 +78,17 @@ export const useCustomEditor = () => {
             type: "pecha",
             src: segmentId,
             children: [{ text: "" }],
-          });
+          } as Node);
           Transforms.insertNodes(editor, {
             type: "paragraph",
             align: "left",
             children: [{ text: "" }],
-          });
+          } as Node);
           return true;
         }
       }
 
-      return embedsRegex.some(({ regex, type, getSrc, idExtractor }) => {
+      return embedsRegex.some(({ regex, type, getSrc }) => {
         const match = text.match(regex);
         if (match) {
           event.preventDefault();
@@ -82,12 +107,12 @@ export const useCustomEditor = () => {
                 segmentId: pechaSegment,
                 children: [{ text: "" }],
                 src: pechaImageURL,
-              });
+              } as Node);
               Transforms.insertNodes(editor, {
                 type: "paragraph",
                 align: "left",
                 children: [{ text: "" }],
-              });
+              } as Node);
               return true;
             }
             return false;
@@ -97,42 +122,42 @@ export const useCustomEditor = () => {
               type: type,
               youtubeId: match[1],
               children: [{ text: "" }],
-            });
+            } as Node);
             Transforms.insertNodes(editor, {
               type: "paragraph",
               align: "left",
               children: [{ text: "" }],
-            });
+            } as Node);
             return true;
           }
           if (type === "audio" && getSrc) {
-            const src = getSrc(match);
+            const src = getSrc(match as unknown as string);
             Transforms.insertNodes(editor, {
               type: type,
               src: src,
               url: text,
               children: [{ text: "" }],
-            });
+            } as Node);
             Transforms.insertNodes(editor, {
               type: "paragraph",
               align: "left",
               children: [{ text: "" }],
-            });
+            } as Node);
             return true;
           }
           if (type === "image" && getSrc) {
-            const src = getSrc(match);
+            const src = getSrc(match as unknown as string);
             Transforms.insertNodes(editor, {
               type: type,
               src: src,
               url: text,
               children: [{ text: "" }],
-            });
+            } as Node);
             Transforms.insertNodes(editor, {
               type: "paragraph",
               align: "left",
               children: [{ text: "" }],
-            });
+            } as Node);
             return true;
           }
           return false;
@@ -140,8 +165,12 @@ export const useCustomEditor = () => {
         return false;
       });
     },
-    handlePaste(editor, event) {
-      if (this.handleEmbeds(editor, event)) {
+    async handlePaste(
+      editor: CustomEditorInstance,
+      event: React.ClipboardEvent,
+    ) {
+      const handled = await this.handleEmbeds(editor, event);
+      if (handled) {
         return;
       }
       const text = event.clipboardData.getData("text/plain");
@@ -151,20 +180,26 @@ export const useCustomEditor = () => {
           type: "paragraph",
           align: "left",
           children: [{ text }],
-        });
+        } as Node);
       }
     },
 
-    handleBackspaceAtListStart(editor, event) {
+    handleBackspaceAtListStart(
+      editor: CustomEditorInstance,
+      event: React.KeyboardEvent,
+    ) {
       const { selection } = editor;
       if (!selection || !Range.isCollapsed(selection)) return false;
 
       const [listItemEntry] = Editor.nodes(editor, {
-        match: (n) => Element.isElement(n) && n.type === "list-item",
+        match: (n) =>
+          !Editor.isEditor(n) &&
+          Element.isElement(n) &&
+          (n as TypedElement).type === "list-item",
       });
       if (!listItemEntry) return false;
 
-      const [listItemNode, listItemPath] = listItemEntry;
+      const [listItemNode, listItemPath] = listItemEntry as [Element, Path];
 
       if (!Editor.isStart(editor, selection.anchor, listItemPath)) return false;
 
@@ -172,11 +207,15 @@ export const useCustomEditor = () => {
         event.preventDefault();
         Transforms.setNodes(
           editor,
-          { type: "paragraph", align: "left" },
-          { at: listItemPath }
+          { type: "paragraph", align: "left" } as unknown as Partial<Node>,
+          { at: listItemPath, match: (n) => Element.isElement(n) },
         );
         Transforms.unwrapNodes(editor, {
-          match: (n) => Element.isElement(n) && isListType(n.type),
+          match: (n) => {
+            if (Editor.isEditor(n) || !Element.isElement(n)) return false;
+            const elementType = (n as TypedElement).type;
+            return elementType ? isListType(elementType) : false;
+          },
           split: true,
         });
         return true;
@@ -185,11 +224,11 @@ export const useCustomEditor = () => {
       return false;
     },
 
-    isMarkActive(editor, type) {
+    isMarkActive(editor: CustomEditorInstance, type: string) {
       const marks = Editor.marks(editor);
-      return marks ? marks[type] === true : false;
+      return marks ? Boolean((marks as Record<string, unknown>)[type]) : false;
     },
-    toggleMark(editor, type) {
+    toggleMark(editor: CustomEditorInstance, type: string) {
       const isActive = this.isMarkActive(editor, type);
       if (isActive) {
         Editor.removeMark(editor, type);
@@ -197,22 +236,25 @@ export const useCustomEditor = () => {
         Editor.addMark(editor, type, true);
       }
     },
-    toggleBlock(editor, format) {
+    toggleBlock(editor: CustomEditorInstance, format: string) {
       const isActive = this.isBlockActive(
         editor,
         format,
-        isAlignType(format) ? "align" : "type"
+        isAlignType(format) ? "align" : "type",
       );
       const isList = isListType(format);
       Transforms.unwrapNodes(editor, {
         match: (n) =>
           !Editor.isEditor(n) &&
           Element.isElement(n) &&
-          isListType(n.type) &&
+          (() => {
+            const elementType = (n as TypedElement).type;
+            return elementType ? isListType(elementType) : false;
+          })() &&
           !isAlignType(format),
         split: true,
       });
-      let newProperties;
+      let newProperties: Partial<TypedElement> & Record<string, unknown>;
       if (isAlignType(format)) {
         newProperties = {
           align: isActive ? undefined : format,
@@ -222,14 +264,25 @@ export const useCustomEditor = () => {
           type: isActive ? "paragraph" : isList ? "list-item" : format,
         };
       }
-      Transforms.setNodes(editor, newProperties);
+      Transforms.setNodes(editor, newProperties as unknown as Partial<Node>, {
+        match: (n) => Element.isElement(n),
+      });
       if (!isActive && isList) {
-        const block = { type: format, children: [] };
-        Transforms.wrapNodes(editor, block);
+        const block = {
+          type: format,
+          children: [{ text: "" }],
+        } as unknown as TypedElement;
+        Transforms.wrapNodes(editor, block as any, {
+          match: (n) => Element.isElement(n),
+        });
       }
     },
 
-    isBlockActive(editor, format, blockType = "type") {
+    isBlockActive(
+      editor: CustomEditorInstance,
+      format: string,
+      blockType: "align" | "type" = "type",
+    ) {
       const { selection } = editor;
       if (!selection) return false;
       const [match] = Array.from(
@@ -237,34 +290,37 @@ export const useCustomEditor = () => {
           at: Editor.unhangRange(editor, selection),
           match: (n) => {
             if (!Editor.isEditor(n) && Element.isElement(n)) {
-              if (blockType === "align" && isAlignElement(n)) {
-                return n.align === format;
+              if (blockType === "align" && isAlignElement(n as any)) {
+                return (n as any).align === format;
               }
-              return n.type === format;
+              return (n as TypedElement).type === format;
             }
             return false;
           },
-        })
+        }),
       );
       return !!match;
     },
-    isCodeBlockActive(editor) {
+    isCodeBlockActive(editor: CustomEditorInstance) {
       const [match] = Editor.nodes(editor, {
-        match: (n) => n.type === "code",
+        match: (n) =>
+          !Editor.isEditor(n) &&
+          Element.isElement(n) &&
+          (n as TypedElement).type === "code",
       });
 
       return !!match;
     },
-    toggleCodeBlock(editor) {
+    toggleCodeBlock(editor: CustomEditorInstance) {
       const isActive = this.isCodeBlockActive(editor);
       Transforms.setNodes(
         editor,
-        { type: isActive ? null : "code" },
-        { match: (n) => Element.isElement(n) && Editor.isBlock(editor, n) }
+        { type: isActive ? null : "code" } as unknown as Partial<Node>,
+        { match: (n) => Element.isElement(n) && Editor.isBlock(editor, n) },
       );
     },
 
-    toggleImage(editor) {
+    toggleImage(editor: CustomEditorInstance) {
       const modalRoot = document.createElement("div");
       document.body.appendChild(modalRoot);
       const root = createRoot(modalRoot);
@@ -274,16 +330,20 @@ export const useCustomEditor = () => {
         document.body.removeChild(modalRoot);
       };
 
-      const handleUpload = (data, alt) => {
+      const handleUpload = (data: UploadedImage | null) => {
         if (!data) return;
         const { selection } = editor;
         let replaced = false;
         if (selection) {
           const [currentNode, currentPath] = Editor.node(editor, selection, {
             depth: 1,
-          });
+          }) as [Node, Path];
+          if (!Element.isElement(currentNode)) {
+            return;
+          }
+          const elementNode = currentNode as TypedElement;
           if (
-            currentNode.type === "paragraph" &&
+            elementNode.type === "paragraph" &&
             Editor.isEmpty(editor, currentNode)
           ) {
             Transforms.setNodes(
@@ -293,8 +353,8 @@ export const useCustomEditor = () => {
                 src: data.url,
                 alt: data.key,
                 children: [{ text: "" }],
-              },
-              { at: currentPath }
+              } as unknown as Partial<Node>,
+              { at: currentPath, match: (n) => Element.isElement(n) },
             );
             Transforms.insertNodes(
               editor,
@@ -302,8 +362,8 @@ export const useCustomEditor = () => {
                 type: "paragraph",
                 align: "left",
                 children: [{ text: "" }],
-              },
-              { at: Path.next(currentPath) }
+              } as Node,
+              { at: Path.next(currentPath) },
             );
             replaced = true;
           }
@@ -314,12 +374,12 @@ export const useCustomEditor = () => {
             src: data.url,
             alt: data.key,
             children: [{ text: "" }],
-          });
+          } as Node);
           Transforms.insertNodes(editor, {
             type: "paragraph",
             align: "left",
             children: [{ text: "" }],
-          });
+          } as Node);
         }
         handleClose();
       };
@@ -330,12 +390,12 @@ export const useCustomEditor = () => {
             onClose: handleClose,
             onUpload: handleUpload,
           }),
-          modalRoot
-        )
+          modalRoot,
+        ),
       );
     },
 
-    toggleSheetSegment(editor) {
+    toggleSheetSegment(editor: CustomEditorInstance) {
       const modalRoot = document.createElement("div");
       document.body.appendChild(modalRoot);
       const root = createRoot(modalRoot);
@@ -344,7 +404,7 @@ export const useCustomEditor = () => {
         document.body.removeChild(modalRoot);
       };
 
-      const handleSegment = (segmentData) => {
+      const handleSegment = (segmentData: SegmentData) => {
         if (!segmentData?.segment_id) return;
 
         const { selection } = editor;
@@ -353,10 +413,14 @@ export const useCustomEditor = () => {
         if (selection) {
           const [currentNode, currentPath] = Editor.node(editor, selection, {
             depth: 1,
-          });
+          }) as [Node, Path];
+          if (!Element.isElement(currentNode)) {
+            return;
+          }
+          const elementNode = currentNode as TypedElement;
 
           if (
-            currentNode.type === "paragraph" &&
+            elementNode.type === "paragraph" &&
             Editor.isEmpty(editor, currentNode)
           ) {
             Transforms.setNodes(
@@ -365,8 +429,8 @@ export const useCustomEditor = () => {
                 type: "pecha",
                 src: segmentData.segment_id,
                 children: [{ text: "" }],
-              },
-              { at: currentPath }
+              } as unknown as Partial<Node>,
+              { at: currentPath, match: (n) => Element.isElement(n) },
             );
             Transforms.insertNodes(
               editor,
@@ -374,8 +438,8 @@ export const useCustomEditor = () => {
                 type: "paragraph",
                 align: "left",
                 children: [{ text: "" }],
-              },
-              { at: Path.next(currentPath) }
+              } as Node,
+              { at: Path.next(currentPath) },
             );
             replaced = true;
           }
@@ -386,12 +450,12 @@ export const useCustomEditor = () => {
             type: "pecha",
             src: segmentData.segment_id,
             children: [{ text: "" }],
-          });
+          } as Node);
           Transforms.insertNodes(editor, {
             type: "paragraph",
             align: "left",
             children: [{ text: "" }],
-          });
+          } as Node);
         }
 
         handleClose();
@@ -405,10 +469,10 @@ export const useCustomEditor = () => {
             React.createElement(SheetSegmentModal, {
               onClose: handleClose,
               onSegment: handleSegment,
-            })
+            }),
           ),
-          modalRoot
-        )
+          modalRoot,
+        ),
       );
     },
   };

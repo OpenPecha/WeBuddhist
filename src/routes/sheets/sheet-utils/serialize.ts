@@ -13,12 +13,16 @@ const special_styles_to_care_about = [
   "textDecoration",
 ];
 
-export const serialize = (content) => {
+export const serialize = (content: any) => {
   if (content.text) {
     const tagStringObj = Object.keys(content).reduce(
       (tagString, key) => {
-        if (content[key] === true && format_to_html_lookup[key]) {
-          const htmlTag = format_to_html_lookup[key];
+        if (
+          content[key] === true &&
+          format_to_html_lookup[key as keyof typeof format_to_html_lookup]
+        ) {
+          const htmlTag =
+            format_to_html_lookup[key as keyof typeof format_to_html_lookup];
           const preTag = tagString.preTags + `<${htmlTag}>`;
           const postTag = `</${htmlTag}>` + tagString.postTags;
           return { preTags: preTag, postTags: postTag };
@@ -33,7 +37,7 @@ export const serialize = (content) => {
         }
         return tagString;
       },
-      { preTags: "", postTags: "" }
+      { preTags: "", postTags: "" },
     );
 
     return `${tagStringObj.preTags}${content.text.replace(/(\n)+/g, "<br>")}${
@@ -59,7 +63,9 @@ export const serialize = (content) => {
       }
       case "list-item": {
         const liHtml = content.children.map(serialize).join("");
-        const alignAttr = content.align ? ` style='text-align: ${content.align}'` : "";
+        const alignAttr = content.align
+          ? ` style='text-align: ${content.align}'`
+          : "";
         return `<li${alignAttr}>${liHtml}</li>`;
       }
       case "ordered-list": {

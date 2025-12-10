@@ -3,21 +3,21 @@ import { serialize } from "./serialize";
 const LIST_TYPES = ["ordered-list", "unordered-list"];
 const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
 
-const extractSpotifyInfo = (url) => {
+const extractSpotifyInfo = (url: string) => {
   const match = url.match(
-    /spotify\.com\/(?:embed\/)?(track|album|playlist)\/([a-zA-Z0-9]+)/
+    /spotify\.com\/(?:embed\/)?(track|album|playlist)\/([a-zA-Z0-9]+)/,
   );
   return match ? { type: match[1], id: match[2] } : null;
 };
 
-const isAlignType = (format) => {
+const isAlignType = (format: string) => {
   return TEXT_ALIGN_TYPES.includes(format);
 };
 
-const isAlignElement = (n) => {
+const isAlignElement = (n: any) => {
   return n.align !== undefined;
 };
-const isListType = (format) => {
+const isListType = (format: string) => {
   return LIST_TYPES.includes(format);
 };
 const embedsRegex = [
@@ -34,30 +34,30 @@ const embedsRegex = [
     regex:
       /https?:\/\/(?:www\.)?soundcloud\.com\/([a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_]+)/,
     type: "audio",
-    getSrc: (match) =>
+    getSrc: (match: string) =>
       `https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${match[1]}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`,
-    idExtractor: (match) => match[1],
+    idExtractor: (match: any) => match[1],
   },
   {
     regex: /https?:\/\/open\.spotify\.com\/(track|album)\/([a-zA-Z0-9]+)/,
     type: "audio",
-    getSrc: (match) =>
+    getSrc: (match: string) =>
       `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator`,
-    idExtractor: (match) => match[2],
+    idExtractor: (match: any) => match[2],
   },
   {
     regex: /https?:\/\/.*\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i,
     type: "image",
-    getSrc: (match) => match[0],
+    getSrc: (match: string) => match[0],
   },
   {
     regex: /https?:\/\/encrypted-tbn\d+\.gstatic\.com\/images\?.*$/i,
     type: "image",
-    getSrc: (match) => match[0],
+    getSrc: (match: string) => match[0],
   },
 ];
 
-const removeFootnotes = (content) => {
+const removeFootnotes = (content: string) => {
   if (!content) return "";
 
   const tempDiv = document.createElement("div");
@@ -80,8 +80,12 @@ export {
   extractSpotifyInfo,
 };
 
-export const createPayload = (value, title, is_published = false) => {
-  const source = value.map((node, i) => {
+export const createPayload = (
+  value: any,
+  title: string,
+  is_published = false,
+) => {
+  const source = value.map((node: any, i: number) => {
     if (node.type === "image") {
       return {
         position: i,
@@ -116,7 +120,7 @@ export const createPayload = (value, title, is_published = false) => {
   };
 };
 
-function htmlToSlate(domNode, marks = {}) {
+function htmlToSlate(domNode: any, marks: any = {}) {
   if (domNode.nodeType === 3) {
     if (!domNode.textContent) return null;
     return { text: domNode.textContent, ...marks };
@@ -139,8 +143,8 @@ function htmlToSlate(domNode, marks = {}) {
       newMarks.underline = true;
     if (domNode.style.color) newMarks.color = domNode.style.color;
   }
-  let children = [];
-  domNode.childNodes.forEach((child) => {
+  let children: any[] = [];
+  domNode.childNodes.forEach((child: any) => {
     const slateNode = htmlToSlate(child, newMarks);
     if (Array.isArray(slateNode)) {
       children.push(...slateNode);
@@ -151,19 +155,19 @@ function htmlToSlate(domNode, marks = {}) {
   return children;
 }
 
-export function convertSegmentsToSlate(segments) {
+export function convertSegmentsToSlate(segments: any) {
   if (segments.length === 0) {
     return [{ type: "paragraph", align: "left", children: [{ text: "" }] }];
   }
   const parser = typeof window !== "undefined" ? new window.DOMParser() : null;
-  return segments.map((segment) => {
+  return segments.map((segment: any) => {
     const { type, content, key } = segment;
     switch (type) {
       case "content": {
         if (/<blockquote[\s>]/i.test(content)) {
           let quoteHtml = content;
           const match = content.match(
-            /<blockquote[^>]*>([\s\S]*?)<\/blockquote>/i
+            /<blockquote[^>]*>([\s\S]*?)<\/blockquote>/i,
           );
           if (match) {
             quoteHtml = match[1];
@@ -173,7 +177,7 @@ export function convertSegmentsToSlate(segments) {
           if (parser) {
             const doc = parser.parseFromString(
               `<body>${quoteHtml}</body>`,
-              "text/html"
+              "text/html",
             );
             const body = doc.body;
             children = [];
@@ -202,7 +206,7 @@ export function convertSegmentsToSlate(segments) {
           if (parser) {
             const doc = parser.parseFromString(
               `<body>${listHtml}</body>`,
-              "text/html"
+              "text/html",
             );
             const body = doc.body;
             const listNode = body.querySelector("ol, ul");
@@ -211,14 +215,17 @@ export function convertSegmentsToSlate(segments) {
                 listNode.nodeName.toLowerCase() === "ol"
                   ? "ordered-list"
                   : "unordered-list";
-              const children = [];
+              const children: any[] = [];
               listNode.childNodes.forEach((li) => {
                 if (li.nodeName === "LI") {
-                  let liHtml = li.innerHTML.replace(/<br\s*\/?>/gi, "\n");
-                  let liChildren = [];
+                  let liHtml = (li as HTMLElement).innerHTML.replace(
+                    /<br\s*\/?>/gi,
+                    "\n",
+                  );
+                  let liChildren: any[] = [];
                   const liDoc = parser.parseFromString(
                     `<body>${liHtml}</body>`,
-                    "text/html"
+                    "text/html",
                   );
                   liDoc.body.childNodes.forEach((node) => {
                     const slateNodes = htmlToSlate(node);
@@ -245,14 +252,14 @@ export function convertSegmentsToSlate(segments) {
         } else if (parser && /<\/?[a-z][\s\S]*>/i.test(content)) {
           const doc = parser.parseFromString(
             `<body>${content}</body>`,
-            "text/html"
+            "text/html",
           );
           const body = doc.body;
           let align = "left";
           let children = [];
           if (body.firstChild && body.firstChild.nodeName === "DIV") {
             const div = body.firstChild;
-            align = div.style.textAlign || "left";
+            align = (div as HTMLElement).style.textAlign || "left";
             children = htmlToSlate(div) || [];
           } else {
             body.childNodes.forEach((node) => {
@@ -264,7 +271,10 @@ export function convertSegmentsToSlate(segments) {
               }
             });
           }
-          if (!children.length || !children.some((n) => n.text !== undefined)) {
+          if (
+            !children.length ||
+            !children.some((n: any) => n.text !== undefined)
+          ) {
             children = [{ text: "" }];
           }
           return {

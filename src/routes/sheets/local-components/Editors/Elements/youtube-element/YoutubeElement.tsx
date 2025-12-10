@@ -1,16 +1,15 @@
-import YoutubeEmbed from 'react-youtube'
+import YoutubeEmbed from "react-youtube";
 
-const YoutubeElement = props => {
-    const {attributes, element} = props
-    const {youtubeId} = element
-    return (
-      <div {...attributes}>
-        <div contentEditable={false}>
-          <YoutubeEmbed videoId={youtubeId} />
-        </div>
-
+const YoutubeElement = (props: any) => {
+  const { attributes, element } = props;
+  const { youtubeId } = element;
+  return (
+    <div {...attributes}>
+      <div contentEditable={false}>
+        <YoutubeEmbed videoId={youtubeId} />
       </div>
-    )
-  }
-  
-  export default YoutubeElement
+    </div>
+  );
+};
+
+export default YoutubeElement;

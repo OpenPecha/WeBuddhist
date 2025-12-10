@@ -1,27 +1,27 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { createEditor } from 'slate';
-import { Slate, withReact } from 'slate-react';
-import withEmbeds from '../../sheet-utils/withEmbeds.ts';
-import EditorInput from './EditorInput/EditorInput.tsx';
-import Toolsbar from '../Toolbar/Toolsbar.tsx';
-import { withHistory } from 'slate-history';
-import { useDebounce } from 'use-debounce';
-import { useParams, useNavigate } from 'react-router-dom';
-import axiosInstance from '../../../../config/axios-config.ts';
-import { createPayload } from '../../sheet-utils/Constant.ts';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { createEditor } from "slate";
+import { Slate, withReact } from "slate-react";
+import withEmbeds from "../../sheet-utils/withEmbeds.ts";
+import EditorInput from "./EditorInput/EditorInput.tsx";
+import Toolsbar from "../Toolbar/Toolsbar.tsx";
+import { withHistory } from "slate-history";
+import { useDebounce } from "use-debounce";
+import { useParams, useNavigate } from "react-router-dom";
+import axiosInstance from "../../../../config/axios-config.ts";
+import { createPayload } from "../../sheet-utils/Constant.ts";
+import { AxiosError } from "axios";
 
-export const createSheet = async (payload) => {
-  const accessToken = sessionStorage.getItem('accessToken');
-  const { data } = await axiosInstance.post('/api/v1/sheets', payload, {
+export const createSheet = async (payload: any) => {
+  const accessToken = sessionStorage.getItem("accessToken");
+  const { data } = await axiosInstance.post("/api/v1/sheets", payload, {
     headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
-  return data
-
+  return data;
 };
 
-export const updateSheet = async (sheet_id, payload) => {
+export const updateSheet = async (sheet_id: string, payload: any) => {
   const accessToken = sessionStorage.getItem("accessToken");
   const { data } = await axiosInstance.put(
     `/api/v1/sheets/${sheet_id}`,
@@ -30,72 +30,74 @@ export const updateSheet = async (sheet_id, payload) => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    }
+    },
   );
   return data;
 };
-const Editor = ({ initialValue, children, title, onTitleError }) => {
-  const [editor] = useState(() => withHistory(withEmbeds(withReact(createEditor()))));
+const Editor = ({ initialValue, children, title, onTitleError }: any) => {
+  const [editor] = useState(() =>
+    withHistory(withEmbeds(withReact(createEditor()))),
+  );
   const [value, setValue] = useState(initialValue);
   const [debouncedValue] = useDebounce(value, 1000);
   const { id } = useParams();
   const navigate = useNavigate();
-  const [sheetId, setSheetId] = useState(id === 'new' ? null : id);
- const hasCreatedSheet=useRef(false)
-  const [saveStatus, setSaveStatus] = useState('idle');
+  const [sheetId, setSheetId] = useState(id === "new" ? null : id);
+  const hasCreatedSheet = useRef(false);
+  const [saveStatus, setSaveStatus] = useState("idle");
 
   const handleNavigation = useCallback(
-    (newSheetId) => {
-      const newUrl = window.location.pathname.replace('/new', `/${newSheetId}`);
+    (newSheetId: string) => {
+      const newUrl = window.location.pathname.replace("/new", `/${newSheetId}`);
       navigate(newUrl, { replace: true });
     },
-    [navigate]
+    [navigate],
   );
 
-    const handleChange = (value) => {
+  const handleChange = (value: any) => {
     setValue(value);
     const isAstChange = editor.operations.some(
-      op => 'set_selection' !== op.type
-    )
+      (op: any) => "set_selection" !== op.type,
+    );
     if (isAstChange) {
-      const content = JSON.stringify(value)
-      sessionStorage.setItem('sheets-content', content)
+      const content = JSON.stringify(value);
+      sessionStorage.setItem("sheets-content", content);
     }
   };
 
   const saveSheet = useCallback(
-    async (content) => {
+    async (content: any) => {
       try {
-        setSaveStatus('saving');
+        setSaveStatus("saving");
         const payload = createPayload(content, title);
         if (!sheetId) {
           const response = await createSheet(payload);
           const newSheetId = response.sheet_id;
           setSheetId(newSheetId);
           handleNavigation(newSheetId);
-          hasCreatedSheet.current=true
-          setSaveStatus('saved');
+          hasCreatedSheet.current = true;
+          setSaveStatus("saved");
           if (onTitleError) {
             onTitleError(null);
           }
           return;
         }
         await updateSheet(sheetId, payload);
-        setSaveStatus('saved');
+        setSaveStatus("saved");
         if (onTitleError) {
           onTitleError(null);
         }
       } catch (error) {
-        setSaveStatus('idle');
-        console.error('Error saving sheet:', error);
-        if (error.response?.status === 400) {
+        setSaveStatus("idle");
+        console.error("Error saving sheet:", error);
+        if (error instanceof AxiosError && error.response?.status === 400) {
           if (onTitleError) {
             onTitleError(error.response?.data?.detail);
           }
         }
       }
     },
-    [sheetId, handleNavigation, title]
+    [sheetId, handleNavigation, title],
   );
 
   useEffect(() => {
@@ -104,19 +106,26 @@ const Editor = ({ initialValue, children, title, onTitleError }) => {
       return;
     }
     if (!debouncedValue) return;
-    const hasContentChanged = JSON.stringify(debouncedValue) !== JSON.stringify(initialValue);
+    const hasContentChanged =
+      JSON.stringify(debouncedValue) !== JSON.stringify(initialValue);
     if (!hasContentChanged) return;
     saveSheet(debouncedValue);
   }, [debouncedValue, initialValue, saveSheet]);
 
   return (
-    <Slate
-      editor={editor}
-      initialValue={initialValue}
-      onChange={handleChange}
-    >
-      <Toolsbar editor={editor} value={value} title={title} sheetId={sheetId} saveStatus={saveStatus} />
-      {React.Children.map(children, (child) => React.cloneElement(child, { editor }))}
+    <Slate editor={editor} initialValue={initialValue} onChange={handleChange}>
+      <Toolsbar
+        editor={editor}
+        value={value}
+        title={title}
+        sheetId={sheetId}
+        saveStatus={saveStatus}
+      />
+      {React.Children.map(children, (child) =>
+        child
+          ? React.cloneElement(child as React.ReactElement, { editor })
+          : null,
+      )}
     </Slate>
   );
 };
