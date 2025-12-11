@@ -1,8 +1,11 @@
-import React from 'react';
+const escapeRegex = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-export const highlightSearchMatch = (text, searchTerm, highlightClass = "highlighted-text") => {
+export const highlightSearchMatch = (
+  text: string,
+  searchTerm: string,
+  highlightClass = "highlighted-text",
+) => {
   if (!text || !searchTerm || searchTerm.trim() === "") {
     return text;
   }
@@ -18,5 +21,8 @@ export const highlightSearchMatch = (text, searchTerm, highlightClass = "highlig
   }
 
   const subRegex = new RegExp(escaped, "giu");
-  return text.replace(subRegex, (match) => `<span class="${highlightClass}">${match}</span>`);
+  return text.replace(
+    subRegex,
+    (match) => `<span class="${highlightClass}">${match}</span>`,
+  );
 };

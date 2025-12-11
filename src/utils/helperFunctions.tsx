@@ -1,4 +1,5 @@
 import pechaLogo from "../assets/icons/pecha_icon.png";
+
 export const getFirstSegmentId = (sections: any[]): string | null => {
   if (!sections?.length) {
     return null;
