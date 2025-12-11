@@ -77,9 +77,10 @@ const fontConfig = {
   },
 };
 
-export const setFontVariables = (language) => {
+export const setFontVariables = (language: string) => {
   const root = document.getElementById("root");
-  const fonts = fontConfig[language] || fontConfig["en"];
+  const fonts =
+    fontConfig[language as keyof typeof fontConfig] || fontConfig["en"];
   Object.entries(fonts).forEach(([key, styles]) => {
     root?.style.setProperty(`--${key}-font-size`, styles.fontSize);
     root?.style.setProperty(`--${key}-font-family`, styles.fontFamily);

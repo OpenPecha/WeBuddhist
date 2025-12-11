@@ -5,7 +5,11 @@ const CollectionColorContext = createContext({
   setCollectionColor: () => {},
 });
 
-export const CollectionColorProvider = ({ children }) => {
+export const CollectionColorProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [collectionColor, setCollectionColor] = useState(null);
 
   const contextValue = useMemo(

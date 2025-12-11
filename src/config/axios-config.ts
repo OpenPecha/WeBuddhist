@@ -3,7 +3,7 @@ import {
   ACCESS_TOKEN,
   RESET_PASSWORD,
   RESET_PASSWORD_TOKEN,
-} from "../utils/constants.js";
+} from "../utils/constants.ts";
 
 const axiosInstance = axios.create({});
 axiosInstance.interceptors.request.use(

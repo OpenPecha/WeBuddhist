@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-const PanelContext = createContext();
+const PanelContext = createContext({});
 
-export const PanelProvider = ({ children }) => {
+export const PanelProvider = ({ children }: { children: React.ReactNode }) => {
   const [isResourcesPanelOpen, setIsResourcesPanelOpen] = useState(() => {
     const stored = sessionStorage.getItem("resourcesPanelOpen");
     return stored === "true";
