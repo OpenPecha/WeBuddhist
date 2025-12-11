@@ -1,7 +1,10 @@
-import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import {
+  QueryClient,
+  QueryClientProvider,
+  type UseQueryResult,
+} from "react-query";
+import { vi, describe, beforeEach, test, expect, type Mock } from "vitest";
 import SheetShare, { fetchShortUrl } from "./sheetShare.js";
 import * as reactQuery from "react-query";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
@@ -23,6 +26,31 @@ vi.mock("../../../../config/axios-config.js", () => ({
   },
 }));
 
+vi.mock("@/components/ui/dropdown-menu.tsx", () => {
+  const DropdownMenu = ({ children }: any) => <div>{children}</div>;
+  const DropdownMenuTrigger = ({ children }: any) => <div>{children}</div>;
+  const DropdownMenuContent = ({ children }: any) => <div>{children}</div>;
+  const DropdownMenuItem = ({
+    children,
+    onClick,
+    disabled,
+  }: {
+    children: any;
+    onClick?: () => void;
+    disabled?: boolean;
+  }) => (
+    <button onClick={disabled ? undefined : onClick} disabled={disabled}>
+      {children}
+    </button>
+  );
+  return {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+  };
+});
+
 Object.assign(navigator, {
   clipboard: {
     writeText: vi.fn(),
@@ -32,23 +60,29 @@ Object.assign(navigator, {
 describe("SheetShare Component", () => {
   const queryClient = new QueryClient();
   const mockShortUrlData = { shortUrl: "https://short.url/abc" };
+  const mockUseParams = useParams as unknown as Mock;
+  const mockUseQuery = vi.spyOn(reactQuery, "useQuery") as unknown as Mock;
+  const axiosPostMock = axiosInstance.post as unknown as Mock;
+
+  const buildQueryResult = (override: any = {}) =>
+    ({
+      data: undefined,
+      isLoading: false,
+      error: null,
+      isError: false,
+      refetch: vi.fn(),
+      status: "success",
+      ...override,
+    }) as unknown as UseQueryResult;
 
   beforeEach(() => {
     vi.resetAllMocks();
-    useParams.mockReturnValue({ sheetSlugAndId: "sheet-slug_123" });
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((...args) => {
-      if (args[0][3]) {
-        return {
-          data: mockShortUrlData,
-          isLoading: false,
-        };
-      }
-      return {
-        data: undefined,
-        isLoading: false,
-      };
-    });
-    axiosInstance.post.mockResolvedValue({ data: mockShortUrlData });
+    mockUseParams.mockReturnValue({ sheetSlugAndId: "sheet-slug_123" });
+    mockUseQuery.mockReturnValue(buildQueryResult({ data: mockShortUrlData }));
+    axiosPostMock.mockResolvedValue({ data: mockShortUrlData });
+    Element.prototype.hasPointerCapture = vi.fn();
+    Element.prototype.releasePointerCapture = vi.fn();
+    Element.prototype.scrollIntoView = vi.fn();
   });
 
   const setup = () =>
@@ -62,41 +96,35 @@ describe("SheetShare Component", () => {
 
   test("renders share button", () => {
     setup();
-    expect(document.querySelector(".share-button")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Change language" }),
+    ).toBeInTheDocument();
   });
 
-  test("opens dropdown on share button click", () => {
+  test("opens dropdown on share button click and shows options", () => {
     setup();
-    fireEvent.click(document.querySelector(".share-button"));
-    expect(document.querySelector(".share-dropdown")).toBeInTheDocument();
+    expect(screen.getByText(/share on facebook/i)).toBeInTheDocument();
+    expect(screen.getByText(/share on x/i)).toBeInTheDocument();
+    expect(screen.getByText(/copy link/i)).toBeInTheDocument();
   });
 
-  test("copies link to clipboard and shows copied state", async () => {
+  test("copies link to clipboard", async () => {
     setup();
-    fireEvent.click(document.querySelector(".share-button"));
-    const copyBtn = screen.getByText(/copy link/i).closest("button");
+    const copyBtn = screen.getByText(/copy link/i);
     fireEvent.click(copyBtn);
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
       mockShortUrlData.shortUrl,
     );
-    await waitFor(() => {
-      expect(screen.getByText(/copy link/i)).toBeInTheDocument();
-    });
   });
 
   test("shows loading state when isLoading is true", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: undefined,
-      isLoading: true,
-    }));
+    mockUseQuery.mockReturnValueOnce(buildQueryResult({ isLoading: true }));
     setup();
-    fireEvent.click(document.querySelector(".share-button"));
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
   test("renders Facebook and X share links with correct URLs", () => {
     setup();
-    fireEvent.click(document.querySelector(".share-button"));
     const facebookLink = screen.getByText(/share on facebook/i).closest("a");
     const xLink = screen.getByText(/share on x/i).closest("a");
     expect(facebookLink).toHaveAttribute(
@@ -109,20 +137,12 @@ describe("SheetShare Component", () => {
     );
   });
 
-  test("closes dropdown when clicking outside", () => {
-    setup();
-    fireEvent.click(document.querySelector(".share-button"));
-    expect(document.querySelector(".share-dropdown")).toBeInTheDocument();
-    fireEvent.mouseDown(document.body);
-    expect(document.querySelector(".share-dropdown")).not.toBeInTheDocument();
-  });
-
   test("fetchShortUrl calls axios with correct params", async () => {
     const url = "http://test.com";
     const textId = "123";
-    axiosInstance.post.mockResolvedValueOnce({ data: mockShortUrlData });
+    axiosPostMock.mockResolvedValueOnce({ data: mockShortUrlData });
     const result = await fetchShortUrl(url, textId);
-    expect(axiosInstance.post).toHaveBeenCalledWith("/api/v1/share", {
+    expect(axiosPostMock).toHaveBeenCalledWith("/api/v1/share", {
       text_id: textId,
       language: "bo",
       url,

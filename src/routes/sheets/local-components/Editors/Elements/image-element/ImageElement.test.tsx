@@ -1,10 +1,10 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ImageElement from "./ImageElement";
 
 describe("ImageElement Component", () => {
-  const defaultProps = {
+  const defaultProps: any = {
     attributes: { "data-testid": "image-element" },
     children: <span>Child content</span>,
     element: {
@@ -13,7 +13,7 @@ describe("ImageElement Component", () => {
     },
   };
 
-  const setup = (props = {}) => {
+  const setup = (props: any = {}) => {
     return render(<ImageElement {...defaultProps} {...props} />);
   };
 
@@ -23,7 +23,9 @@ describe("ImageElement Component", () => {
     const image = screen.getByRole("img");
     expect(image).toBeInTheDocument();
     expect(image).toHaveAttribute("src", defaultProps.element.src);
-    expect(image).toHaveClass("sheet-image");
+    expect(image.className).toContain("w-full");
+    expect(image.className).toContain("object-cover");
+    expect(image).toHaveAttribute("alt", "Sheet image");
     expect(image).toHaveStyle({ maxWidth: "100%", height: "auto" });
   });
 
@@ -38,7 +40,7 @@ describe("ImageElement Component", () => {
 
     expect(screen.getByText("Image link:")).toBeInTheDocument();
     expect(screen.getByText("https://example.com/image")).toBeInTheDocument();
-    expect(screen.getByText("(Error: Image not found)")).toBeInTheDocument();
+    expect(screen.getByText(/Error: Image not found/)).toBeInTheDocument();
   });
 
   test("renders fallback content with default text when both src and url are not provided", () => {

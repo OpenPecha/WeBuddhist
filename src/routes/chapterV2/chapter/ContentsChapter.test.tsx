@@ -1,4 +1,3 @@
-import React from "react";
 import {
   mockAxios,
   mockReactQuery,
@@ -11,7 +10,7 @@ import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter as Router } from "react-router-dom";
-import { vi } from "vitest";
+import { vi, describe, beforeEach, test, expect, type Mock } from "vitest";
 import "@testing-library/jest-dom";
 import ContentsChapter from "./ContentsChapter.js";
 import axiosInstance from "../../../config/axios-config.js";
@@ -20,11 +19,13 @@ mockAxios();
 mockUseAuth();
 mockReactQuery();
 
+const axiosPostMock = axiosInstance.post as unknown as Mock;
+
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
   return {
     ...actual,
-    useTranslate: () => ({ t: (key) => key }),
+    useTranslate: () => ({ t: (key: any) => key }),
   };
 });
 
@@ -37,20 +38,20 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
 
 vi.mock("../utils/header/ChapterHeader.jsx", () => ({
   __esModule: true,
-  default: (props) => (
+  default: (props: any) => (
     <div data-testid="chapter-header-mock">ChapterHeader</div>
   ),
 }));
 
 vi.mock("./helpers/UseChapterHook.jsx", () => ({
   __esModule: true,
-  default: (props) => (
+  default: (props: any) => (
     <div data-testid="use-chapter-hook-mock">UseChapterHook</div>
   ),
 }));
 
 vi.mock("../../../context/PanelContext.jsx", () => ({
-  PanelProvider: ({ children }) => (
+  PanelProvider: ({ children }: { children: any }) => (
     <div data-testid="panel-provider-mock">{children}</div>
   ),
 }));
@@ -63,7 +64,15 @@ vi.mock("../../../config/axios-config.js", () => ({
 
 const queryClient = new QueryClient();
 
-const defaultProps = {
+const buildInfiniteQueryResult = (override: any = {}) =>
+  ({
+    data: null,
+    isLoading: false,
+    error: null,
+    ...override,
+  }) as unknown as ReturnType<typeof reactQuery.useInfiniteQuery>;
+
+const defaultProps: any = {
   textId: "text-1",
   contentId: "content-1",
   segmentId: "segment-1",
@@ -75,7 +84,7 @@ const defaultProps = {
   setVersionId: vi.fn(),
 };
 
-const setup = (props = {}) => {
+const setup = (props: any = {}) => {
   return render(
     <Router>
       <QueryClientProvider client={queryClient}>
@@ -88,7 +97,7 @@ const setup = (props = {}) => {
 };
 
 describe("ContentsChapter", () => {
-  let localStorageMock;
+  let localStorageMock: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -98,71 +107,65 @@ describe("ContentsChapter", () => {
   });
 
   test("renders main container and child components", () => {
-    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue({
-      data: {
-        pages: [
-          {
-            content: { sections: [{ id: 1 }], foo: "bar" },
-            text_detail: { language: "en" },
-          },
-        ],
-      },
-      fetchNextPage: vi.fn(),
-      hasNextPage: true,
-      isFetchingNextPage: false,
-      fetchPreviousPage: vi.fn(),
-      hasPreviousPage: false,
-      isFetchingPreviousPage: false,
-      isLoading: false,
-      error: null,
-    });
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({
+        data: {
+          pages: [
+            {
+              content: { sections: [{ id: 1 }], foo: "bar" },
+              text_detail: { language: "en" },
+            },
+          ],
+        },
+        fetchNextPage: vi.fn(),
+        hasNextPage: true,
+        isFetchingNextPage: false,
+        fetchPreviousPage: vi.fn(),
+        hasPreviousPage: false,
+        isFetchingPreviousPage: false,
+      }),
+    );
     setup();
-    expect(
-      document.querySelector(".contents-chapter-container"),
-    ).toBeInTheDocument();
+    expect(document.querySelector(".flex")).toBeInTheDocument();
     expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
     expect(screen.getByTestId("panel-provider-mock")).toBeInTheDocument();
   });
 
   test("passes correct props to UseChapterHook and ChapterHeader", () => {
-    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue({
-      data: {
-        pages: [
-          {
-            content: { sections: [{ id: 1 }], foo: "bar" },
-            text_detail: { language: "en" },
-          },
-        ],
-      },
-      fetchNextPage: vi.fn(),
-      hasNextPage: true,
-      isFetchingNextPage: false,
-      fetchPreviousPage: vi.fn(),
-      hasPreviousPage: false,
-      isFetchingPreviousPage: false,
-      isLoading: false,
-      error: null,
-    });
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({
+        data: {
+          pages: [
+            {
+              content: { sections: [{ id: 1 }], foo: "bar" },
+              text_detail: { language: "en" },
+            },
+          ],
+        },
+        fetchNextPage: vi.fn(),
+        hasNextPage: true,
+        isFetchingNextPage: false,
+        fetchPreviousPage: vi.fn(),
+        hasPreviousPage: false,
+        isFetchingPreviousPage: false,
+      }),
+    );
     setup();
     expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
   });
 
   test("handles no data gracefully", () => {
-    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue({
-      data: null,
-      isLoading: false,
-      error: null,
-    });
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({ data: null }),
+    );
     setup();
-    expect(
-      document.querySelector(".contents-chapter-container"),
-    ).toBeInTheDocument();
+    expect(document.querySelector(".flex")).toBeInTheDocument();
   });
 
   describe("fetchContentDetails function", () => {
     test("calls axios with correct parameters when all props are provided", async () => {
       const mockData = { content: { sections: [] } };
-      axiosInstance.post.mockResolvedValue({ data: mockData });
+      axiosPostMock.mockResolvedValue({ data: mockData });
 
       const queryKey = [
         "content",
@@ -174,15 +177,11 @@ describe("ContentsChapter", () => {
       ];
       const pageParam = { segmentId: "test-segment", direction: "next" };
 
-      let capturedFetchFunction;
+      let capturedFetchFunction: any;
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
-        (key, fetchFn, options) => {
+        (_key: any, fetchFn: any) => {
           capturedFetchFunction = fetchFn;
-          return {
-            data: null,
-            isLoading: false,
-            error: null,
-          };
+          return buildInfiniteQueryResult();
         },
       );
 
@@ -205,17 +204,13 @@ describe("ContentsChapter", () => {
 
     test("calls axios with default direction when pageParam is null", async () => {
       const mockData = { content: { sections: [] } };
-      axiosInstance.post.mockResolvedValue({ data: mockData });
+      axiosPostMock.mockResolvedValue({ data: mockData });
 
-      let capturedFetchFunction;
+      let capturedFetchFunction: any;
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
-        (key, fetchFn, options) => {
+        (_key: any, fetchFn: any) => {
           capturedFetchFunction = fetchFn;
-          return {
-            data: null,
-            isLoading: false,
-            error: null,
-          };
+          return buildInfiniteQueryResult();
         },
       );
 
@@ -248,17 +243,13 @@ describe("ContentsChapter", () => {
 
     test("calls axios without optional parameters when they are null/undefined", async () => {
       const mockData = { content: { sections: [] } };
-      axiosInstance.post.mockResolvedValue({ data: mockData });
+      axiosPostMock.mockResolvedValue({ data: mockData });
 
-      let capturedFetchFunction;
+      let capturedFetchFunction: any;
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
-        (key, fetchFn, options) => {
+        (_key: any, fetchFn: any) => {
           capturedFetchFunction = fetchFn;
-          return {
-            data: null,
-            isLoading: false,
-            error: null,
-          };
+          return buildInfiniteQueryResult();
         },
       );
 
@@ -286,16 +277,12 @@ describe("ContentsChapter", () => {
 
   describe("getNextPageParam logic", () => {
     test("returns null when current_segment_position equals total_segments", () => {
-      let capturedGetNextPageParam;
+      let capturedGetNextPageParam: any;
 
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
-        (key, fetchFn, options) => {
+        (_key: any, _fetchFn: any, options: any) => {
           capturedGetNextPageParam = options.getNextPageParam;
-          return {
-            data: null,
-            isLoading: false,
-            error: null,
-          };
+          return buildInfiniteQueryResult();
         },
       );
 
@@ -312,16 +299,12 @@ describe("ContentsChapter", () => {
     });
 
     test("handles undefined lastPage gracefully", () => {
-      let capturedGetNextPageParam;
+      let capturedGetNextPageParam: any;
 
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
-        (key, fetchFn, options) => {
+        (_key: any, _fetchFn: any, options: any) => {
           capturedGetNextPageParam = options.getNextPageParam;
-          return {
-            data: null,
-            isLoading: false,
-            error: null,
-          };
+          return buildInfiniteQueryResult();
         },
       );
 
@@ -334,16 +317,12 @@ describe("ContentsChapter", () => {
 
   describe("getPreviousPageParam logic", () => {
     test("returns null when current_segment_position equals 1", () => {
-      let capturedGetPreviousPageParam;
+      let capturedGetPreviousPageParam: any;
 
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
-        (key, fetchFn, options) => {
+        (_key: any, _fetchFn: any, options: any) => {
           capturedGetPreviousPageParam = options.getPreviousPageParam;
-          return {
-            data: null,
-            isLoading: false,
-            error: null,
-          };
+          return buildInfiniteQueryResult();
         },
       );
 
@@ -361,16 +340,12 @@ describe("ContentsChapter", () => {
 
   describe("useInfiniteQuery configuration", () => {
     test("query is enabled when textId is provided", () => {
-      let capturedOptions;
+      let capturedOptions: any;
 
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
-        (key, fetchFn, options) => {
+        (_key: any, _fetchFn: any, options: any) => {
           capturedOptions = options;
-          return {
-            data: null,
-            isLoading: false,
-            error: null,
-          };
+          return buildInfiniteQueryResult();
         },
       );
 
@@ -380,16 +355,12 @@ describe("ContentsChapter", () => {
     });
 
     test("query is disabled when textId is not provided", () => {
-      let capturedOptions;
+      let capturedOptions: any;
 
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
-        (key, fetchFn, options) => {
+        (_key: any, _fetchFn: any, options: any) => {
           capturedOptions = options;
-          return {
-            data: null,
-            isLoading: false,
-            error: null,
-          };
+          return buildInfiniteQueryResult();
         },
       );
 
@@ -399,16 +370,12 @@ describe("ContentsChapter", () => {
     });
 
     test("refetchOnWindowFocus is disabled", () => {
-      let capturedOptions;
+      let capturedOptions: any;
 
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
-        (key, fetchFn, options) => {
+        (_key: any, _fetchFn: any, options: any) => {
           capturedOptions = options;
-          return {
-            data: null,
-            isLoading: false,
-            error: null,
-          };
+          return buildInfiniteQueryResult();
         },
       );
 

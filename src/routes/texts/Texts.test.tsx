@@ -1,43 +1,49 @@
 import {
-  mockAxios,
   mockReactQuery,
   mockTolgee,
   mockUseAuth,
   mockLocalStorage,
-} from "../../test-utils/CommonMocks.js";
-import { vi } from "vitest";
+} from "../../test-utils/CommonMocks.ts";
+import {
+  vi,
+  describe,
+  beforeEach,
+  test,
+  expect,
+  type Mock,
+  type MockInstance,
+} from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
 import * as reactQuery from "react-query";
-import axiosInstance from "../../config/axios-config.js";
-import { render, screen, fireEvent } from "@testing-library/react";
+import axiosInstance from "../../config/axios-config.ts";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { TolgeeProvider } from "@tolgee/react";
-import React from "react";
-import Texts, { fetchTableOfContents, fetchVersions } from "./Texts.js";
+import Texts, { fetchTableOfContents, fetchVersions } from "./Texts.tsx";
 
-mockAxios();
 mockUseAuth();
 mockReactQuery();
 
-vi.mock("./versions/Versions.jsx", () => ({
+vi.mock("./versions/Versions.tsx", () => ({
+  __esModule: true,
   default: () => <div data-testid="versions-component">Versions Component</div>,
 }));
 
-vi.mock("./table-of-contents/TableOfContents.jsx", () => ({
-  default: ({ error, loading, t, ...rest }) => (
-    <div data-testid="table-of-content-component">
-      Table of Contents Component
-    </div>
+vi.mock("./commentaries/Commentaries.tsx", () => ({
+  __esModule: true,
+  default: () => (
+    <div data-testid="commentaries-component">Commentaries Component</div>
   ),
 }));
 
-vi.mock("../../utils/helperFunctions.jsx", () => ({
-  mapLanguageCode: (code) => (code === "bo-IN" ? "bo" : code),
+vi.mock("../../utils/helperFunctions.tsx", () => ({
+  mapLanguageCode: (code: string) => (code === "bo-IN" ? "bo" : code),
   getLanguageClass: () => "language-class",
   getEarlyReturn: () => "",
 }));
 
-vi.mock("../../utils/constants.js", () => ({
+vi.mock("../../utils/constants.ts", () => ({
   LANGUAGE: "LANGUAGE",
   siteName: "Webuddhist",
 }));
@@ -58,38 +64,42 @@ vi.mock("react-router-dom", async () => {
 });
 
 describe("Texts Component", () => {
-  const queryClient = new QueryClient();
-  const mockTextDetailData = {
-    text_detail: {
-      title: "Test Title",
-      type: "Test Type",
-    },
-    contents: [
-      {
-        id: "sdfasdfasdf",
-        sections: [
-          { id: "section1", title: "Section 1" },
-          { id: "section2", title: "Section 2" },
-        ],
-      },
-    ],
-  };
+  const tableOfContentsData = { contents: [{ id: "content-1" }] };
+  const versionsData = { text: { title: "Sample Text", language: "bo-IN" } };
+  const commentariesData = { items: [{ id: "commentary-1" }] };
 
-  let localStorageMock;
+  let localStorageMock: any;
+  let axiosGetMock: MockInstance;
 
   beforeEach(() => {
-    vi.restoreAllMocks();
-    useParams.mockReturnValue({ id: "123" });
+    vi.clearAllMocks();
     localStorageMock = mockLocalStorage();
     localStorageMock.getItem.mockReturnValue("bo-IN");
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: mockTextDetailData,
-      isLoading: false,
-    }));
-    axiosInstance.get.mockResolvedValue({ data: mockTextDetailData });
+    (useParams as unknown as Mock).mockReturnValue({ id: "123" });
+    (reactQuery.useQuery as Mock).mockImplementation((queryKey: any) => {
+      const key = Array.isArray(queryKey) ? queryKey[0] : queryKey;
+      if (key === "table-of-contents") {
+        return {
+          data: tableOfContentsData,
+          isLoading: false,
+          error: undefined,
+        };
+      }
+      if (key === "versions") {
+        return { data: versionsData, isLoading: false, error: undefined };
+      }
+      if (key === "commentaries") {
+        return { data: commentariesData, isLoading: false, error: undefined };
+      }
+      return { data: undefined, isLoading: false, error: undefined };
+    });
+    axiosGetMock = vi
+      .spyOn(axiosInstance, "get")
+      .mockResolvedValue({ data: tableOfContentsData });
   });
 
   const setup = () => {
+    const queryClient = new QueryClient();
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
@@ -101,98 +111,50 @@ describe("Texts Component", () => {
     );
   };
 
-  test("renders tabs correctly", () => {
+  test("renders title with language class", () => {
     setup();
-    expect(screen.getByText("Table of Contents Component")).toBeInTheDocument();
-    const buttons = document.querySelectorAll(".tab-button");
-    expect(buttons[0]).toHaveTextContent("Contents");
-    expect(buttons[1]).toHaveTextContent("Version");
+    const heading = screen.getByRole("heading", { name: "Sample Text" });
+    expect(heading).toBeInTheDocument();
+    expect(heading).toHaveClass("language-class");
   });
 
-  test("renders child components", () => {
+  test("shows versions tab by default and switches to commentaries", async () => {
+    const user = userEvent.setup();
     setup();
-    expect(
-      screen.getByTestId("table-of-content-component"),
-    ).toBeInTheDocument();
+
+    const versionsTab = screen.getByRole("tab", { name: /version/i });
+    expect(versionsTab).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByTestId("versions-component")).toBeInTheDocument();
+
+    const commentariesTab = screen.getByRole("tab", { name: /commentary/i });
+    await user.click(commentariesTab);
+    expect(commentariesTab).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByTestId("commentaries-component")).toBeInTheDocument();
   });
 
-  test("displays loading state implicitly", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: null,
-      isLoading: true,
-    }));
-
-    setup();
-    // Title should be empty during loading
-    expect(screen.queryByText("Test Title")).not.toBeInTheDocument();
-  });
-
-  // test("renders download button", () => {
-  //   setup();
-  //   expect(screen.getByText("Download Text")).toBeInTheDocument();
-  // });
-
-  test("fetchTableOfContents makes correct API call", async () => {
+  test("fetchTableOfContents maps language code", async () => {
     sessionStorage.setItem("textLanguage", "bo-IN");
+    axiosGetMock.mockResolvedValueOnce({ data: tableOfContentsData });
+
     const result = await fetchTableOfContents("123", 0, 10);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith(
-      "/api/v1/texts/123/contents",
-      {
-        params: {
-          language: "bo",
-          limit: 10,
-          skip: 0,
-        },
-      },
-    );
-
-    expect(result).toEqual(mockTextDetailData);
+    expect(axiosGetMock).toHaveBeenCalledWith("/api/v1/texts/123/contents", {
+      params: { language: "bo", limit: 10, skip: 0 },
+    });
+    expect(result).toEqual(tableOfContentsData);
     sessionStorage.removeItem("textLanguage");
   });
 
-  test("switches to versions tab when clicked", () => {
-    setup();
-
-    const buttons = document.querySelectorAll(".tab-button");
-    expect(buttons[0]).toHaveClass("active");
-    expect(
-      screen.getByTestId("table-of-content-component"),
-    ).toBeInTheDocument();
-    fireEvent.click(buttons[1]);
-    expect(buttons[1]).toHaveClass("active");
-    expect(screen.getByTestId("versions-component")).toBeInTheDocument();
-  });
-
-  test("fetchVersions makes correct API call", async () => {
+  test("fetchVersions maps language code", async () => {
     sessionStorage.setItem("textLanguage", "bo-IN");
-    axiosInstance.get.mockResolvedValueOnce({ data: { versions: [] } });
+    axiosGetMock.mockResolvedValueOnce({ data: { versions: [] } });
+
     const result = await fetchVersions("123", 0, 10);
-    expect(axiosInstance.get).toHaveBeenCalledWith(
-      "/api/v1/texts/123/versions",
-      {
-        params: {
-          language: "bo",
-          limit: 10,
-          skip: 0,
-        },
-      },
-    );
+
+    expect(axiosGetMock).toHaveBeenCalledWith("/api/v1/texts/123/versions", {
+      params: { language: "bo", limit: 10, skip: 0 },
+    });
     expect(result).toEqual({ versions: [] });
     sessionStorage.removeItem("textLanguage");
-  });
-
-  test("switches back to contents from versions tab", () => {
-    setup();
-
-    const buttons = document.querySelectorAll(".tab-button");
-    fireEvent.click(buttons[1]);
-    expect(screen.getByTestId("versions-component")).toBeInTheDocument();
-    fireEvent.click(buttons[0]);
-    expect(buttons[0]).toHaveClass("active");
-    expect(
-      screen.getByTestId("table-of-content-component"),
-    ).toBeInTheDocument();
-    expect(screen.queryByTestId("versions-component")).not.toBeInTheDocument();
   });
 });

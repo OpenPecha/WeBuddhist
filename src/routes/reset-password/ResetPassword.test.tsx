@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { expect } from "vitest";
+import { describe, expect, vi, beforeEach, it } from "vitest";
 import "@testing-library/jest-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import ResetPassword from "./ResetPassword.js";
@@ -14,9 +14,30 @@ import { TolgeeProvider } from "@tolgee/react";
 mockAxios();
 mockUseAuth();
 
+vi.mock("@tolgee/react", async () => {
+  const actual = await vi.importActual("@tolgee/react");
+  return {
+    ...actual,
+    useTranslate: () => ({ t: (key: string) => key }),
+  };
+});
+
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+    useLocation: () => ({ search: "?token=test-token" }),
+  };
+});
+
 const queryClient = new QueryClient();
 
 describe("ResetPassword Component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   const setup = () => {
     render(
       <Router>
@@ -30,9 +51,13 @@ describe("ResetPassword Component", () => {
   };
   it("renders the component with required fields", () => {
     setup();
-    expect(screen.getByLabelText("New Password")).toBeInTheDocument();
-    expect(screen.getByLabelText("Confirm Password")).toBeInTheDocument();
-    expect(screen.getByText("Reset Password")).toBeInTheDocument();
+    expect(screen.getByLabelText("common.new_password")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("common.confirm_password"),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("common.reset_password").length).toBeGreaterThan(
+      0,
+    );
   });
 
   // it("shows validation errors when required fields are empty", async () => {
@@ -65,34 +90,44 @@ describe("ResetPassword Component", () => {
 
   it("toggles password visibility", () => {
     setup();
-    const toggleButton = screen.getAllByRole("button", {
-      name: "toggle-password",
+    const toggleButtons = screen.getAllByRole("button", {
+      name: "login.show_password",
     });
 
-    expect(screen.getByLabelText("New Password").type).toBe("password");
+    const newPasswordInput = screen.getByLabelText(
+      "common.new_password",
+    ) as HTMLInputElement;
+    expect(newPasswordInput.type).toBe("password");
 
-    fireEvent.click(toggleButton[0]);
-    expect(screen.getByLabelText("New Password").type).toBe("text");
+    fireEvent.click(toggleButtons[0]);
+    expect(newPasswordInput.type).toBe("text");
 
-    fireEvent.click(toggleButton[0]);
-    expect(screen.getByLabelText("New Password").type).toBe("password");
+    fireEvent.click(toggleButtons[0]);
+    expect(newPasswordInput.type).toBe("password");
   });
 
   it("submits the form successfully with valid inputs", async () => {
     setup();
-    fireEvent.change(screen.getByLabelText("New Password"), {
+    fireEvent.change(screen.getByLabelText("common.new_password"), {
       target: { value: "NewPassword123" },
     });
-    fireEvent.change(screen.getByLabelText("Confirm Password"), {
+    fireEvent.change(screen.getByLabelText("common.confirm_password"), {
       target: { value: "NewPassword123" },
     });
 
-    fireEvent.click(screen.getByText("Reset Password"));
+    const resetButtons = screen.getAllByText("common.reset_password");
+    fireEvent.click(resetButtons[resetButtons.length - 1]);
 
     await waitFor(() => {
-      expect(screen.queryByText("required")).not.toBeInTheDocument();
-      expect(screen.queryByText("invalidPassword")).not.toBeInTheDocument();
-      expect(screen.queryByText("passwordsDoNotMatch")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("user.validation.required"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("user.validation.invalid_password"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("user.validation.password_do_not_match"),
+      ).not.toBeInTheDocument();
     });
   });
 });

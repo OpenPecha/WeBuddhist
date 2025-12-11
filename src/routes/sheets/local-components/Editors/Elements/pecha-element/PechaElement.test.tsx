@@ -1,9 +1,12 @@
-import React from "react";
+import { vi, describe, beforeEach, test, expect, type Mock } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  type UseQueryResult,
+} from "react-query";
 import PechaElement, { fetchSegmentDetails } from "./PechaElement.js";
-import { vi } from "vitest";
 import {
   mockAxios,
   mockReactQuery,
@@ -38,17 +41,30 @@ describe("PechaElement Component", () => {
     },
   };
 
-  beforeEach(() => {
-    vi.restoreAllMocks();
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: mockSegmentData,
+  const mockUseQuery = vi.spyOn(reactQuery, "useQuery") as unknown as Mock;
+  const mockGetLanguageClass = getLanguageClass as unknown as Mock;
+  const mockRemoveFootnotes = removeFootnotes as unknown as Mock;
+  const axiosGetMock = axiosInstance.get as unknown as Mock;
+
+  const buildQueryResult = (override: any = {}) =>
+    ({
+      data: null,
       isLoading: false,
-    }));
-    getLanguageClass.mockReturnValue("tibetan-class");
-    removeFootnotes.mockImplementation((content) => content);
+      error: null,
+      isError: false,
+      refetch: vi.fn(),
+      status: "success",
+      ...override,
+    }) as unknown as UseQueryResult;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUseQuery.mockReturnValue(buildQueryResult({ data: mockSegmentData }));
+    mockGetLanguageClass.mockReturnValue("tibetan-class");
+    mockRemoveFootnotes.mockImplementation((content: string) => content);
   });
 
-  const defaultProps = {
+  const defaultProps: any = {
     attributes: { "data-testid": "pecha-element" },
     children: null,
     element: {
@@ -56,7 +72,7 @@ describe("PechaElement Component", () => {
     },
   };
 
-  const setup = (props = {}) => {
+  const setup = (props: any = {}) => {
     return render(
       <QueryClientProvider client={queryClient}>
         <PechaElement {...defaultProps} {...props} />
@@ -65,10 +81,9 @@ describe("PechaElement Component", () => {
   };
 
   test("shows loading state when data is being fetched", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: null,
-      isLoading: true,
-    }));
+    mockUseQuery.mockReturnValue(
+      buildQueryResult({ data: null, isLoading: true }),
+    );
 
     setup();
 
@@ -83,24 +98,19 @@ describe("PechaElement Component", () => {
     });
 
     const container = screen.getByTestId("pecha-element");
-    const contentWrapper = container.querySelector(".webuddhist-content");
-    expect(contentWrapper).toBeInTheDocument();
-
-    const pechaIcon = screen.getByAltText("source icon");
-    expect(pechaIcon).toHaveAttribute("src", "mocked-pecha-icon.png");
-    expect(pechaIcon).toHaveClass("webuddhist-icon");
-
-    const titleElement = screen.getByText("Sample Text Title");
-    expect(titleElement).toHaveClass("webuddhist-title");
+    expect(container).toBeInTheDocument();
+    expect(container.textContent).toContain("Sample Text Title");
+    expect(mockRemoveFootnotes).toHaveBeenCalledWith(
+      "<p>Sample content with [footnote]</p>",
+    );
+    const languageWrapper = container.querySelector(".tibetan-class");
+    expect(languageWrapper).toBeInTheDocument();
   });
 
   test("disables query when segmentId is falsy", () => {
-    const querySpy = vi.spyOn(reactQuery, "useQuery");
-
     setup({ element: { src: null } });
-
-    expect(querySpy).toHaveBeenCalledWith(
-      ["segment", null],
+    expect(mockUseQuery).toHaveBeenCalledWith(
+      ["segment", ""],
       expect.any(Function),
       {
         enabled: false,
@@ -110,47 +120,38 @@ describe("PechaElement Component", () => {
   });
 
   test("fetchSegmentDetails function makes correct API call", async () => {
-    axiosInstance.get.mockResolvedValueOnce({ data: mockSegmentData });
+    axiosGetMock.mockResolvedValueOnce({ data: mockSegmentData });
 
     const segmentId = "segment-123";
     const result = await fetchSegmentDetails(segmentId);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith(
-      "/api/v1/segments/segment-123",
-      {
-        params: {
-          text_details: true,
-        },
+    expect(axiosGetMock).toHaveBeenCalledWith("/api/v1/segments/segment-123", {
+      params: {
+        text_details: true,
       },
-    );
+    });
 
     expect(result).toEqual(mockSegmentData);
   });
 
   test("useQuery executes fetchSegmentDetails function", async () => {
-    axiosInstance.get.mockResolvedValueOnce({ data: mockSegmentData });
+    axiosGetMock.mockResolvedValueOnce({ data: mockSegmentData });
 
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(
-      (_queryKey, queryFn, options) => {
+    mockUseQuery.mockImplementation(
+      (_queryKey: any, queryFn: any, options: any) => {
         if (options?.enabled) {
           queryFn();
         }
-        return {
-          data: mockSegmentData,
-          isLoading: false,
-        };
+        return buildQueryResult({ data: mockSegmentData });
       },
     );
 
     setup();
 
-    expect(axiosInstance.get).toHaveBeenCalledWith(
-      "/api/v1/segments/segment-123",
-      {
-        params: {
-          text_details: true,
-        },
+    expect(axiosGetMock).toHaveBeenCalledWith("/api/v1/segments/segment-123", {
+      params: {
+        text_details: true,
       },
-    );
+    });
   });
 });

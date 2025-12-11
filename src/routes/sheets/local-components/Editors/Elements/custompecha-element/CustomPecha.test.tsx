@@ -1,10 +1,10 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import CustomPecha from "./CustomPecha";
+import { describe, test, expect } from "vitest";
 
 describe("CustomPecha Component", () => {
-  const defaultProps = {
+  const defaultProps: any = {
     attributes: { "data-testid": "custom-webuddhist" },
     children: null,
     element: {
@@ -14,7 +14,7 @@ describe("CustomPecha Component", () => {
     },
   };
 
-  const setup = (props = {}) => {
+  const setup = (props: any = {}) => {
     return render(<CustomPecha {...defaultProps} {...props} />);
   };
 
@@ -27,9 +27,9 @@ describe("CustomPecha Component", () => {
     setup();
 
     const container = screen.getByTestId("custom-webuddhist");
-    expect(container).toHaveClass("custom-webuddhist-container");
+    expect(container).toHaveClass("my-4");
 
-    const wrapper = container.querySelector(".custom-webuddhist-wrapper");
+    const wrapper = container.querySelector(".max-w-full");
     expect(wrapper).toBeInTheDocument();
     expect(wrapper).toHaveAttribute("contentEditable", "false");
 
@@ -37,11 +37,13 @@ describe("CustomPecha Component", () => {
     expect(link).toHaveAttribute("href", "https://example.com/link");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
-    expect(link).toHaveClass("custom-webuddhist-link");
+    expect(link).toHaveClass("block");
+    expect(link).toHaveClass("no-underline");
 
     const image = screen.getByRole("img");
     expect(image).toHaveAttribute("src", "https://example.com/image.jpg");
     expect(image).toHaveAttribute("alt", "segment-123");
-    expect(image).toHaveClass("custom-webuddhist-image");
+    expect(image).toHaveClass("mx-auto");
+    expect(image).toHaveClass("max-w-full");
   });
 });

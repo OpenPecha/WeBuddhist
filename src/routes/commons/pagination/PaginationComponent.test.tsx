@@ -1,6 +1,6 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, test, expect, vi } from "vitest";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 import PaginationComponent from "./PaginationComponent.js";
 
 const mockHandlePageChange = vi.fn();
@@ -9,24 +9,32 @@ const mockSetPagination = vi.fn();
 describe("PaginationComponent", () => {
   const pagination = { currentPage: 1, limit: 10 };
   const totalPages = 5;
+  const user = userEvent.setup({ pointerEventsCheck: 0 });
 
-  const setup = () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    Element.prototype.hasPointerCapture = vi.fn();
+    Element.prototype.releasePointerCapture = vi.fn();
+    Element.prototype.scrollIntoView = vi.fn();
+  });
+
+  const setup = (override: any = {}) => {
     render(
       <PaginationComponent
-        pagination={pagination}
-        totalPages={totalPages}
+        pagination={override.pagination || pagination}
+        totalPages={override.totalPages ?? totalPages}
         handlePageChange={mockHandlePageChange}
         setPagination={mockSetPagination}
       />,
     );
   };
 
-  const getPaginationButtons = () => {
-    const buttons = screen.getAllByRole("button");
+  const getPaginationLinks = () => {
+    const links = screen.getAllByRole("link");
     return {
-      prevButton: buttons[0],
-      nextButton: buttons[buttons.length - 1],
-      allButtons: buttons,
+      prevLink: screen.getByLabelText("Go to previous page"),
+      nextLink: screen.getByLabelText("Go to next page"),
+      allLinks: links,
     };
   };
 
@@ -40,8 +48,8 @@ describe("PaginationComponent", () => {
 
   test("disables previous button on first page", () => {
     setup();
-    const { prevButton } = getPaginationButtons();
-    expect(prevButton).toBeDisabled();
+    const { prevLink } = getPaginationLinks();
+    expect(prevLink).toHaveAttribute("aria-disabled", "true");
   });
 
   test("renders nothing when totalPages is 0", () => {
@@ -57,49 +65,37 @@ describe("PaginationComponent", () => {
   });
 
   test("disables next button on last page", () => {
-    render(
-      <PaginationComponent
-        pagination={{ currentPage: totalPages, limit: 10 }}
-        totalPages={totalPages}
-        handlePageChange={mockHandlePageChange}
-        setPagination={mockSetPagination}
-      />,
-    );
-    const { nextButton } = getPaginationButtons();
-    expect(nextButton).toBeDisabled();
+    setup({ pagination: { currentPage: totalPages, limit: 10 } });
+    const { nextLink } = getPaginationLinks();
+    expect(nextLink).toHaveAttribute("aria-disabled", "true");
   });
 
   test("calls handlePageChange when clicking a page number", async () => {
     setup();
-    await userEvent.click(screen.getByText("3"));
+    await user.click(screen.getByText("3"));
     expect(mockHandlePageChange).toHaveBeenCalledWith(3);
   });
 
   test("calls handlePageChange when clicking next button", async () => {
     setup();
-    const { nextButton } = getPaginationButtons();
-    await userEvent.click(nextButton);
+    const { nextLink } = getPaginationLinks();
+    await user.click(nextLink);
     expect(mockHandlePageChange).toHaveBeenCalledWith(2);
   });
 
   test("calls handlePageChange when clicking previous button", async () => {
-    render(
-      <PaginationComponent
-        pagination={{ currentPage: 2, limit: 10 }}
-        totalPages={totalPages}
-        handlePageChange={mockHandlePageChange}
-        setPagination={mockSetPagination}
-      />,
-    );
-    const { prevButton } = getPaginationButtons();
-    await userEvent.click(prevButton);
+    setup({ pagination: { currentPage: 2, limit: 10 } });
+    const { prevLink } = getPaginationLinks();
+    await user.click(prevLink);
     expect(mockHandlePageChange).toHaveBeenCalledWith(1);
   });
 
   test("updates pagination when limit is changed", async () => {
     setup();
-    const select = screen.getByRole("combobox");
-    await fireEvent.change(select, { target: { value: "20" } });
+    const trigger = screen.getByRole("combobox");
+    await user.click(trigger);
+    const option = await screen.findByText("20");
+    await user.click(option);
     expect(mockSetPagination).toHaveBeenCalledWith({
       currentPage: 1,
       limit: 20,

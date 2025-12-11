@@ -1,8 +1,7 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DefaultElement from "./DefaultElement.js";
-import { vi } from "vitest";
+import { vi, describe, beforeEach, test, expect, type Mock } from "vitest";
 
 import { useSelected } from "slate-react";
 import { getLanguageClass } from "../../../../../../utils/helperFunctions.js";
@@ -16,7 +15,7 @@ vi.mock("slate-react", () => ({
 }));
 
 vi.mock("react-icons/md", () => ({
-  MdDragIndicator: (props) => (
+  MdDragIndicator: (props: any) => (
     <span data-testid="drag-indicator" {...props}>
       Drag
     </span>
@@ -24,20 +23,23 @@ vi.mock("react-icons/md", () => ({
 }));
 
 describe("DefaultElement Component", () => {
-  const defaultProps = {
+  const mockUseSelected = useSelected as unknown as Mock;
+  const mockGetLanguageClass = getLanguageClass as unknown as Mock;
+
+  const defaultProps: any = {
     attributes: { "data-testid": "default-element" },
     children: "Sample text content",
     element: {},
   };
 
-  const setup = (props = {}) => {
+  const setup = (props: any = {}) => {
     return render(<DefaultElement {...defaultProps} {...props} />);
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    useSelected.mockReturnValue(false);
-    getLanguageClass.mockReturnValue("en-class");
+    mockUseSelected.mockReturnValue(false);
+    mockGetLanguageClass.mockReturnValue("en-class");
   });
 
   test("applies custom alignment when specified", () => {
@@ -53,12 +55,11 @@ describe("DefaultElement Component", () => {
   });
 
   test("shows drag indicator when element is selected", () => {
-    useSelected.mockReturnValue(true);
+    mockUseSelected.mockReturnValue(true);
     setup();
 
-    expect(screen.getByTestId("drag-indicator")).toBeInTheDocument();
-    expect(screen.getByTestId("drag-indicator")).toHaveClass(
-      "newline-indicator",
-    );
+    const indicator = screen.getByTestId("drag-indicator");
+    expect(indicator).toBeInTheDocument();
+    expect(indicator.className).toContain("absolute");
   });
 });

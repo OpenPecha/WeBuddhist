@@ -1,7 +1,6 @@
-import React from "react";
-import { vi } from "vitest";
+import { vi, describe, beforeEach, test, expect } from "vitest";
 import { BrowserRouter as Router } from "react-router-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { TolgeeProvider } from "@tolgee/react";
 import "@testing-library/jest-dom";
 import {
@@ -17,15 +16,21 @@ vi.mock("@tolgee/react", async () => {
   return {
     ...actual,
     useTranslate: () => ({
-      t: (key) => key,
+      t: (key: string) => key,
     }),
   };
 });
 
 vi.mock("../../../utils/helperFunctions.jsx", () => ({
-  getLanguageClass: (lang) => `language-${lang}`,
+  getLanguageClass: (lang: string) => `language-${lang}`,
   mapLanguageCode: () => "en",
-  getEarlyReturn: ({ isLoading, error }) => {
+  getEarlyReturn: ({
+    isLoading,
+    error,
+  }: {
+    isLoading: boolean;
+    error: any;
+  }) => {
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error occurred</div>;
     return null;
@@ -33,7 +38,11 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
 }));
 
 vi.mock("../../commons/pagination/PaginationComponent.jsx", () => ({
-  default: ({ handlePageChange }) => (
+  default: ({
+    handlePageChange,
+  }: {
+    handlePageChange: (page: number) => void;
+  }) => (
     <div className="pagination">
       <button className="page-link" onClick={() => handlePageChange(2)}>
         2
@@ -48,10 +57,10 @@ describe("Commentaries Component", () => {
     localStorageMock = mockLocalStorage();
     localStorageMock.getItem.mockReturnValue(null);
   });
-  const defaultProps = {
+  const defaultProps: any = {
     items: [
-      { id: "c1", title: "Commentary 1", language: "bo" },
-      { id: "c2", title: "Commentary 2", language: "en" },
+      { id: "c1", title: "Commentary 1", language: "bo" as const },
+      { id: "c2", title: "Commentary 2", language: "en" as const },
     ],
     isLoading: false,
     isError: null,
@@ -59,8 +68,8 @@ describe("Commentaries Component", () => {
     setPagination: vi.fn(),
   };
 
-  const setup = (props = {}) => {
-    const mergedProps = { ...defaultProps, ...props };
+  const setup = (props: any = {}) => {
+    const mergedProps: any = { ...defaultProps, ...props };
     return render(
       <Router>
         <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
@@ -73,17 +82,11 @@ describe("Commentaries Component", () => {
   test("renders items with language labels", () => {
     setup();
 
-    expect(
-      document.querySelector(".commentaries-container"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Commentary 1")).toBeInTheDocument();
+    expect(screen.getByText("Commentary 2")).toBeInTheDocument();
 
-    const items = document.querySelectorAll(".commentary-details");
-    expect(items).toHaveLength(2);
-
-    const languageLabels = document.querySelectorAll(".commentary-language p");
-    expect(languageLabels).toHaveLength(2);
-    expect(languageLabels[0].textContent).toBe("language.tibetan");
-    expect(languageLabels[1].textContent).toBe("language.english");
+    expect(screen.getByText("language.tibetan")).toBeInTheDocument();
+    expect(screen.getByText("language.english")).toBeInTheDocument();
   });
 
   test("displays loading state when isLoading is true", () => {

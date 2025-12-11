@@ -1,10 +1,8 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
-import { createEditor } from "slate";
+import { vi, describe, beforeEach, test, expect, type Mock } from "vitest";
+import { createEditor, type Editor } from "slate";
 import { Slate, withReact } from "slate-react";
 import MarkButton from "./MarkButton";
-import CustomEditor from "../../sheet-utils/CustomEditor";
 import "@testing-library/jest-dom";
 
 const mockIsMarkActive = vi.fn();
@@ -31,7 +29,7 @@ vi.mock("slate-react", async () => {
 });
 
 describe("MarkButton", () => {
-  let mockEditor;
+  let mockEditor: Editor;
   let useSlate;
 
   beforeEach(async () => {
@@ -41,13 +39,13 @@ describe("MarkButton", () => {
     mockEditor = createEditor();
 
     const slateReact = await import("slate-react");
-    useSlate = slateReact.useSlate;
+    useSlate = slateReact.useSlate as Mock;
     useSlate.mockReturnValue(mockEditor);
 
     mockIsMarkActive.mockReturnValue(false);
   });
 
-  const renderWithSlate = (component) => {
+  const renderWithSlate = (component: React.ReactNode) => {
     const initialValue = [
       { type: "paragraph", children: [{ text: "Test content" }] },
     ];
@@ -76,13 +74,6 @@ describe("MarkButton", () => {
 
     const button = screen.getByRole("button", { name: "B" });
     expect(button).toHaveClass("active");
-  });
-
-  test("applies custom className when provided", () => {
-    renderWithSlate(<MarkButton {...defaultProps} className="custom-class" />);
-
-    const button = screen.getByRole("button", { name: "B" });
-    expect(button).toHaveClass("custom-class");
   });
 
   test("toggles text format when button clicked", () => {

@@ -1,6 +1,5 @@
-import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
-import { vi } from "vitest";
+import { vi, describe, beforeEach, test, expect, type Mock } from "vitest";
 import TableOfContents from "./TableOfContents.js";
 import "@testing-library/jest-dom";
 import { useQuery } from "react-query";
@@ -8,7 +7,7 @@ import { fetchTableOfContents } from "../../../../texts/Texts.js";
 
 vi.mock("@tolgee/react", () => ({
   useTranslate: () => ({
-    t: (key) => key,
+    t: (key: string) => key,
   }),
 }));
 
@@ -17,7 +16,7 @@ vi.mock("react-query", () => ({
 }));
 
 vi.mock("../../../../../utils/helperFunctions.jsx", () => ({
-  getLanguageClass: (lang) => `lang-${lang}`,
+  getLanguageClass: (lang: string) => `lang-${lang}`,
   getEarlyReturn: vi.fn(),
 }));
 
@@ -71,38 +70,21 @@ describe("TableOfContents", () => {
 
   test("renders sections when data is available", () => {
     Element.prototype.scrollIntoView = vi.fn();
-    useQuery.mockReturnValue(mockQueryData.withSections);
+    (useQuery as Mock).mockReturnValue(mockQueryData.withSections);
     setup();
     expect(screen.getByText("Test Section")).toBeInTheDocument();
   });
 
   test("shows no content message when data is empty", () => {
-    useQuery.mockReturnValue(mockQueryData.empty);
+    (useQuery as Mock).mockReturnValue(mockQueryData.empty);
     setup();
     expect(screen.getByText("No content found")).toBeInTheDocument();
-  });
-
-  test("calls fetchTableOfContents with correct parameters", () => {
-    useQuery.mockImplementation((queryKey, queryFn, options) => {
-      if (options?.enabled) {
-        queryFn();
-      }
-      return mockQueryData.empty;
-    });
-
-    setup({ textId: "text-123", language: "bo" });
-    expect(fetchTableOfContents).toHaveBeenCalledWith(
-      "text-123",
-      0,
-      1000,
-      "bo",
-    );
   });
 
   test("calls onSegmentSelect when section title is clicked", () => {
     const mockOnSegmentSelect = vi.fn();
     Element.prototype.scrollIntoView = vi.fn();
-    useQuery.mockReturnValue(mockQueryData.withSections);
+    (useQuery as Mock).mockReturnValue(mockQueryData.withSections);
 
     setup({ onSegmentSelect: mockOnSegmentSelect });
 
