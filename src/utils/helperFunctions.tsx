@@ -1,27 +1,43 @@
 import pechaLogo from "../assets/icons/pecha_icon.png";
-export const getFirstSegmentId = (sections:any[]):string | null => {
+export const getFirstSegmentId = (sections: any[]): string | null => {
   if (!sections?.length) {
     return null;
   }
   const [firstSection] = sections;
   return (
-    getFirstSegmentId(firstSection.sections) ?? firstSection.segments?.[0]?.segment_id ?? null
+    getFirstSegmentId(firstSection.sections) ??
+    firstSection.segments?.[0]?.segment_id ??
+    null
   );
 };
 
-export const getLastSegmentId = (sections:any[]):string | null => {
+export const getLastSegmentId = (sections: any[]): string | null => {
   if (!sections?.length) {
     return null;
   }
   const lastSection = sections.at(-1);
   return (
-    getLastSegmentId(lastSection.sections) ?? lastSection.segments?.at(-1)?.segment_id ?? null
+    getLastSegmentId(lastSection.sections) ??
+    lastSection.segments?.at(-1)?.segment_id ??
+    null
   );
 };
 
-export const getEarlyReturn = ({ isLoading, error, t }: { isLoading: boolean, error: any, t: any }) => {
+export const getEarlyReturn = ({
+  isLoading,
+  error,
+  t,
+}: {
+  isLoading: boolean;
+  error: any;
+  t: any;
+}) => {
   if (isLoading) {
-    return <div className=" w-full h-svh flex flex-col justify-center items-center">{t("common.loading")}</div>;
+    return (
+      <div className=" w-full h-svh flex flex-col justify-center items-center">
+        {t("common.loading")}
+      </div>
+    );
   }
 
   if (error) {
@@ -35,17 +51,19 @@ export const getEarlyReturn = ({ isLoading, error, t }: { isLoading: boolean, er
 
   return null;
 };
-export const mapLanguageCode = (languageCode:string):string => {
-  const languageMap={
-    "en": "en",
+export const mapLanguageCode = (languageCode: string): string => {
+  const languageMap = {
+    en: "en",
     "zh-Hans-CN": "zh",
     "bo-IN": "bo",
-    "bo": "bo",
-    "zh": "zh",
-  }
-  return languageMap[languageCode as keyof typeof languageMap] || languageMap.en;
+    bo: "bo",
+    zh: "zh",
+  };
+  return (
+    languageMap[languageCode as keyof typeof languageMap] || languageMap.en
+  );
 };
-export const getLanguageClass = (language:string):string => {
+export const getLanguageClass = (language: string): string => {
   switch (language) {
     case "bo":
       return "bo-text";
@@ -57,6 +75,8 @@ export const getLanguageClass = (language:string):string => {
       return "bo-text";
     case "tib":
       return "bo-text";
+    case "zh":
+      return "bo-text";
     case "it":
       return "en-serif-text";
     default:
@@ -64,28 +84,40 @@ export const getLanguageClass = (language:string):string => {
   }
 };
 
-export const mergeSections = (existingSections:any[], newSections:any[]):any[] => {
+export const mergeSections = (
+  existingSections: any[],
+  newSections: any[],
+): any[] => {
   if (!existingSections || existingSections.length === 0) return newSections;
   if (!newSections || newSections.length === 0) return existingSections;
 
   const mergedSections = [...existingSections];
-  newSections.forEach(newSection => {
-    const existingIndex = mergedSections.findIndex(section => section.id === newSection.id);
+  newSections.forEach((newSection) => {
+    const existingIndex = mergedSections.findIndex(
+      (section) => section.id === newSection.id,
+    );
     if (existingIndex !== -1) {
       const existingSection = mergedSections[existingIndex];
       // Merge segments
       const mergedSegments = [...(existingSection.segments || [])];
-      (newSection.segments || []).forEach((newSegment:any) => {
-        if (!mergedSegments.some(segment => segment.segment_id === newSegment.segment_id)) {
+      (newSection.segments || []).forEach((newSegment: any) => {
+        if (
+          !mergedSegments.some(
+            (segment) => segment.segment_id === newSegment.segment_id,
+          )
+        ) {
           mergedSegments.push(newSegment);
         }
       });
       // Merge nested sections recursively
-      const mergedNestedSections = mergeSections(existingSection.sections || [], newSection.sections || []);
+      const mergedNestedSections = mergeSections(
+        existingSection.sections || [],
+        newSection.sections || [],
+      );
       mergedSections[existingIndex] = {
         ...existingSection,
         segments: mergedSegments,
-        sections: mergedNestedSections
+        sections: mergedNestedSections,
       };
     } else {
       mergedSections.push(newSection);
@@ -94,12 +126,16 @@ export const mergeSections = (existingSections:any[], newSections:any[]):any[] =
   return mergedSections;
 };
 
-export const getCurrentSectionFromScroll = (sections:any[], containerRect:any, sectionRefs:any):string | null => {
+export const getCurrentSectionFromScroll = (
+  sections: any[],
+  containerRect: any,
+  sectionRefs: any,
+): string | null => {
   if (!sections || sections.length === 0) return null;
 
-  const flatSections:any[] = [];
-  const walk = (secs:any[], depth = 0) => {
-    secs.forEach((sec:any) => {
+  const flatSections: any[] = [];
+  const walk = (secs: any[], depth = 0) => {
+    secs.forEach((sec: any) => {
       flatSections.push({ sec, depth });
       if (sec.sections && sec.sections.length > 0) {
         walk(sec.sections, depth + 1);
@@ -115,18 +151,21 @@ export const getCurrentSectionFromScroll = (sections:any[], containerRect:any, s
     const element = sectionRefs.current?.get(sec.id);
     if (!element) return;
     const rect = element.getBoundingClientRect();
-    if (rect.bottom <= containerRect.top || rect.top >= containerRect.bottom) return;
-    const offsetFromTop = rect.top - containerRect.top; 
+    if (rect.bottom <= containerRect.top || rect.top >= containerRect.bottom)
+      return;
+    const offsetFromTop = rect.top - containerRect.top;
     if (offsetFromTop >= 0) {
       const isCloser = offsetFromTop < candidateBelow.dist;
-      const isSameDistButDeeper = offsetFromTop === candidateBelow.dist && depth > candidateBelow.depth;
+      const isSameDistButDeeper =
+        offsetFromTop === candidateBelow.dist && depth > candidateBelow.depth;
       if (isCloser || isSameDistButDeeper) {
         candidateBelow = { id: sec.id, dist: offsetFromTop, depth };
       }
     } else {
       const distance = Math.abs(offsetFromTop);
       const isCloser = distance < candidateAbove.dist;
-      const isSameDistButDeeper = distance === candidateAbove.dist && depth > candidateAbove.depth;
+      const isSameDistButDeeper =
+        distance === candidateAbove.dist && depth > candidateAbove.depth;
       if (isCloser || isSameDistButDeeper) {
         candidateAbove = { id: sec.id, dist: distance, depth };
       }

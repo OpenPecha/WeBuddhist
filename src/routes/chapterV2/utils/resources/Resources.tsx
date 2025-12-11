@@ -1,5 +1,4 @@
 import { useQuery } from "react-query";
-import { IoMdClose } from "react-icons/io";
 import { IoLanguage, IoNewspaperOutline } from "react-icons/io5";
 import { BiSearch, BiBookOpen } from "react-icons/bi";
 import { useState } from "react";
@@ -14,6 +13,7 @@ import { MENU_ITEMS } from "../../../../utils/constants.ts";
 import IndividualTextSearch from "./components/individual-text-search/IndividualTextSearch.tsx";
 import CompareText from "../compare-text/CompareText.tsx";
 import { Button } from "@/components/ui/button";
+import ResourceHeader from "./components/common/ResourceHeader.tsx";
 
 type PanelContextValue = {
   isResourcesPanelOpen: boolean;
@@ -62,7 +62,7 @@ const Resources = ({
         onClick={() => setActiveView("translation")}
         className="w-full flex justify-start"
       >
-        <IoLanguage className="mr-2 text-lg" />
+        <IoLanguage className="text-lg" />
         {`${t("connection_pannel.translations")} (${sidePanelData.segment_info.translations})`}
       </Button>
     );
@@ -75,7 +75,7 @@ const Resources = ({
         className="w-full flex justify-start"
         onClick={() => setActiveView("commentary")}
       >
-        <BiBookOpen className="mr-2 text-lg" />
+        <BiBookOpen className="text-lg" />
         {`${t("text.commentary")} (${sidePanelData.segment_info.related_text.commentaries})`}
       </Button>
     );
@@ -88,7 +88,7 @@ const Resources = ({
         className="w-full flex justify-start"
         onClick={() => setActiveView("root_text")}
       >
-        <BiBookOpen className="mr-2 text-lg" />
+        <BiBookOpen className="text-lg" />
         {`${t("text.root_text")} (${sidePanelData.segment_info.related_text.root_text})`}
       </Button>
     );
@@ -124,7 +124,7 @@ const Resources = ({
         <p
           className={`flex w-full items-center py-3 text-gray-700 transition hover:text-gray-600 hover:bg-gray-50 justify-start`}
         >
-          <IoNewspaperOutline className="mr-2 text-lg" />
+          <IoNewspaperOutline className="text-lg" />
           {`${t("common.sheets")} (${sidePanelData.segment_info.resources.sheets})`}
         </p>
       </>
@@ -151,7 +151,7 @@ const Resources = ({
           className="w-full flex justify-start"
           onClick={() => handleMenuItemClick(item)}
         >
-          {item.icon && <item.icon className="mr-2 text-lg" />}
+          <item.icon className="text-lg" />
           {t(`${item.label}`)}
         </Button>
       ))}
@@ -160,32 +160,15 @@ const Resources = ({
 
   const renderMainPanel = () => (
     <>
-      <div
-        className={`flex items-center bg-[#EDEDED] border-b border-[#e0e0e0] px-3 py-4 justify-between relative`}
-      >
-        <p className="text-base font-medium text-gray-800">
-          {t("panel.resources")}
-        </p>
-        <Button
-          type="button"
-          aria-label={t("common.close")}
-          variant="secondary"
-          size="icon-sm"
-          onClick={handleClosePanel}
-        >
-          <IoMdClose size={20} />
-        </Button>
-      </div>
-      <div
-        className={`p-4 transition-opacity duration-300 ${showPanel ? "opacity-100" : "opacity-0 sm:opacity-0 lg:opacity-100"} text-left`}
-      >
+      <ResourceHeader title={t("panel.resources")} onClose={handleClosePanel} />
+      <div className="text-left p-4 space-y-2">
         <Button
           type="button"
           variant="ghost"
           onClick={() => setActiveView("search")}
           className="w-full flex justify-start"
         >
-          <BiSearch className="mr-2 text-lg" />
+          <BiSearch className="text-lg" />
           {t("connection_panel.search_in_this_text")}
         </Button>
         {renderTranslationsSection()}
@@ -263,7 +246,7 @@ const Resources = ({
   return (
     <>
       <div
-        className={`flex flex-col text-left bg-[#FBFBFA] transition-all duration-300 overflow-y-auto ${showPanel ? "block" : "hidden"}  fixed inset-x-0 bottom-0 h-[45vh] w-full border-t border-gray-200 bg-white z-1500 lg:static lg:h-full lg:min-w-[420px] lg:w-[350px] lg:max-w-full lg:bg-[#FBFBFA] lg:shadow-none lg:translate-x-0 lg:transform-none lg:z-auto xl:w-[580px]`}
+        className={`flex lg:w-[580px] flex-col text-left bg-[#FBFBFA] transition-all duration-300 overflow-y-auto ${showPanel ? "block" : "hidden"}  fixed inset-x-0 bottom-0 h-[45vh] w-full border-t border-gray-200 sm:static sm:h-full  sm:max-w-full`}
       >
         {renderSidePanel()}
       </div>

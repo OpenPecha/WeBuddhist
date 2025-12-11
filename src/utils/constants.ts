@@ -26,3 +26,19 @@ export const SOURCE_TRANSLATION_OPTIONS_MAPPER = {
   translation: "TRANSLATION",
   source_translation: "SOURCE_TRANSLATION",
 };
+
+export const languageMap = {
+  sa: "language.sanskrit",
+  bo: "language.tibetan",
+  en: "language.english",
+  ja: "language.japanese",
+  ko: "language.korean",
+  fr: "language.french",
+  de: "language.german",
+  bhu: "language.bhutanese",
+  mo: "language.mongolian",
+  sp: "language.spanish",
+  it: "language.italian",
+  zh: "language.chinese",
+  tib: "language.tibetan",
+};
