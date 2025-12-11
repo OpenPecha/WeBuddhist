@@ -11,9 +11,9 @@ import axiosInstance from "../../../../config/axios-config.ts";
 import { usePanelContext } from "../../../../context/PanelContext.tsx";
 import { MENU_ITEMS } from "../../../../utils/constants.ts";
 import IndividualTextSearch from "./components/individual-text-search/IndividualTextSearch.tsx";
-import CompareText from "../compare-text/CompareText.tsx";
 import { Button } from "@/components/ui/button";
 import ResourceHeader from "./components/common/ResourceHeader.tsx";
+import CompareText from "./components/compare-text/CompareText.tsx";
 
 type PanelContextValue = {
   isResourcesPanelOpen: boolean;
@@ -246,7 +246,7 @@ const Resources = ({
   return (
     <>
       <div
-        className={`flex lg:w-[580px] flex-col text-left bg-[#FBFBFA] transition-all duration-300 overflow-y-auto ${showPanel ? "block" : "hidden"}  fixed inset-x-0 bottom-0 h-[45vh] w-full border-t border-gray-200 sm:static sm:h-full  sm:max-w-full`}
+        className={`flex lg:w-[580px] flex-col text-left bg-[#FBFBFA] transition-all duration-300 overflow-y-auto ${showPanel ? "block" : "hidden"}  fixed inset-x-0 bottom-0 h-[45vh] w-full border-gray-200 sm:static sm:h-full  sm:max-w-full`}
       >
         {renderSidePanel()}
       </div>

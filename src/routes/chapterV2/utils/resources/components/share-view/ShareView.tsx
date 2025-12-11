@@ -58,7 +58,7 @@ const ShareView = ({
   return (
     <div>
       <ResourceHeader
-        title={t("panel.share")}
+        title={t("common.share")}
         onBack={handleNavigate}
         onClose={() => setIsShareView("main")}
       />

@@ -1,98 +1,118 @@
-import React, { useRef, useEffect } from "react"
-import "./ViewSelector.scss"
-import {useTranslate} from "@tolgee/react";
-import {MdClose} from "react-icons/md";
-import { ImParagraphJustify } from "react-icons/im"; 
+import React from "react";
+import { useTranslate } from "@tolgee/react";
+import { ImParagraphJustify } from "react-icons/im";
 import { LuAlignJustify } from "react-icons/lu";
+import {
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@/components/ui/dropdown-menu.tsx";
 
 export const VIEW_MODES = {
   SOURCE: "SOURCE",
   TRANSLATIONS: "TRANSLATIONS",
-  SOURCE_AND_TRANSLATIONS: "SOURCE_AND_TRANSLATIONS"
+  SOURCE_AND_TRANSLATIONS: "SOURCE_AND_TRANSLATIONS",
 };
 
 export const LAYOUT_MODES = {
   SEGMENTED: "SEGMENTED",
-  PROSE: "PROSE"
+  PROSE: "PROSE",
 };
 
 const options = [
-  {id: "1", label: "text.reader_option_menu.source", value: VIEW_MODES.SOURCE},
-  {id: "2", label: "text.reader_option_menu.translation", value: VIEW_MODES.TRANSLATIONS},
-  {id: "3", label: "text.reader_option_menu.source_with_translation", value: VIEW_MODES.SOURCE_AND_TRANSLATIONS}
-]
+  {
+    id: "1",
+    label: "text.reader_option_menu.source",
+    value: VIEW_MODES.SOURCE,
+  },
+  {
+    id: "2",
+    label: "text.reader_option_menu.translation",
+    value: VIEW_MODES.TRANSLATIONS,
+  },
+  {
+    id: "3",
+    label: "text.reader_option_menu.source_with_translation",
+    value: VIEW_MODES.SOURCE_AND_TRANSLATIONS,
+  },
+];
 
 const layoutOptions = [
-  {id: "layout-1", icon: <ImParagraphJustify />, value: LAYOUT_MODES.PROSE},      
-  {id: "layout-2", icon: <LuAlignJustify />, value: LAYOUT_MODES.SEGMENTED}      
-]
+  {
+    id: "layout-1",
+    icon: <ImParagraphJustify className="size-5" />,
+    value: LAYOUT_MODES.PROSE,
+    label: "Prose layout",
+  },
+  {
+    id: "layout-2",
+    icon: <LuAlignJustify className="size-5" />,
+    value: LAYOUT_MODES.SEGMENTED,
+    label: "Segmented layout",
+  },
+];
 
-const ViewSelector = (props) => {
-  const {setShowViewSelector, viewMode, setViewMode, versionSelected, layoutMode, setLayoutMode} = props;
-  const {t} = useTranslate();
-  const viewSelectorRef = useRef(null);
+type ViewSelectorProps = {
+  viewMode: string;
+  setViewMode: (viewMode: string) => void;
+  layoutMode: string;
+  setLayoutMode: (layoutMode: string) => void;
+  versionSelected?: boolean;
+};
 
-  // Handle click outside to close the view selector
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (viewSelectorRef.current && !viewSelectorRef.current.contains(event.target)) {
-        setShowViewSelector(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [setShowViewSelector]);
-
-  // ----------------------------- renderers ----------------------------
-  const renderCloseIcon = () => {
-    return <button className="view-selector-close-icon" onClick={() => setShowViewSelector(false)}>
-      <MdClose size={18} style={{cursor: 'pointer'}}/>
-    </button>
-  }
+const ViewSelector = ({
+  versionSelected,
+  viewMode,
+  setViewMode,
+  layoutMode,
+  setLayoutMode,
+}: ViewSelectorProps) => {
+  const { t } = useTranslate();
 
   const renderViewModeOptions = () => {
-    if (!versionSelected) return null;
-    return options.map((option) => (
-      <label key={option.id} className="radio-option subcontent">
-        <input type="radio" name="view-mode" value={option.value} checked={viewMode === option.value} onChange={(e) => setViewMode(e.target.value)}/>
-        <span>{t(option.label)}</span>
-      </label>
-    ))
-  }
-
-  const renderLayoutModeOptions = () => {
     return (
-      <div className="layout-icons-container">
-        <span className="layout-label subcontent">{t("text.reader_option_menu.layout")}</span>  
-        <div className="icons-group">
-          {layoutOptions.map((option) => (
-            <label key={option.id} className="icon-option">
-              <input 
-                type="radio" 
-                name="layout-mode" 
-                value={option.value} 
-                checked={layoutMode === option.value} 
-                onChange={(e) => setLayoutMode(e.target.value)}
-              />
-              <div className="layout-icon">
-                {option.icon}  
-              </div>
-            </label>
+      <div className="flex flex-col p-2 space-y-2">
+        <DropdownMenuRadioGroup
+          className="space-y-2"
+          value={viewMode}
+          onValueChange={setViewMode}
+        >
+          {options.map((option) => (
+            <DropdownMenuRadioItem
+              key={option.id}
+              value={option.value}
+              className="flex items-center gap-2 rounded-md border px-3 py-2 data-[state=checked]:border-primary data-[state=checked]:bg-primary/5"
+            >
+              <span className="text-sm text-foreground">{t(option.label)}</span>
+            </DropdownMenuRadioItem>
           ))}
-        </div>
+        </DropdownMenuRadioGroup>
       </div>
-    )
-  }
+    );
+  };
 
   return (
-    <div className="view-selector-options-container" ref={viewSelectorRef}>
-      {/* {renderViewModeOptions()} */}
-      <div className={`layout-mode-options ${!versionSelected ? 'no-view-modes' : ''}`}>
-        {renderLayoutModeOptions()}
-      </div>
+    <div className="flex flex-col gap-4">
+      {renderViewModeOptions()}
+      <DropdownMenuLabel className="text-sm font-medium text-[#676767]">
+        {t("text.reader_option_menu.layout")}
+      </DropdownMenuLabel>
+      <DropdownMenuRadioGroup
+        value={layoutMode}
+        onValueChange={setLayoutMode}
+        className="grid grid-cols-2 gap-2"
+      >
+        {layoutOptions.map((option) => (
+          <DropdownMenuRadioItem
+            key={option.id}
+            value={option.value}
+            className="flex items-center gap-2 rounded-md border px-3 py-2 data-[state=checked]:border-primary data-[state=checked]:bg-primary/5"
+          >
+            <span className="text-muted-foreground">{option.icon}</span>
+            <span className="text-sm text-foreground">{option.label}</span>
+          </DropdownMenuRadioItem>
+        ))}
+      </DropdownMenuRadioGroup>
     </div>
   );
 };

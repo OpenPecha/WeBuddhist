@@ -16,7 +16,7 @@ const ResourceHeader = ({
   className = "",
 }: ResourceHeaderProps) => (
   <div
-    className={`sticky top-0 z-20 flex items-center justify-between gap-2 border-b border-[#e0e0e0] bg-[#EDEDED] px-3 py-4 ${className}`}
+    className={`sticky top-0 z-20 flex items-center justify-between border-b border-[#e0e0e0] p-2 bg-[#EDEDED] ${className}`}
   >
     <div className="flex items-center gap-2">
       {onBack && (
