@@ -5,16 +5,16 @@ import {
   mockUseAuth,
   mockUseAuth0,
   mockLocalStorage,
-} from "../../test-utils/CommonMocks.js";
+} from "../../test-utils/CommonMocks.ts";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter as Router } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Navigation from "./NavigationBar.js"; // Fix import
+import Navigation from "./NavigationBar.tsx";
 import userEvent from "@testing-library/user-event";
-import { vi } from "vitest";
-import * as useAuthContext from "../../config/AuthContext.js";
+import * as useAuthContext from "../../config/AuthContext.tsx";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 mockAxios();
 mockUseAuth();
@@ -52,7 +52,7 @@ describe("NavigationBar Component", () => {
   // Fix describe name
 
   const queryClient = new QueryClient();
-  let localStorageMock;
+  let localStorageMock: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -84,7 +84,7 @@ describe("NavigationBar Component", () => {
     setup();
     const searchInput = screen.getByPlaceholderText("Search");
     expect(searchInput).toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toBe(searchInput);
+    expect(screen.getByRole("searchbox")).toBe(searchInput);
   });
 
   test("renders login and register buttons when not authenticated", () => {
@@ -124,8 +124,8 @@ describe("NavigationBar Component", () => {
     setup();
     const searchInput = screen.getByPlaceholderText("Search");
     await userEvent.type(searchInput, "test search query");
-    expect(searchInput.value).toBe("test search query");
+    expect((searchInput as HTMLInputElement).value).toBe("test search query");
     await userEvent.type(searchInput, "{enter}");
-    expect(searchInput.value).toBe("");
+    expect((searchInput as HTMLInputElement).value).toBe("");
   });
 });

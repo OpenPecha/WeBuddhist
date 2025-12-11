@@ -3,11 +3,15 @@ import {
   ACCESS_TOKEN,
   LOGGED_IN_VIA,
   REFRESH_TOKEN,
-} from "../utils/constants.js";
+} from "../utils/constants.ts";
 
-const AuthContext = createContext();
+const AuthContext = createContext({});
 
-export const PechaAuthProvider = ({ children }) => {
+export const PechaAuthProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
@@ -23,7 +27,7 @@ export const PechaAuthProvider = ({ children }) => {
     setIsAuthLoading(false);
   }, []);
 
-  const login = (accessToken, refreshToken = null) => {
+  const login = (accessToken: string, refreshToken: string | null = null) => {
     sessionStorage.setItem(ACCESS_TOKEN, accessToken);
     if (refreshToken) {
       localStorage.setItem(REFRESH_TOKEN, refreshToken);
