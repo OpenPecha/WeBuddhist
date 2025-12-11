@@ -3,8 +3,6 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
-// https://vite.dev/config/
-
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, "./env");
   return {
@@ -57,13 +55,6 @@ export default defineConfig(({ mode }) => {
           "src/components/commons/expandtext/**",
           "src/components/chat/**",
         ],
-      },
-    },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          api: "modern-compiler",
-        },
       },
     },
   };
