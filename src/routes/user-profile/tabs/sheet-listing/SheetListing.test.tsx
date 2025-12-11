@@ -1,5 +1,10 @@
 import React from "react";
-import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../../../test-utils/CommonMocks.js";
+import {
+  mockAxios,
+  mockReactQuery,
+  mockTolgee,
+  mockUseAuth,
+} from "../../../../test-utils/CommonMocks.js";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
@@ -30,7 +35,7 @@ vi.mock("@tolgee/react", async () => {
 
 vi.mock("../../../../utils/constants.js", () => ({
   LANGUAGE: "LANGUAGE",
-  mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
+  mapLanguageCode: (code) => (code === "bo-IN" ? "bo" : code),
 }));
 
 vi.mock("../../../../config/axios-config.js", () => ({
@@ -41,21 +46,21 @@ vi.mock("../../../../config/axios-config.js", () => ({
 const mockLocalStorage = {
   getItem: vi.fn(),
   setItem: vi.fn(),
-  clear: vi.fn()
+  clear: vi.fn(),
 };
 
 const mockSessionStorage = {
   getItem: vi.fn(),
   setItem: vi.fn(),
-  clear: vi.fn()
+  clear: vi.fn(),
 };
 
-Object.defineProperty(window, 'localStorage', {
-  value: mockLocalStorage
+Object.defineProperty(window, "localStorage", {
+  value: mockLocalStorage,
 });
 
-Object.defineProperty(window, 'sessionStorage', {
-  value: mockSessionStorage
+Object.defineProperty(window, "sessionStorage", {
+  value: mockSessionStorage,
 });
 
 describe("SheetListing Component", () => {
@@ -76,7 +81,7 @@ describe("SheetListing Component", () => {
         publisher: { username: "testuser" },
         views: 100,
         published_date: "2024-03-20 10:00:00",
-        language: "bo"
+        language: "bo",
       },
       {
         id: "2",
@@ -84,11 +89,11 @@ describe("SheetListing Component", () => {
         publisher: { username: "testuser" },
         views: 200,
         published_date: "2024-03-21 10:00:00",
-        language: "en"
-      }
+        language: "en",
+      },
     ],
     skip: 0,
-    limit: 10
+    limit: 10,
   };
 
   beforeEach(() => {
@@ -111,14 +116,11 @@ describe("SheetListing Component", () => {
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
-          <TolgeeProvider
-            fallback={"Loading tolgee..."}
-            tolgee={mockTolgee}
-          >
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
             <SheetListing userInfo={{ email: "test@example.com" }} />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
 
@@ -166,7 +168,7 @@ describe("SheetListing Component", () => {
 
   test("fetches sheet data successfully", async () => {
     const result = await fetchsheet("test@example.com", 10, 0);
-    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/sheets", {
       headers: {
         Authorization: "Bearer mock-token",
       },
@@ -194,19 +196,25 @@ describe("SheetListing Component", () => {
 
     fireEvent.click(deleteButtons[0]);
 
-    expect(document.querySelector(".sheet-delete-modal-overlay")).toBeInTheDocument();
+    expect(
+      document.querySelector(".sheet-delete-modal-overlay"),
+    ).toBeInTheDocument();
   });
 
   test("closes delete modal when cancel button is clicked", () => {
     setup();
     const deleteButtons = document.querySelectorAll(".sheet-delete svg");
-    
+
     fireEvent.click(deleteButtons[0]);
-    expect(document.querySelector(".sheet-delete-modal-overlay")).toBeInTheDocument();
+    expect(
+      document.querySelector(".sheet-delete-modal-overlay"),
+    ).toBeInTheDocument();
     const cancelButton = document.querySelector(".sheet-delete-cancel-button");
 
     fireEvent.click(cancelButton);
 
-    expect(document.querySelector(".sheet-delete-modal-overlay")).not.toBeInTheDocument();
+    expect(
+      document.querySelector(".sheet-delete-modal-overlay"),
+    ).not.toBeInTheDocument();
   });
 });
