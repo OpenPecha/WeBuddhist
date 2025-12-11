@@ -38,7 +38,6 @@ $black-color: black;
       width: 100%;
       box-sizing: border-box;
       padding: 0.8rem;
-      padding-right: 2rem;
       border-radius: 5px;
       border: 1px solid $light-grey;
 
@@ -120,16 +119,16 @@ $black-color: black;
   .login-button {
     width: 100%;
     margin-bottom: 1rem;
-    background-color: brown;
-    color: $white-color;
+    border: 1px solid #18345D;
+    color: $black-color;
+    background:transparent;
     padding: 0.8rem;
     font-weight: bold;
-    border: none;
     border-radius: 5px;
     cursor: pointer;
-
+    transition: all 0.2s ease;
     &:hover {
-      background-color: $dark-red-color;
+      background-color: #fbfafa;
     }
 
     &:focus {
@@ -139,10 +138,11 @@ $black-color: black;
 
   .login-links {
     text-align: center;
-
+    display: flex;
+    flex-direction: column;
     .forgot-password,
     .create-account {
-      color: $black-color;
+      color: #676767;
       text-decoration: none;
 
       &:hover {

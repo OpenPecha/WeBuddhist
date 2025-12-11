@@ -118,7 +118,7 @@ describe("CommunityPage Component", () => {
     }));
     
     setup();
-    expect(screen.getByText("Loading sheets...")).toBeInTheDocument();
+    expect(screen.getByText("Loading stories...")).toBeInTheDocument();
   });
 
   test("handles empty sheets data", () => {
@@ -129,7 +129,7 @@ describe("CommunityPage Component", () => {
     
     setup();
     expect(screen.queryByText("Test Sheet Title")).not.toBeInTheDocument();
-    expect(screen.queryByText("Loading sheets...")).not.toBeInTheDocument();
+    expect(screen.queryByText("Loading stories...")).not.toBeInTheDocument();
   });
 
   test("fetches sheet with correct parameters", async () => {

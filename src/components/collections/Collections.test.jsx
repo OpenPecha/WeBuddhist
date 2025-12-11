@@ -1,10 +1,11 @@
 import React from "react";
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
+import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockLocalStorage} from "../../test-utils/CommonMocks.js";
 import {QueryClient, QueryClientProvider} from "react-query";
 import * as reactQuery from "react-query";
 import {TolgeeProvider} from "@tolgee/react";
 import {fireEvent, render, screen} from "@testing-library/react";
 import {BrowserRouter as Router, useParams} from "react-router-dom";
+import * as reactRouterDom from "react-router-dom";
 import Collections, {fetchCollections} from "./Collections.jsx";
 import {vi} from "vitest";
 import "@testing-library/jest-dom";
@@ -35,12 +36,18 @@ vi.mock("react-router-dom", async () => {
 
 vi.mock("../../utils/helperFunctions.jsx", () => ({
   mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
-  getEarlyReturn: () => null
+  getEarlyReturn: () => null,
+  getLanguageClass: (language) => language === "bo" ? "tibetan-font" : ""
 }));
 
 vi.mock("../../utils/constants.js", () => ({
   LANGUAGE: "LANGUAGE",
   siteName: "WeBuddhist",
+}));
+
+const setCollectionColorMock = vi.fn();
+vi.mock("../../context/CollectionColorContext.jsx", () => ({
+  useCollectionColor: () => ({ setCollectionColor: setCollectionColorMock })
 }));
 
 describe("Collections Component", () => {
@@ -56,14 +63,17 @@ describe("Collections Component", () => {
     limit: 10
   };
 
+  let localStorageMock;
+
   beforeEach(() => {
     vi.resetAllMocks();
     useParams.mockReturnValue({ id: null });
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue("bo-IN");
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockCollectionsData,
       isLoading: false,
     }));
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
   });
 
   const setup = () => {
@@ -99,7 +109,7 @@ describe("Collections Component", () => {
   });
 
   test("handles language selection correctly", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en-US");
+    window.localStorage.getItem.mockReturnValue("en-US");
     const useQuerySpy = vi.spyOn(reactQuery, "useQuery");
     setup();
     expect(useQuerySpy).toHaveBeenCalled();
@@ -208,19 +218,180 @@ describe("Collections Component", () => {
     expect(document.querySelector(".right-section")).toBeInTheDocument();
   });
 
-  test("fetches term with correct parameters", async () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en");
+  test("fetches collections with correct parameters", async () => {
+    window.localStorage.getItem.mockReturnValue("en");
     axiosInstance.get.mockResolvedValueOnce({ data: mockCollectionsData });
-
     const result = await fetchCollections();
+    expect(window.localStorage.getItem).toHaveBeenCalledWith("LANGUAGE");
     expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/collections", {
       params: {
         language: "en",
-        limit: 10,
+        limit: 50,
         skip: 0
       }
     });
-
     expect(result).toEqual(mockCollectionsData);
+  });
+
+  test("sets collection color based on index", () => {
+    const data = {
+      collections: [
+        { id: "c1", title: "A", description: "d1", has_child: true },
+        { id: "c2", title: "B", description: "d2", has_child: false },
+        { id: "c3", title: "C", description: "d3", has_child: true },
+      ],
+      total: 3,
+      skip: 0,
+      limit: 10
+    };
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data,
+      isLoading: false,
+    }));
+
+    render(
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider
+            fallback={"Loading tolgee..."}
+            tolgee={mockTolgee}
+          >
+            <Collections />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
+    );
+
+    const links = screen.getAllByRole('link', { name: /A|B|C/ });
+    fireEvent.click(links[0]);
+    fireEvent.click(links[1]);
+    fireEvent.click(links[2]);
+    expect(setCollectionColorMock).toHaveBeenNthCalledWith(1, "#802F3E");
+    expect(setCollectionColorMock).toHaveBeenNthCalledWith(2, "#5B99B7");
+    expect(setCollectionColorMock).toHaveBeenNthCalledWith(3, "#5D956F");
+  });
+
+  test("compare-text mode: renders button and triggers callbacks", () => {
+    const data = {
+      collections: [
+        { id: "c1", title: "Compare A", description: "d1", has_child: false },
+      ],
+      total: 1,
+      skip: 0,
+      limit: 10
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data,
+      isLoading: false,
+    }));
+
+    const setRendererInfo = vi.fn();
+
+    render(
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider
+            fallback={"Loading tolgee..."}
+            tolgee={mockTolgee}
+          >
+            <Collections requiredInfo={{ from: "compare-text" }} setRendererInfo={setRendererInfo} />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
+    );
+
+    const link = screen.getByRole("link", { name: "Compare A" });
+    fireEvent.click(link);
+
+    expect(setCollectionColorMock).toHaveBeenCalledWith("#802F3E");
+    expect(setRendererInfo).toHaveBeenCalledTimes(1);
+    const updater = setRendererInfo.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    const prev = { foo: "bar" };
+    const next = updater(prev);
+    expect(next).toEqual({ foo: "bar", requiredId: "c1", renderer: "works" });
+  });
+
+  test("renders correct link targets based on has_child", () => {
+    const data = {
+      collections: [
+        { id: "c1", title: "With Child", description: "d1", has_child: true },
+        { id: "w1", title: "Leaf", description: "d2", has_child: false },
+      ],
+      total: 2,
+      skip: 0,
+      limit: 10
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data,
+      isLoading: false,
+    }));
+
+    render(
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider
+            fallback={"Loading tolgee..."}
+            tolgee={mockTolgee}
+          >
+            <Collections />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>
+    );
+
+    const withChildLink = screen.getByRole("link", { name: "With Child" });
+    const leafLink = screen.getByRole("link", { name: "Leaf" });
+    expect(withChildLink.getAttribute("href")).toBe("/collections/c1");
+    expect(leafLink.getAttribute("href")).toBe("/works/w1");
+  });
+
+  test("navigates to community when Explore Stories is clicked", () => {
+    const navigateMock = vi.fn();
+    const useNavigateSpy = vi.spyOn(reactRouterDom, "useNavigate").mockReturnValue(navigateMock);
+
+    setup();
+    const button = screen.getByRole("button", { name: "side_nav.community.join_conversation" });
+    fireEvent.click(button);
+
+    expect(navigateMock).toHaveBeenCalledWith("/community");
+    useNavigateSpy.mockRestore();
+  });
+
+  test("renders correct line classes for indices 0-8 and sets 9th color", () => {
+    const data = {
+      collections: Array.from({ length: 9 }, (_, i) => ({
+        id: `c${i}`,
+        title: `T${i}`,
+        description: `D${i}`,
+        has_child: i % 2 === 0
+      })),
+      total: 9,
+      skip: 0,
+      limit: 10
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data,
+      isLoading: false,
+    }));
+
+    setup();
+
+    expect(document.querySelectorAll(".red-line").length).toBe(1); 
+    expect(document.querySelectorAll(".green-line").length).toBe(1);  
+    expect(document.querySelectorAll(".lightgreen-line").length).toBe(1); 
+    expect(document.querySelectorAll(".blue-line").length).toBe(1); 
+    expect(document.querySelectorAll(".purple-line").length).toBe(1); 
+    expect(document.querySelectorAll(".lightpurpleline-line").length).toBe(1); 
+    expect(document.querySelectorAll(".orangeline-line").length).toBe(1); 
+    expect(document.querySelectorAll(".pink-line").length).toBe(1); 
+    expect(document.querySelectorAll(".gold-line").length).toBe(1); 
+
+    const lastLink = screen.getByRole("link", { name: "T8" });
+    fireEvent.click(lastLink);
+    expect(setCollectionColorMock).toHaveBeenCalledWith("#CCB478");
   });
 });

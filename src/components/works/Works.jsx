@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
 import axiosInstance from '../../config/axios-config';
 import { LANGUAGE, siteName } from "../../utils/constants.js";
 import './Works.scss';
@@ -8,8 +8,11 @@ import { useParams,Link } from 'react-router-dom';
 import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx";
 import Seo from "../commons/seo/Seo.jsx";
 import PropTypes from "prop-types";
+import PaginationComponent from "../commons/pagination/PaginationComponent.jsx";
 import { changeLanguage } from '../navbar/NavigationBar.jsx';
 import pechaIcon from "../../assets/icons/pecha_icon.png";
+import Breadcrumbs from "../commons/breadcrumbs/Breadcrumbs.jsx";
+
 const fetchWorks = async (bookId, limit = 10, skip = 0) => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
@@ -47,9 +50,12 @@ const Works = (props) => {
   const id = requiredInfo.from === "compare-text" ? props.collection_id : paramId;
   const isCompareText = requiredInfo.from === "compare-text";
 
+  const [pagination, setPagination] = useState({ currentPage: 1, limit: 12});
+  const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
+
   const {data: worksData, isLoading: worksDataIsLoading, error: worksDataIsError} = useQuery(
-    ["works", id],
-    () => fetchWorks(id),
+    ["works", id, skip, pagination.limit],
+    () => fetchWorks(id, pagination.limit, skip),
     {refetchOnWindowFocus: false}
   );
 
@@ -64,15 +70,35 @@ const Works = (props) => {
   const earlyReturn = getEarlyReturn({ isLoading: worksDataIsLoading, error: worksDataIsError, t });
   if (earlyReturn) return earlyReturn;
 
+  const totalPages = Math.ceil((worksData?.total || 0) / pagination.limit);
+  const handlePageChange = (pageNumber) => {
+    setPagination(prev => ({ ...prev, currentPage: pageNumber }));
+  };
 
   const rootTexts = groupedTexts["root_text"] || [];
   const commentaryTexts = groupedTexts["commentary"] || [];
+
+  const breadcrumbItems = [
+    { label: t('header.text'), path: '/' },
+    { label: worksData?.collection?.title || '' }
+  ];
 
   // ---------------------------------- renderers ---------------------------------
   const renderWorksTitle = () => {
 
     return <h1 className="overalltext">{worksData.term?.title}</h1>
   }
+
+  const handleTextClick = (text) => {
+    sessionStorage.setItem('textLanguage', text.language);
+  };
+
+  const getParentCollectionState = () => ({
+    parentCollection: {
+      id: id,
+      title: worksData?.collection?.title
+    }
+  });
 
   const renderRootTextItem = (text) => isCompareText ? (
     <button 
@@ -90,15 +116,20 @@ const Works = (props) => {
       <p>{text.title}</p>
     </button>
   ) : (
-    <Link key={text.id} to={`/texts/${text.id}?type=root_text`}
-          className={`${getLanguageClass(text.language)} root-text`}>
+    <Link 
+      onClick={() => handleTextClick(text)} 
+      key={text.id} 
+      to={`/texts/${text.id}?type=root_text`}
+      state={getParentCollectionState()}
+      className={`${getLanguageClass(text.language)} root-text`}
+    >
       <div className="divider"></div>
       <p>{text.title}</p>
     </Link>
   )
 
   const renderRootTexts = () => {
-    const renderTitle = () => <h2 className="section-title overalltext">{t("text.type.root_text")}</h2>;
+    const renderTitle = () => <h1 className="title">{worksData?.collection?.title}</h1>;
   
     return (
       <div className="root-text-section">
@@ -132,8 +163,13 @@ const Works = (props) => {
       <p>{text.title}</p>
     </button>
   ) : (
-    <Link key={text.id} to={`/texts/${text.id}?type=commentary`}
-          className={`${getLanguageClass(text.language)} commentary-text`}>
+    <Link 
+      onClick={() => handleTextClick(text)} 
+      key={text.id} 
+      to={`/texts/${text.id}?type=commentary`}
+      state={getParentCollectionState()}
+      className={`${getLanguageClass(text.language)} commentary-text`}
+    >
       <div className="divider"></div>
       <p>{text.title}</p>
     </Link>
@@ -158,28 +194,48 @@ const Works = (props) => {
   }
 
   return (
-    <div className={`${!requiredInfo.from ? "works-container" : "works-container no-margin"}`}>
+    <div
+      className={`${
+        !requiredInfo.from ? "works-container" : "works-container no-margin"
+      }`}
+    >
       <Seo
         title={pageTitle}
         description="Browse texts grouped by type within this collection."
         canonical={canonicalUrl}
       />
-      <div className={`${!requiredInfo.from ? "left-section" : "minified-left-section"}`}>
+      <div
+        className={`${
+          !requiredInfo.from ? "left-section" : "minified-left-section"
+        }`}
+      >
+        {!requiredInfo.from && <Breadcrumbs items={breadcrumbItems} />}
         <div className="works-title-container">{renderWorksTitle()}</div>
         {texts.length == 0 && (
           <div className="no-content-container">
-          <img src={pechaIcon} alt="pecha icon" width={80} height={80} />
-          <div className="no-content">{t("work.no_text.change")}</div>
-          <button className='no-language-alert' onClick={()=>(changeLanguage("bo-IN",queryClient,tolgee))}>
-           {t("work.no_text.button")}
-          </button>
+            <img src={pechaIcon} alt="pecha icon" width={80} height={80} />
+            <div className="no-content">{t("work.no_text.change")}</div>
+            <button
+              className="no-language-alert"
+              onClick={() => changeLanguage("bo-IN", queryClient, tolgee)}
+            >
+              {t("work.no_text.button")}
+            </button>
           </div>
         )}
         <div className="root-text-container">{renderRootTexts()}</div>
-        <div className="commentary-text-container">{renderCommentaryTexts()}</div>
+        <div className="commentary-text-container">
+          {renderCommentaryTexts()}
+        </div>
+          <PaginationComponent
+            pagination={pagination}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
+            setPagination={setPagination}
+          />
       </div>
     </div>
-  )
+  );
 
 };
 

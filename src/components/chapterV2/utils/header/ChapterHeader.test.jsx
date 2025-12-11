@@ -4,6 +4,9 @@ import { vi } from "vitest";
 import ChapterHeader from "./ChapterHeader.jsx";
 import { PanelProvider } from "../../../../context/PanelContext.jsx";
 import "@testing-library/jest-dom";
+import { TolgeeProvider } from "@tolgee/react";
+import { mockTolgee } from "../../../../test-utils/CommonMocks.js";
+import { BrowserRouter as Router } from "react-router-dom";
 
 vi.mock("../../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: (lang) => lang ? `lang-${lang}` : "",
@@ -17,19 +20,25 @@ describe("ChapterHeader Component", () => {
   const defaultProps = {
     viewMode: "single",
     setViewMode: vi.fn(),
+    layoutMode: "default",
+    setLayoutMode: vi.fn(),
     textdetail: { title: "Test Chapter", language: "bo" },
     showTableOfContents: false,
     setShowTableOfContents: vi.fn(),
     removeChapter: vi.fn(),
-    currentChapter: 1,
+    currentChapter: { id: 1 },
     totalChapters: 2,
   };
 
   const setup = (props = {}) =>
     render(
-      <PanelProvider>
-        <ChapterHeader {...defaultProps} {...props} />
-      </PanelProvider>
+      <Router>
+        <TolgeeProvider tolgee={mockTolgee} fallback={"Loading tolgee..."}>
+          <PanelProvider>
+            <ChapterHeader {...defaultProps} {...props} />
+          </PanelProvider>
+        </TolgeeProvider>
+      </Router>
     );
 
   beforeEach(() => {
@@ -66,7 +75,7 @@ describe("ChapterHeader Component", () => {
 
   test("renders view selector icon and opens ViewSelector on click", () => {
     setup();
-    const viewSelectorIcon = document.querySelector(".view-selector-icon-container svg");
+    const viewSelectorIcon = screen.getByAltText("view selector");
     expect(viewSelectorIcon).toBeInTheDocument();
     fireEvent.click(viewSelectorIcon);
     expect(screen.getByTestId("view-selector")).toBeInTheDocument();
@@ -74,10 +83,11 @@ describe("ChapterHeader Component", () => {
 
   test("calls removeChapter with currentChapter when close icon is clicked", () => {
     const removeChapter = vi.fn();
-    setup({ removeChapter, totalChapters: 3, currentChapter: 5 });
+    const testChapter = { id: 5 };
+    setup({ removeChapter, totalChapters: 3, currentChapter: testChapter });
     const closeIcon = document.querySelector(".close-icon-container svg");
     fireEvent.click(closeIcon);
-    expect(removeChapter).toHaveBeenCalledWith(5);
+    expect(removeChapter).toHaveBeenCalledWith(testChapter);
   });
 
   test("handles missing textdetail gracefully", () => {
@@ -87,9 +97,23 @@ describe("ChapterHeader Component", () => {
 
   test("handles missing props without crashing", () => {
     render(
-      <PanelProvider>
-        <ChapterHeader />
-      </PanelProvider>
+      <Router>
+        <TolgeeProvider tolgee={mockTolgee} fallback={"Loading tolgee..."}>
+          <PanelProvider>
+            <ChapterHeader 
+              viewMode="single"
+              setViewMode={vi.fn()}
+              layoutMode="default"
+              setLayoutMode={vi.fn()}
+              showTableOfContents={false}
+              setShowTableOfContents={vi.fn()}
+              removeChapter={vi.fn()}
+              currentChapter={{ id: 1 }}
+              totalChapters={1}
+            />
+          </PanelProvider>
+        </TolgeeProvider>
+      </Router>
     );
     expect(document.querySelector(".chapter-header-container")).toBeInTheDocument();
   });

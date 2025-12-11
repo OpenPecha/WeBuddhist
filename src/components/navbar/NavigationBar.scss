@@ -3,85 +3,118 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 149;
+  z-index: 2000;
   background-color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 15px 20px;
+  border-bottom: 4px solid #ffffff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
   .navigation-left{
       display: flex;
       align-items: center;
       gap: 20px;
       .logo{
-         height: 25px;
+         height: 30px;
+         margin-left: 10px;
       }
       .nav-links{
           display: flex;
           gap: 20px;
+          font-weight: 400;
           a{
               text-decoration: none;
-              color: #2f2f2f;
+              color: #676767;
+              letter-spacing: 0.02em;
+          }
+          button{
+            text-decoration: none;
+              color: #676767;
+              letter-spacing: 0.02em;
+          }
+          a:hover{
+            text-decoration: 2px solid #676767 underline;
+
+          }
+          button:hover{
+            text-decoration: 2px solid #676767 underline;
+
           }
       }
   }
   .navigation-right{
       display: flex;
       align-items: center;
-      gap: 20px;
+      justify-content: space-between;
+      gap: 0 10px;
       .search-bar{
+        .search-icon{
+          margin-left: 6px;
+          color: #5b5b5b;
+        }
           display: flex;
           align-items: center;
-          gap: 10px;
-          padding: 5px;
-          border-radius: 5px;
+          gap: 4px;
+          padding: 4px;
+          font-size: 16px;
+          border-radius: 30rem;
           border: 1px solid #e0e0e0;
-          background-color: #ffffff;
+          background-color: #EDEDEC;
+          width: 200px;
+          transition: width 0.3s ease;
           input{
+              width: 100%;
               border: none;
               background-color: transparent;
               outline: none;
           }
+          &.search-focused{
+            width: 250px;
+          }
+
       }
       .auth-buttons{
           display: flex;
           align-items: center;
           gap: 10px;
+          font-size: 14px;
           button{
               border: none;
           }
           a{
               text-decoration: none;
-              color: #2f2f2f;
+              color: #676767;
           }
           .auth-button-login{
-              border: 1px solid #a2a2a2;
-              color: #2b2b2b;
+              color: #676767;
               padding: 5px 10px;
               border-radius: 5px;
               transition: all 0.3s ease;
               &:hover{
-                background-color: #f0f0f0;
+                background-color: #f5f5f5;
+                text-decoration: 2px solid #676767 underline;
               }
           }
           .auth-button-register{
-              background-color: #871C1C;
-              color: #ffffff;
+              border: 1px solid #dbdbdb;
+              color: #676767;
               padding: 5px 10px;
               border-radius: 5px;
               transition: all 0.3s ease;
               &:hover{
-                background-color: #741116;
+                background-color: #f5f5f5;
+                text-decoration: 2px solid #676767 underline;
               }
           }
       }
       .logout-button{
-          border: 1px solid #767676;
-          background-color: transparent;
-          color: #2b2b2b;
-          padding: 5px 15px;
-          border-radius: 5px;
+              border: 1px solid #dbdbdb;
+              background-color: transparent;
+              color: #676767;
+              padding: 5px 10px;
+              border-radius: 5px;
+              transition: all 0.3s ease;
       }
       .language-dropdown {
           position: relative;
@@ -148,8 +181,14 @@
 body {
   padding-top: 60px;
 }
+@media (max-width: 992px){
+  .navigation-main{
+    z-index: 1998;
+  }
+}
 @media (max-width: 768px){
   .navigation-main{
+    z-index: 1998;
     .navigation-left{
       .nav-links{
         display:none;
@@ -181,7 +220,7 @@ body {
     gap:15px;
     padding:10px 16px;
     overflow-y:auto;
-    z-index:148;
+    z-index:1800;
     .nav-links{
       display:flex;
       flex-direction:column;
@@ -238,6 +277,7 @@ body {
         display: flex;
         align-items: center;
         gap: 10px;
+        margin-top: 1rem;
         padding: 5px;
         border-radius: 5px;
         border: 1px solid #e0e0e0;

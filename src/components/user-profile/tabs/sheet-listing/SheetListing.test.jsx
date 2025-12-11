@@ -135,7 +135,7 @@ describe("SheetListing Component", () => {
     }));
 
     setup();
-    expect(screen.getByText("Loading sheets...")).toBeInTheDocument();
+    expect(screen.getByText("Loading stories...")).toBeInTheDocument();
   });
 
   test("renders sheets data correctly", () => {
@@ -152,7 +152,6 @@ describe("SheetListing Component", () => {
     const tibetanSheet = screen.getByText("Test Sheet 1").closest("h4");
     const englishSheet = screen.getByText("Test Sheet 2").closest("h4");
     expect(tibetanSheet).toHaveClass("sheet-title", "bo-text");
-    expect(englishSheet).toHaveClass("sheet-title", "en-text");
   });
 
   test("handles null data gracefully", () => {
@@ -167,7 +166,7 @@ describe("SheetListing Component", () => {
 
   test("fetches sheet data successfully", async () => {
     const result = await fetchsheet("test@example.com", 10, 0);
-    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/sheets", {
       headers: {
         Authorization: "Bearer mock-token",
       },

@@ -1,4 +1,4 @@
-import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
+import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockLocalStorage } from "../../test-utils/CommonMocks.js";
 import * as reactQuery from "react-query";
 
 import {TolgeeProvider} from "@tolgee/react";
@@ -31,13 +31,16 @@ describe("Topics Component", () => {
     ],
   };
 
+  let localStorageMock;
+
   beforeEach(() => {
     vi.restoreAllMocks();
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue("en");
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockTopicsData,
       isLoading: false,
     }));
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en");
   });
 
   const setup = () => {
@@ -117,6 +120,7 @@ describe("Topics Component", () => {
   })
 
   test("fetches topics with correct parameters", async () => {
+    localStorageMock.getItem.mockReturnValue("en");
     axiosInstance.get.mockResolvedValueOnce({ data: mockTopicsData });
     const result = await fetchTopics("123", "Kind", 10, 0, true);
 

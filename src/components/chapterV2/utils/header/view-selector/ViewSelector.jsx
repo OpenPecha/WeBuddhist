@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useRef, useEffect } from "react"
 import "./ViewSelector.scss"
 import {useTranslate} from "@tolgee/react";
 import {MdClose} from "react-icons/md";
@@ -31,6 +31,21 @@ const layoutOptions = [
 const ViewSelector = (props) => {
   const {setShowViewSelector, viewMode, setViewMode, versionSelected, layoutMode, setLayoutMode} = props;
   const {t} = useTranslate();
+  const viewSelectorRef = useRef(null);
+
+  // Handle click outside to close the view selector
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (viewSelectorRef.current && !viewSelectorRef.current.contains(event.target)) {
+        setShowViewSelector(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [setShowViewSelector]);
 
   // ----------------------------- renderers ----------------------------
   const renderCloseIcon = () => {
@@ -40,10 +55,10 @@ const ViewSelector = (props) => {
   }
 
   const renderViewModeOptions = () => {
+    if (!versionSelected) return null;
     return options.map((option) => (
       <label key={option.id} className="radio-option subcontent">
-        <input type="radio" name="view-mode" value={option.value} checked={viewMode === option.value} disabled={!versionSelected && option.value !== VIEW_MODES.SOURCE}
-          onChange={(e) => setViewMode(e.target.value)}/>
+        <input type="radio" name="view-mode" value={option.value} checked={viewMode === option.value} onChange={(e) => setViewMode(e.target.value)}/>
         <span>{t(option.label)}</span>
       </label>
     ))
@@ -74,10 +89,9 @@ const ViewSelector = (props) => {
   }
 
   return (
-    <div className="view-selector-options-container">
-      {renderCloseIcon()}
-      {renderViewModeOptions()}
-      <div className="layout-mode-options">
+    <div className="view-selector-options-container" ref={viewSelectorRef}>
+      {/* {renderViewModeOptions()} */}
+      <div className={`layout-mode-options ${!versionSelected ? 'no-view-modes' : ''}`}>
         {renderLayoutModeOptions()}
       </div>
     </div>

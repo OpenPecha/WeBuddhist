@@ -1,59 +1,50 @@
-import React, {useMemo, useState} from 'react'
-import {LANGUAGE} from "../../../utils/constants.js";
-import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../../utils/helperFunctions.jsx";
-import axiosInstance from "../../../config/axios-config.js";
+import React from 'react'
+import {getEarlyReturn, getLanguageClass} from "../../../utils/helperFunctions.jsx";
 import {Link, useParams} from "react-router-dom";
-import {useQuery} from "react-query";
 import {useTranslate} from "@tolgee/react";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.jsx";
 import "./Versions.scss"
 import PropTypes from "prop-types";
 
-export const fetchVersions = async (textId, skip, limit) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
-  const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/versions`, {
-    params: {
-      language,
-      limit,
-      skip
-    }
-  })
-  return data
-}
-const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter }) => {
+const Versions = ({ 
+  textId: propTextId, 
+  contentId:propContentId,
+  requiredInfo, 
+  addChapter, 
+  currentChapter, 
+  versions, 
+  versionsIsLoading, 
+  versionsIsError, 
+  versionsPagination, 
+  setVersionsPagination 
+}) => {
   const { id: urlId } = useParams();
   const { t } = useTranslate();
-  const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
-  const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
   
   const textId = propTextId || urlId;
-
-  const {data: versions, isLoading: versionsIsLoading, error: versionsIsError} = useQuery(
-    ["versions", textId, skip],
-    () => fetchVersions(textId, skip, pagination.limit),
-    {refetchOnWindowFocus: false, enabled: !!textId}
-  );
 
   // -------------------------------------------- helpers ----------------------------------------------
 
   const earlyReturn = getEarlyReturn({isLoading: versionsIsLoading, error: versionsIsError, t});
   if (earlyReturn) return earlyReturn;
-  if(versions.versions.length === 0) return <div className="listtitle">
-    <p>{t("text.version.notfound")}</p>
+  if(versions.versions.length === 0 && !versions.text) return <div className="content">
+    <p className='mt-2'>{t("global.not_found")}</p>
   </div>
   const languageMap = {
     "sa":"language.sanskrit",
     "bo":"language.tibetan",
     "en":"language.english",
-    "zh":"language.chinese"
+    "zh":"language.chinese",
+    "it":"language.italian",
+    "tib":"language.tibetan",
+    "tibphono":"language.tibetan"
   }
 
   const totalVersions = versions?.versions.length || 0;
-  const totalPages = Math.ceil(totalVersions / pagination.limit);
+  const totalPages = Math.ceil(totalVersions / versionsPagination.limit);
 
   const handlePageChange = (pageNumber) => {
-    setPagination(prev => ({ ...prev, currentPage: pageNumber }));
+    setVersionsPagination(prev => ({ ...prev, currentPage: pageNumber }));
   };
 
 
@@ -73,7 +64,7 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
               }, currentChapter);
             }
           }}>
-            <div className={`${getLanguageClass(version.language)}`}>
+            <div className={`${getLanguageClass(version.language)} version-title`}>
               {version.title}
             </div>
           </button>
@@ -83,18 +74,35 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
         to={`/chapter?text_id=${version.id}&content_id=${version.table_of_contents[0]}`}
         className="version-title"
       >
-        <div className={`${getLanguageClass(version.language)}`}>
+        <div className={`${getLanguageClass(version.language)} version-title`}>
           {version.title}
         </div>
       </Link>
     }
 
-    const renderSubtitle = () => {
-      return <div className="version-subtitle subtitle">
-        {t("text.versions.information.review_history")}
-      </div>
+    const renderMetadata = (version) => {
+      const source = version.source_link || "";
+      const license = version.license || "";
+      return (
+        <div className={`version-metadata en-text`}>
+          {source && (
+            <div className="metadata-row">
+              <span>Source:</span>
+              <span>
+                {source}
+              </span>
+            </div>
+          )}
+          {license && (
+            <div className="metadata-row">
+              <span>License:</span>
+              <span>{license}</span>
+            </div>
+          )}
+        </div>
+      )
     }
-
+    
     const renderLanguage = (version) => {
       return <div className="version-language subtitle border">
         <p>{t(languageMap[version.language])}</p>
@@ -102,31 +110,103 @@ const Versions = ({ textId: propTextId, requiredInfo, addChapter, currentChapter
     }
 
     return versions?.versions.map((version) => (
-      <>
         <div className="version-details" key={version.id}>
           <div className="version-title-subtitle-container">
             {renderTitle(version)}
-            {renderSubtitle()}
+            {renderMetadata(version)}
           </div>
           {renderLanguage(version)}
         </div>
-        <hr/>
-      </>
     ))
   }
+  
+  const renderTexts = () => {
+    const renderTitle = (version) => {
+      if (addChapter) {
+        return (
+          <button className="version-title-button" onClick={() => {
+            const contentId = propContentId;
+            if (contentId) {
+              addChapter({
+                textId: version.id,
+                contentId: contentId,
+              }, currentChapter);
+            }
+          }}>
+            <div className={`${getLanguageClass(version.language)} version-title`}>
+              {version.title}
+            </div>
+          </button>
+        )
+      }
+      return <Link
+        to={`/chapter?text_id=${version.id}&content_id=${propContentId}&versionId=&contentIndex=${0}`}
+        className="version-title"
+      >
+        <div className={`${getLanguageClass(version.language)} version-title`}>
+          {version.title}
+        </div>
+      </Link>
+    }
+
+    const renderMetadata = (version) => {
+      const source = version.source_link || "";
+      const license = version.license || "";
+      return (
+        <div className={`version-metadata en-text`}>
+          {source && (
+            <div className="metadata-row">
+              <span>Source:</span>
+              <span>
+                {source}
+              </span>
+            </div>
+          )}
+          {license && (
+            <div className="metadata-row">
+              <span>License:</span>
+              <span>{license}</span>
+            </div>
+          )}
+        </div>
+      )
+    }
+    
+    const renderLanguage = (version) => {
+      return <div className="version-language subtitle border">
+        <p>{t(languageMap[version.language])}</p>
+      </div>
+    }
+
+    if (!versions?.text) return null;
+    
+    const textVersion = versions.text;
+    return (
+      <div className="version-details" key={textVersion.id}>
+        <div className="version-title-subtitle-container">
+          {renderTitle(textVersion)}
+          {renderMetadata(textVersion)}
+        </div>
+        {renderLanguage(textVersion)}
+      </div>
+    )
+  }
   const renderPagination = () => {
-    return versions.versions.length > 0 ?
+    return versions?.versions?.length > 0 ?
       <PaginationComponent
-        pagination={pagination}
+        pagination={versionsPagination}
         totalPages={totalPages}
         handlePageChange={handlePageChange}
-        setPagination={setPagination}
+        setPagination={setVersionsPagination}
       /> :<></>
   }
 
   return <div className="versions-container">
+    {
+      renderTexts()
+    }
     {renderVersions()}
-    {renderPagination()}
+    {/* {renderPagination()} */}
   </div>
 }
 
@@ -137,5 +217,13 @@ Versions.propTypes = {
     from: PropTypes.string
   }),
   addChapter: PropTypes.func,
-  currentChapter: PropTypes.object
+  currentChapter: PropTypes.object,
+  versions: PropTypes.object,
+  versionsIsLoading: PropTypes.bool,
+  versionsIsError: PropTypes.object,
+  versionsPagination: PropTypes.shape({
+    currentPage: PropTypes.number.isRequired,
+    limit: PropTypes.number.isRequired
+  }),
+  setVersionsPagination: PropTypes.func
 };

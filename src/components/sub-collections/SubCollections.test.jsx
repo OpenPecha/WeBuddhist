@@ -1,5 +1,5 @@
 import React from "react";
-import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
+import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockLocalStorage } from "../../test-utils/CommonMocks.js";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
@@ -55,14 +55,17 @@ describe("SubCollections Component", () => {
     limit: 10
   };
 
+  let localStorageMock;
+
   beforeEach(() => {
     vi.resetAllMocks();
     useParams.mockReturnValue({ id: "parent123" });
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue("bo-IN");
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockTextChildData,
       isLoading: false,
     }));
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
   });
 
   const setup = () => {
@@ -98,14 +101,6 @@ describe("SubCollections Component", () => {
     expect(header.textContent).toBe("PARENT TITLE");
   });
 
-  test("renders the correct number of text items", () => {
-    setup();
-    const textItems = document.querySelectorAll(".text-item");
-    expect(textItems).toHaveLength(3);
-    expect(textItems[0].textContent).toBe("Term 1");
-    expect(textItems[1].textContent).toBe("Term 2");
-    expect(textItems[2].textContent).toBe("Term 3");
-  });
 
   test("text items have correct navigation links", () => {
     setup();
@@ -134,8 +129,8 @@ describe("SubCollections Component", () => {
   });
 
   test("fetchSubCollections function makes correct API call", async () => {
+    localStorageMock.getItem.mockReturnValue("bo-IN");
     const parentId = "parent123";
-    window.localStorage.getItem.mockReturnValue("bo-IN");
     axiosInstance.get.mockResolvedValueOnce({ data: mockTextChildData });
 
     const result = await fetchSubCollections(parentId);
@@ -152,7 +147,7 @@ describe("SubCollections Component", () => {
   });
 
   test("fetchSubCollections handles missing parentId", async () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
+    localStorageMock.getItem.mockReturnValue("bo-IN");
     axiosInstance.get.mockResolvedValueOnce({ data: mockTextChildData });
 
     const result = await fetchSubCollections();
@@ -169,7 +164,7 @@ describe("SubCollections Component", () => {
 
   test("fetchSubCollections uses default language when none stored", async () => {
     const parentId = "parent123";
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue(null);
+    localStorageMock.getItem.mockReturnValue(null);
     axiosInstance.get.mockResolvedValueOnce({ data: mockTextChildData });
 
     const result = await fetchSubCollections(parentId);

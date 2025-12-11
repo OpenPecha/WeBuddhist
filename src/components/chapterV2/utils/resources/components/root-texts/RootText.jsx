@@ -1,5 +1,6 @@
 import { IoMdClose } from "react-icons/io";
 // import { IoAddCircleOutline, IoShareSocialSharp } from "react-icons/io5";
+import { IoChevronBackSharp } from "react-icons/io5";
 import { GoLinkExternal } from "react-icons/go";
 import { useTranslate } from "@tolgee/react";
 import { useQuery } from "react-query";
@@ -9,12 +10,14 @@ import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
+import TextExpand from "../../../../../commons/expandtext/TextExpand.jsx";
+
 export const fetchRootTextData = async (segment_id) => {
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/root_text`);
   return data;
 }
 
-const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpandedRootTexts, addChapter, currentChapter }) => {
+const RootTextView = ({ segmentId, setIsRootTextView, addChapter, currentChapter, handleNavigate }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
   const {data: rootTextData} = useQuery(
@@ -53,16 +56,10 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
     };
   }, [rootTextData]);
 
-  const toggleRootText = (rootTextId) => {
-    setExpandedRootTexts(prev => ({
-      ...prev,
-      [rootTextId]: !prev[rootTextId]
-    }));
-  };
-
   return (
     <div>
       <div className="headerthing">
+        <IoChevronBackSharp size={24} onClick={() => handleNavigate()} className="back-icon" />
         <p className="mt-4 px-4 listtitle">
           {t("text.root_text")}
           {rootTextData?.segment_root_mapping?.length > 0 ? 
@@ -79,42 +76,28 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
           {rootTextData?.segment_root_mapping?.length > 0 && (
             <div className="all-root-texts">
               {rootTextData.segment_root_mapping.map((rootText) => {
-                const rootTextId = rootText.text_id;
-                const isExpanded = expandedRootTexts[rootTextId];
+                const textId = rootText.text_id;
+                const language=rootText.language;
                 return (
-                  <div key={rootTextId} className="root-text-list-item">
-                    <h3 className={`root-text-title ${getLanguageClass(rootText.language)}`}>
-                      {rootText.title}
+                  <div key={textId} className="root-text-list-item">
+                    <h3 className={`root-text-title ${getLanguageClass(language)}`}>
+                      {rootText.title} {rootText.count && `(${rootText.count})`}
                     </h3>
-                    
-                    {rootText.content && (
+                    {rootText.segments && (
                       <div className="root-text-container">
-                        <div 
-                          className={`root-text-content ${getLanguageClass(rootText.language)} ${isExpanded ? '' : 'content-truncated'}`}
-                        >
-                          <div 
-                            dangerouslySetInnerHTML={{ __html: rootText.content }}
-                          />
-                        </div>
-                        
-                        <div className="see-more-container">
-                          <button 
-                            className="see-more-link" 
-                            onClick={() => toggleRootText(rootTextId)}
-                          >
-                            {isExpanded ? t('panel.showless') : t('panel.showmore')} 
-                          </button>
-                        </div>
-
-                        <div className="root-text-actions">
+                          {rootText.segments && rootText.segments.map((item, idx) => (
+                          <div key={idx}>
+                          <TextExpand language={language} maxLength={250}>
+                            {item.content}
+                          </TextExpand>
                           <div className="root-text-buttons">
                             <button className="root-text-button"
                                  onClick={() => {
-                                  addChapter({
-                                   textId: rootText.text_id, 
-                                   segmentId: rootText.segment_id,
-                                 },currentChapter)
-                                 closeResourcesPanel();
+                                   addChapter({
+                                     textId: textId, 
+                                     segmentId: item.segment_id,
+                                   }, currentChapter);
+                                   closeResourcesPanel();
                                  }}>
                               <GoLinkExternal size={14} className="mr-1"/>
                               <span>{t("text.translation.open_text")}</span>
@@ -130,14 +113,15 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
                               <span>{t("common.share")}</span>
                             </div> */}
                           </div>
-                        </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
                 );
               })}
             </div>
-          )}
+            )}
         </div>
       </div>
     </div>
@@ -147,9 +131,8 @@ const RootTextView = ({ segmentId, setIsRootTextView, expandedRootTexts, setExpa
 export default RootTextView;
 RootTextView.propTypes = {
   segmentId: PropTypes.string.isRequired, 
-  expandedRootTexts: PropTypes.object.isRequired, 
-  setExpandedRootTexts: PropTypes.func.isRequired, 
   setIsRootTextView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
   currentChapter: PropTypes.object, 
+  handleNavigate: PropTypes.func.isRequired,
 } 

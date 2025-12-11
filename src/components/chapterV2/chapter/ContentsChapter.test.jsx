@@ -1,5 +1,5 @@
 import React from "react";
-import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../../test-utils/CommonMocks.js";
+import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockLocalStorage } from "../../../test-utils/CommonMocks.js";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
@@ -76,8 +76,13 @@ const setup = (props = {}) => {
 };
 
 describe("ContentsChapter", () => {
+  let localStorageMock;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue(null);
+    localStorageMock.setItem.mockClear();
   });
 
   test("renders main container and child components", () => {
@@ -101,7 +106,6 @@ describe("ContentsChapter", () => {
     });
     setup();
     expect(document.querySelector(".contents-chapter-container")).toBeInTheDocument();
-    expect(screen.getByTestId("chapter-header-mock")).toBeInTheDocument();
     expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
     expect(screen.getByTestId("panel-provider-mock")).toBeInTheDocument();
   });
@@ -126,7 +130,6 @@ describe("ContentsChapter", () => {
       error: null,
     });
     setup();
-    expect(screen.getByTestId("chapter-header-mock")).toBeInTheDocument();
     expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
   });
 

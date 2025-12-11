@@ -1,22 +1,71 @@
 .chapter-header-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  position: sticky;
   z-index: 100;
-  top: 0px;
   padding: 1rem;
   gap: 2rem;
+  justify-content: center;
   border-bottom: 1px solid #e0e0e0;
-  background: rgba(255, 255, 255);
+  background: rgb(248, 248, 248);
+  flex-shrink: 0;
+
+  .back-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    color: #555;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .title-and-view-selector-container{
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    justify-content: space-between;
+    width: 500px;
+  }
+  .view-selector-icon-container{
+    width: fit-content;
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+    img {
+      width: 17px;
+      height: 16px;
+    }
+  }
   .bookmark-icon-container button {
     background: none;
     border: none;
     cursor: pointer;
   }
   .title-container {
-    margin: 0 auto;
+    width: fit-content;
     white-space: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+}
+
+.split-screen .chapter-header-container {
+  width: 100%;
+}
+
+@media (max-width: 992px){
+  .single-chapter .chapter-header-container {
+    width: 100%;
   }
 }
 
+@media (min-width: 993px) {
+  .single-chapter .chapter-header-container {
+    width: 100%;
+  }
+}

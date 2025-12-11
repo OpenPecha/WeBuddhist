@@ -330,19 +330,20 @@
         }
 
         .tab-content {
-          padding: 15px 20px 20px 20px;
           font-size: 16px;
           width: 100%;
           min-height: 200px;
 
           @media (max-width: 768px) {
-            padding: 5px 15px 15px 15px;
             min-height: 150px;
           }
 
           @media (max-width: 480px) {
-            padding: 5px 10px 10px 10px;
             font-size: 14px;
+          }
+
+          > p {
+            padding-top: 3rem;
           }
         }
       }
@@ -356,10 +357,14 @@
 }
 
 .sheets-list {
+  > p {
+    padding-top: 3rem;
+  }
+
   .sheet-item {
     text-align: start;
     border-bottom: 1px solid #f0f0f0;
-    padding: 15px 0;
+    padding: 10px 0 0 20px;
 
     .sheet-content {
       .sheet-header {
@@ -414,4 +419,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+p.listsubtitle {
+  padding-top: 30vh;
+}
+
+.profile-page {
+  min-height: calc(100vh - var(--navbar-height, 60px));
 }

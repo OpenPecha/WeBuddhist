@@ -34,8 +34,9 @@ describe("CommentaryView", () => {
         segment_id: "mock-segment-id",
         title: "རྩོམ་པ་པོ་དང་པོ། དབུ་མའི་ལྟ་བའི་གསལ་བཤད།",
         language: "bo",
-        content:
-          "<p>སེམས་ཀྱི་ངོ་བོ་ནི་གསལ་བ་དང་རིག་པ་ཡིན། དེ་ནི་འོད་གསལ་བ་དང་རྣམ་པར་དག་པ་ཡིན།</p>",
+        content: [
+          "<p>སེམས་ཀྱི་ངོ་བོ་ནི་གསལ་བ་དང་རིག་པ་ཡིན། དེ་ནི་འོད་གསལ་བ་དང་རྣམ་པར་དག་པ་ཡིན།</p>"
+        ],
         count: 2,
       },
       {
@@ -43,8 +44,10 @@ describe("CommentaryView", () => {
         segment_id: "mock-segment-id",
         title: "RelatedText on Buddhist Philosophy",
         language: "en",
-        content:
-          "<p>This is a sample RelatedText about Buddhist philosophy and its principles.</p><p>Second paragraph.</p>",
+        content: [
+          "<p>This is a sample RelatedText about Buddhist philosophy and its principles.</p>",
+          "<p>Second paragraph.</p>"
+        ],
         count: 3,
       },
     ],
@@ -55,12 +58,10 @@ describe("CommentaryView", () => {
   };
 
   let mockSetIsRelatedTextView;
-  let mockSetExpandedCommentaries;
 
   beforeEach(() => {
     vi.resetAllMocks();
     mockSetIsRelatedTextView = vi.fn();
-    mockSetExpandedCommentaries = vi.fn();
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
       if (queryKey[0] === "relatedTexts") {
@@ -94,8 +95,6 @@ describe("CommentaryView", () => {
     const defaultProps = {
       segmentId: "mock-segment-id",
       setIsCommentaryView: mockSetIsRelatedTextView,
-      expandedCommentaries: { "mock-RelatedText-1": false, "mock-RelatedText-2": false },
-      setExpandedCommentaries: mockSetExpandedCommentaries,
       addChapter: vi.fn(),
       sectionindex: 0
     };
@@ -138,15 +137,6 @@ describe("CommentaryView", () => {
     const closeIcon = document.querySelector(".close-icon");
     fireEvent.click(closeIcon);
     expect(mockSetIsRelatedTextView).toHaveBeenCalledWith("main");
-  });
-
-  test("toggles commentary expansion when show more button is clicked", () => {
-    setup();
-
-    const showMoreButtons = document.querySelectorAll(".see-more-link");
-    expect(showMoreButtons.length).toBe(2);
-    fireEvent.click(showMoreButtons[0]);
-    expect(mockSetExpandedCommentaries).toHaveBeenCalled();
   });
 
   test("fetchCommentaryData makes correct API call", async () => {
@@ -193,5 +183,44 @@ describe("CommentaryView", () => {
     // Should not display any count when there are no commentaries
     expect(screen.getByText("text.commentary")).toBeInTheDocument();
     expect(screen.queryByText(/\(\d+\)/)).not.toBeInTheDocument();
+  });
+
+  test("calls handleNavigate when back icon is clicked", () => {
+    const handleNavigate = vi.fn();
+    setup({ handleNavigate });
+    const backIcon = document.querySelector(".back-icon");
+    expect(backIcon).toBeInTheDocument();
+    fireEvent.click(backIcon);
+    expect(handleNavigate).toHaveBeenCalled();
+  });
+
+  test("executes query and clicking open text triggers addChapter", async () => {
+    const dataWithSegments = {
+      commentaries: [
+        {
+          text_id: "mock--1",
+          title: "Title",
+          language: "en",
+          segments: [{ segment_id: "seg-1", content: "the-text" }],
+        },
+      ],
+    };
+
+    axiosInstance.get.mockResolvedValueOnce({ data: dataWithSegments });
+    vi.spyOn(reactQuery, "useQuery").mockImplementationOnce((_, queryFn) => {
+      queryFn();
+      return { data: dataWithSegments, isLoading: false };
+    });
+
+    const addChapter = vi.fn();
+    setup({ addChapter, currentChapter: { id: 1 }, handleNavigate: vi.fn() });
+
+    const openBtn = screen.getByText("text.translation.open_text");
+    fireEvent.click(openBtn);
+
+    expect(addChapter).toHaveBeenCalledWith(
+      { textId: "mock--1", segmentId: "seg-1" },
+      { id: 1 }
+    );
   });
 });

@@ -46,19 +46,27 @@ describe("RootTextView", () => {
     segment_root_mapping: [
       {
         text_id: "mock-root-text-1",
-        segment_id: "mock-segment-id",
         title: "རྩ་བའི་གཞུང་དང་པོ།",
         language: "bo",
-        content:
-          "<p>འདི་ནི་རྩ་བའི་གཞུང་གི་ནང་དོན་ཡིན།</p><p>གཉིས་པའི་བརྗོད་པ།</p>",
+        segments: [
+          {
+            segment_id: "mock-segment-id",
+            content:
+              "<p>འདི་ནི་རྩ་བའི་གཞུང་གི་ནང་དོན་ཡིན།</p><p>གཉིས་པའི་བརྗོད་པ།</p>",
+          },
+        ],
       },
       {
         text_id: "mock-root-text-2",
-        segment_id: "mock-segment-id",
         title: "Root Text on Buddhist Philosophy",
         language: "en",
-        content:
-          "<p>This is a sample root text about Buddhist philosophy.</p><p>Second paragraph with a <span class='footnote-marker'>*</span><span class='footnote'>This is a footnote</span> footnote.</p>",
+        segments: [
+          {
+            segment_id: "mock-segment-id",
+            content:
+              "<p>This is a sample root text about Buddhist philosophy.</p><p>Second paragraph with a <span class='footnote-marker'>*</span><span class='footnote'>This is a footnote</span> footnote.</p>",
+          },
+        ],
       },
     ],
   };
@@ -68,16 +76,16 @@ describe("RootTextView", () => {
   };
 
   let mockSetIsRootTextView;
-  let mockSetExpandedRootTexts;
   let mockAddChapter;
   let mockCloseResourcesPanel;
   let currentChapter;
+  let mockHandleNavigate;
   beforeEach(() => {
     vi.resetAllMocks();
     mockSetIsRootTextView = vi.fn();
-    mockSetExpandedRootTexts = vi.fn();
     mockAddChapter = vi.fn();
     mockCloseResourcesPanel = vi.fn();
+    mockHandleNavigate = vi.fn();
     currentChapter = {
       textId: "mock-root-text-1",
       segmentId: "mock-segment-id",
@@ -105,11 +113,10 @@ describe("RootTextView", () => {
     const defaultProps = {
       segmentId: "mock-segment-id",
       setIsRootTextView: mockSetIsRootTextView,
-      expandedRootTexts: { "mock-root-text-1": false, "mock-root-text-2": false },
-      setExpandedRootTexts: mockSetExpandedRootTexts,
       addChapter: mockAddChapter,
       sectionindex: 0,
       currentChapter: currentChapter,
+      handleNavigate: mockHandleNavigate,
     };
 
     return render(
@@ -128,17 +135,6 @@ describe("RootTextView", () => {
   test("renders root texts with correct title and count", () => {
     setup();
     expect(screen.getByText("text.root_text (2)")).toBeInTheDocument();
-  });
-
-
-
-  test("toggles root text expansion when show more button is clicked", () => {
-    setup();
-
-    const showMoreButtons = document.querySelectorAll(".see-more-link");
-    expect(showMoreButtons.length).toBe(2);
-    fireEvent.click(showMoreButtons[0]);
-    expect(mockSetExpandedRootTexts).toHaveBeenCalled();
   });
 
   test("fetchRootTextData makes correct API call", async () => {
@@ -164,19 +160,6 @@ describe("RootTextView", () => {
       expect(error).toBeDefined();
       expect(error.message).toBe("API Error");
     }
-  });
-
-  test("clicking on 'open text' button calls addChapter with correct parameters", () => {
-    setup();
-
-    const openTextButtons = document.querySelectorAll(".root-text-button");
-    // The first button is the 'open text' button for the first root text
-    fireEvent.click(openTextButtons[0]);
-
-    expect(mockAddChapter).toHaveBeenCalledWith({
-      textId: "mock-root-text-1",
-      segmentId: "mock-segment-id",
-    },currentChapter);
   });
 
   test("renders correctly with empty root texts", () => {
@@ -206,30 +189,6 @@ describe("RootTextView", () => {
     
     // Check that the second title (English) has the en-text class
     expect(rootTextTitles[1]).toHaveClass('en-text');
-  });
-
-  test("renders root text content correctly", () => {
-    setup();
-    
-    const rootTextContainers = document.querySelectorAll(".root-text-content");
-    expect(rootTextContainers.length).toBe(2);
-    
-    // Check that the content is initially truncated
-    expect(rootTextContainers[0]).toHaveClass("content-truncated");
-    expect(rootTextContainers[1]).toHaveClass("content-truncated");
-  });
-
-  test("removes truncation when expanded", () => {
-    setup({
-      expandedRootTexts: { "mock-root-text-1": true, "mock-root-text-2": false }
-    });
-    
-    const rootTextContainers = document.querySelectorAll(".root-text-content");
-    
-    // First root text should be expanded
-    expect(rootTextContainers[0]).not.toHaveClass("content-truncated");
-    // Second root text should still be truncated
-    expect(rootTextContainers[1]).toHaveClass("content-truncated");
   });
   
   test("calls setIsRootTextView when close icon is clicked", () => {

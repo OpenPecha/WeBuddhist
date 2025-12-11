@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import UseChapterHook from "./UseChapterHook.jsx";
 import "@testing-library/jest-dom";
@@ -35,6 +35,11 @@ vi.mock("../../utils/header/table-of-contents/TableOfContents.jsx", () => ({
   default: ({showTableOfContents}) => showTableOfContents ? <div data-testid="table-of-contents">TableOfContents</div> : null,
 }));
 
+vi.mock("../../utils/header/ChapterHeader.jsx", () => ({
+  __esModule: true,
+  default: () => <div data-testid="chapter-header-mock">ChapterHeader</div>,
+}));
+
 vi.mock("../../utils/resources/Resources.jsx", () => ({
   __esModule: true,
   default: ({ segmentId }) => <div data-testid="resources">Resources {segmentId}</div>,
@@ -50,6 +55,7 @@ const defaultProps = {
   content: {
     sections: [
       {
+        id: "section-1",
         title: "Section 1",
         segments: [
           {
@@ -78,6 +84,8 @@ const defaultProps = {
     fetchNextPage: vi.fn(),
     fetchPreviousPage: vi.fn(),
   },
+  handleSegmentNavigate: vi.fn(),
+  onCurrentSectionChange: vi.fn(),
 };
 
 const setup = (props = {}) => {
@@ -199,20 +207,20 @@ describe("UseChapterHook", () => {
 
   test("renders Resources when panel is open and segment is selected", () => {
     mockState.panelContext.isResourcesPanelOpen = true;
-    setup();
+    const { container } = setup();
     
-    const segmentButton = screen.getByRole("button", { name: /1/i });
-    fireEvent.click(segmentButton);
+    const segmentContainer = container.querySelector(".segment-container");
+    fireEvent.click(segmentContainer);
     
     expect(screen.getByTestId("resources")).toBeInTheDocument();
     expect(screen.getByText("Resources seg1")).toBeInTheDocument();
   });
 
   test("handleSegmentClick opens resources panel", () => {
-    setup();
+    const { container } = setup();
     
-    const segmentButton = screen.getByRole("button", { name: /1/i });
-    fireEvent.click(segmentButton);
+    const segmentContainer = container.querySelector(".segment-container");
+    fireEvent.click(segmentContainer);
     
     expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
   });
@@ -225,5 +233,44 @@ describe("UseChapterHook", () => {
     expect(container.querySelector(".prose-paragraph")).toBeInTheDocument();
     expect(container.querySelector(".segment-text")).toBeInTheDocument();
     expect(screen.queryByText("1")).not.toBeInTheDocument();
+  });
+
+  test("calls openResourcesPanel when segment is activated with keyboard in prose layout", () => {
+    setup({
+      viewMode: VIEW_MODES.SOURCE,
+      layoutMode: LAYOUT_MODES.PROSE,
+    });
+
+    const segmentText = document.querySelector(".segment-text");
+    expect(segmentText).toBeInTheDocument();
+
+    fireEvent.keyDown(segmentText, { key: "Enter" });
+    expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
+
+    mockState.panelContext.openResourcesPanel.mockClear();
+    fireEvent.keyDown(segmentText, { key: " " });
+    expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
+  });
+
+  test("scrolls to section when segment is selected", async () => {
+    const scrollIntoViewMock = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoViewMock;
+    
+    const { rerender } = setup({
+      currentSegmentId: null,
+      scrollTrigger: 0,
+    });
+    
+    rerender(
+      <UseChapterHook
+        {...defaultProps}
+        currentSegmentId="seg1"
+        scrollTrigger={1}
+      />
+    );
+    
+    await waitFor(() => {
+      expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+    });
   });
 });

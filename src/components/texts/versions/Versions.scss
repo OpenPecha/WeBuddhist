@@ -8,23 +8,24 @@ $primary-color: #666666;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #E0E0E0;
     .version-title-subtitle-container{
       display: flex;
       flex-direction: column;
       text-align: left;
 
       .version-title{
-        font-size: 16px;
-        font-weight: 500;
+        font-size: 18px;
         word-break: break-word;
         color: $primary-color !important;
-
-        &:hover,
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
         &:visited,
         &:active {
-          color: $primary-color !important;
-          text-decoration: underline;
+          text-decoration: none;
         }
       }
       .version-title-button{
@@ -41,13 +42,29 @@ $primary-color: #666666;
         
         &:hover {
           color: #333;
-          text-decoration: underline;
         }
       }
       .version-subtitle{
         margin-top: 16px;
         color: $primary-color;
         font-size: 15px;
+      }
+      .version-metadata {
+        margin-top: 2px;
+        color: $primary-color;
+        font-size: 14px;
+        .metadata-row {
+          display: flex;
+          gap: 0.5rem;
+          span {
+            color: $primary-color;
+          }
+          a {
+            color: $primary-color;
+            text-decoration: none;
+            cursor: pointer;
+          }
+        }
       }
     }
 

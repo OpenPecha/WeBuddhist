@@ -7,6 +7,7 @@ import "./ShareView.scss";
 import { useQuery } from "react-query";
 import axiosInstance from "../../../../../../config/axios-config.js";
 import PropTypes from "prop-types";
+import { IoChevronBackSharp } from "react-icons/io5";
 
 export const fetchShortUrl = async (url,segmentId) => {
   const { data } = await axiosInstance.post('/api/v1/share', 
@@ -22,7 +23,7 @@ const getURLwithUpdatedSegmentId = (segmentId) => {
   urlObj.searchParams.set("segment_id", segmentId);
   return urlObj.toString();
 }
-const ShareView = ({ setIsShareView, segmentId }) => {
+const ShareView = ({ setIsShareView, segmentId, handleNavigate }) => {
   const [copied, setCopied] = useState(false);
   const { t } = useTranslate();
   const url= getURLwithUpdatedSegmentId(segmentId)
@@ -37,6 +38,7 @@ const ShareView = ({ setIsShareView, segmentId }) => {
   return (
     <div>
       <div className="headerthing">
+        <IoChevronBackSharp size={24} onClick={() => handleNavigate()} className="back-icon" />
         <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
         <IoMdClose
           size={24}
@@ -88,5 +90,6 @@ const ShareView = ({ setIsShareView, segmentId }) => {
 export default ShareView;
 ShareView.propTypes = {
   setIsShareView: PropTypes.func.isRequired,
-  segmentId: PropTypes.string.isRequired
+  segmentId: PropTypes.string.isRequired,
+  handleNavigate: PropTypes.func.isRequired,
 }

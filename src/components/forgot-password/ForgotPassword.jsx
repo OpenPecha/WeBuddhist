@@ -44,31 +44,33 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="forgot-password-container">
-            <form onSubmit={handleSubmit}>
-                <div className="header">
-                    <img src={pechaIcon}  className="logo" alt="Webuddhist"/>
-                    <h4>{t("common.forgot_password.reset.title")}</h4>
-                </div>
-                <div className="text-content">
-                    <p>{t("user.forgot_password")}</p>
-                </div>
-                <div className="content">
-                    <label className="form-label" htmlFor="email">{ t("common.email") }</label>
-                    <input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className={`form-control ${error ? "is-invalid" : ""}`}
-                    />
-                    {error && <div className="error-message">{error}</div>}
-                </div>
-                <button type="submit" className="btn">
-                    { t("common.button.submit") }
-                </button>
-            </form>
-        </div>
+    <div className="auth-page">
+      <div className="forgot-password-container">
+        <form onSubmit={handleSubmit}>
+          <div className="header">
+            <img src={pechaIcon}  className="logo" alt="Webuddhist"/>
+            <h4>{t("common.forgot_password.reset.title")}</h4>
+          </div>
+          <div className="text-content">
+            <p>{t("user.forgot_password")}</p>
+          </div>
+          <div className="content">
+            <label className="form-label" htmlFor="email">{ t("common.email") }</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`form-control ${error ? "is-invalid" : ""}`}
+            />
+            {error && <div className="error-message">{error}</div>}
+          </div>
+          <button type="submit" className="btn">
+            { t("common.button.submit") }
+          </button>
+        </form>
+      </div>
+    </div>
     );
 };
 

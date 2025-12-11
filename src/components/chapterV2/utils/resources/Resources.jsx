@@ -25,9 +25,6 @@ export const fetchSidePanelData = async (segmentId) => {
 const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersionId, handleSegmentNavigate}) => {
   const { isResourcesPanelOpen, closeResourcesPanel } = usePanelContext();
   const showPanel = isResourcesPanelOpen;
-  const [expandedCommentaries, setExpandedCommentaries] = useState({});
-  const [expandedTranslations, setExpandedTranslations] = useState({});
-  const [expandedRootTexts, setExpandedRootTexts] = useState({});
   const [activeView, setActiveView] = useState("main");
   const {t} = useTranslate();
 
@@ -46,7 +43,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
 
   const renderPanelHeader = () => (
     <div className="headerthing">
-      <p className='mt-4 px-4 listtitle'>{t('panel.resources')}</p>
+      <p className='mt-4 px-4 '>{t('panel.resources')}</p>
       <IoMdClose
         size={24}
         onClick={handleClosePanel}
@@ -169,6 +166,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <ShareView
             segmentId={segmentId}
             setIsShareView={setActiveView}
+            handleNavigate={() => setActiveView("main")}
           />
         );
       case "search":
@@ -177,6 +175,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
             onClose={() => setActiveView("main")}
             textId={sidePanelData?.segment_info?.text_id}
             handleSegmentNavigate={handleSegmentNavigate}
+            handleNavigate={() => setActiveView("main")}
           />
         );
       case "translation":
@@ -184,11 +183,10 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <TranslationView
             segmentId={segmentId}
             setIsTranslationView={setActiveView}
-            expandedTranslations={expandedTranslations}
-            setExpandedTranslations={setExpandedTranslations}
             addChapter={addChapter}
             currentChapter={currentChapter}
             setVersionId={setVersionId}
+            handleNavigate={() => setActiveView("main")}
           />
         );
       case "commentary":
@@ -196,21 +194,18 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
           <CommentaryView
             segmentId={segmentId}
             setIsCommentaryView={setActiveView}
-            expandedCommentaries={expandedCommentaries}
-            setExpandedCommentaries={setExpandedCommentaries}
             addChapter={addChapter}
             currentChapter={currentChapter}
+            handleNavigate={() => setActiveView("main")}
           />
         );
       case "compare_text": 
-        return <CompareText setIsCompareTextView={setActiveView} addChapter={addChapter} currentChapter={currentChapter} />;
+        return <CompareText setIsCompareTextView={setActiveView} addChapter={addChapter} currentChapter={currentChapter} handleNavigate={() => setActiveView("main")}/>;
       case "root_text":
         return (
           <RootTextView
             segmentId={segmentId}
             setIsRootTextView={setActiveView}
-            expandedRootTexts={expandedRootTexts}
-            setExpandedRootTexts={setExpandedRootTexts}
             addChapter={addChapter}
             currentChapter={currentChapter}
           />
@@ -223,7 +218,7 @@ const Resources = ({segmentId, addChapter, handleClose, currentChapter, setVersi
   return(
     <>
       {showPanel && <button className="panel-backdrop" onClick={() => closeResourcesPanel()}></button>}
-      <div className={`right-panel navbaritems ${showPanel ? 'show' : ''}`}>
+      <div className={`right-panel navbaritems ${showPanel ? 'show' : ''} ${activeView === 'main' ? 'is-main' : ''}`}>
         {renderSidePanel()}
       </div>
     </>

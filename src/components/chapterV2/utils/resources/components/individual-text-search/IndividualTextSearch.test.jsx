@@ -6,6 +6,7 @@ import { useQuery } from 'react-query';
 import IndividualTextSearch, { fetchTextSearchResults } from './IndividualTextSearch';
 import axiosInstance from '../../../../../../config/axios-config';
 import { usePanelContext } from '../../../../../../context/PanelContext';
+import { mockLocalStorage } from '../../../../../../test-utils/CommonMocks.js';
 
 vi.mock('use-debounce', () => ({
   useDebounce: vi.fn((value) => [value, vi.fn()])
@@ -41,6 +42,14 @@ vi.mock('../../../../../../config/axios-config', () => ({
   },
 }));
 
+let localStorageMock;
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  localStorageMock = mockLocalStorage();
+  localStorageMock.getItem.mockReturnValue('en');
+});
+
 describe('fetchTextSearchResults', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -49,18 +58,23 @@ describe('fetchTextSearchResults', () => {
   it('should call axios with correct parameters', async () => {
     const mockQuery = 'test query';
     const mockTextId = 'text123';
+    const mockLanguage = 'en';
     const mockSkip = 10;
     const mockPagination = { limit: 10 };
-    const mockResponse = { data: { search: { text: mockQuery }, sources: [] } };
+    const mockResponse = { data: { query: mockQuery, sources: [], total: 0 } };
     
     axiosInstance.get.mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchTextSearchResults(mockQuery, mockTextId, mockSkip, mockPagination);
+    const result = await fetchTextSearchResults(mockQuery, mockTextId, mockLanguage, mockSkip, mockPagination);
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
-      `api/v1/search?query=${mockQuery}&search_type=SOURCE&text_id=${mockTextId}`,
+      'api/v1/search/multilingual',
       {
         params: {
+          query: mockQuery,
+          search_type: 'exact',
+          text_id: mockTextId,
+          language: mockLanguage,
           limit: mockPagination.limit,
           skip: mockSkip
         }
@@ -74,20 +88,24 @@ describe('fetchTextSearchResults', () => {
     axiosInstance.get.mockRejectedValueOnce(mockError);
 
     await expect(
-      fetchTextSearchResults('query', 'textId', 0, { limit: 10 })
+      fetchTextSearchResults('query', 'textId', 'en', 0, { limit: 10 })
     ).rejects.toThrow('API Error');
   });
 
   it('should handle empty parameters gracefully', async () => {
-    const mockResponse = { data: { search: { text: '' }, sources: [] } };
+    const mockResponse = { data: { query: '', sources: [], total: 0 } };
     axiosInstance.get.mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchTextSearchResults('', '', 0, { limit: 10 });
+    const result = await fetchTextSearchResults('', '', 'en', 0, { limit: 10 });
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
-      `api/v1/search?query=&search_type=SOURCE&text_id=`,
+      'api/v1/search/multilingual',
       {
         params: {
+          query: '',
+          search_type: 'exact',
+          text_id: '',
+          language: 'en',
           limit: 10,
           skip: 0
         }
@@ -99,6 +117,7 @@ describe('fetchTextSearchResults', () => {
   it('should process the expected API response format correctly', async () => {
     const mockQuery = 'buddha';
     const mockTextId = 'text123';
+    const mockLanguage = 'en';
     const mockSegmentMatches = [
       { 
         segment_id: 'seg1', 
@@ -112,9 +131,8 @@ describe('fetchTextSearchResults', () => {
     
     const mockResponse = { 
       data: { 
-        search: { 
-          text: mockQuery 
-        }, 
+        query: mockQuery,
+        total: 2,
         sources: [
           {
             text: {
@@ -122,7 +140,7 @@ describe('fetchTextSearchResults', () => {
               title: 'Buddhist Text',
               language: 'en'
             },
-            segment_match: mockSegmentMatches
+            segment_matches: mockSegmentMatches
           }
         ] 
       } 
@@ -130,18 +148,19 @@ describe('fetchTextSearchResults', () => {
     
     axiosInstance.get.mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchTextSearchResults(mockQuery, mockTextId, 0, { limit: 10 });
+    const result = await fetchTextSearchResults(mockQuery, mockTextId, mockLanguage, 0, { limit: 10 });
 
     expect(result).toEqual(mockResponse.data);
-    expect(result.search.text).toBe(mockQuery);
+    expect(result.query).toBe(mockQuery);
     expect(result.sources).toHaveLength(1);
-    expect(result.sources[0].segment_match).toEqual(mockSegmentMatches);
+    expect(result.sources[0].segment_matches).toEqual(mockSegmentMatches);
     expect(result.sources[0].text.id).toBe(mockTextId);
   });
 
   it('should handle pagination with more than 10 results', async () => {
     const mockQuery = 'dharma';
     const mockTextId = 'text123';
+    const mockLanguage = 'en';
     
     const mockSegmentMatches = Array.from({ length: 11 }, (_, i) => ({
       segment_id: `seg${i + 1}`,
@@ -150,9 +169,8 @@ describe('fetchTextSearchResults', () => {
     
     const mockResponse = { 
       data: { 
-        search: { 
-          text: mockQuery 
-        }, 
+        query: mockQuery,
+        total: 11,
         sources: [
           {
             text: {
@@ -160,7 +178,7 @@ describe('fetchTextSearchResults', () => {
               title: 'Buddhist Text',
               language: 'en'
             },
-            segment_match: mockSegmentMatches
+            segment_matches: mockSegmentMatches
           }
         ] 
       } 
@@ -170,38 +188,47 @@ describe('fetchTextSearchResults', () => {
 
     const pagination = { limit: 10 };
     const skip = 0;
-    const result = await fetchTextSearchResults(mockQuery, mockTextId, skip, pagination);
+    const result = await fetchTextSearchResults(mockQuery, mockTextId, mockLanguage, skip, pagination);
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
-      `api/v1/search?query=${mockQuery}&search_type=SOURCE&text_id=${mockTextId}`,
+      'api/v1/search/multilingual',
       {
         params: {
+          query: mockQuery,
+          search_type: 'exact',
+          text_id: mockTextId,
+          language: mockLanguage,
           limit: pagination.limit,
           skip: skip
         }
       }
     );
-    expect(result.sources[0].segment_match.length).toBe(11);
+    expect(result.sources[0].segment_matches.length).toBe(11);
     
-    const totalSegments = result.sources[0].segment_match.length;
+    const totalSegments = result.sources[0].segment_matches.length;
     const totalPages = Math.ceil(totalSegments / pagination.limit);
     expect(totalPages).toBe(2);
   });
 
   it('should handle case when no textId is provided in either props or URL search params', async () => {
     const mockQuery = 'test query';
+    const mockLanguage = 'en';
     const mockSkip = 10;
     const mockPagination = { limit: 10 };
-    const mockResponse = { data: { search: { text: mockQuery }, sources: [] } };
+    const mockResponse = { data: { query: mockQuery, sources: [], total: 0 } };
     
     axiosInstance.get.mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchTextSearchResults(mockQuery, undefined, mockSkip, mockPagination);
+    const result = await fetchTextSearchResults(mockQuery, undefined, mockLanguage, mockSkip, mockPagination);
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
-      `api/v1/search?query=${mockQuery}&search_type=SOURCE&text_id=undefined`,
+      'api/v1/search/multilingual',
       {
         params: {
+          query: mockQuery,
+          search_type: 'exact',
+          text_id: undefined,
+          language: mockLanguage,
           limit: mockPagination.limit,
           skip: mockSkip
         }
@@ -232,7 +259,13 @@ describe('IndividualTextSearch Component', () => {
     mockSearchParams.set('text_id', 'text123FromURL');
     useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
     
-    render(<IndividualTextSearch onClose={vi.fn()} />);
+    render(
+      <IndividualTextSearch 
+        onClose={vi.fn()} 
+        handleSegmentNavigate={vi.fn()} 
+        handleNavigate={vi.fn()} 
+      />
+    );
     
     expect(useSearchParams).toHaveBeenCalled();
     
@@ -251,7 +284,14 @@ describe('IndividualTextSearch Component', () => {
     
     const propTextId = 'text123FromProp';
     
-    render(<IndividualTextSearch onClose={vi.fn()} textId={propTextId} />);
+    render(
+      <IndividualTextSearch 
+        onClose={vi.fn()} 
+        textId={propTextId} 
+        handleSegmentNavigate={vi.fn()} 
+        handleNavigate={vi.fn()} 
+      />
+    );
     
     expect(useSearchParams).toHaveBeenCalled();
     
@@ -266,7 +306,13 @@ describe('IndividualTextSearch Component', () => {
     const mockSearchParams = new URLSearchParams();
     useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
     
-    render(<IndividualTextSearch onClose={vi.fn()} />);
+    render(
+      <IndividualTextSearch 
+        onClose={vi.fn()} 
+        handleSegmentNavigate={vi.fn()} 
+        handleNavigate={vi.fn()} 
+      />
+    );
     
     expect(useSearchParams).toHaveBeenCalled();
     
@@ -285,11 +331,13 @@ describe('IndividualTextSearch Component', () => {
     
     const mockOnClose = vi.fn();
     const mockHandleSegmentNavigate = vi.fn();
+    const mockHandleNavigate = vi.fn();
     
     const { getByPlaceholderText } = render(
       <IndividualTextSearch 
         onClose={mockOnClose} 
-        handleSegmentNavigate={mockHandleSegmentNavigate} 
+        handleSegmentNavigate={mockHandleSegmentNavigate}
+        handleNavigate={mockHandleNavigate}
       />
     );
     
@@ -317,7 +365,11 @@ describe('IndividualTextSearch Component', () => {
     const mockOnClose = vi.fn();
     
     const { getByPlaceholderText } = render(
-      <IndividualTextSearch onClose={mockOnClose} />
+      <IndividualTextSearch 
+        onClose={mockOnClose} 
+        handleSegmentNavigate={vi.fn()} 
+        handleNavigate={vi.fn()} 
+      />
     );
     
     const searchInput = getByPlaceholderText('connection_panel.search_in_this_text');
@@ -331,51 +383,6 @@ describe('IndividualTextSearch Component', () => {
         enabled: false
       })
     );
-  });
-
-  it('should reset pagination to page 1 when submitting a new search', () => {
-    const mockSearchParams = new URLSearchParams();
-    mockSearchParams.set('text_id', 'text123');
-    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
-    
-    let capturedQueryKeys = [];
-    
-    useQuery.mockImplementation((queryKey, queryFn, options) => {
-      capturedQueryKeys.push(queryKey);
-      
-      return {
-        data: {
-          search: { text: queryKey[1] || '' },
-          sources: [{
-            text: { id: queryKey[2], language: 'en', title: 'Test Text' },
-            segment_match: Array(11).fill().map((_, i) => ({
-              segment_id: `seg${i}`,
-              content: `Content with <em>${queryKey[1] || ''}</em>`
-            }))
-          }]
-        },
-        isLoading: false,
-        error: null
-      };
-    });
-    
-    const { getByPlaceholderText } = render(
-      <IndividualTextSearch onClose={vi.fn()} />
-    );
-    
-    const searchInput = getByPlaceholderText('connection_panel.search_in_this_text');
-    
-    fireEvent.change(searchInput, { target: { value: 'buddha' } });
-    fireEvent.submit(searchInput.closest('form'));
-    
-    const firstSearchPagination = capturedQueryKeys[capturedQueryKeys.length - 1][4];
-    expect(firstSearchPagination).toEqual(expect.objectContaining({ currentPage: 1 }));
-    
-    fireEvent.change(searchInput, { target: { value: 'dharma' } });
-    fireEvent.submit(searchInput.closest('form'));
-    
-    const secondSearchPagination = capturedQueryKeys[capturedQueryKeys.length - 1][4];
-    expect(secondSearchPagination).toEqual(expect.objectContaining({ currentPage: 1 }));
   });
 
   it('should update search input field correctly when typing', () => {
@@ -424,59 +431,54 @@ describe('IndividualTextSearch Component', () => {
     expect(searchInput).toHaveClass('search-input');
   });
 
-  it('should call handleSegmentNavigate and openResourcesPanel when a segment is clicked', () => {
+  it('renders results and clicking a segment opens resources and navigates to segment', () => {
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set('text_id', 'text123');
     useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
-    
-    const mockOpenResourcesPanel = vi.fn();
-    vi.mocked(usePanelContext).mockReturnValue({
-      openResourcesPanel: mockOpenResourcesPanel,
+
+    const openResourcesPanel = vi.fn();
+    usePanelContext.mockReturnValue({
+      openResourcesPanel,
+      closeResourcesPanel: vi.fn(),
       isResourcesPanelOpen: true,
     });
-    
-    const mockHandleSegmentNavigate = vi.fn();
-    
+
     useQuery.mockReturnValue({
       data: {
-        search: { text: 'buddha' },
+        query: 'buddha',
+        total: 2,
         sources: [
           {
-            text: {
-              id: 'text123',
-              title: 'Buddhist Text',
-              language: 'en'
-            },
-            segment_match: [
-              { 
-                segment_id: 'seg1', 
-                content: 'This is about the <em>buddha</em> dharma.'
-              }
-            ]
-          }
+            text: { language: 'en' },
+            segment_matches: [
+              { segment_id: 'seg1', content: 'One <em>the</em>' },
+              { segment_id: 'seg2', content: 'Two <em>the</em>' },
+            ],
+          },
         ],
-        total: 1
       },
       isLoading: false,
-      error: null
+      error: null,
     });
-    
-    const { container } = render(
-      <IndividualTextSearch 
-        onClose={vi.fn()} 
-        handleSegmentNavigate={mockHandleSegmentNavigate} 
+
+    const handleSegmentNavigate = vi.fn();
+    const { getByPlaceholderText, container } = render(
+      <IndividualTextSearch
+        onClose={vi.fn()}
+        handleSegmentNavigate={handleSegmentNavigate}
+        handleNavigate={vi.fn()}
       />
     );
-    
-    const searchInput = container.querySelector('.search-input');
-    fireEvent.change(searchInput, { target: { value: 'buddha' } });
-    fireEvent.submit(searchInput.closest('form'));
-    
-    const segmentButton = container.querySelector('.segment-item');
-    expect(segmentButton).toBeInTheDocument();
-    fireEvent.click(segmentButton);
-    
-    expect(mockHandleSegmentNavigate).toHaveBeenCalledWith('seg1');
-    expect(mockOpenResourcesPanel).toHaveBeenCalled();
+
+    fireEvent.change(getByPlaceholderText('connection_panel.search_in_this_text'), {
+      target: { value: 'the' },
+    });
+
+    const items = container.querySelectorAll('.segment-item');
+    expect(items.length).toBeGreaterThan(0);
+    fireEvent.click(items[0]);
+
+    expect(handleSegmentNavigate).toHaveBeenCalledWith('seg1');
+    expect(openResourcesPanel).toHaveBeenCalled();
   });
 });

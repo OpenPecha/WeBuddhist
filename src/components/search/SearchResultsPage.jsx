@@ -44,9 +44,9 @@ const SearchResultsPage = () => {
       <button className={`nav-link ${activeTab === "sources" ? "active" : ""}`} onClick={() => { setActiveTab("sources"); setSortOption(null); }}>
         {t("sheet.sources", "Sources")}
       </button>
-      <button className={`nav-link ${activeTab === "sheets" ? "active" : ""}`} onClick={() => { setActiveTab("sheets"); setSortOption(null); }}>
+      {/* <button className={`nav-link ${activeTab === "sheets" ? "active" : ""}`} onClick={() => { setActiveTab("sheets"); setSortOption(null); }}>
         {t("common.sheets", "Sheets")}
-      </button>
+      </button> */}
     </div>
   );
 
@@ -81,14 +81,14 @@ const SearchResultsPage = () => {
   const renderTabsContainer = () => (
     <div className="tabs-container">
       {renderTabNavigation()}
-      {renderSortDropdown()}
+      {/* {renderSortDropdown()} */}
     </div>
   );
 
   const renderTabContent = () => (
     <div className="tab-content-container">
       {activeTab === "sources" && <Sources query={query} />}
-      {activeTab === "sheets" && <Sheets query={query} />}
+      {/* {activeTab === "sheets" && <Sheets query={query} />} */}
     </div>
   );
 

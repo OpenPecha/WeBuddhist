@@ -151,6 +151,15 @@
             .text-content {
               margin: 0;
               width: 100%;
+          ul {
+            list-style: disc;
+          }
+          ol {
+            list-style: decimal;
+          }
+          li {
+            display: list-item;
+          }
             }
             ol, ul {
               width: fit-content;
@@ -206,4 +215,7 @@
     
     }
   }
+}
+.sheet-detail-page-loading {
+  padding-top: 30vh; 
 }

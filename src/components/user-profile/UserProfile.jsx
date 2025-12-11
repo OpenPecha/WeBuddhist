@@ -165,9 +165,15 @@ const UserProfile = () => {
 
     const profilesWithUrls = socialProfiles.filter(profile => profile.url && profile.url.trim() !== '');
 
+    const hasEmail = profilesWithUrls.some(profile => profile.account === "email");
+    if (!hasEmail && userInfo?.email) {
+      profilesWithUrls.push({ account: "email", url: userInfo.email });
+    }
+    const profilesToDisplay = profilesWithUrls;
+
     return (
       <div className="social-links">
-        {profilesWithUrls.map((profile) => {
+        {profilesToDisplay.map((profile) => {
           const { icon: Icon, color } = socialIcons[profile.account] || {};
           return Icon ? (
             <a
@@ -309,14 +315,14 @@ const UserProfile = () => {
     );
 
   return (
-    <>
+    <div className="profile-page">
       {!userInfoIsLoading ? (
         renderProfileContent()
       ) : (
         <p className="listsubtitle">{t("common.loading")}</p>
       )}
       {renderImageUploadModal()}
-    </>
+    </div>
   );
 };
 

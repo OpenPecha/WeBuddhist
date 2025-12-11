@@ -44,7 +44,7 @@ export const updateSheetVisibility = async (sheetId, isPublished, sheetData) => 
       return {
         position: index,
         type: segment.type,
-        content: segment.content,
+        content: segment.key || segment.content,
       };
     }
     if (segment.type === "source") {
@@ -57,7 +57,7 @@ export const updateSheetVisibility = async (sheetId, isPublished, sheetData) => 
     return {
       position: index,
       type: "content", 
-      content: segment.content,
+      content: segment.key || segment.content,
     };
   });
   
@@ -192,7 +192,7 @@ const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
   };
 
   if (isLoading) {
-      return <p>{t("common.loading")}</p>;
+      return <p className="sheet-detail-page-loading">{t("common.loading")}</p>;
   }
 
   if (!sheetData || sheetData.content.segments.length === 0) {
@@ -217,7 +217,7 @@ const SheetDetailPage = ({ addChapter, currentChapter } = {}) => {
           </div>
         </div>
         <div className="view-toolbar-item">
-          <FiPrinter onClick={() => window.print()}/>
+          {/* <FiPrinter onClick={() => window.print()}/> */}
           <SheetShare />         
           {sheetData.publisher.email === userInfo?.email && (
             <>

@@ -1,6 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaGlobe, FaSearch } from "react-icons/fa";
-import { RxHamburgerMenu , RxCross1 } from "react-icons/rx";
+import { MdOutlineManageSearch } from "react-icons/md";
+import { RxCross1 } from "react-icons/rx";
 import { useAuth } from "../../config/AuthContext.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ACCESS_TOKEN, LANGUAGE, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
@@ -9,6 +10,7 @@ import { setFontVariables } from "../../config/commonConfigs.js";
 import { useQueryClient } from "react-query";
 import { useState } from 'react';
 import "./NavigationBar.scss";
+import { useCollectionColor } from "../../context/CollectionColorContext.jsx";
 
 export const invalidateQueries = async (queryClient) => {
     const queriesToInvalidate = ["texts", "topics","sheets","sidePanel","works","texts-versions","texts-content","sheets-user-profile","table-of-contents","collections","sub-collections","versions"];
@@ -16,20 +18,31 @@ export const invalidateQueries = async (queryClient) => {
   };
  export const changeLanguage = async (lng,queryClient,tolgee) => {
     await tolgee.changeLanguage(lng);
+    sessionStorage.setItem('textLanguage', lng);
     localStorage.setItem(LANGUAGE, lng);
     setFontVariables(lng);
     await invalidateQueries(queryClient)
   };
 const Navigation = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useTranslate();
     const { isLoggedIn, logout: pechaLogout, isAuthLoading } = useAuth();
     const { isAuthenticated, logout, isLoading: isAuth0Loading } = useAuth0();
+    const userisLoggedIn = isLoggedIn || isAuthenticated;
     const tolgee = useTolgee(['language']);
     const queryClient = useQueryClient();
+    const { collectionColor } = useCollectionColor();
     const [searchTerm, setSearchTerm] = useState("");
     const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+
+    const currentLanguage = tolgee.getLanguage();
+    const isTibetan = currentLanguage === 'bo-IN';
+
+    const routesWithoutColorBorder = ['/', '/collections', '/login', '/register', '/signup', '/community','/user'];
+    const shouldHideColorBorder = routesWithoutColorBorder.includes(location.pathname);
    
 
      function handleLogout(e) {
@@ -63,32 +76,41 @@ const Navigation = () => {
       setIsMobileMenuOpen((prev) => !prev);
       setIsLangDropdownOpen(false);
     };
+    const handleLogoClick = () => {
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
 const renderLogo=()=>{
     return(
-        <Link to="/" onClick={handleMobileMenuToggle}>
+        <Link to="/" onClick={handleLogoClick}>
          <img className="logo" src="/img/webuddhist_logo.svg" alt="Webuddhist"/>
        </Link>
     )
 }
 const renderNavLinks=()=>{
     return(
-        <div className='nav-links navbaritems'>
+        <div className={`nav-links navbaritems ${isTibetan && 'mt-2'}`}>
             <Link to="/collections" onClick={handleMobileMenuToggle}>  {t("header.text")}</Link>
             {/* <Link to="/topics" onClick={handleMobileMenuToggle}>{t("header.topic")}</Link> */}
             <Link to="/community" onClick={handleMobileMenuToggle}> {t("header.community")}</Link>
+
+            <button className=" text-[#5B5B5B]" onClick={() => 
+              userisLoggedIn ?( navigate("/ai/new")) : (navigate("/login"))}> {t("header.ai_mode")}</button>
         </div>
     )
 }
 const renderSearch = () => {
     return (
-      <form className="search-bar navbaritems" onSubmit={handleSearchSubmit}>
-        <FaSearch />
+      <form className={`search-bar content ${isSearchFocused ? 'search-focused' : ''}`} onSubmit={handleSearchSubmit}>
+        <FaSearch className="search-icon" />
         <input
           type="text"
           placeholder={t("common.placeholder.search")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => setIsSearchFocused(false)}
         />
       </form>
     );
@@ -99,18 +121,18 @@ const renderAuthButtons = () => {
     }
     if (!isLoggedIn && !isAuthenticated) {
       return (
-        <div className='auth-buttons navbaritems'>
-          <Link className='auth-button-login'  to="/login" onClick={handleMobileMenuToggle} >
+        <div className={`auth-buttons navbaritems`}>
+          <Link className={`auth-button-login ${isTibetan && 'pt-2'}`}  to="/login" onClick={handleMobileMenuToggle} >
             {t("login.form.button.login_in")}
           </Link>
-          <Link className='auth-button-register' to="/register" onClick={handleMobileMenuToggle} >
+          <Link className={`auth-button-register ${isTibetan && 'pt-2'}`} to="/register" onClick={handleMobileMenuToggle} >
             {t("common.sign_up")}
           </Link>
         </div>
       );
     }
     return (
-      <button className='logout-button navbaritems' onClick={handleLogout}>
+      <button className={`logout-button navbaritems ${isTibetan && 'pt-2'}`} onClick={handleLogout}>
         {t("profile.log_out")}
       </button>
     );
@@ -180,7 +202,12 @@ const renderAuthButtons = () => {
   }
   return (
     <>
-      <div className='navigation-main'>
+      <div 
+        className='navigation-main'
+        style={{
+          borderBottomColor: shouldHideColorBorder ? '#ffffff' : (collectionColor || '#ffffff')
+        }}
+      >
           <div className='navigation-left'>
               {renderLogo()}
               {renderNavLinks()}
@@ -194,10 +221,11 @@ const renderAuthButtons = () => {
                 className="mobile-menu-trigger"
                 onClick={handleMobileMenuToggle}
               >
-                {!isMobileMenuOpen ? <RxHamburgerMenu /> : <RxCross1 />}
+                {!isMobileMenuOpen ? <MdOutlineManageSearch size={30} /> : <RxCross1 />}
               </button>
           </div>
       </div>
+
       {isMobileMenuOpen && (
         <div className="mobile-menu">
           {renderSearch()}

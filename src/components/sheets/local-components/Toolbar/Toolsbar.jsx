@@ -54,9 +54,9 @@ const Toolsbar = (prop) => {
   const renderMarkButtons = () => {
     return (
       <div className="toolbar-group">
-        <MarkButton format="bold" className="toolbar-button"> <FaBold /> </MarkButton>
-        <MarkButton format="italic" className="toolbar-button"> <FaItalic /> </MarkButton>
-        <MarkButton format="underline" className="toolbar-button"> <FaUnderline /> </MarkButton>
+        <MarkButton format="bold" className="toolbar-button" title={t('Bold')}> <FaBold /> </MarkButton>
+        <MarkButton format="italic" className="toolbar-button" title={t('Italic')}> <FaItalic /> </MarkButton>
+        <MarkButton format="underline" className="toolbar-button" title={t('Underline')}> <FaUnderline /> </MarkButton>
       </div>
     );
   };
@@ -66,6 +66,7 @@ const Toolsbar = (prop) => {
       <div className="toolbar-group">
         <button 
           className="toolbar-button"
+          title={t('Pecha Segment')}
           onMouseDown={(e) => {
             e.preventDefault();
             customEditor.toggleSheetSegment(editor);
@@ -80,8 +81,8 @@ const Toolsbar = (prop) => {
   const renderListButtons = () => {
     return (
       <div className="toolbar-group">
-        <BlockButton format="ordered-list" className="toolbar-button"><FaListOl /></BlockButton>
-        <BlockButton format="unordered-list" className="toolbar-button"><FaListUl /></BlockButton>
+        <BlockButton format="ordered-list" className="toolbar-button" title={t('Ordered List')}><FaListOl /></BlockButton>
+        <BlockButton format="unordered-list" className="toolbar-button" title={t('Unordered List')}><FaListUl /></BlockButton>
       </div>
     );
   };
@@ -89,10 +90,10 @@ const Toolsbar = (prop) => {
   const renderAlignmentButtons = () => {
     return (
       <div className="toolbar-group">
-        <BlockButton format="left" className="toolbar-button"> <FaAlignLeft /> </BlockButton>
-        <BlockButton format="center" className="toolbar-button"> <FaAlignCenter /> </BlockButton>
-        <BlockButton format="right" className="toolbar-button"> <FaAlignRight /> </BlockButton>
-        <BlockButton format="justify" className="toolbar-button"> <FaAlignJustify /> </BlockButton>
+        <BlockButton format="left" className="toolbar-button" title={t('Align Left')}> <FaAlignLeft /> </BlockButton>
+        <BlockButton format="center" className="toolbar-button" title={t('Align Center')}> <FaAlignCenter /> </BlockButton>
+        <BlockButton format="right" className="toolbar-button" title={t('Align Right')}> <FaAlignRight /> </BlockButton>
+        <BlockButton format="justify" className="toolbar-button" title={t('Justify')}> <FaAlignJustify /> </BlockButton>
       </div>
     );
   };
@@ -100,9 +101,9 @@ const Toolsbar = (prop) => {
   const renderUtilityButtons = () => {
     return (
       <div className="toolbar-group">
-        <BlockButton format="block-quote" className="toolbar-button"> <FaQuoteLeft /> </BlockButton>
-        <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); customEditor.toggleCodeBlock(editor); }}><FaCode /></button>
-        <button className="toolbar-button" onMouseDown={(e) => { e.preventDefault(); customEditor.toggleImage(editor); }}><FaImage /></button>
+        <BlockButton format="block-quote" className="toolbar-button" title={t('Block Quote')}> <FaQuoteLeft /> </BlockButton>
+        <button className="toolbar-button" title={t('Code Block')} onMouseDown={(e) => { e.preventDefault(); customEditor.toggleCodeBlock(editor); }}><FaCode /></button>
+        <button className="toolbar-button" title={t('Insert Image')} onMouseDown={(e) => { e.preventDefault(); customEditor.toggleImage(editor); }}><FaImage /></button>
       </div>
     );
   };
@@ -113,6 +114,7 @@ const Toolsbar = (prop) => {
         <button
           disabled={!sheetId}
           className={`publish-button listtitle ${!sheetId ? "disabled-button" : ""}`}
+          title={t('Publish Sheet')}
           onClick={handlePublish}
         >
           {t("publish")}

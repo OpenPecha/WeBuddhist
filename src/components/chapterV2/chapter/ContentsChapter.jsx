@@ -1,5 +1,4 @@
-import ChapterHeader from "../utils/header/ChapterHeader.jsx";
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { VIEW_MODES, LAYOUT_MODES } from "../utils/header/view-selector/ViewSelector.jsx";
 import { LAYOUT_MODE, siteName } from "../../../utils/constants.js";
 import UseChapterHook from "./helpers/UseChapterHook.jsx";
@@ -37,6 +36,7 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
   const [showTableOfContents, setShowTableOfContents] = useState(false);
   const [currentSegmentId, setCurrentSegmentId] = useState(segmentId)
   const [currentSectionId, setCurrentSectionId] = useState(null);
+  const [scrollTrigger, setScrollTrigger] = useState(0);
   const size = 20;
 
   useEffect(() => {
@@ -88,31 +88,28 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
       content: { ...infiniteQuery.data.pages[0].content, sections: mergedSections },text_detail};
   }, [infiniteQuery.data?.pages]);
 
+  const handleSegmentNavigate = useCallback((newSegmentId) => {
+    setCurrentSegmentId(newSegmentId);
+    setScrollTrigger(prev => prev + 1);
+  }, []);
+
+  const handleCurrentSectionChange = useCallback((sectionId) => {
+    setCurrentSectionId(sectionId);
+  }, []);
+
   // ----------------------------- helpers ---------------------------------------
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const pageTitle = allContent?.text_detail?.title ? `${allContent.text_detail.title} | ${siteName}` : `Chapter | ${siteName}`;
   const earlyReturn = getEarlyReturn({ isLoading: infiniteQuery.isLoading, error: infiniteQuery.error, t });
   if (earlyReturn) return earlyReturn;
-
-  const handleSegmentNavigate = (newSegmentId) => {
-    setCurrentSegmentId(newSegmentId);
-  };
-
-  const handleCurrentSectionChange = (sectionId) => {
-    setCurrentSectionId(sectionId);
-  };
+  const canShowTableOfContents = ((allContent?.content?.sections || []).length) > 1;
   
   // ------------------------ renderers ----------------------
-  const renderChapterHeader = () => {
-    const propsForChapterHeader = { viewMode, setViewMode, layoutMode, setLayoutMode, textdetail: allContent?.text_detail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!versionId };
-    return <ChapterHeader {...propsForChapterHeader} />;
-  };
-
   const renderChapter = () => {
     const propsForUseChapterHookComponent = {
       textId,
-      showTableOfContents,
+      showTableOfContents: showTableOfContents && canShowTableOfContents,
       setShowTableOfContents,
       content: allContent?.content,
       language: allContent?.text_detail?.language,
@@ -125,7 +122,14 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
       infiniteQuery,
       onCurrentSectionChange: handleCurrentSectionChange,
       currentSectionId,
-      currentSegmentId
+      currentSegmentId,
+      scrollTrigger,
+      textdetail: allContent?.text_detail,
+      removeChapter,
+      totalChapters,
+      canShowTableOfContents,
+      setViewMode,
+      setLayoutMode
     };
     return (
         <UseChapterHook {...propsForUseChapterHookComponent} />
@@ -133,14 +137,13 @@ const ContentsChapter = ({ textId, contentId, segmentId, isFromSheet = false, ve
   }
 
   return (
-    <div className="contents-chapter-container">
+    <div className={`contents-chapter-container ${totalChapters > 1 ? 'split-screen' : 'single-chapter'}`}>
       <Seo
         title={pageTitle}
         description="Read chapter content with source and translations."
         canonical={canonicalUrl}
       />
       <PanelProvider>
-        {renderChapterHeader()}
         {renderChapter()}
       </PanelProvider>
     </div>

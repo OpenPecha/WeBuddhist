@@ -1,24 +1,36 @@
 $tablet-breakpoint: 768px;
-$primary-color: #871C1C;
+$primary-color: #18345D;
 
 .texts-container{
   display: flex;
   gap: 2rem;
-  margin: 0 5rem;
-  justify-content: space-around;
+  margin: 0 1rem 0 8rem;
+  justify-content: flex-start;
+  align-items: stretch;
+  min-height: calc(100vh - var(--navbar-height, 60px));
   .left-section{
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
     width: 70%;
-    margin-top: 5rem;
+    margin-top: 4rem;
+
+    .breadcrumbs-container {
+      margin-top: -2rem;
+      margin-bottom: 1rem;
+    }
 
     .title-type-container{
       display: flex;
       flex-direction: column;
-      gap: 1rem;
       text-align: left;
-
+      h1{
+        font-size: 24px;
+      }
+      .navbaritems{
+        font-size: 16px;
+        color: #666666;
+      }
     }
 
     .continue-reading-button{
@@ -67,7 +79,7 @@ $primary-color: #871C1C;
 
         &.active {
           color: $primary-color;
-          border-bottom-color: $primary-color;
+          border-bottom-color: $border-color;
           border-bottom-width: 3px ;
         }
 
@@ -77,7 +89,6 @@ $primary-color: #871C1C;
       }
 
       .tab-content {
-        padding: 20px;
         background-color: $background-white;
         border-top: none;
       }
@@ -88,11 +99,14 @@ $primary-color: #871C1C;
 
       @media (max-width: $tablet-breakpoint) {
         .tab-nav {
-          flex-direction: column;
+          border-bottom: 0px;
+          display:flex;
+          width: 100%;
         }
 
         .tab-button {
           text-align: left;
+          flex:1;
           border-bottom: 1px solid $border-color;
           border-left: 2px solid transparent;
 
@@ -153,7 +167,7 @@ $primary-color: #871C1C;
       .download-button {
         width: 100%;
         padding: 0.75rem;
-        background-color: #871C1C;
+        background-color: #18345D;
         color: white;
         border: none;
         border-radius: 4px;
@@ -192,8 +206,8 @@ $primary-color: #871C1C;
           border-bottom: 2px solid transparent;
 
           &.active {
-            color: #871C1C;
-            border-bottom-color: #871C1C;
+            color: #18345D;
+            border-bottom-color: #18345D;
             border-bottom-width: 3px;
           }
         }
@@ -210,8 +224,8 @@ $primary-color: #871C1C;
   .texts-container{
     display: flex;
     flex-direction: column;
-    margin: 0 5rem;
-    justify-content: space-around;
+    margin: 1rem;
+    // justify-content: space-around;
     .left-section, .right-section{
       width: 100%;
     }

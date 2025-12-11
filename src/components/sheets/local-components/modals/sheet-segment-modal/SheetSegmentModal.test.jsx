@@ -14,9 +14,9 @@ const mockSegmentData = {
       text: {
         text_id: "text1",
         title: "Sample Text",
-        language: "tibetan",
+        language: "en",
       },
-      segment_match: [
+      segment_matches: [
         {
           segment_id: "seg1",
           content: "<p>Sample segment content</p>",
@@ -58,10 +58,6 @@ vi.mock(
   })
 );
 
-vi.mock("../../../../../utils/Constants", () => ({
-  getLanguageClass: vi.fn(() => "tibetan"),
-}));
-
 vi.mock("react-icons/io5", () => ({
   IoClose: () => <span data-testid="close-icon">Close</span>,
 }));
@@ -70,6 +66,18 @@ vi.mock("./SheetSegmentModal.scss", () => ({}));
 import { useQuery } from "react-query";
 
 describe("SheetSegmentModal", () => {
+  beforeAll(() => {
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      },
+      writable: true,
+    });
+  });
+
   const defaultProps = {
     onClose: mockOnClose,
     onSegment: mockOnSegment,
@@ -166,11 +174,19 @@ describe("SheetSegmentModal", () => {
     const mockAxios = vi.mocked(axiosInstance);
     mockAxios.get.mockResolvedValue(mockResponse);
 
-    const result = await fetchSegments("test query", 10, 0);
+    const result = await fetchSegments("test query", "en", 0, { limit: 10 });
 
     expect(mockAxios.get).toHaveBeenCalledWith(
-      "/api/v1/search?query=test query&search_type=SOURCE",
-      { params: { limit: 10, skip: 0 } }
+      "/api/v1/search/multilingual",
+      {
+        params: {
+          query: "test query",
+          search_type: "exact",
+          language: "en",
+          limit: 10,
+          skip: 0,
+        },
+      }
     );
     expect(result).toEqual(mockResponse.data);
   });

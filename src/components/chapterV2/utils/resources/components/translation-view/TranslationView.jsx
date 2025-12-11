@@ -7,6 +7,9 @@ import axiosInstance from "../../../../../../config/axios-config.js";
 import {usePanelContext} from "../../../../../../context/PanelContext.jsx";
 import {getLanguageClass} from "../../../../../../utils/helperFunctions.jsx";
 import PropTypes from "prop-types";
+import TextExpand from "../../../../../commons/expandtext/TextExpand.jsx";
+import { IoChevronBackSharp } from "react-icons/io5";
+
 export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
   const {data} = await axiosInstance.get(`/api/v1/segments/${segment_id}/translations`, {
     params: {
@@ -20,12 +23,11 @@ export const fetchTranslationsData=async(segment_id, skip=0, limit=10)=>{
 
 const TranslationView = ({
   segmentId,
-  expandedTranslations, 
-  setExpandedTranslations, 
   setIsTranslationView, 
   addChapter,
   currentChapter,
   setVersionId,
+  handleNavigate,
 }) => {
   const { t } = useTranslate();
   const {closeResourcesPanel} = usePanelContext();
@@ -47,7 +49,10 @@ const TranslationView = ({
     "de": "language.german",
     "bhu":"language.bhutanese",
     "mo":"language.mongolian",
-    "sp":"language.spanish"
+    "sp":"language.spanish",
+    "it":"language.italian",
+    "zh":"language.chinese",
+    "tib":"language.tibetan"
   }
   const groupedTranslations = sidePanelTranslationsData?.translations?.reduce((acc, translation) => {
     if (!acc[translation.language]) {
@@ -58,28 +63,9 @@ const TranslationView = ({
   }, {});
 
   const renderTranslationItem = (translation, language, index) => {
-    const translationKey = `${language}-${index}`;
-    const isExpanded = expandedTranslations[translationKey] || false;
-    const hasContent = !!translation.content?.length;
     return (
       <div key={index} className="translation-item">
-      <span className={`translation-content  ${getLanguageClass(language)}`}>
-        <div
-          className={`translation-text ${isExpanded ? 'expanded' : 'collapsed'}`}
-          dangerouslySetInnerHTML={{ __html: translation.content }}
-        />
-        {hasContent && (
-          <button
-            className="expand-button navbaritems"
-            onClick={() => setExpandedTranslations(prev => ({
-              ...prev,
-              [translationKey]: !isExpanded,
-            }))}          >
-            {isExpanded ? t('panel.showless') : t('panel.showmore')}
-          </button>
-        )}
-      </span>
-
+        <TextExpand language={translation.language} maxLength={250}>{translation.content}</TextExpand>
         <div className={`belowdiv ${getLanguageClass(translation.language)}`}>
           {translation.title && (
             <p className="titles">{translation.title}</p>
@@ -89,11 +75,6 @@ const TranslationView = ({
               {t("connection_panel.menuscript.source")}:<span className={`${getLanguageClass("en")} source`}> {translation.source}</span>
             </p>
           )}
-
-          <p className="text-great review navbaritems">
-            {t("text.versions.information.review_history")}
-          </p>
-
           <div className="link-select navbaritems">
             {addChapter && (
               <button
@@ -127,6 +108,7 @@ const TranslationView = ({
   return (
     <div className="translation-view">
       <div className="headerthing">
+        <IoChevronBackSharp size={24} onClick={() => handleNavigate()} className="back-icon" />
         <p className="mt-4 px-4 listtitle">
           {t('connection_pannel.translations')}
         </p>
@@ -162,10 +144,9 @@ const TranslationView = ({
 export default TranslationView;
 TranslationView.propTypes = {
   segmentId: PropTypes.string.isRequired, 
-  expandedTranslations: PropTypes.object.isRequired, 
-  setExpandedTranslations: PropTypes.func.isRequired, 
   setIsTranslationView: PropTypes.func.isRequired, 
   addChapter: PropTypes.func, 
   currentChapter: PropTypes.object, 
   setVersionId: PropTypes.func.isRequired,
+  handleNavigate: PropTypes.func.isRequired,
 }

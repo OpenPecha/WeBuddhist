@@ -1,5 +1,5 @@
 import "./App.css";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate, matchPath, Navigate } from "react-router-dom";
 import NavigationBar from "./components/navbar/NavigationBar.jsx";
 import { useMutation } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.jsx";
@@ -13,6 +13,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { setFontVariables } from "./config/commonConfigs.js";
 import Sheets from "./components/sheets/Sheets.jsx";
 import SheetChapters from "./components/chapterV2/SheetChapters.jsx";
+import Footer from "./components/footer/Footer.jsx";
 
 const tokenExpiryTime = import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC;
 const Collections = lazy(() => import("./components/collections/Collections.jsx"));
@@ -28,12 +29,13 @@ const AuthorProfile = lazy(() => import("./components/author-profile/AuthorProfi
 const ResetPassword = lazy(() => import("./components/reset-password/ResetPassword.jsx"));
 const ForgotPassword = lazy(() => import("./components/forgot-password/ForgotPassword.jsx"));
 const SearchResultsPage = lazy(() => import("./components/search/SearchResultsPage.jsx"));
-
+const Chat = lazy(() => import("./components/chat/base/Chat.jsx"));
 
 function App() {
     const navigate = useNavigate();
     const { login, isLoggedIn, logout: pechaLogout } = useAuth();
     const [intervalId, setIntervalId] = useState(null);
+    const location = useLocation();
     const { getIdTokenClaims, isAuthenticated, logout } = useAuth0();
 
     useEffect(() => {
@@ -110,6 +112,14 @@ function App() {
         setFontVariables(localStorage.getItem(LANGUAGE) || "en");
     }, []);
 
+    const hideFooter =
+    !!matchPath("/sheets/:id", location.pathname) ||
+    !!matchPath("/chapter", location.pathname) ||
+    !!matchPath("/login", location.pathname) ||
+    !!matchPath("/register", location.pathname) ||
+    !!matchPath("/ai", location.pathname) ||
+    !!matchPath("/ai/:threadId", location.pathname);
+
     return (
       <Suspense>
           <NavigationBar/>
@@ -131,10 +141,14 @@ function App() {
               <Route path="/works/:id" element={<Works/>}/>
               <Route path="/chapter" element={<ChaptersV2/>}/>
               <Route path="/search" element={<SearchResultsPage/>}/>
+              <Route path="/ai" element={<Navigate to="/ai/new" replace />}/>
+              <Route path="/ai/new" element={<AuthenticationGuard component={Chat}/>}/>
+              <Route path="/ai/:threadId" element={<AuthenticationGuard component={Chat}/>}/>
               <Route path="*" element={<Collections/>}/>
               <Route path="/sheets/:id" element={<Sheets/>}/>
               <Route path="/:username/:sheetSlugAndId" element={<SheetChapters/>}/>
           </Routes>
+          {!hideFooter && <Footer/>}
       </Suspense>
     );
 }

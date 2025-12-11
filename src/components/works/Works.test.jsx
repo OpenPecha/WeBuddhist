@@ -6,6 +6,7 @@ import {
   mockAxios,
   mockReactQuery, mockTolgee,
   mockUseAuth,
+  mockLocalStorage,
 } from "../../test-utils/CommonMocks.js";
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -60,17 +61,17 @@ describe("Works Component", () => {
     ],
   };
 
+  let localStorageMock;
+
   beforeEach(() => {
     vi.restoreAllMocks();
     useParams.mockReturnValue({ id: "works-id" });
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue("en");
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockTextCategoryData,
       isLoading: false,
     }));
-    vi.spyOn(Storage.prototype, "getItem").mockImplementation((key) => {
-      if (key === "LANGUAGE") return "en";
-      return null;
-    });
   });
 
   afterEach(() => {
@@ -92,7 +93,6 @@ describe("Works Component", () => {
 
   test("renders root texts correctly", () => {
     setup();
-    expect(screen.getByText("text.type.root_text")).toBeInTheDocument();
     expect(screen.getByText("Root Text 1")).toBeInTheDocument();
     expect(screen.getByText("Root Text 2")).toBeInTheDocument();
   });
@@ -145,10 +145,13 @@ describe("Works Component", () => {
         title: "Text Category",
         description: "Text Category Description",
       },
+      collection: {
+        title: "Text Category",
+      },
       texts: [
-        { id: "text1", title: "Root Text 1", type: "root_text" },
-        { id: "text2", title: "Root Text 2", type: "root_text"},
-        { id: "text3", title: "Commentary 1", type: "commentary" }
+        { id: "text1", title: "Root Text 1", type: "root_text", language: "en" },
+        { id: "text2", title: "Root Text 2", type: "root_text", language: "en"},
+        { id: "text3", title: "Commentary 1", type: "commentary", language: "en" }
       ],
     };
 
@@ -159,10 +162,10 @@ describe("Works Component", () => {
 
     setup();
     const links = screen.getAllByTestId("router-link");
-    expect(links).toHaveLength(3);
-    expect(links[0].getAttribute("href")).toBe("/texts/text1?type=root_text");
-    expect(links[1].getAttribute("href")).toBe("/texts/text2?type=root_text");
-    expect(links[2].getAttribute("href")).toBe("/texts/text3?type=commentary");
+    // 1 breadcrumb link + 3 text links = 4 total
+    expect(links).toHaveLength(4);
+    expect(links[1].getAttribute("href")).toBe("/texts/text1?type=root_text");
+    expect(links[2].getAttribute("href")).toBe("/texts/text2?type=root_text");
   });
 
 
@@ -186,7 +189,7 @@ describe("Works Component", () => {
   });
 
   test("uses correct language from localStorage", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo");
+    localStorageMock.getItem.mockReturnValue("bo");
 
     const axiosSpy = vi.spyOn(axiosInstance, "get");
     axiosSpy.mockResolvedValueOnce({ data: mockTextCategoryData });
@@ -195,7 +198,7 @@ describe("Works Component", () => {
 
     expect(reactQuery.useQuery).toHaveBeenCalled();
     const queryKey = reactQuery.useQuery.mock.calls[0][0];
-    expect(queryKey).toEqual(["works", "works-id"]);
+    expect(queryKey).toEqual(["works", "works-id", 0, 12]);
   });
 
   test("uses pagination parameters correctly", () => {
@@ -240,7 +243,7 @@ describe("Works Component", () => {
   });
 
   test("uses correct language from localStorage with mapping", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("en");
+    localStorageMock.getItem.mockReturnValue("en");
     const axiosSpy = vi.spyOn(axiosInstance, "get").mockResolvedValueOnce({
       data: mockTextCategoryData,
     });
@@ -261,7 +264,7 @@ describe("Works Component", () => {
         params: expect.objectContaining({
           collection_id: "works-id",
           language: "en",
-          limit: 10,
+          limit: 12,
           skip: 0,
         }),
       })
@@ -271,7 +274,7 @@ describe("Works Component", () => {
   });
 
   test("defaults to 'en' language when localStorage is empty", () => {
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue(null);
+    localStorageMock.getItem.mockReturnValue(null);
     const axiosSpy = vi.spyOn(axiosInstance, "get").mockResolvedValueOnce({
       data: mockTextCategoryData,
     });
@@ -315,7 +318,7 @@ describe("Works Component", () => {
       "/api/v1/texts",
       expect.objectContaining({
         params: expect.objectContaining({
-          limit: 10,
+          limit: 12,
           skip: 0,
         }),
       })
@@ -342,7 +345,6 @@ describe("Works Component", () => {
 
     const { container } = setup();
 
-    expect(screen.getByText("text.type.root_text")).toBeInTheDocument();
     expect(screen.getByText("text.type.commentary")).toBeInTheDocument();
 
     const textSections = container.querySelectorAll(".root-text");

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { IoMdClose } from 'react-icons/io';
+import { IoChevronBackSharp } from "react-icons/io5";
 import { BiSearch } from 'react-icons/bi';
 import { useTranslate } from '@tolgee/react';
 import { useQuery } from 'react-query';
@@ -7,15 +8,20 @@ import { useSearchParams } from 'react-router-dom';
 import axiosInstance from '../../../../../../config/axios-config.js';
 import PaginationComponent from '../../../../../commons/pagination/PaginationComponent.jsx';
 import { highlightSearchMatch } from '../../../../../../utils/highlightUtils.jsx';
-import { getLanguageClass, getEarlyReturn } from '../../../../../../utils/helperFunctions.jsx';
+import { getLanguageClass, getEarlyReturn, mapLanguageCode } from '../../../../../../utils/helperFunctions.jsx';
 import { usePanelContext } from '../../../../../../context/PanelContext.jsx';
 import './IndividualTextSearch.scss';
 import PropTypes from "prop-types";
 import { useDebounce } from 'use-debounce';
+import { LANGUAGE } from '../../../../../../utils/constants.js';
 
-export const fetchTextSearchResults = async(query, textId, skip, pagination) => {
-  const { data } = await axiosInstance.get(`api/v1/search?query=${query}&search_type=SOURCE&text_id=${textId}`, {
+export const fetchTextSearchResults = async(query, textId, language, skip, pagination) => {
+  const { data } = await axiosInstance.get('api/v1/search/multilingual', {
     params: {
+      query,
+      search_type: 'exact',
+      text_id: textId,
+      language,
       limit: pagination.limit,
       skip: skip
     }
@@ -23,7 +29,7 @@ export const fetchTextSearchResults = async(query, textId, skip, pagination) => 
   return data;
 };
 
-const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNavigate }) => {
+const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNavigate, handleNavigate }) => {
   const [searchParams] = useSearchParams();
   const textId = propTextId || searchParams.get("text_id");
   
@@ -31,13 +37,15 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
   const [debouncedSearchQuery] = useDebounce(searchQuery, 500);
   const { t } = useTranslate();
   const { openResourcesPanel } = usePanelContext();
+  const storedLanguage = localStorage.getItem(LANGUAGE);
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : 'en';
   
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination.currentPage - 1) * pagination.limit, [pagination]);
   
   const { data: searchResults, isLoading, error } = useQuery(
-    ["textSearch", searchQuery, textId, skip, pagination],
-    () => fetchTextSearchResults(searchQuery, textId, skip, pagination),
+    ["textSearch", debouncedSearchQuery, textId, language, skip, pagination],
+    () => fetchTextSearchResults(debouncedSearchQuery, textId, language, skip, pagination),
     {
       refetchOnWindowFocus: false,
       retry: 1,
@@ -45,7 +53,7 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
     }
   );
   
-  const searchText = searchResults?.search?.text || searchQuery;
+  const searchText = searchResults?.query || searchQuery;
 
   // ----------------------------- helpers ---------------------------------------
 
@@ -64,7 +72,8 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
   // ----------------------------- renderers -------------------------------------
   const renderHeader = () => {
     return (
-      <div className="search-header">
+      <div className="search-header mt-2">
+        <IoChevronBackSharp size={24} onClick={() => handleNavigate()} className="back-icon" />
         <h2>{t('connection_panel.search_in_this_text')}</h2>
         <IoMdClose
           size={24}
@@ -142,8 +151,8 @@ const IndividualTextSearch = ({ onClose, textId: propTextId, handleSegmentNaviga
       return <div className="search-message">{t('search.zero_result', 'No results to display.')}</div>;
     }
 
-    const source = searchResults.sources[0];
-    const segments = source?.segment_match || [];
+    const source = searchResults.sources?.[0];
+    const segments = source?.segment_matches || [];
     const totalSegments = segments.length;
 
     return (
@@ -172,4 +181,5 @@ IndividualTextSearch.propTypes = {
   onClose: PropTypes.func.isRequired,
   textId: PropTypes.string,
   handleSegmentNavigate: PropTypes.func.isRequired,
+  handleNavigate: PropTypes.func.isRequired,
 };

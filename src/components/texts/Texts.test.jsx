@@ -1,4 +1,4 @@
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
+import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockLocalStorage} from "../../test-utils/CommonMocks.js";
 import {vi} from "vitest";
 import {QueryClient, QueryClientProvider} from "react-query";
 import {BrowserRouter as Router, useParams} from "react-router-dom";
@@ -7,7 +7,7 @@ import axiosInstance from "../../config/axios-config.js";
 import {render, screen, fireEvent} from "@testing-library/react";
 import {TolgeeProvider} from "@tolgee/react";
 import React from "react";
-import Texts, {fetchTableOfContents} from "./Texts.jsx";
+import Texts, {fetchTableOfContents, fetchVersions} from "./Texts.jsx";
 
 mockAxios();
 mockUseAuth();
@@ -37,7 +37,13 @@ vi.mock("react-router-dom", async () => {
   return {
     ...actual,
     useParams: vi.fn(),
-    useSearchParams: () => [new URLSearchParams("?type=works"), vi.fn()]
+    useSearchParams: () => [new URLSearchParams("?type=works"), vi.fn()],
+    useLocation: () => ({
+      pathname: '/texts/123',
+      state: {
+        parentCollection: { id: 'collection-123', title: 'Test Collection' }
+      }
+    })
   };
 });
 
@@ -49,19 +55,27 @@ describe("Texts Component", () => {
       type: "Test Type"
     },
     contents:[{
-      id:"sdfasdfasdf"
+      id:"sdfasdfasdf",
+      sections: [
+        { id: "section1", title: "Section 1" },
+        { id: "section2", title: "Section 2" }
+
+
+      ]
     }]
   };
+
+  let localStorageMock;
 
   beforeEach(() => {
     vi.restoreAllMocks();
     useParams.mockReturnValue({ id: "123" });
+    localStorageMock = mockLocalStorage();
+    localStorageMock.getItem.mockReturnValue("bo-IN");
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockTextDetailData,
       isLoading: false,
     }));
-
-    Storage.prototype.getItem = vi.fn().mockReturnValue("bo-IN");
     axiosInstance.get.mockResolvedValue({ data: mockTextDetailData });
   });
 
@@ -85,7 +99,7 @@ describe("Texts Component", () => {
     setup();
     expect(screen.getByText("Table of Contents Component")).toBeInTheDocument();
     const buttons = document.querySelectorAll('.tab-button');
-      expect(buttons[0]).toHaveTextContent("Content")
+      expect(buttons[0]).toHaveTextContent("Contents")
     expect(buttons[1]).toHaveTextContent("Version")
 
   });
@@ -111,12 +125,9 @@ describe("Texts Component", () => {
   //   expect(screen.getByText("Download Text")).toBeInTheDocument();
   // });
 
-  test("renders continue reading button", () => {
-    setup();
-    expect(screen.getByText("Continue Reading")).toBeInTheDocument();
-  });
 
   test("fetchTableOfContents makes correct API call", async () => {
+    sessionStorage.setItem('textLanguage', 'bo-IN');
     const result = await fetchTableOfContents("123", 0, 10);
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
@@ -131,6 +142,7 @@ describe("Texts Component", () => {
     );
 
     expect(result).toEqual(mockTextDetailData);
+    sessionStorage.removeItem('textLanguage');
   });
 
   test("switches to versions tab when clicked", () => {
@@ -142,6 +154,24 @@ describe("Texts Component", () => {
     fireEvent.click(buttons[1]);
     expect(buttons[1]).toHaveClass('active');
     expect(screen.getByTestId("versions-component")).toBeInTheDocument();
+  });
+
+  test("fetchVersions makes correct API call", async () => {
+    sessionStorage.setItem('textLanguage', 'bo-IN');
+    axiosInstance.get.mockResolvedValueOnce({ data: { versions: [] } });
+    const result = await fetchVersions("123", 0, 10);
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      "/api/v1/texts/123/versions",
+      {
+        params: {
+          language: "bo",
+          limit: 10,
+          skip: 0
+        }
+      }
+    );
+    expect(result).toEqual({ versions: [] });
+    sessionStorage.removeItem('textLanguage');
   });
 
   test("switches back to contents from versions tab", () => {

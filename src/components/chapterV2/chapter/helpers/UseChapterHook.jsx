@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useInView } from "react-intersection-observer";
 import TableOfContents from "../../utils/header/table-of-contents/TableOfContents.jsx";
+import ChapterHeader from "../../utils/header/ChapterHeader.jsx";
 import "./ChapterHook.scss"
 import { VIEW_MODES, LAYOUT_MODES } from "../../utils/header/view-selector/ViewSelector.jsx";
 import { getLanguageClass, getCurrentSectionFromScroll } from "../../../../utils/helperFunctions.jsx";
@@ -9,7 +10,7 @@ import Resources from "../../utils/resources/Resources.jsx";
 import PropTypes from "prop-types";
 
 const UseChapterHook = (props) => {
-  const { showTableOfContents, setShowTableOfContents, content, language, viewMode, layoutMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId} = props;
+  const { showTableOfContents, setShowTableOfContents, content, language, viewMode, layoutMode, addChapter, currentChapter, setVersionId,handleSegmentNavigate, infiniteQuery, onCurrentSectionChange, currentSectionId ,textId, currentSegmentId, scrollTrigger, textdetail, removeChapter, totalChapters, canShowTableOfContents, setViewMode, setLayoutMode} = props;
   const [selectedSegmentId, setSelectedSegmentId] = useState(null)
   const { isResourcesPanelOpen, openResourcesPanel } = usePanelContext();
   const contentsContainerRef = useRef(null);
@@ -17,6 +18,7 @@ const UseChapterHook = (props) => {
   const sectionRefs = useRef(new Map());
   const { ref: topSentinelRef, inView: isTopSentinelVisible } = useInView({threshold: 0.1, rootMargin: '50px',});
   const { ref: sentinelRef, inView: isBottomSentinelVisible } = useInView({threshold: 0.1, rootMargin: '50px'});
+  const lastScrollTriggerRef = useRef(0);
 
   useEffect(() => {
     const container = contentsContainerRef.current;
@@ -87,6 +89,48 @@ const UseChapterHook = (props) => {
       container.removeEventListener('click', handleDocumentClick);
     };
   }, []);
+
+  useEffect(() => {
+    const container = contentsContainerRef.current;
+    if (!container) return;
+
+    const activeFootnotes = container.querySelectorAll(".footnote.active");
+    activeFootnotes.forEach((footnote) => {
+      footnote.classList.remove("active");
+    });
+  }, [layoutMode]);
+
+  useEffect(() => {
+    if (scrollTrigger === lastScrollTriggerRef.current) return;
+    lastScrollTriggerRef.current = scrollTrigger;
+    if (!currentSegmentId || !content?.sections) return;
+
+    const container = contentsContainerRef.current;
+    if (!container) return;
+
+    const findSectionWithSegment = (sections) => {
+      for (const section of sections) {
+        if (
+          section.segments?.some((seg) => seg.segment_id === currentSegmentId)
+        ) {
+          return section.id;
+        }
+        if (section.sections?.length) {
+          const found = findSectionWithSegment(section.sections);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    const sectionId = findSectionWithSegment(content.sections);
+    if (!sectionId) return;
+
+    const sectionElement = sectionRefs.current.get(sectionId);
+    if (sectionElement) {
+      sectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [currentSegmentId, content?.sections, scrollTrigger]);
   
   useLayoutEffect(() => {
     const scrollContainer = contentsContainerRef.current;
@@ -99,6 +143,11 @@ const UseChapterHook = (props) => {
   }, [content]);
 
   // -------------------------- renderers --------------------------
+  const renderChapterHeader = () => {
+    const propsForChapterHeader = { viewMode, setViewMode, layoutMode, setLayoutMode, textdetail, showTableOfContents, setShowTableOfContents, removeChapter, currentChapter, totalChapters, currentSectionId, versionSelected: !!currentChapter.versionId, canShowTableOfContents };
+    return <ChapterHeader {...propsForChapterHeader} />;
+  };
+
   const renderTableOfContents = () => {
     const propsForTableOfContents={textId, showTableOfContents, currentSectionId, onSegmentSelect: handleSegmentNavigate, language, onClose: () => setShowTableOfContents(false)}
     return <TableOfContents {...propsForTableOfContents} />
@@ -168,7 +217,6 @@ const UseChapterHook = (props) => {
                       handleSegmentClick(segment.segment_id);
                     }
                   }}
-                  tabIndex={0}
                   role="button"
                 >
                   {(viewMode === VIEW_MODES.SOURCE ||
@@ -195,7 +243,7 @@ const UseChapterHook = (props) => {
             </p>
           ) : (
             section.segments?.map((segment) => (
-              <button
+              <div
                 key={segment.segment_id}
                 className={`segment-container ${
                   selectedSegmentId === segment.segment_id
@@ -203,6 +251,7 @@ const UseChapterHook = (props) => {
                     : ""
                 }`}
                 onClick={() => handleSegmentClick(segment.segment_id)}
+                style={{ cursor: 'pointer' }}
               >
                 <p className="segment-number">{segment.segment_number}</p>
                 <div className="segment-content">
@@ -226,7 +275,7 @@ const UseChapterHook = (props) => {
                       />
                     )}
                 </div>
-              </button>
+              </div>
             ))
           )}
 
@@ -265,8 +314,11 @@ const UseChapterHook = (props) => {
     <div className="use-chapter-hook-container">
       <div className="chapter-flex-row">
         {renderTableOfContents()}
-        <div className="main-content" ref={contentsContainerRef}>
-          {renderContents()}
+        <div className="main-content-wrapper">
+          {renderChapterHeader()}
+          <div className="main-content" ref={contentsContainerRef}>
+            {renderContents()}
+          </div>
         </div>
         {renderResources()}
       </div>
@@ -305,6 +357,7 @@ UseChapterHook.propTypes = {
   addChapter: PropTypes.func.isRequired,
   currentChapter: PropTypes.shape({
     segmentId: PropTypes.string,
+    versionId: PropTypes.string,
   }).isRequired,
   setVersionId: PropTypes.func.isRequired,
   handleSegmentNavigate: PropTypes.func.isRequired,
@@ -320,4 +373,14 @@ UseChapterHook.propTypes = {
   currentSectionId: PropTypes.string,
   textId: PropTypes.string.isRequired,
   currentSegmentId: PropTypes.string,
+  scrollTrigger: PropTypes.number.isRequired,
+  textdetail: PropTypes.shape({
+    language: PropTypes.string,
+    title: PropTypes.string,
+  }),
+  removeChapter: PropTypes.func.isRequired,
+  totalChapters: PropTypes.number.isRequired,
+  canShowTableOfContents: PropTypes.bool,
+  setViewMode: PropTypes.func.isRequired,
+  setLayoutMode: PropTypes.func.isRequired,
 };

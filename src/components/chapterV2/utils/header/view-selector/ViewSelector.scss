@@ -2,7 +2,7 @@
 .view-selector-options-container {
   position: absolute;
   top: 130%;
-  right: 0;
+  left: 0;
   background: white;
   border-radius: 6px;
   padding: 0.75rem;
@@ -19,7 +19,7 @@
     border: none;
     position: absolute;
     top: 0.5rem;
-    right: 1rem;
+    left: 1rem;
     z-index: 10;
   }
 
@@ -41,12 +41,13 @@
     border-top: 1px solid #e0e0e0;
     padding-top: 0.5rem;
     margin-top: 0.5rem;
+    position: relative;
+
     
     .layout-icons-container {
       display: flex;
       align-items: center;
-      justify-content: space-between; 
-      
+      justify-content: space-between;
       .layout-label {
         font-size: 14px;
         font-weight: 500;
@@ -94,5 +95,18 @@
         }
       }
     }
+  }
+}
+
+.contents-chapter-container.split-screen .view-selector-options-container {
+  left: auto;
+  right: 0;
+}
+
+@media (max-width: 992px) {
+  .view-selector-options-container {
+    left: auto;
+    right: 0;
+    margin-top: 1rem;
   }
 }

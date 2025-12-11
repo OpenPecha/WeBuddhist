@@ -1,4 +1,4 @@
-import { Editor, Transforms, Element, Path } from "slate";
+import { Editor, Transforms, Element, Path, Range } from "slate";
 import "../local-components/modals/image-upload-modal/ImageUpload.scss";
 import { createPortal } from "react-dom";
 import React from "react";
@@ -153,6 +153,36 @@ export const useCustomEditor = () => {
           children: [{ text }],
         });
       }
+    },
+
+    handleBackspaceAtListStart(editor, event) {
+      const { selection } = editor;
+      if (!selection || !Range.isCollapsed(selection)) return false;
+
+      const [listItemEntry] = Editor.nodes(editor, {
+        match: (n) => Element.isElement(n) && n.type === "list-item",
+      });
+      if (!listItemEntry) return false;
+
+      const [listItemNode, listItemPath] = listItemEntry;
+
+      if (!Editor.isStart(editor, selection.anchor, listItemPath)) return false;
+
+      if (Editor.isEmpty(editor, listItemNode)) {
+        event.preventDefault();
+        Transforms.setNodes(
+          editor,
+          { type: "paragraph", align: "left" },
+          { at: listItemPath }
+        );
+        Transforms.unwrapNodes(editor, {
+          match: (n) => Element.isElement(n) && isListType(n.type),
+          split: true,
+        });
+        return true;
+      }
+
+      return false;
     },
 
     isMarkActive(editor, type) {

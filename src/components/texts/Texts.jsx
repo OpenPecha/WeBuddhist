@@ -1,24 +1,25 @@
-import React, {useMemo, useState} from 'react'
+import React, {useMemo, useState, useEffect} from 'react'
 import {useQuery} from "react-query";
 import {getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.jsx"; 
 import Seo from "../commons/seo/Seo.jsx";
 import "./Texts.scss"
 import {LANGUAGE, siteName} from "../../utils/constants.js";
 import axiosInstance from "../../config/axios-config.js";
-import {useTranslate} from "@tolgee/react";
-import {Link, useParams, useSearchParams} from "react-router-dom";
+import {useTolgee, useTranslate} from "@tolgee/react";
+import {Link, useParams, useSearchParams, useLocation} from "react-router-dom";
 import {FiChevronDown} from "react-icons/fi";
 import TableOfContents from "./table-of-contents/TableOfContents.jsx";
 import Versions from "./versions/Versions.jsx";
+import Commentaries from "./commentaries/Commentaries.jsx";
 import PropTypes from "prop-types";
+import Breadcrumbs from "../commons/breadcrumbs/Breadcrumbs.jsx";
 
-export const fetchTableOfContents = async (textId, skip, limit, languageFromContent = null) => {
-  const storedLanguage = localStorage.getItem(LANGUAGE);
-  const fallbackLanguage = (storedLanguage ? mapLanguageCode(storedLanguage) : "en");
-  const language = languageFromContent || fallbackLanguage;
+export const fetchTableOfContents = async (textId, skip, limit) => {
+  const language=sessionStorage.getItem('textLanguage');
+  const mappedLanguage = language ? mapLanguageCode(language) : "en";
   const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/contents`, {
     params: {
-      language,
+      language: mappedLanguage,
       limit: limit,
       skip: skip
     }
@@ -27,42 +28,105 @@ export const fetchTableOfContents = async (textId, skip, limit, languageFromCont
 
 }
 
+export const fetchVersions = async (textId, skip, limit) => {
+  const language=sessionStorage.getItem('textLanguage');
+  const mappedLanguage = language ? mapLanguageCode(language) : "en";
+  const {data} = await axiosInstance.get(`/api/v1/texts/${textId}/versions`, {
+    params: {
+      language: mappedLanguage,
+      limit,
+      skip
+    }
+  })
+  return data
+}
+
+export const fetchCommentaries = async (textId, skip, limit) => {
+  const { data } = await axiosInstance.get(`/api/v1/texts/${textId}/commentaries`, {
+    params: {
+      skip,
+      limit
+    }
+  });
+  return { items: data };
+}
+
 const Texts = (props) => {
   const {requiredInfo = {}, setRendererInfo, collection_id, addChapter, currentChapter} = props;
   const { t } = useTranslate();
   const { id: urlId } = useParams();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const type = searchParams.get('type') || "";
   const [activeTab, setActiveTab] = useState('contents');
   const [downloadOptionSelections, setDownloadOptionSelections] = useState({format: '', version: ''});
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
+  const [versionsPagination, setVersionsPagination] = useState({ currentPage: 1, limit: 10 });
+  const [commentariesPagination, setCommentariesPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(() => (pagination?.currentPage - 1) * pagination?.limit, [pagination]);
-  
+  const versionsSkip = useMemo(() => (versionsPagination?.currentPage - 1) * versionsPagination?.limit, [versionsPagination]);
+  const commentariesSkip = useMemo(() => (commentariesPagination?.currentPage - 1) * commentariesPagination?.limit, [commentariesPagination]);
+  const tolgee = useTolgee(['language']);
+  const currentLanguage = tolgee.getLanguage();
+  const isTibetan = currentLanguage === 'bo-IN';
   const textId = requiredInfo?.from === "compare-text" ? collection_id : urlId;
 
   const {data: tableOfContents, isLoading: tableOfContentsIsLoading, error: tableOfContentsIsError} = useQuery(
-    ["table-of-contents", skip],
+    ["table-of-contents", textId, skip, pagination.limit],   
     () => fetchTableOfContents(textId, skip, pagination.limit),
     {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
   );
+
+  const {data: versions, isLoading: versionsIsLoading, error: versionsIsError} = useQuery(
+    ["versions", textId, versionsSkip, versionsPagination.limit],   
+    () => fetchVersions(textId, versionsSkip, versionsPagination.limit),
+    {refetchOnWindowFocus: false, enabled: !!textId}
+  );
+
+  const {data: commentaries, isLoading: commentariesIsLoading, error: commentariesIsError} = useQuery(
+    ["commentaries", textId, commentariesSkip, commentariesPagination.limit],
+    () => fetchCommentaries(textId, commentariesSkip, commentariesPagination.limit),
+    {refetchOnWindowFocus: false, enabled: !!textId, retry: false}
+  );
+
+  useEffect(() => {
+    const hasMultipleSections = tableOfContents?.contents[0]?.sections?.length > 1;
+    if (hasMultipleSections) {
+      setActiveTab('contents');
+    } else if (tableOfContents?.contents) {
+      setActiveTab('versions');
+    }
+  }, [tableOfContents]);
 
   // -------------------------------------------- helpers ----------------------------------------------
   const handleOptionChange = (e, type) => { setDownloadOptionSelections(prev =>({...prev, [type]: e.target.value})) }
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
-  const dynamicTitle = tableOfContents?.text_detail?.title ? `${tableOfContents.text_detail.title} | ${siteName}` : `Text | ${siteName}`;
+  const dynamicTitle = versions?.text?.title ? `${versions.text.title} | ${siteName}` : `Text | ${siteName}`;
   const description = "Read Buddhist texts with translations and related resources.";
 
+  const parentCollection = location.state?.parentCollection || null;
+
+  const breadcrumbItems = useMemo(() => {
+    const items = [{ label: t('header.text'), path: '/' }];
+    if (parentCollection?.title) {
+      items.push({ label: parentCollection.title, path: `/works/${parentCollection.id}` });
+    }
+    if (versions?.text?.title) {
+      items.push({ label: versions.text.title });
+    }
+    return items;
+  }, [parentCollection, versions?.text?.title, t]);
   // --------------------------------------------- renderers -------------------------------------------
   const renderTextTitleAndType = () => {
     const renderTitle = () => {
-      return <h3 className={`${getLanguageClass(tableOfContents?.text_detail.language)}`}>
-        {tableOfContents?.text_detail.title}
-      </h3>
+      return <h1 className={`${getLanguageClass(versions?.text?.language)}`}>
+        {versions?.text?.title}
+      </h1>
     }
 
     const renderType = () => {
-      return <div className="navbaritems subcom">
+      return <div className="navbaritems">
         {t(`text.type.${type}`)}
       </div>
     }
@@ -70,13 +134,13 @@ const Texts = (props) => {
     return(
       <div className="title-type-container">
         {renderTitle()}
-        {renderType()}
+        {/* {renderType()} */}
       </div>
     )
   }
 
   const renderContinueReadingButton = () => {
-    return <Link className="navbaritems continue-reading-button"
+    return <Link className={`navbaritems continue-reading-button ${isTibetan && 'pt-2'}`}
                  to={`/chapter?text_id=${tableOfContents?.text_detail?.id}&contentId=${tableOfContents?.contents[0]?.id}&versionId=&contentIndex=${0}`}>
       {t("text.button.continue_reading")}
     </Link>
@@ -87,30 +151,66 @@ const Texts = (props) => {
     return <div className="tab-container listsubtitle">
       {/* Tab Navigation */}
       <div className="tab-nav">
-        <button
-          className={`tab-button ${activeTab === 'contents' ? 'active' : ''}`}
-          onClick={() => setActiveTab('contents')}
-        >
-          {t("text.contents")}
-        </button>
+        {
+         tableOfContents?.contents[0]?.sections?.length > 1 && (
+            <button
+              className={`tab-button ${activeTab === 'contents' ? 'active' : ''}`}
+              onClick={() => setActiveTab('contents')}
+            >
+              {t("text.contents")}
+            </button>
+          )
+        }
         <button
           className={`tab-button ${activeTab === 'versions' ? 'active' : ''}`}
           onClick={() => setActiveTab('versions')}
         >
           {t("common.version")}
         </button>
+        <button
+          className={`tab-button ${activeTab === 'commentaries' ? 'active' : ''}`}
+          onClick={() => setActiveTab('commentaries')}
+        >
+          {t("text.type.commentary")}
+        </button>
       </div>
 
       {/* Tab Content */}
       <div className="tab-content">
-        {activeTab === 'contents' && (
+        {activeTab === 'contents' && tableOfContents?.contents[0]?.sections?.length > 1 && (
           <div className="tab-panel">
             <TableOfContents tableOfContents={tableOfContents} pagination={pagination} setPagination={setPagination} textId={tableOfContents?.text_detail?.id} error={tableOfContentsIsError} loading={tableOfContentsIsLoading} t={t} requiredInfo={requiredInfo} addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}/>
           </div>
         )}
         {activeTab === 'versions' && (
           <div className="tab-panel">
-            <Versions textId={textId} requiredInfo={requiredInfo} addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined} />
+            <Versions 
+              textId={textId} 
+              contentId={tableOfContents?.contents[0]?.id}
+              requiredInfo={requiredInfo} 
+              addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined} 
+              currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}
+              versions={versions}
+              versionsIsLoading={versionsIsLoading}
+              versionsIsError={versionsIsError}
+              versionsPagination={versionsPagination}
+              setVersionsPagination={setVersionsPagination}
+            />
+          </div>
+        )}
+        {activeTab === 'commentaries' && (
+          <div className="tab-panel">
+            <Commentaries
+              textId={textId}
+              requiredInfo={requiredInfo}
+              addChapter={requiredInfo?.from === "compare-text" ? addChapter : undefined}
+              currentChapter={requiredInfo?.from === "compare-text" ? currentChapter : undefined}
+              items={commentaries?.items || []}
+              isLoading={commentariesIsLoading}
+              isError={commentariesIsError}
+              pagination={commentariesPagination}
+              setPagination={setCommentariesPagination}
+            />
           </div>
         )}
       </div>
@@ -167,8 +267,9 @@ const Texts = (props) => {
         canonical={canonicalUrl}
       />
       <div className="left-section">
+        {!requiredInfo.from && <Breadcrumbs items={breadcrumbItems} />}
         {!requiredInfo.from && renderTextTitleAndType()}
-        {!requiredInfo.from && renderContinueReadingButton()}
+        {/* {!requiredInfo.from && renderContinueReadingButton()} */}
         {renderTabs()}
       </div>
       <div className="right-section">

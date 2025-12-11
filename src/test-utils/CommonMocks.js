@@ -79,3 +79,19 @@ vi.mock("react-helmet-async", () => ({
 }));
 
 window.alert = vi.fn();
+
+export const mockLocalStorage = () => {
+  const localStorageMock = {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    clear: vi.fn(),
+  };
+  
+  Object.defineProperty(window, 'localStorage', {
+    value: localStorageMock,
+    writable: true,
+  });
+  
+  return localStorageMock;
+};

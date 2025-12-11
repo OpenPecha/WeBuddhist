@@ -40,6 +40,8 @@ export const mapLanguageCode = (languageCode) => {
     "en": "en",
     "zh-Hans-CN": "zh",
     "bo-IN": "bo",
+    "bo": "bo",
+    "zh": "zh",
   }
   return languageMap[languageCode]
 };
@@ -48,13 +50,17 @@ export const getLanguageClass = (language) => {
     case "bo":
       return "bo-text";
     case "en":
-      return "en-text";
+      return "en-serif-text";
     case "sa":
       return "bo-text";
     case "bhu":
       return "bo-text";
+    case "tib":
+      return "bo-text";
+    case "it":
+      return "en-serif-text";
     default:
-      return "overalltext";
+      return "en-serif-text";
   }
 };
 

@@ -86,7 +86,7 @@ const CommunityPage = () => {
         <div className='published-list'>
         <div className="sheets-list">
                     {sheetsIsLoading ? (
-                      <p>Loading sheets...</p>
+                      <p className="community-loading-message">Loading stories...</p>
                     ) : sheetsData?.sheets?.length === 0 ? (
                       <div className="no-stories-message">
                         <p className="navbaritems">{t("community_empty_story")}</p>
@@ -131,9 +131,9 @@ const CommunityPage = () => {
 
       <div className='sidebar-community'>
         <div className='sidebar-section'>
-          <div className='sidebar-content navbaritems'>
+          <div className=' content sidebar-content '>
             <p>{t("side_nav.join_conversation.descriptions")}</p>
-            <button className='make-sheet-btn navbaritems' onClick={() => 
+            <button className='make-sheet-btn content' onClick={() => 
               userIsLoggedIn ?(sessionStorage.removeItem('sheets-content'),sessionStorage.removeItem('sheet-title'), navigate("/sheets/new")) : navigate("/login")}>
               {t("side_nav.join_conversation.button.make_sheet")}
 
