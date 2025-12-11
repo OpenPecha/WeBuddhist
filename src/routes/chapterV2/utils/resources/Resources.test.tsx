@@ -1,15 +1,15 @@
-import {vi} from "vitest";
-import {QueryClient, QueryClientProvider} from "react-query";
+import { vi } from "vitest";
+import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
-import {fireEvent, render, screen} from "@testing-library/react";
-import {BrowserRouter as Router} from "react-router-dom";
-import {TolgeeProvider} from "@tolgee/react";
-import Resources, {fetchSidePanelData} from "./Resources.js";
-import {mockTolgee} from "../../../../test-utils/CommonMocks.js";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { TolgeeProvider } from "@tolgee/react";
+import Resources, { fetchSidePanelData } from "./Resources.js";
+import { mockTolgee } from "../../../../test-utils/CommonMocks.js";
 import axiosInstance from "../../../../config/axios-config.js";
 
 vi.mock("../../../../utils/helperFunctions.jsx", () => ({
-  mapLanguageCode: (code) => code === "bo-IN" ? "bo" : code,
+  mapLanguageCode: (code) => (code === "bo-IN" ? "bo" : code),
 }));
 
 const mockContext = {
@@ -20,7 +20,7 @@ const mockContext = {
   toggleResourcesPanel: vi.fn(),
   openTranslationSource: vi.fn(),
   closeTranslationSource: vi.fn(),
-  toggleTranslationSource: vi.fn()
+  toggleTranslationSource: vi.fn(),
 };
 
 vi.mock("../../../../context/PanelContext.jsx", () => ({
@@ -42,7 +42,7 @@ vi.mock("../../../../utils/constants.js", () => ({
   MENU_ITEMS: [
     { label: "common.share", icon: vi.fn() },
     { label: "menu.item2", icon: vi.fn(), isHeader: true },
-    { label: "connection_panel.compare_text", icon: vi.fn() }
+    { label: "connection_panel.compare_text", icon: vi.fn() },
   ],
 }));
 
@@ -52,7 +52,7 @@ vi.mock("./components/root-texts/RootText.jsx", () => ({
       Root Text View
       <button onClick={() => setIsRootTextView("main")}>Back</button>
     </div>
-  )
+  ),
 }));
 
 vi.mock("../../../chapterV2/utils/compare-text/CompareText.jsx", () => {
@@ -62,7 +62,7 @@ vi.mock("../../../chapterV2/utils/compare-text/CompareText.jsx", () => {
         <div>Compare Text Component</div>
         <button onClick={() => setIsCompareTextView("main")}>Close</button>
       </div>
-    )
+    ),
   };
 });
 
@@ -71,21 +71,21 @@ describe("Resources Side Panel", () => {
   const mockTextData = {
     text: {
       title: "Test Title",
-      id: "test123"
-    }
+      id: "test123",
+    },
   };
   const mockSidePanelData = {
     segment_info: {
       short_url: "https://test.com/share",
       translations: 2,
       resources: {
-        sheets: 3
+        sheets: 3,
       },
       related_text: {
         commentaries: 2,
-        root_text: 1
-      }
-    }
+        root_text: 1,
+      },
+    },
   };
 
   beforeEach(() => {
@@ -106,18 +106,18 @@ describe("Resources Side Panel", () => {
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
-          <TolgeeProvider
-            fallback={"Loading tolgee..."}
-            tolgee={mockTolgee}
-          >
-              <Resources segmentId={"test123"} addChapter={() => vi.fn()} setVersionId={() => vi.fn()}
-                         versionId={"version1"}/>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+            <Resources
+              segmentId={"test123"}
+              addChapter={() => vi.fn()}
+              setVersionId={() => vi.fn()}
+              versionId={"version1"}
+            />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
-
 
   test("fetchSidePanelData makes correct API call", async () => {
     const segmentId = "test123";
@@ -125,28 +125,28 @@ describe("Resources Side Panel", () => {
 
     const result = await fetchSidePanelData(segmentId);
 
-    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/segments/${segmentId}/info`,);
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      `/api/v1/segments/${segmentId}/info`,
+    );
     expect(result).toEqual(mockSidePanelData);
   });
-
-
 
   test("shows translation view when clicking on translations option", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
       if (queryKey[0] === "sidePanel") {
-        return { 
+        return {
           data: {
             segment_info: {
-              translations: 5
-            }
-          }
+              translations: 5,
+            },
+          },
         };
       }
       return { data: null, isLoading: false };
     });
-    
+
     const { container } = setup();
-    
+
     const translationText = screen.getByText(/connection_pannel\.translations/);
     fireEvent.click(translationText);
     expect(screen.queryByText(/side_nav\.about_text/)).not.toBeInTheDocument();
@@ -155,23 +155,23 @@ describe("Resources Side Panel", () => {
   test("shows commentary view when clicking on commentary option", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKey) => {
       if (queryKey[0] === "sidePanel") {
-        return { 
+        return {
           data: {
             segment_info: {
               related_text: {
-                commentaries: 2
-              }
-            }
-          }
+                commentaries: 2,
+              },
+            },
+          },
         };
       }
       return { data: null, isLoading: false };
     });
-    
+
     const { container } = setup();
     const commentaryText = screen.getByText(/text\.commentary/);
     fireEvent.click(commentaryText);
-    
+
     expect(screen.queryByText(/side_nav\.about_text/)).not.toBeInTheDocument();
   });
 
@@ -182,34 +182,34 @@ describe("Resources Side Panel", () => {
       }
       return { data: null, isLoading: false };
     });
-    
+
     const { container } = setup();
     const shareItems = screen.getAllByText(/common\.share/);
     fireEvent.click(shareItems[0]);
-    
+
     expect(screen.queryByText(/side_nav\.about_text/)).not.toBeInTheDocument();
   });
 
   test("toggles visibility with showPanel prop", () => {
     const originalIsResourcesPanelOpen = mockContext.isResourcesPanelOpen;
     mockContext.isResourcesPanelOpen = false;
-    
+
     const { container } = render(
       <Router>
         <QueryClientProvider client={queryClient}>
           <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <Resources 
-              segmentId={"test123"} 
+            <Resources
+              segmentId={"test123"}
               setVersionId={() => vi.fn()}
               versionId={"version1"}
             />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
-    
-    let panel = container.querySelector('.right-panel');
-    expect(panel).not.toHaveClass('show');
+
+    let panel = container.querySelector(".right-panel");
+    expect(panel).not.toHaveClass("show");
     mockContext.isResourcesPanelOpen = originalIsResourcesPanelOpen;
   });
 
@@ -270,9 +270,11 @@ describe("Resources Side Panel", () => {
     });
 
     setup();
-    const compareTextElement = screen.getByText(/connection_panel\.compare_text/);
+    const compareTextElement = screen.getByText(
+      /connection_panel\.compare_text/,
+    );
     fireEvent.click(compareTextElement);
 
     expect(screen.getByTestId("compare-text-view")).toBeInTheDocument();
   });
-})
+});

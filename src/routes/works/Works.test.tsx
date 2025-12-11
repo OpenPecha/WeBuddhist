@@ -4,7 +4,8 @@ import * as reactQuery from "react-query";
 import "@testing-library/jest-dom";
 import {
   mockAxios,
-  mockReactQuery, mockTolgee,
+  mockReactQuery,
+  mockTolgee,
   mockUseAuth,
   mockLocalStorage,
 } from "../../test-utils/CommonMocks.js";
@@ -44,19 +45,19 @@ describe("Works Component", () => {
         id: "text1",
         title: "Root Text 1",
         type: "root_text",
-        language: "bo"
+        language: "bo",
       },
       {
         id: "text2",
         title: "Root Text 2",
         type: "root_text",
-        language: "en"
+        language: "en",
       },
       {
         id: "text3",
         title: "Commentary 1",
         type: "commentary",
-        language: "bo"
+        language: "bo",
       },
     ],
   };
@@ -86,10 +87,9 @@ describe("Works Component", () => {
             <Works />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
-
 
   test("renders root texts correctly", () => {
     setup();
@@ -103,13 +103,13 @@ describe("Works Component", () => {
       ...mockTextCategoryData,
       texts: [
         ...mockTextCategoryData.texts.slice(0, 2),
-        { id: "text3", title: "Commentary 1", type: "commentary" }
-      ]
+        { id: "text3", title: "Commentary 1", type: "commentary" },
+      ],
     };
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: updatedMockData,
-      isLoading: false
+      isLoading: false,
     }));
 
     setup();
@@ -138,7 +138,6 @@ describe("Works Component", () => {
     expect(screen.getByText("global.not_found")).toBeInTheDocument();
   });
 
-
   test("renders correct links to text detail chapter", () => {
     const updatedMockData = {
       term: {
@@ -149,15 +148,30 @@ describe("Works Component", () => {
         title: "Text Category",
       },
       texts: [
-        { id: "text1", title: "Root Text 1", type: "root_text", language: "en" },
-        { id: "text2", title: "Root Text 2", type: "root_text", language: "en"},
-        { id: "text3", title: "Commentary 1", type: "commentary", language: "en" }
+        {
+          id: "text1",
+          title: "Root Text 1",
+          type: "root_text",
+          language: "en",
+        },
+        {
+          id: "text2",
+          title: "Root Text 2",
+          type: "root_text",
+          language: "en",
+        },
+        {
+          id: "text3",
+          title: "Commentary 1",
+          type: "commentary",
+          language: "en",
+        },
       ],
     };
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: updatedMockData,
-      isLoading: false
+      isLoading: false,
     }));
 
     setup();
@@ -167,7 +181,6 @@ describe("Works Component", () => {
     expect(links[1].getAttribute("href")).toBe("/texts/text1?type=root_text");
     expect(links[2].getAttribute("href")).toBe("/texts/text2?type=root_text");
   });
-
 
   test("uses default category ID when none provided", () => {
     useParams.mockReturnValue({});
@@ -180,7 +193,7 @@ describe("Works Component", () => {
           data: mockTextCategoryData,
           isLoading: false,
         };
-      }
+      },
     );
 
     setup();
@@ -214,10 +227,10 @@ describe("Works Component", () => {
   test("handles API call errors by showing error message", () => {
     const errorMessage = "Network Error";
 
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => { });
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const mockError = {
-      response: { status: 500, data: { message: errorMessage } }
+      response: { status: 500, data: { message: errorMessage } },
     };
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => {
@@ -226,7 +239,7 @@ describe("Works Component", () => {
       return {
         data: null,
         isLoading: false,
-        error: new Error(errorMessage)
+        error: new Error(errorMessage),
       };
     });
 
@@ -236,7 +249,7 @@ describe("Works Component", () => {
 
     expect(consoleSpy).toHaveBeenCalledWith(
       "API call error:",
-      mockError.response
+      mockError.response,
     );
 
     consoleSpy.mockRestore();
@@ -267,7 +280,7 @@ describe("Works Component", () => {
           limit: 12,
           skip: 0,
         }),
-      })
+      }),
     );
 
     vi.clearAllMocks();
@@ -295,7 +308,7 @@ describe("Works Component", () => {
         params: expect.objectContaining({
           language: "en",
         }),
-      })
+      }),
     );
   });
 
@@ -321,7 +334,7 @@ describe("Works Component", () => {
           limit: 12,
           skip: 0,
         }),
-      })
+      }),
     );
   });
 

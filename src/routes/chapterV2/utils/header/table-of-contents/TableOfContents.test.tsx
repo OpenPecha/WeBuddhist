@@ -89,22 +89,26 @@ describe("TableOfContents", () => {
       }
       return mockQueryData.empty;
     });
-    
+
     setup({ textId: "text-123", language: "bo" });
-    expect(fetchTableOfContents).toHaveBeenCalledWith("text-123", 0, 1000, "bo");
+    expect(fetchTableOfContents).toHaveBeenCalledWith(
+      "text-123",
+      0,
+      1000,
+      "bo",
+    );
   });
 
   test("calls onSegmentSelect when section title is clicked", () => {
     const mockOnSegmentSelect = vi.fn();
     Element.prototype.scrollIntoView = vi.fn();
     useQuery.mockReturnValue(mockQueryData.withSections);
-    
+
     setup({ onSegmentSelect: mockOnSegmentSelect });
-    
+
     const sectionTitle = screen.getByText("Test Section");
     fireEvent.click(sectionTitle);
-    
+
     expect(mockOnSegmentSelect).toHaveBeenCalledWith("segment1");
   });
 });
-

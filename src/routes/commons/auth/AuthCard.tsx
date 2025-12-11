@@ -26,8 +26,13 @@ const AuthCard = ({
   className,
 }: AuthCardProps) => {
   return (
-    <Card className={cn("w-full max-w-md shadow-none border border-[#E7E5E4]", className)}>
-      <CardHeader >
+    <Card
+      className={cn(
+        "w-full max-w-md shadow-none border border-[#E7E5E4]",
+        className,
+      )}
+    >
+      <CardHeader>
         <CardTitle className="text-center text-lg font-semibold">
           {title}
         </CardTitle>
@@ -39,7 +44,9 @@ const AuthCard = ({
       </CardHeader>
       <CardContent className="space-y-6 pb-6">{children}</CardContent>
       {footer && (
-        <CardFooter className="flex-col gap-3 border-t pt-6">{footer}</CardFooter>
+        <CardFooter className="flex-col gap-3 border-t pt-6">
+          {footer}
+        </CardFooter>
       )}
     </Card>
   );

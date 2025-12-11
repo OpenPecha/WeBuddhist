@@ -8,11 +8,11 @@ describe("YoutubeElement Component", () => {
     const props = {
       attributes: { "data-testid": "youtube-element" },
       children: "Sample content",
-      element: { youtubeId: "dQw4w9WgXcQ" }
+      element: { youtubeId: "dQw4w9WgXcQ" },
     };
-    
+
     render(<YoutubeElement {...props} />);
-    
+
     const youtubeElement = screen.getByTestId("youtube-element");
     expect(youtubeElement).toBeInTheDocument();
     expect(youtubeElement.tagName).toBe("DIV");

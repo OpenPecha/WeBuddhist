@@ -11,7 +11,10 @@ import {
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import axiosInstance from "../../../config/axios-config.js";
-import SheetDetailPageWithPanelContext, { fetchSheetData, deleteSheet } from "./SheetDetailPage.js";
+import SheetDetailPageWithPanelContext, {
+  fetchSheetData,
+  deleteSheet,
+} from "./SheetDetailPage.js";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
 import * as Constants from "../sheet-utils/Constant.js";
@@ -40,15 +43,22 @@ vi.mock("../../chapterV2/utils/resources/Resources.jsx", () => ({
   ),
 }));
 
-vi.mock("../local-components/modals/sheet-delete-modal/SheetDeleteModal", () => ({
-  SheetDeleteModal: ({ isOpen, onClose, onDelete }) => 
-    isOpen ? (
-      <div data-testid="delete-modal">
-        <button onClick={onClose} data-testid="cancel-delete">Cancel</button>
-        <button onClick={onDelete} data-testid="confirm-delete">Delete</button>
-      </div>
-    ) : null,
-}));
+vi.mock(
+  "../local-components/modals/sheet-delete-modal/SheetDeleteModal",
+  () => ({
+    SheetDeleteModal: ({ isOpen, onClose, onDelete }) =>
+      isOpen ? (
+        <div data-testid="delete-modal">
+          <button onClick={onClose} data-testid="cancel-delete">
+            Cancel
+          </button>
+          <button onClick={onDelete} data-testid="confirm-delete">
+            Delete
+          </button>
+        </div>
+      ) : null,
+  }),
+);
 
 vi.mock("react-youtube", () => ({
   default: ({ videoId }) => (
@@ -63,19 +73,19 @@ vi.mock("react-router-dom", async () => {
   return {
     ...actual,
     useParams: vi.fn(),
-    useSearchParams: vi.fn(() => [
-      new URLSearchParams(),
-      vi.fn(),
-    ]),
+    useSearchParams: vi.fn(() => [new URLSearchParams(), vi.fn()]),
     useNavigate: vi.fn(() => mockNavigate),
   };
 });
 
 const mockNavigate = vi.fn();
 
-vi.mock("../local-components/Editors/Elements/pecha-element/PechaElement.jsx", () => ({
-  fetchSegmentDetails: vi.fn()
-}));
+vi.mock(
+  "../local-components/Editors/Elements/pecha-element/PechaElement.jsx",
+  () => ({
+    fetchSegmentDetails: vi.fn(),
+  }),
+);
 
 import { fetchSegmentDetails } from "../local-components/Editors/Elements/pecha-element/PechaElement.js";
 const mockFetchSegmentDetails = vi.mocked(fetchSegmentDetails);
@@ -117,14 +127,14 @@ describe("SheetDetailPage Component", () => {
     ...mockSheetData,
     publisher: {
       ...mockSheetData.publisher,
-      email: "testuser@example.com"
+      email: "testuser@example.com",
     },
-    is_published: false
+    is_published: false,
   };
-  
+
   const mockUserInfoData = {
-    email: "testuser@example.com"
-  }
+    email: "testuser@example.com",
+  };
 
   let extractSpotifyInfoSpy;
   let mockSetSearchParams;
@@ -132,60 +142,71 @@ describe("SheetDetailPage Component", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     mockSetSearchParams = vi.fn();
-    useParams.mockReturnValue({ sheetSlugAndId: "test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3" });
-    
+    useParams.mockReturnValue({
+      sheetSlugAndId: "test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3",
+    });
+
     const mockUseSearchParams = vi.fn(() => [
       new URLSearchParams(),
       mockSetSearchParams,
     ]);
-    
+
     vi.doMock("react-router-dom", async () => {
       const actual = await vi.importActual("react-router-dom");
       return {
         ...actual,
-        useParams: vi.fn().mockReturnValue({ sheetSlugAndId: "test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3" }),
+        useParams: vi.fn().mockReturnValue({
+          sheetSlugAndId: "test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3",
+        }),
         useSearchParams: mockUseSearchParams,
         useNavigate: vi.fn(() => mockNavigate),
       };
     });
 
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKeyOrConfig, queryFn, options) => {
-      if (Array.isArray(queryKeyOrConfig)) {
-        if (queryKeyOrConfig[0] === 'shortUrl') {
-          return { 
-            data: { shortUrl: 'https://short.url/test' },
-            isLoading: false 
-          };
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(
+      (queryKeyOrConfig, queryFn, options) => {
+        if (Array.isArray(queryKeyOrConfig)) {
+          if (queryKeyOrConfig[0] === "shortUrl") {
+            return {
+              data: { shortUrl: "https://short.url/test" },
+              isLoading: false,
+            };
+          }
+        } else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
+          if (queryKeyOrConfig.queryKey[0] === "userInfo") {
+            return { data: mockUserInfoData, isLoading: false, error: null };
+          }
         }
-      } 
-      else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
-        if (queryKeyOrConfig.queryKey[0] === 'userInfo') {
-          return { data: mockUserInfoData, isLoading: false, error: null };
-        }
-      }
-      
-      return { data: mockSheetDataWithUserInfo, isLoading: false, error: null };
-    });
+
+        return {
+          data: mockSheetDataWithUserInfo,
+          isLoading: false,
+          error: null,
+        };
+      },
+    );
 
     vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
       mutate: vi.fn(),
       isLoading: false,
     }));
 
-    extractSpotifyInfoSpy = vi.spyOn(Constants, "extractSpotifyInfo").mockImplementation(() => null);
-    
+    extractSpotifyInfoSpy = vi
+      .spyOn(Constants, "extractSpotifyInfo")
+      .mockImplementation(() => null);
+
     mockFetchSegmentDetails.mockResolvedValue({
       text: {
         text_id: "mock-text-id-123",
         title: "Mock Text Title",
-        language: "en"
+        language: "en",
       },
-      content: "Mock segment content"
+      content: "Mock segment content",
     });
   });
 
   const mockAddChapter = vi.fn();
-  const mockCurrentChapter = { id: 'test-chapter', textId: 'test-text-id' };
+  const mockCurrentChapter = { id: "test-chapter", textId: "test-text-id" };
 
   afterEach(() => {
     vi.clearAllMocks();
@@ -196,9 +217,9 @@ describe("SheetDetailPage Component", () => {
     const defaultProps = {
       addChapter: mockAddChapter,
       currentChapter: mockCurrentChapter,
-      ...props
+      ...props,
     };
-    
+
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
@@ -206,7 +227,7 @@ describe("SheetDetailPage Component", () => {
             <SheetDetailPageWithPanelContext {...defaultProps} />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
 
@@ -238,7 +259,9 @@ describe("SheetDetailPage Component", () => {
     }));
 
     setup();
-    expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
+    expect(
+      screen.getByText("text_category.message.notfound"),
+    ).toBeInTheDocument();
   });
 
   test("displays not found message when segments array is empty", () => {
@@ -256,7 +279,9 @@ describe("SheetDetailPage Component", () => {
     }));
 
     setup();
-    expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
+    expect(
+      screen.getByText("text_category.message.notfound"),
+    ).toBeInTheDocument();
   });
 
   test("displays not found message when fetchSheetData fails", async () => {
@@ -268,7 +293,9 @@ describe("SheetDetailPage Component", () => {
     axiosInstance.get.mockRejectedValueOnce(new Error("Failed to fetch sheet"));
 
     setup();
-    expect(screen.getByText("text_category.message.notfound")).toBeInTheDocument();
+    expect(
+      screen.getByText("text_category.message.notfound"),
+    ).toBeInTheDocument();
   });
 
   test("renders video segment correctly", () => {
@@ -300,31 +327,31 @@ describe("SheetDetailPage Component", () => {
 
   test("renders different segment types correctly", () => {
     setup();
-    
+
     expect(screen.getByText("Source Title")).toBeInTheDocument();
     expect(screen.getByAltText("source icon")).toBeInTheDocument();
-    
+
     expect(screen.getByText("Text content")).toBeInTheDocument();
-    
+
     expect(screen.getByAltText("Sheet content")).toBeInTheDocument();
   });
 
   test("renders toolbar with correct icons and view count", () => {
     setup();
-    
+
     expect(screen.getByText("42")).toBeInTheDocument();
-    
+
     const toolbar = screen.getByRole("main");
     expect(toolbar).toBeInTheDocument();
   });
 
   test("renders user info with avatar, name and username", () => {
     setup();
-    
+
     const avatar = screen.getByAltText("user");
     expect(avatar).toBeInTheDocument();
     expect(avatar).toHaveAttribute("src", "https://example.com/avatar.jpg");
-    
+
     expect(screen.getByText("Test User")).toBeInTheDocument();
     expect(screen.getByText("@testuser")).toBeInTheDocument();
   });
@@ -363,18 +390,18 @@ describe("SheetDetailPage Component", () => {
 
   test("calls addChapter with correct parameters when source segment is clicked", async () => {
     setup();
-    
+
     const sourceButton = screen.getByRole("button", { name: /source title/i });
     fireEvent.click(sourceButton);
-    
+
     await waitFor(() => {
       expect(mockAddChapter).toHaveBeenCalledWith(
         {
           textId: "mock-text-id-123",
-          segmentId: "segment1"
+          segmentId: "segment1",
         },
         mockCurrentChapter,
-        true
+        true,
       );
     });
   });
@@ -382,74 +409,73 @@ describe("SheetDetailPage Component", () => {
   test("calls addChapter when provided as prop", async () => {
     const mockAddChapterLocal = vi.fn();
     setup({ addChapter: mockAddChapterLocal });
-    
+
     const sourceButton = screen.getByRole("button", { name: /source title/i });
     fireEvent.click(sourceButton);
-    
+
     await waitFor(() => {
       expect(mockAddChapterLocal).toHaveBeenCalledWith(
         {
           textId: "mock-text-id-123",
-          segmentId: "segment1"
+          segmentId: "segment1",
         },
         mockCurrentChapter,
-        true
+        true,
       );
     });
   });
 
-
   test("handles fetchSegmentDetails returning data without text property", async () => {
     mockFetchSegmentDetails.mockResolvedValueOnce({
       text_id: "fallback-text-id-456",
-      content: "Mock segment content"
+      content: "Mock segment content",
     });
-    
+
     setup();
-    
+
     const sourceButton = screen.getByRole("button", { name: /source title/i });
     fireEvent.click(sourceButton);
-    
+
     await waitFor(() => {
       expect(mockAddChapter).toHaveBeenCalledWith(
         {
           textId: "fallback-text-id-456",
-          segmentId: "segment1"
+          segmentId: "segment1",
         },
         mockCurrentChapter,
-        true
+        true,
       );
     });
   });
 
   test("handles fetchSegmentDetails returning data with both text.text_id and text_id undefined", async () => {
     mockFetchSegmentDetails.mockResolvedValueOnce({
-      content: "Mock segment content"
+      content: "Mock segment content",
     });
-    
+
     setup();
-    
+
     const sourceButton = screen.getByRole("button", { name: /source title/i });
     fireEvent.click(sourceButton);
-    
+
     await waitFor(() => {
       expect(mockAddChapter).toHaveBeenCalledWith(
         {
           textId: undefined,
-          segmentId: "segment1"
+          segmentId: "segment1",
         },
         mockCurrentChapter,
-        true
+        true,
       );
     });
   });
 
   test("calls fetchSegmentDetails with correct segment_id", async () => {
     setup();
-    
+
     const sourceButton = screen.getByRole("button", { name: /source title/i });
     fireEvent.click(sourceButton);
-    
+
     await waitFor(() => {
       expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment1");
     });
@@ -460,32 +486,32 @@ describe("SheetDetailPage Component", () => {
     const pendingPromise = new Promise((resolve) => {
       resolvePromise = resolve;
     });
-    
+
     mockFetchSegmentDetails.mockReturnValueOnce(pendingPromise);
-    
+
     setup();
-    
+
     const sourceButton = screen.getByRole("button", { name: /source title/i });
     fireEvent.click(sourceButton);
-    
+
     expect(mockAddChapter).not.toHaveBeenCalled();
-    
+
     resolvePromise({
       text: {
         text_id: "async-text-id",
         title: "Async Text Title",
-        language: "en"
-      }
+        language: "en",
+      },
     });
-    
+
     await waitFor(() => {
       expect(mockAddChapter).toHaveBeenCalledWith(
         {
           textId: "async-text-id",
-          segmentId: "segment1"
+          segmentId: "segment1",
         },
         mockCurrentChapter,
-        true
+        true,
       );
     });
   });
@@ -508,147 +534,161 @@ describe("SheetDetailPage Component", () => {
             content: "Source content 2",
             language: "bo",
             text_title: "Source Title 2",
-          }
-        ]
-      }
+          },
+        ],
+      },
     };
-    
+
     vi.spyOn(reactQuery, "useQuery").mockImplementation((config) => {
-      if (config.queryKey?.[0] === 'sheetData') {
+      if (config.queryKey?.[0] === "sheetData") {
         return {
           data: sheetWithMultipleSources,
-          isLoading: false
+          isLoading: false,
         };
       }
       return {
         data: mockUserInfoData,
-        isLoading: false
+        isLoading: false,
       };
     });
-    
+
     const { container } = setup();
-    
-    const sourceSegmentButtons = container.querySelectorAll('.segment-source');
+
+    const sourceSegmentButtons = container.querySelectorAll(".segment-source");
     expect(sourceSegmentButtons).toHaveLength(2);
-    
+
     fireEvent.click(sourceSegmentButtons[0]);
-    
+
     await waitFor(() => {
       expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment1");
     });
-    
+
     fireEvent.click(sourceSegmentButtons[1]);
-    
+
     await waitFor(() => {
       expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment2");
     });
-    
+
     expect(mockFetchSegmentDetails).toHaveBeenCalledTimes(2);
   });
 
-
-
   test("opens delete modal when trash icon is clicked", () => {
-  setup();
-  
-  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
-  
-  const trashIcon = screen.getByRole("main").querySelector('svg[data-testid="trash-icon"]');
-  
-  const toolbarItems = screen.getByRole("main").querySelectorAll('.view-toolbar-item');
-  const trashButton = toolbarItems[1]; 
-  const trashIconElement = trashButton.querySelector('svg:nth-last-child(2)'); 
-  
-  fireEvent.click(trashIconElement);
-  
-  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
-  expect(screen.getByTestId("cancel-delete")).toBeInTheDocument();
-  expect(screen.getByTestId("confirm-delete")).toBeInTheDocument();
+    setup();
+
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+
+    const trashIcon = screen
+      .getByRole("main")
+      .querySelector('svg[data-testid="trash-icon"]');
+
+    const toolbarItems = screen
+      .getByRole("main")
+      .querySelectorAll(".view-toolbar-item");
+    const trashButton = toolbarItems[1];
+    const trashIconElement = trashButton.querySelector("svg:nth-last-child(2)");
+
+    fireEvent.click(trashIconElement);
+
+    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+    expect(screen.getByTestId("cancel-delete")).toBeInTheDocument();
+    expect(screen.getByTestId("confirm-delete")).toBeInTheDocument();
   });
 
   test("opens delete modal by clicking trash icon alternative approach", () => {
-  setup();
-  
-  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
-  
-  const svgElements = screen.getAllByRole("main").flatMap(element => 
-    Array.from(element.querySelectorAll('svg'))
-  );
-  
-  const trashIcon = svgElements.find(svg => {
-    const paths = svg.querySelectorAll('path');
-    return paths.length > 0; 
-  });
+    setup();
 
-  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const trashElement = toolbarContainer.querySelector('svg:nth-last-child(2)');
-  
-  fireEvent.click(trashElement);
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
 
-  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+    const svgElements = screen
+      .getAllByRole("main")
+      .flatMap((element) => Array.from(element.querySelectorAll("svg")));
+
+    const trashIcon = svgElements.find((svg) => {
+      const paths = svg.querySelectorAll("path");
+      return paths.length > 0;
+    });
+
+    const toolbarContainer = screen
+      .getByRole("main")
+      .querySelector(".view-toolbar-item:last-child");
+    const trashElement = toolbarContainer.querySelector(
+      "svg:nth-last-child(2)",
+    );
+
+    fireEvent.click(trashElement);
+
+    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
   });
 
   test("modal state management - open and close", () => {
-  setup();
+    setup();
 
-  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
 
-  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
-  fireEvent.click(trashIcon);
+    const toolbarContainer = screen
+      .getByRole("main")
+      .querySelector(".view-toolbar-item:last-child");
+    const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
+    fireEvent.click(trashIcon);
 
-  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
 
-  const cancelButton = screen.getByTestId("cancel-delete");
-  fireEvent.click(cancelButton);
+    const cancelButton = screen.getByTestId("cancel-delete");
+    fireEvent.click(cancelButton);
 
-  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
   });
 
   test("delete modal remains closed initially", () => {
-  setup();
+    setup();
 
-  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
-  
-  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
-  expect(trashIcon).toBeInTheDocument();
-  
-  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+
+    const toolbarContainer = screen
+      .getByRole("main")
+      .querySelector(".view-toolbar-item:last-child");
+    const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
+    expect(trashIcon).toBeInTheDocument();
+
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
   });
 
   test("can open and close modal multiple times", () => {
-  setup();
-  
-  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
+    setup();
 
-  fireEvent.click(trashIcon);
-  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
-  
-  fireEvent.click(screen.getByTestId("cancel-delete"));
-  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+    const toolbarContainer = screen
+      .getByRole("main")
+      .querySelector(".view-toolbar-item:last-child");
+    const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
 
-  fireEvent.click(trashIcon);
-  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
-  
-  fireEvent.click(screen.getByTestId("cancel-delete"));
-  expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+    fireEvent.click(trashIcon);
+    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("cancel-delete"));
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+
+    fireEvent.click(trashIcon);
+    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("cancel-delete"));
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
   });
 
   test("other toolbar icons don't trigger delete modal", () => {
-  setup();
-  
-  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const allIcons = toolbarContainer.querySelectorAll('svg:nth-last-child(2)');
+    setup();
 
-  for (let i = 0; i < allIcons.length - 1; i++) {
-    fireEvent.click(allIcons[i]);
-    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
-  }
+    const toolbarContainer = screen
+      .getByRole("main")
+      .querySelector(".view-toolbar-item:last-child");
+    const allIcons = toolbarContainer.querySelectorAll("svg:nth-last-child(2)");
 
-  fireEvent.click(allIcons[allIcons.length - 1]);
-  expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+    for (let i = 0; i < allIcons.length - 1; i++) {
+      fireEvent.click(allIcons[i]);
+      expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+    }
+
+    fireEvent.click(allIcons[allIcons.length - 1]);
+    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
   });
 
   test("closes delete modal when cancel is clicked", () => {
@@ -659,7 +699,7 @@ describe("SheetDetailPage Component", () => {
     }));
 
     setup();
-    
+
     expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
   });
 
@@ -774,165 +814,183 @@ describe("SheetDetailPage Component", () => {
   });
 
   describe("handleDeleteSheet function tests", () => {
-  test("handleDeleteSheet is called with correct context", () => {
-    const mockMutate = vi.fn();
-    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
-      mutate: mockMutate,
-      isLoading: false,
-    }));
+    test("handleDeleteSheet is called with correct context", () => {
+      const mockMutate = vi.fn();
+      vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+        mutate: mockMutate,
+        isLoading: false,
+      }));
 
-    setup();
+      setup();
 
-    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
+      const toolbarContainer = screen
+        .getByRole("main")
+        .querySelector(".view-toolbar-item:last-child");
+      const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
 
-    fireEvent.click(trashIcon);
-    fireEvent.click(screen.getByTestId("confirm-delete"));
-    expect(mockMutate).toHaveBeenCalledTimes(1);
-  });
+      fireEvent.click(trashIcon);
+      fireEvent.click(screen.getByTestId("confirm-delete"));
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+    });
 
-  test("handleDeleteSheet works when mutation is in loading state", () => {
-    const mockMutate = vi.fn();
-    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
-      mutate: mockMutate,
-      isLoading: true, 
-    }));
+    test("handleDeleteSheet works when mutation is in loading state", () => {
+      const mockMutate = vi.fn();
+      vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+        mutate: mockMutate,
+        isLoading: true,
+      }));
 
-    setup();
+      setup();
 
-    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
-    fireEvent.click(trashIcon);
+      const toolbarContainer = screen
+        .getByRole("main")
+        .querySelector(".view-toolbar-item:last-child");
+      const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
+      fireEvent.click(trashIcon);
 
-    const confirmButton = screen.getByTestId("confirm-delete");
-    fireEvent.click(confirmButton);
+      const confirmButton = screen.getByTestId("confirm-delete");
+      fireEvent.click(confirmButton);
 
-    expect(mockMutate).toHaveBeenCalledTimes(1);
-  });
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+    });
 
-  test("handleDeleteSheet function is properly bound to confirm button", () => {
-    const mockMutate = vi.fn();
-    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
-      mutate: mockMutate,
-      isLoading: false,
-    }));
+    test("handleDeleteSheet function is properly bound to confirm button", () => {
+      const mockMutate = vi.fn();
+      vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+        mutate: mockMutate,
+        isLoading: false,
+      }));
 
-    setup();
+      setup();
 
-    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
-    fireEvent.click(trashIcon);
+      const toolbarContainer = screen
+        .getByRole("main")
+        .querySelector(".view-toolbar-item:last-child");
+      const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
+      fireEvent.click(trashIcon);
 
-    const confirmButton = screen.getByTestId("confirm-delete");
-    expect(confirmButton).toBeInTheDocument();
+      const confirmButton = screen.getByTestId("confirm-delete");
+      expect(confirmButton).toBeInTheDocument();
 
-    const cancelButton = screen.getByTestId("cancel-delete");
-    fireEvent.click(cancelButton);
-    expect(mockMutate).not.toHaveBeenCalled();
+      const cancelButton = screen.getByTestId("cancel-delete");
+      fireEvent.click(cancelButton);
+      expect(mockMutate).not.toHaveBeenCalled();
 
-    fireEvent.click(trashIcon);
-    fireEvent.click(screen.getByTestId("confirm-delete"));
-    expect(mockMutate).toHaveBeenCalledTimes(1);
-  });
+      fireEvent.click(trashIcon);
+      fireEvent.click(screen.getByTestId("confirm-delete"));
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+    });
 
-  test("handleDeleteSheet function doesn't interfere with other modal actions", () => {
-    const mockMutate = vi.fn();
-    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
-      mutate: mockMutate,
-      isLoading: false,
-    }));
+    test("handleDeleteSheet function doesn't interfere with other modal actions", () => {
+      const mockMutate = vi.fn();
+      vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+        mutate: mockMutate,
+        isLoading: false,
+      }));
 
-    setup();
+      setup();
 
-    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
-    fireEvent.click(trashIcon);
+      const toolbarContainer = screen
+        .getByRole("main")
+        .querySelector(".view-toolbar-item:last-child");
+      const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
+      fireEvent.click(trashIcon);
 
-    const cancelButton = screen.getByTestId("cancel-delete");
-    fireEvent.click(cancelButton);
-    fireEvent.click(cancelButton);
-    
-    expect(mockMutate).not.toHaveBeenCalled();
+      const cancelButton = screen.getByTestId("cancel-delete");
+      fireEvent.click(cancelButton);
+      fireEvent.click(cancelButton);
 
-    fireEvent.click(trashIcon);
-    fireEvent.click(screen.getByTestId("confirm-delete"));
-    
-    expect(mockMutate).toHaveBeenCalledTimes(1);
-  });
+      expect(mockMutate).not.toHaveBeenCalled();
 
-  test("handleDeleteSheet maintains function reference integrity", () => {
-    const mockMutate = vi.fn();
-    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
-      mutate: mockMutate,
-      isLoading: false,
-    }));
-    const { rerender } = render(
-      <Router>
-        <QueryClientProvider client={new QueryClient()}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <SheetDetailPageWithPanelContext />
-          </TolgeeProvider>
-        </QueryClientProvider>
-      </Router>
-    );
+      fireEvent.click(trashIcon);
+      fireEvent.click(screen.getByTestId("confirm-delete"));
 
-    const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-    const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
-    fireEvent.click(trashIcon);
-    fireEvent.click(screen.getByTestId("confirm-delete"));
-    
-    expect(mockMutate).toHaveBeenCalledTimes(1);
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+    });
 
-    rerender(
-      <Router>
-        <QueryClientProvider client={new QueryClient()}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <SheetDetailPageWithPanelContext />
-          </TolgeeProvider>
-        </QueryClientProvider>
-      </Router>
-    );
+    test("handleDeleteSheet maintains function reference integrity", () => {
+      const mockMutate = vi.fn();
+      vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+        mutate: mockMutate,
+        isLoading: false,
+      }));
+      const { rerender } = render(
+        <Router>
+          <QueryClientProvider client={new QueryClient()}>
+            <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+              <SheetDetailPageWithPanelContext />
+            </TolgeeProvider>
+          </QueryClientProvider>
+        </Router>,
+      );
 
-    fireEvent.click(trashIcon);
-    fireEvent.click(screen.getByTestId("confirm-delete"));
-    
-    expect(mockMutate).toHaveBeenCalledTimes(2);
-  });
+      const toolbarContainer = screen
+        .getByRole("main")
+        .querySelector(".view-toolbar-item:last-child");
+      const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
+      fireEvent.click(trashIcon);
+      fireEvent.click(screen.getByTestId("confirm-delete"));
+
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+
+      rerender(
+        <Router>
+          <QueryClientProvider client={new QueryClient()}>
+            <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+              <SheetDetailPageWithPanelContext />
+            </TolgeeProvider>
+          </QueryClientProvider>
+        </Router>,
+      );
+
+      fireEvent.click(trashIcon);
+      fireEvent.click(screen.getByTestId("confirm-delete"));
+
+      expect(mockMutate).toHaveBeenCalledTimes(2);
+    });
   });
 
   test("handleDeleteSheet error handling", () => {
-  const mockMutate = vi.fn();
-  const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-  let deleteOnErrorCallback;
-  
-  vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
-    if (config.mutationFn && config.mutationFn.toString().includes('deleteSheet')) {
-      deleteOnErrorCallback = config.onError;
-    }
-    return {
-      mutate: mockMutate,
-      isLoading: false,
-    };
-  });
+    const mockMutate = vi.fn();
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    let deleteOnErrorCallback;
 
-  setup();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
+      if (
+        config.mutationFn &&
+        config.mutationFn.toString().includes("deleteSheet")
+      ) {
+        deleteOnErrorCallback = config.onError;
+      }
+      return {
+        mutate: mockMutate,
+        isLoading: false,
+      };
+    });
 
-  const toolbarContainer = screen.getByRole("main").querySelector('.view-toolbar-item:last-child');
-  const trashIcon = toolbarContainer.querySelector('svg:nth-last-child(2)');
-  fireEvent.click(trashIcon);
-  fireEvent.click(screen.getByTestId("confirm-delete"));
+    setup();
 
-  const testError = new Error("Delete failed");
-  deleteOnErrorCallback(testError);
+    const toolbarContainer = screen
+      .getByRole("main")
+      .querySelector(".view-toolbar-item:last-child");
+    const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
+    fireEvent.click(trashIcon);
+    fireEvent.click(screen.getByTestId("confirm-delete"));
 
-  expect(consoleSpy).toHaveBeenCalledWith("Error deleting sheet:", testError);
-  
-  consoleSpy.mockRestore();
+    const testError = new Error("Delete failed");
+    deleteOnErrorCallback(testError);
+
+    expect(consoleSpy).toHaveBeenCalledWith("Error deleting sheet:", testError);
+
+    consoleSpy.mockRestore();
   });
 
   describe("getAudioSrc function tests", () => {
     test("renders audio segment with Spotify URL correctly", () => {
-      extractSpotifyInfoSpy.mockReturnValue({ type: "track", id: "4iV5W9uYEdYUVa79Axb7Rh" });
+      extractSpotifyInfoSpy.mockReturnValue({
+        type: "track",
+        id: "4iV5W9uYEdYUVa79Axb7Rh",
+      });
 
       const audioSheetData = {
         ...mockSheetData,
@@ -941,10 +999,10 @@ describe("SheetDetailPage Component", () => {
             {
               segment_id: "audio1",
               type: "audio",
-              content: "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh"
-            }
-          ]
-        }
+              content: "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh",
+            },
+          ],
+        },
       };
 
       vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
@@ -953,11 +1011,15 @@ describe("SheetDetailPage Component", () => {
       }));
 
       setup();
-      
+
       const iframe = screen.getByTitle("audio-audio1");
       expect(iframe).toBeInTheDocument();
-      expect(iframe.src).toBe("https://open.spotify.com/embed/track/4iV5W9uYEdYUVa79Axb7Rh?utm_source=generator");
-      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith("https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh");
+      expect(iframe.src).toBe(
+        "https://open.spotify.com/embed/track/4iV5W9uYEdYUVa79Axb7Rh?utm_source=generator",
+      );
+      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith(
+        "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh",
+      );
     });
 
     test("renders audio segment with SoundCloud URL correctly", () => {
@@ -970,10 +1032,10 @@ describe("SheetDetailPage Component", () => {
             {
               segment_id: "audio2",
               type: "audio",
-              content: "https://soundcloud.com/test/track"
-            }
-          ]
-        }
+              content: "https://soundcloud.com/test/track",
+            },
+          ],
+        },
       };
 
       vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
@@ -982,11 +1044,15 @@ describe("SheetDetailPage Component", () => {
       }));
 
       setup();
-      
+
       const iframe = screen.getByTitle("audio-audio2");
       expect(iframe).toBeInTheDocument();
-      expect(iframe.src).toBe("https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Ftest%2Ftrack&color=%23ff5500");
-      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith("https://soundcloud.com/test/track");
+      expect(iframe.src).toBe(
+        "https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Ftest%2Ftrack&color=%23ff5500",
+      );
+      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith(
+        "https://soundcloud.com/test/track",
+      );
     });
 
     test("handles audio segment with unsupported URL (returns null)", () => {
@@ -999,10 +1065,10 @@ describe("SheetDetailPage Component", () => {
             {
               segment_id: "audio3",
               type: "audio",
-              content: "https://example.com/unsupported-audio"
-            }
-          ]
-        }
+              content: "https://example.com/unsupported-audio",
+            },
+          ],
+        },
       };
 
       vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
@@ -1011,15 +1077,20 @@ describe("SheetDetailPage Component", () => {
       }));
 
       setup();
-      
+
       const iframe = screen.getByTitle("audio-audio3");
       expect(iframe).toBeInTheDocument();
       expect(iframe.src).toBe("");
-      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith("https://example.com/unsupported-audio");
+      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith(
+        "https://example.com/unsupported-audio",
+      );
     });
 
     test("renders audio segment with Spotify album URL", () => {
-      extractSpotifyInfoSpy.mockReturnValue({ type: "album", id: "1A2B3C4D5E6F7G8H9I0J" });
+      extractSpotifyInfoSpy.mockReturnValue({
+        type: "album",
+        id: "1A2B3C4D5E6F7G8H9I0J",
+      });
 
       const audioSheetData = {
         ...mockSheetData,
@@ -1028,10 +1099,10 @@ describe("SheetDetailPage Component", () => {
             {
               segment_id: "audio4",
               type: "audio",
-              content: "https://open.spotify.com/album/1A2B3C4D5E6F7G8H9I0J"
-            }
-          ]
-        }
+              content: "https://open.spotify.com/album/1A2B3C4D5E6F7G8H9I0J",
+            },
+          ],
+        },
       };
 
       vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
@@ -1040,14 +1111,19 @@ describe("SheetDetailPage Component", () => {
       }));
 
       setup();
-      
+
       const iframe = screen.getByTitle("audio-audio4");
       expect(iframe).toBeInTheDocument();
-      expect(iframe.src).toBe("https://open.spotify.com/embed/album/1A2B3C4D5E6F7G8H9I0J?utm_source=generator");
+      expect(iframe.src).toBe(
+        "https://open.spotify.com/embed/album/1A2B3C4D5E6F7G8H9I0J?utm_source=generator",
+      );
     });
 
     test("renders audio segment with Spotify playlist URL", () => {
-      extractSpotifyInfoSpy.mockReturnValue({ type: "playlist", id: "37i9dQZF1DX0XUsuxWHRQd" });
+      extractSpotifyInfoSpy.mockReturnValue({
+        type: "playlist",
+        id: "37i9dQZF1DX0XUsuxWHRQd",
+      });
 
       const audioSheetData = {
         ...mockSheetData,
@@ -1056,10 +1132,11 @@ describe("SheetDetailPage Component", () => {
             {
               segment_id: "audio5",
               type: "audio",
-              content: "https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd"
-            }
-          ]
-        }
+              content:
+                "https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd",
+            },
+          ],
+        },
       };
 
       vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
@@ -1068,79 +1145,95 @@ describe("SheetDetailPage Component", () => {
       }));
 
       setup();
-      
+
       const iframe = screen.getByTitle("audio-audio5");
       expect(iframe).toBeInTheDocument();
-      expect(iframe.src).toBe("https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator");
+      expect(iframe.src).toBe(
+        "https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator",
+      );
     });
   });
 
   test("fetchSheetData calls the correct API endpoint", async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockSheetData });
-    
+
     const sheetId = "test-id";
     await fetchSheetData(sheetId);
-    
-    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/sheets/${sheetId}`, {
-      params: {
-        skip: 0,
-        limit: 10,
-      }
-    });
+
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      `/api/v1/sheets/${sheetId}`,
+      {
+        params: {
+          skip: 0,
+          limit: 10,
+        },
+      },
+    );
   });
 
   test("fetchSheetData handles API errors", async () => {
     axiosInstance.get.mockRejectedValueOnce(new Error("API Error"));
-    
+
     const sheetId = "test-id";
-    
+
     await expect(fetchSheetData(sheetId)).rejects.toThrow("API Error");
-    expect(axiosInstance.get).toHaveBeenCalledWith(`/api/v1/sheets/${sheetId}`, {
-      params: {
-        skip: 0,
-        limit: 10,
-      }
-    });
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      `/api/v1/sheets/${sheetId}`,
+      {
+        params: {
+          skip: 0,
+          limit: 10,
+        },
+      },
+    );
   });
 
   test("deleteSheet calls the correct API endpoint", async () => {
     axiosInstance.delete.mockClear();
-    axiosInstance.delete.mockImplementationOnce(() => Promise.resolve({ status: 200 }));
-    
+    axiosInstance.delete.mockImplementationOnce(() =>
+      Promise.resolve({ status: 200 }),
+    );
+
     const sheetId = "test-id";
     const result = await deleteSheet(sheetId);
-    
-    expect(axiosInstance.delete).toHaveBeenCalledWith(`/api/v1/sheets/${sheetId}`);
+
+    expect(axiosInstance.delete).toHaveBeenCalledWith(
+      `/api/v1/sheets/${sheetId}`,
+    );
     expect(result).toBe(true);
   });
 
   test("deleteSheet handles API errors", async () => {
     axiosInstance.delete.mockClear();
     axiosInstance.delete.mockRejectedValueOnce(new Error("Delete failed"));
-    
+
     const sheetId = "test-id";
-    
+
     await expect(deleteSheet(sheetId)).rejects.toThrow("Delete failed");
-    expect(axiosInstance.delete).toHaveBeenCalledWith(`/api/v1/sheets/${sheetId}`);
+    expect(axiosInstance.delete).toHaveBeenCalledWith(
+      `/api/v1/sheets/${sheetId}`,
+    );
   });
 
   test("deleteSheetMutation navigates to community page on success", async () => {
     const navigateMock = vi.fn();
     const closeModalMock = vi.fn();
-    
+
     const onSuccess = () => {
       closeModalMock();
-      navigateMock('/community');
+      navigateMock("/community");
     };
-    
+
     axiosInstance.delete.mockClear();
-    axiosInstance.delete.mockImplementationOnce(() => Promise.resolve({ status: 200 }));
-    
+    axiosInstance.delete.mockImplementationOnce(() =>
+      Promise.resolve({ status: 200 }),
+    );
+
     await deleteSheet("626ddc35-a146-4bca-a3a3-b8221c501df3");
     onSuccess();
-    
+
     expect(axiosInstance.delete).toHaveBeenCalledWith(
-      "/api/v1/sheets/626ddc35-a146-4bca-a3a3-b8221c501df3"
+      "/api/v1/sheets/626ddc35-a146-4bca-a3a3-b8221c501df3",
     );
     expect(closeModalMock).toHaveBeenCalled();
     expect(navigateMock).toHaveBeenCalledWith("/community");
@@ -1148,25 +1241,30 @@ describe("SheetDetailPage Component", () => {
 
   test("deleteSheetMutation handles error properly", async () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    
+
     axiosInstance.delete.mockClear();
-    axiosInstance.delete.mockImplementationOnce(() => Promise.reject(new Error("Delete failed")));
-    
+    axiosInstance.delete.mockImplementationOnce(() =>
+      Promise.reject(new Error("Delete failed")),
+    );
+
     const onError = (error) => {
       console.error("Error deleting sheet:", error);
     };
-    
+
     try {
       await deleteSheet("626ddc35-a146-4bca-a3a3-b8221c501df3");
     } catch (error) {
       onError(error);
     }
-    
+
     expect(axiosInstance.delete).toHaveBeenCalledWith(
-      "/api/v1/sheets/626ddc35-a146-4bca-a3a3-b8221c501df3"
+      "/api/v1/sheets/626ddc35-a146-4bca-a3a3-b8221c501df3",
     );
-    expect(consoleSpy).toHaveBeenCalledWith("Error deleting sheet:", expect.any(Error));
-    
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error deleting sheet:",
+      expect.any(Error),
+    );
+
     consoleSpy.mockRestore();
   });
 
@@ -1174,10 +1272,12 @@ describe("SheetDetailPage Component", () => {
     // Print icon is commented out in the component
     // Verifying that FiPrinter is not rendered in the toolbar
     setup();
-    
-    const toolbarItems = screen.getByRole("main").querySelectorAll('.view-toolbar-item');
+
+    const toolbarItems = screen
+      .getByRole("main")
+      .querySelectorAll(".view-toolbar-item");
     expect(toolbarItems.length).toBeGreaterThan(0);
-    
+
     // The component should render without the print functionality
     expect(screen.getByText("Test Sheet")).toBeInTheDocument();
   });
@@ -1195,7 +1295,7 @@ describe("SheetDetailPage Component", () => {
 
   test("renders main container with correct CSS classes", () => {
     setup();
-    
+
     const mainContainer = screen.getByRole("main");
     expect(mainContainer).toHaveClass("sheet-detail-container");
   });
@@ -1203,10 +1303,10 @@ describe("SheetDetailPage Component", () => {
   test("renders correctly with minimal props", () => {
     const mockAddChapterLocal = vi.fn();
     setup({ addChapter: mockAddChapterLocal, currentChapter: undefined });
-    
+
     const sourceButton = screen.getByRole("button", { name: /source title/i });
     expect(sourceButton).toBeInTheDocument();
-    
+
     const mainContainer = screen.getByRole("main");
     expect(mainContainer).toHaveClass("sheet-detail-container");
   });
@@ -1249,7 +1349,7 @@ describe("SheetDetailPage Component", () => {
     }));
 
     setup();
-    
+
     expect(screen.getByText("Source Title")).toBeInTheDocument();
     expect(screen.getByText("Text content")).toBeInTheDocument();
     expect(screen.getByAltText("Sheet content")).toBeInTheDocument();
@@ -1258,35 +1358,40 @@ describe("SheetDetailPage Component", () => {
 
   test("renders visibility button for sheet owner and handles click", () => {
     const mockUpdateMutation = vi.fn();
-    
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKeyOrConfig, queryFn, options) => {
-      if (Array.isArray(queryKeyOrConfig)) {
-        if (queryKeyOrConfig[0] === 'shortUrl') {
-          return { 
-            data: { shortUrl: 'https://short.url/test' },
-            isLoading: false 
-          };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(
+      (queryKeyOrConfig, queryFn, options) => {
+        if (Array.isArray(queryKeyOrConfig)) {
+          if (queryKeyOrConfig[0] === "shortUrl") {
+            return {
+              data: { shortUrl: "https://short.url/test" },
+              isLoading: false,
+            };
+          }
+        } else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
+          if (queryKeyOrConfig.queryKey[0] === "userInfo") {
+            return { data: mockUserInfoData, isLoading: false, error: null };
+          }
         }
-      } 
-      else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
-        if (queryKeyOrConfig.queryKey[0] === 'userInfo') {
-          return { data: mockUserInfoData, isLoading: false, error: null };
-        }
-      }
-      
-      return { data: mockSheetDataWithUserInfo, isLoading: false, error: null };
-    });
-  
+
+        return {
+          data: mockSheetDataWithUserInfo,
+          isLoading: false,
+          error: null,
+        };
+      },
+    );
+
     vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
       mutate: mockUpdateMutation,
       isLoading: false,
     }));
-  
+
     setup();
-  
+
     const visibilityButton = screen.getByText("Private");
     expect(visibilityButton).toBeInTheDocument();
-    
+
     fireEvent.click(visibilityButton);
     expect(mockUpdateMutation).toHaveBeenCalledWith(true);
   });
@@ -1294,9 +1399,12 @@ describe("SheetDetailPage Component", () => {
   test("handles updateSheetVisibility error", () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     let visibilityOnErrorCallback;
-    
+
     vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
-      if (config.mutationFn && config.mutationFn.toString().includes('updateSheetVisibility')) {
+      if (
+        config.mutationFn &&
+        config.mutationFn.toString().includes("updateSheetVisibility")
+      ) {
         visibilityOnErrorCallback = config.onError;
       }
       return {
@@ -1304,42 +1412,53 @@ describe("SheetDetailPage Component", () => {
         isLoading: false,
       };
     });
-  
+
     setup();
-  
+
     const testError = new Error("Visibility update failed");
     visibilityOnErrorCallback(testError);
-  
-    expect(consoleSpy).toHaveBeenCalledWith("Error updating visibility:", testError);
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error updating visibility:",
+      testError,
+    );
     consoleSpy.mockRestore();
   });
 
   test("invalidates queries on successful visibility update", () => {
     const mockQueryClient = { invalidateQueries: vi.fn() };
     let visibilityOnSuccessCallback;
-    
+
     vi.spyOn(reactQuery, "useQueryClient").mockReturnValue(mockQueryClient);
-    
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((queryKeyOrConfig, queryFn, options) => {
-      if (Array.isArray(queryKeyOrConfig)) {
-        if (queryKeyOrConfig[0] === 'shortUrl') {
-          return { 
-            data: { shortUrl: 'https://short.url/test' },
-            isLoading: false 
-          };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(
+      (queryKeyOrConfig, queryFn, options) => {
+        if (Array.isArray(queryKeyOrConfig)) {
+          if (queryKeyOrConfig[0] === "shortUrl") {
+            return {
+              data: { shortUrl: "https://short.url/test" },
+              isLoading: false,
+            };
+          }
+        } else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
+          if (queryKeyOrConfig.queryKey[0] === "userInfo") {
+            return { data: mockUserInfoData, isLoading: false, error: null };
+          }
         }
-      } 
-      else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
-        if (queryKeyOrConfig.queryKey[0] === 'userInfo') {
-          return { data: mockUserInfoData, isLoading: false, error: null };
-        }
-      }
-      
-      return { data: mockSheetDataWithUserInfo, isLoading: false, error: null };
-    });
-  
+
+        return {
+          data: mockSheetDataWithUserInfo,
+          isLoading: false,
+          error: null,
+        };
+      },
+    );
+
     vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
-      if (config.mutationFn && config.mutationFn.toString().includes('updateSheetVisibility')) {
+      if (
+        config.mutationFn &&
+        config.mutationFn.toString().includes("updateSheetVisibility")
+      ) {
         visibilityOnSuccessCallback = config.onSuccess;
       }
       return {
@@ -1347,13 +1466,13 @@ describe("SheetDetailPage Component", () => {
         isLoading: false,
       };
     });
-  
+
     setup();
-  
+
     visibilityOnSuccessCallback();
-  
-    expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({ 
-      queryKey: ['sheetData', expect.any(String)] 
+
+    expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["sheetData", expect.any(String)],
     });
   });
 });

@@ -17,7 +17,10 @@ describe("ViewSelector Component", () => {
   const setShowViewSelector = vi.fn();
   const setViewMode = vi.fn();
 
-  const setup = (viewMode = VIEW_MODES.SOURCE, layoutMode = LAYOUT_MODES.SEGMENTED) => {
+  const setup = (
+    viewMode = VIEW_MODES.SOURCE,
+    layoutMode = LAYOUT_MODES.SEGMENTED,
+  ) => {
     return render(
       <ViewSelector
         setShowViewSelector={setShowViewSelector}
@@ -26,7 +29,7 @@ describe("ViewSelector Component", () => {
         versionSelected={true}
         layoutMode={layoutMode}
         setLayoutMode={vi.fn()}
-      />
+      />,
     );
   };
 
@@ -36,9 +39,13 @@ describe("ViewSelector Component", () => {
 
   test("renders options container and layout radios", () => {
     setup();
-    expect(document.querySelector('.view-selector-options-container')).toBeInTheDocument();
-    expect(screen.getByText('text.reader_option_menu.layout')).toBeInTheDocument();
-    const radios = screen.getAllByRole('radio');
+    expect(
+      document.querySelector(".view-selector-options-container"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("text.reader_option_menu.layout"),
+    ).toBeInTheDocument();
+    const radios = screen.getAllByRole("radio");
     expect(radios).toHaveLength(2);
   });
 
@@ -49,7 +56,6 @@ describe("ViewSelector Component", () => {
     expect(radios[1]).toBeChecked();
     expect(radios[0]).not.toBeChecked();
   });
-
 
   test("outside click closes the selector", () => {
     setup();
@@ -68,7 +74,7 @@ describe("ViewSelector Component", () => {
 
   test("calls setLayoutMode when layout option is selected", () => {
     const setLayoutMode = vi.fn();
-    
+
     render(
       <ViewSelector
         setShowViewSelector={vi.fn()}
@@ -77,9 +83,9 @@ describe("ViewSelector Component", () => {
         versionSelected={true}
         layoutMode={LAYOUT_MODES.SEGMENTED}
         setLayoutMode={setLayoutMode}
-      />
+      />,
     );
-    
+
     const radios = screen.getAllByRole("radio");
     fireEvent.click(radios[0]);
     expect(setLayoutMode).toHaveBeenCalledWith(LAYOUT_MODES.PROSE);

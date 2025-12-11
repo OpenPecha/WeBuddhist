@@ -3,7 +3,10 @@ import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import UseChapterHook from "./UseChapterHook.js";
 import "@testing-library/jest-dom";
-import { VIEW_MODES, LAYOUT_MODES } from "../../utils/header/view-selector/ViewSelector.js";
+import {
+  VIEW_MODES,
+  LAYOUT_MODES,
+} from "../../utils/header/view-selector/ViewSelector.js";
 
 const mockState = {
   panelContext: {
@@ -24,15 +27,24 @@ vi.mock("react-intersection-observer", () => ({
   useInView: vi.fn().mockImplementation(() => {
     const callCount = vi.fn().mock.calls.length;
     if (callCount === 0) {
-      return { ref: vi.fn(), inView: mockState.intersectionObserver.topSentinelInView };
+      return {
+        ref: vi.fn(),
+        inView: mockState.intersectionObserver.topSentinelInView,
+      };
     }
-    return { ref: vi.fn(), inView: mockState.intersectionObserver.bottomSentinelInView };
+    return {
+      ref: vi.fn(),
+      inView: mockState.intersectionObserver.bottomSentinelInView,
+    };
   }),
 }));
 
 vi.mock("../../utils/header/table-of-contents/TableOfContents.jsx", () => ({
   __esModule: true,
-  default: ({showTableOfContents}) => showTableOfContents ? <div data-testid="table-of-contents">TableOfContents</div> : null,
+  default: ({ showTableOfContents }) =>
+    showTableOfContents ? (
+      <div data-testid="table-of-contents">TableOfContents</div>
+    ) : null,
 }));
 
 vi.mock("../../utils/header/ChapterHeader.jsx", () => ({
@@ -42,7 +54,9 @@ vi.mock("../../utils/header/ChapterHeader.jsx", () => ({
 
 vi.mock("../../utils/resources/Resources.jsx", () => ({
   __esModule: true,
-  default: ({ segmentId }) => <div data-testid="resources">Resources {segmentId}</div>,
+  default: ({ segmentId }) => (
+    <div data-testid="resources">Resources {segmentId}</div>
+  ),
 }));
 
 vi.mock("../../../../utils/helperFunctions.jsx", () => ({
@@ -103,7 +117,9 @@ describe("UseChapterHook", () => {
 
   test("renders main containers", () => {
     setup();
-    expect(document.querySelector(".use-chapter-hook-container")).toBeInTheDocument();
+    expect(
+      document.querySelector(".use-chapter-hook-container"),
+    ).toBeInTheDocument();
     expect(document.querySelector(".main-content")).toBeInTheDocument();
   });
 
@@ -122,7 +138,9 @@ describe("UseChapterHook", () => {
     expect(screen.getByText("Section 1")).toBeInTheDocument();
     expect(screen.getByText("1")).toBeInTheDocument();
     const segmentContent = document.querySelector(".segment-content");
-    expect(segmentContent && segmentContent.innerHTML).toContain("Segment 1 Content");
+    expect(segmentContent && segmentContent.innerHTML).toContain(
+      "Segment 1 Content",
+    );
   });
 
   test("renders loading indicators when fetching", () => {
@@ -167,7 +185,9 @@ describe("UseChapterHook", () => {
 
   test("handles empty content gracefully", () => {
     setup({ content: { sections: [] } });
-    expect(document.querySelector(".outmost-container")).not.toBeInTheDocument();
+    expect(
+      document.querySelector(".outmost-container"),
+    ).not.toBeInTheDocument();
   });
 
   test("footnote marker click toggles active class", async () => {
@@ -181,7 +201,8 @@ describe("UseChapterHook", () => {
               {
                 segment_id: "seg1",
                 segment_number: 1,
-                content: '<span><span class="footnote-marker">*</span><span class="footnote">Footnote</span></span>',
+                content:
+                  '<span><span class="footnote-marker">*</span><span class="footnote">Footnote</span></span>',
                 translation: null,
               },
             ],
@@ -208,23 +229,23 @@ describe("UseChapterHook", () => {
   test("renders Resources when panel is open and segment is selected", () => {
     mockState.panelContext.isResourcesPanelOpen = true;
     const { container } = setup();
-    
+
     const segmentContainer = container.querySelector(".segment-container");
     fireEvent.click(segmentContainer);
-    
+
     expect(screen.getByTestId("resources")).toBeInTheDocument();
     expect(screen.getByText("Resources seg1")).toBeInTheDocument();
   });
 
   test("handleSegmentClick opens resources panel", () => {
     const { container } = setup();
-    
+
     const segmentContainer = container.querySelector(".segment-container");
     fireEvent.click(segmentContainer);
-    
+
     expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
   });
-  
+
   test("renders prose layout when layoutMode is PROSE", () => {
     const { container } = setup({
       viewMode: VIEW_MODES.SOURCE,
@@ -255,22 +276,25 @@ describe("UseChapterHook", () => {
   test("scrolls to section when segment is selected", async () => {
     const scrollIntoViewMock = vi.fn();
     Element.prototype.scrollIntoView = scrollIntoViewMock;
-    
+
     const { rerender } = setup({
       currentSegmentId: null,
       scrollTrigger: 0,
     });
-    
+
     rerender(
       <UseChapterHook
         {...defaultProps}
         currentSegmentId="seg1"
         scrollTrigger={1}
-      />
+      />,
     );
-    
+
     await waitFor(() => {
-      expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+      expect(scrollIntoViewMock).toHaveBeenCalledWith({
+        behavior: "smooth",
+        block: "start",
+      });
     });
   });
 });

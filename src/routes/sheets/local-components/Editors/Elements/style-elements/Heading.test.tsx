@@ -8,7 +8,7 @@ describe("Heading Component", () => {
     as: "h1",
     attributes: { "data-testid": "heading-element" },
     children: "Sample heading content",
-    element: { align: "left" }
+    element: { align: "left" },
   };
 
   const setup = (props = {}) => {
@@ -18,9 +18,9 @@ describe("Heading Component", () => {
   test("renders h1 element with correct attributes and styling", () => {
     setup({
       as: "h1",
-      element: { align: "center" }
+      element: { align: "center" },
     });
-    
+
     const h1 = screen.getByTestId("heading-element");
     expect(h1).toBeInTheDocument();
     expect(h1.tagName).toBe("H1");
@@ -32,9 +32,9 @@ describe("Heading Component", () => {
     setup({
       as: "h2",
       element: { align: "right" },
-      children: "H2 Heading"
+      children: "H2 Heading",
     });
-    
+
     const h2 = screen.getByTestId("heading-element");
     expect(h2).toBeInTheDocument();
     expect(h2.tagName).toBe("H2");
@@ -46,9 +46,9 @@ describe("Heading Component", () => {
     setup({
       as: "h3",
       element: { align: "justify" },
-      children: "Default paragraph"
+      children: "Default paragraph",
     });
-    
+
     const p = screen.getByTestId("heading-element");
     expect(p).toBeInTheDocument();
     expect(p.tagName).toBe("P");

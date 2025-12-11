@@ -1,12 +1,17 @@
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth} from "../../test-utils/CommonMocks.js";
-import {QueryClient, QueryClientProvider, useQuery} from "react-query";
-import {BrowserRouter as Router} from "react-router-dom";
-import {TolgeeProvider} from "@tolgee/react";
-import CommunityPage, {fetchsheet} from "./CommunityPage.js";
+import {
+  mockAxios,
+  mockReactQuery,
+  mockTolgee,
+  mockUseAuth,
+} from "../../test-utils/CommonMocks.js";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { BrowserRouter as Router } from "react-router-dom";
+import { TolgeeProvider } from "@tolgee/react";
+import CommunityPage, { fetchsheet } from "./CommunityPage.js";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import axiosInstance from "../../config/axios-config.js";
-import {fireEvent} from "@testing-library/react";
+import { fireEvent } from "@testing-library/react";
 
 mockAxios();
 mockUseAuth();
@@ -14,7 +19,7 @@ mockReactQuery();
 
 describe("CommunityPage Component", () => {
   const queryClient = new QueryClient();
-  
+
   const mockSheetsData = {
     sheets: [
       {
@@ -23,9 +28,9 @@ describe("CommunityPage Component", () => {
         summary: "This is a test sheet summary",
         publisher: {
           name: "Test User",
-          avatar_url: "https://example.com/image.jpg"
+          avatar_url: "https://example.com/image.jpg",
         },
-        time_passed: "2 days ago"
+        time_passed: "2 days ago",
       },
       {
         id: "2",
@@ -33,11 +38,11 @@ describe("CommunityPage Component", () => {
         summary: "Another test summary content",
         publisher: {
           name: "John Doe",
-          avatar_url: null
+          avatar_url: null,
         },
-        time_passed: "5 hours ago"
-      }
-    ]
+        time_passed: "5 hours ago",
+      },
+    ],
   };
   beforeEach(() => {
     // Mock localStorage and sessionStorage methods
@@ -67,7 +72,7 @@ describe("CommunityPage Component", () => {
             <CommunityPage />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
 
@@ -85,16 +90,22 @@ describe("CommunityPage Component", () => {
     // expect(screen.getByText("Collections")).toBeInTheDocument();
     // expect(screen.getByText(/Organizations, communities and individuals/)).toBeInTheDocument();
     // expect(screen.getByText("Explore Collections")).toBeInTheDocument();
-    expect(screen.getByText(/Combine sources from our library/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Combine sources from our library/),
+    ).toBeInTheDocument();
     expect(screen.getByText("Make a Sheet")).toBeInTheDocument();
   });
 
   test("renders sheet items correctly", () => {
     setup();
     expect(screen.getByText("Test Sheet Title")).toBeInTheDocument();
-    expect(screen.getByText("This is a test sheet summary")).toBeInTheDocument();
+    expect(
+      screen.getByText("This is a test sheet summary"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Another Sheet")).toBeInTheDocument();
-    expect(screen.getByText("Another test summary content")).toBeInTheDocument();
+    expect(
+      screen.getByText("Another test summary content"),
+    ).toBeInTheDocument();
     expect(screen.getByText("2 days ago")).toBeInTheDocument();
     expect(screen.getByText("5 hours ago")).toBeInTheDocument();
   });
@@ -103,7 +114,10 @@ describe("CommunityPage Component", () => {
     setup();
     const publisherImage = screen.getByAltText("TU");
     expect(publisherImage).toBeInTheDocument();
-    expect(publisherImage).toHaveAttribute("src", "https://example.com/image.jpg");
+    expect(publisherImage).toHaveAttribute(
+      "src",
+      "https://example.com/image.jpg",
+    );
   });
 
   test("renders initials avatar when publisher image is not available", () => {
@@ -116,7 +130,7 @@ describe("CommunityPage Component", () => {
       data: null,
       isLoading: true,
     }));
-    
+
     setup();
     expect(screen.getByText("Loading stories...")).toBeInTheDocument();
   });
@@ -126,17 +140,17 @@ describe("CommunityPage Component", () => {
       data: { sheets: [] },
       isLoading: false,
     }));
-    
+
     setup();
     expect(screen.queryByText("Test Sheet Title")).not.toBeInTheDocument();
     expect(screen.queryByText("Loading stories...")).not.toBeInTheDocument();
   });
 
   test("fetches sheet with correct parameters", async () => {
-    vi.spyOn(window.localStorage, "getItem").mockReturnValue("en");    
+    vi.spyOn(window.localStorage, "getItem").mockReturnValue("en");
     axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
     const result = await fetchsheet(10, 0, "desc");
-  
+
     expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
       params: {
         language: "en",
@@ -146,15 +160,15 @@ describe("CommunityPage Component", () => {
         sort_order: "desc",
       },
       headers: {
-        Authorization: "Bearer None"
+        Authorization: "Bearer None",
       },
     });
-  
+
     expect(result).toEqual(mockSheetsData);
   });
 
   test("handles Make a Sheet button interaction", () => {
-    setup();  
+    setup();
     const makeSheetButton = screen.getByText("Make a Sheet");
     expect(makeSheetButton).toBeInTheDocument();
     expect(makeSheetButton).not.toBeDisabled();

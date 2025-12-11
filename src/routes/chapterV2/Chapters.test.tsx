@@ -5,17 +5,36 @@ import Chapters from "./Chapters.js";
 
 vi.mock("./chapter/ContentsChapter", () => ({
   __esModule: true,
-  default: ({ textId, contentId, segmentId, versionId, addChapter, removeChapter, currentChapter, totalChapters, setVersionId }) => (
-    <div data-testid="contents-chapter-mock"
+  default: ({
+    textId,
+    contentId,
+    segmentId,
+    versionId,
+    addChapter,
+    removeChapter,
+    currentChapter,
+    totalChapters,
+    setVersionId,
+  }) => (
+    <div
+      data-testid="contents-chapter-mock"
       data-textid={textId}
       data-contentid={contentId}
       data-segmentid={segmentId}
       data-versionid={versionId}
       data-totalchapters={totalChapters}
-      onClick={() => addChapter && addChapter({ textId: "t2", contentId: "c2", segmentId: "s2" }, currentChapter)}
+      onClick={() =>
+        addChapter &&
+        addChapter(
+          { textId: "t2", contentId: "c2", segmentId: "s2" },
+          currentChapter,
+        )
+      }
       onDoubleClick={() => removeChapter && removeChapter(currentChapter)}
-    >MockContentsChapter</div>
-  )
+    >
+      MockContentsChapter
+    </div>
+  ),
 }));
 
 const mockSearchParams = vi.fn();
@@ -54,7 +73,7 @@ describe("Chapters Component", () => {
   test("renders with chapters from sessionStorage", () => {
     const chapters = [
       { textId: "t1", contentId: "c1", segmentId: "s1" },
-      { textId: "t2", contentId: "c2", segmentId: "s2" }
+      { textId: "t2", contentId: "c2", segmentId: "s2" },
     ];
     setupSessionStorage({ chapters, versionId: "v1" });
     mockSearchParams.mockReturnValue({ get: () => null });
@@ -73,7 +92,7 @@ describe("Chapters Component", () => {
         if (key === "content_id") return "c3";
         if (key === "segment_id") return "s3";
         return null;
-      }
+      },
     });
     render(<Chapters />);
     const containers = screen.getAllByTestId("contents-chapter-mock");
@@ -84,9 +103,7 @@ describe("Chapters Component", () => {
   });
 
   test("addChapter adds a chapter (max 3)", () => {
-    const chapters = [
-      { textId: "t1", contentId: "c1", segmentId: "s1" }
-    ];
+    const chapters = [{ textId: "t1", contentId: "c1", segmentId: "s1" }];
     setupSessionStorage({ chapters });
     mockSearchParams.mockReturnValue({ get: () => null });
     render(<Chapters />);
@@ -100,22 +117,22 @@ describe("Chapters Component", () => {
   test("removeChapter removes a chapter", () => {
     const chapters = [
       { textId: "t1", contentId: "c1", segmentId: "s1" },
-      { textId: "t2", contentId: "c2", segmentId: "s2" }
+      { textId: "t2", contentId: "c2", segmentId: "s2" },
     ];
     setupSessionStorage({ chapters });
     mockSearchParams.mockReturnValue({ get: () => null });
     render(<Chapters />);
     const containers = screen.getAllByTestId("contents-chapter-mock");
     act(() => {
-      containers[0].dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+      containers[0].dispatchEvent(
+        new MouseEvent("dblclick", { bubbles: true }),
+      );
     });
     expect(screen.getAllByTestId("contents-chapter-mock").length).toBe(1);
   });
 
   test("sessionStorage is updated on chapters/versionId change", () => {
-    const chapters = [
-      { textId: "t1", contentId: "c1", segmentId: "s1" }
-    ];
+    const chapters = [{ textId: "t1", contentId: "c1", segmentId: "s1" }];
     setupSessionStorage({ chapters });
     mockSearchParams.mockReturnValue({ get: () => null });
     render(<Chapters />);
@@ -124,9 +141,7 @@ describe("Chapters Component", () => {
   });
 
   test("cleanup removes sessionStorage items on unmount", () => {
-    const chapters = [
-      { textId: "t1", contentId: "c1", segmentId: "s1" }
-    ];
+    const chapters = [{ textId: "t1", contentId: "c1", segmentId: "s1" }];
     setupSessionStorage({ chapters });
     mockSearchParams.mockReturnValue({ get: () => null });
     const { unmount } = render(<Chapters />);
@@ -138,7 +153,7 @@ describe("Chapters Component", () => {
   test("renders with initialChapters prop", () => {
     const initialChapters = [
       { textId: "init1", contentId: "c1", segmentId: "s1" },
-      { textId: "init2", contentId: "c2", segmentId: "s2" }
+      { textId: "init2", contentId: "c2", segmentId: "s2" },
     ];
     setupSessionStorage({});
     mockSearchParams.mockReturnValue({ get: () => null });
@@ -156,25 +171,34 @@ describe("Chapters Component", () => {
     render(<Chapters maxChapters={1} />);
     const container = screen.getByTestId("contents-chapter-mock");
     act(() => {
-      container.click(); 
+      container.click();
     });
-    expect(screen.getAllByTestId("contents-chapter-mock").length).toBe(2); 
+    expect(screen.getAllByTestId("contents-chapter-mock").length).toBe(2);
   });
 
   test("uses custom renderChapter function", () => {
     const chapters = [{ textId: "t1", contentId: "c1", segmentId: "s1" }];
     const customRender = vi.fn((chapter, index, helpers) => (
-      <div data-testid="custom-chapter" data-textid={chapter.textId}>Custom: {chapter.textId}</div>
+      <div data-testid="custom-chapter" data-textid={chapter.textId}>
+        Custom: {chapter.textId}
+      </div>
     ));
     setupSessionStorage({ chapters });
     mockSearchParams.mockReturnValue({ get: () => null });
     render(<Chapters renderChapter={customRender} />);
     expect(screen.getByTestId("custom-chapter")).toBeInTheDocument();
-    expect(screen.getByTestId("custom-chapter")).toHaveAttribute("data-textid", "t1");
+    expect(screen.getByTestId("custom-chapter")).toHaveAttribute(
+      "data-textid",
+      "t1",
+    );
     expect(customRender).toHaveBeenCalledWith(
       expect.objectContaining({ textId: "t1" }),
       0,
-      expect.objectContaining({ versionId: expect.any(String), addChapter: expect.any(Function), removeChapter: expect.any(Function) })
+      expect.objectContaining({
+        versionId: expect.any(String),
+        addChapter: expect.any(Function),
+        removeChapter: expect.any(Function),
+      }),
     );
   });
 });

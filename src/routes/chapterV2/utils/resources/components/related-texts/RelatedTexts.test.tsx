@@ -1,14 +1,14 @@
-import React from 'react'
+import React from "react";
 import { vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
-import {PanelProvider} from "../../../../../../context/PanelContext.js";
+import { PanelProvider } from "../../../../../../context/PanelContext.js";
 import { BrowserRouter as Router } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
 import CommentaryView, { fetchCommentaryData } from "./RelatedTexts.js";
 import "@testing-library/jest-dom";
-import {mockTolgee} from "../../../../../../test-utils/CommonMocks.js";
+import { mockTolgee } from "../../../../../../test-utils/CommonMocks.js";
 import axiosInstance from "../../../../../../config/axios-config.js";
 
 vi.mock("@tolgee/react", async () => {
@@ -22,7 +22,7 @@ vi.mock("@tolgee/react", async () => {
 });
 
 vi.mock("../../../../../../utils/helperFunctions.jsx", () => ({
-  getLanguageClass: (language) => language === "bo" ? "bo-text" : "en-text",
+  getLanguageClass: (language) => (language === "bo" ? "bo-text" : "en-text"),
 }));
 
 describe("CommentaryView", () => {
@@ -35,7 +35,7 @@ describe("CommentaryView", () => {
         title: "རྩོམ་པ་པོ་དང་པོ། དབུ་མའི་ལྟ་བའི་གསལ་བཤད།",
         language: "bo",
         content: [
-          "<p>སེམས་ཀྱི་ངོ་བོ་ནི་གསལ་བ་དང་རིག་པ་ཡིན། དེ་ནི་འོད་གསལ་བ་དང་རྣམ་པར་དག་པ་ཡིན།</p>"
+          "<p>སེམས་ཀྱི་ངོ་བོ་ནི་གསལ་བ་དང་རིག་པ་ཡིན། དེ་ནི་འོད་གསལ་བ་དང་རྣམ་པར་དག་པ་ཡིན།</p>",
         ],
         count: 2,
       },
@@ -46,7 +46,7 @@ describe("CommentaryView", () => {
         language: "en",
         content: [
           "<p>This is a sample RelatedText about Buddhist philosophy and its principles.</p>",
-          "<p>Second paragraph.</p>"
+          "<p>Second paragraph.</p>",
         ],
         count: 3,
       },
@@ -69,7 +69,7 @@ describe("CommentaryView", () => {
       }
       return { data: null, isLoading: false };
     });
-    
+
     // Mock the PanelContext
     vi.mock("../../../../../../context/PanelContext.jsx", () => ({
       usePanelContext: () => ({
@@ -84,11 +84,10 @@ describe("CommentaryView", () => {
         toggleTranslationSource: vi.fn(),
         openLeftPanel: vi.fn(),
         closeLeftPanel: vi.fn(),
-        toggleLeftPanel: vi.fn()
+        toggleLeftPanel: vi.fn(),
       }),
-      PanelProvider: ({ children, value }) => <div>{children}</div>
+      PanelProvider: ({ children, value }) => <div>{children}</div>,
     }));
-
   });
 
   const setup = (props = {}) => {
@@ -96,7 +95,7 @@ describe("CommentaryView", () => {
       segmentId: "mock-segment-id",
       setIsCommentaryView: mockSetIsRelatedTextView,
       addChapter: vi.fn(),
-      sectionindex: 0
+      sectionindex: 0,
     };
 
     const mockPanelContextValue = {
@@ -111,7 +110,7 @@ describe("CommentaryView", () => {
       toggleTranslationSource: vi.fn(),
       openLeftPanel: vi.fn(),
       closeLeftPanel: vi.fn(),
-      toggleLeftPanel: vi.fn()
+      toggleLeftPanel: vi.fn(),
     };
 
     return render(
@@ -123,7 +122,7 @@ describe("CommentaryView", () => {
             </PanelProvider>
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
 
@@ -152,7 +151,7 @@ describe("CommentaryView", () => {
           skip: 0,
           limit: 10,
         },
-      }
+      },
     );
     expect(result).toEqual(mockCommentariesData);
   });
@@ -163,23 +162,21 @@ describe("CommentaryView", () => {
 
     try {
       await fetchCommentaryData(segmentId);
-      expect(true).toBe(false); 
+      expect(true).toBe(false);
     } catch (error) {
       expect(error).toBeDefined();
       expect(error.message).toBe("API Error");
     }
   });
 
- 
-
   test("renders correctly with empty commentaries", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementationOnce(() => ({
       data: { commentaries: [] },
-      isLoading: false
+      isLoading: false,
     }));
 
     setup();
-    
+
     // Should not display any count when there are no commentaries
     expect(screen.getByText("text.commentary")).toBeInTheDocument();
     expect(screen.queryByText(/\(\d+\)/)).not.toBeInTheDocument();
@@ -220,7 +217,7 @@ describe("CommentaryView", () => {
 
     expect(addChapter).toHaveBeenCalledWith(
       { textId: "mock--1", segmentId: "seg-1" },
-      { id: 1 }
+      { id: 1 },
     );
   });
 });

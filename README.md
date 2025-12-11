@@ -10,11 +10,13 @@ This is the frontend application for the OpenPecha platform, designed to manage 
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/OpenPecha/app-pecha-frontend.git
    ```
 
 2. Navigate to app-pecha-frontend directory:
+
    ```bash
    cd app-pecha-frontend
    ```
@@ -27,9 +29,11 @@ This is the frontend application for the OpenPecha platform, designed to manage 
 ## Development
 
 1. Start the development server:
+
    ```bash
    npm run dev
    ```
+
    The application will be available at [http://localhost:5173](http://localhost:5173)
 
 2. Run the test cases:

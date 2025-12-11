@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { ChevronUp } from 'lucide-react';
-
+import { useState } from "react";
+import { ChevronUp } from "lucide-react";
 
 export function SearchResults({ results }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -23,15 +22,13 @@ export function SearchResults({ results }) {
                 {index + 1}
               </div>
               <span className=" text-sm font-semibold  truncate text-[#18345D]">
-                {result.title || 'Unknown Source'}
+                {result.title || "Unknown Source"}
               </span>
             </div>
-            <p className=" text-sm text-gray-500 truncate">
-              {result.text}
-            </p>
+            <p className=" text-sm text-gray-500 truncate">{result.text}</p>
           </span>
         ))}
-        
+
         {!isExpanded && hiddenCount > 0 && (
           <button
             onClick={() => setIsExpanded(true)}
@@ -42,7 +39,7 @@ export function SearchResults({ results }) {
           </button>
         )}
       </div>
-      
+
       {isExpanded && (
         <button
           onClick={() => setIsExpanded(false)}

@@ -28,7 +28,7 @@ const SearchResultsPage: React.FC = () => {
           <Sources query={query} />
         </div>
       }
-      sidebar={<div/>}
+      sidebar={<div />}
     />
   );
 };

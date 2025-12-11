@@ -1,20 +1,23 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const PanelContext = createContext();
 
 export const PanelProvider = ({ children }) => {
   const [isResourcesPanelOpen, setIsResourcesPanelOpen] = useState(() => {
-    const stored = sessionStorage.getItem('resourcesPanelOpen');
-    return stored === 'true';
+    const stored = sessionStorage.getItem("resourcesPanelOpen");
+    return stored === "true";
   });
   const [isTranslationSourceOpen, setIsTranslationSourceOpen] = useState(false);
   const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(false);
   const [isViewSelectorOpen, setIsViewSelectorOpen] = useState(false);
 
   useEffect(() => {
-    sessionStorage.setItem('resourcesPanelOpen', isResourcesPanelOpen.toString());
+    sessionStorage.setItem(
+      "resourcesPanelOpen",
+      isResourcesPanelOpen.toString(),
+    );
   }, [isResourcesPanelOpen]);
- 
+
   const openResourcesPanel = () => {
     setIsResourcesPanelOpen(true);
     setIsTranslationSourceOpen(false);
@@ -25,7 +28,7 @@ export const PanelProvider = ({ children }) => {
   };
 
   const toggleResourcesPanel = () => {
-    setIsResourcesPanelOpen(prev => {
+    setIsResourcesPanelOpen((prev) => {
       const newState = !prev;
       // If opening Resources panel, close TranslationSource
       if (newState) {
@@ -45,7 +48,7 @@ export const PanelProvider = ({ children }) => {
   };
 
   const toggleTranslationSource = () => {
-    setIsTranslationSourceOpen(prev => {
+    setIsTranslationSourceOpen((prev) => {
       const newState = !prev;
       // If opening TranslationSource, close Resources panel
       if (newState) {
@@ -64,7 +67,7 @@ export const PanelProvider = ({ children }) => {
   };
 
   const toggleLeftPanel = () => {
-    setIsLeftPanelOpen(prev => {
+    setIsLeftPanelOpen((prev) => {
       const newState = !prev;
       return newState;
     });
@@ -84,20 +87,18 @@ export const PanelProvider = ({ children }) => {
     toggleTranslationSource,
     openLeftPanel,
     closeLeftPanel,
-    toggleLeftPanel
+    toggleLeftPanel,
   };
 
   return (
-    <PanelContext.Provider value={value}>
-      {children}
-    </PanelContext.Provider>
+    <PanelContext.Provider value={value}>{children}</PanelContext.Provider>
   );
 };
 
 export const usePanelContext = () => {
   const context = useContext(PanelContext);
   if (!context) {
-    throw new Error('usePanelContext must be used within a PanelProvider');
+    throw new Error("usePanelContext must be used within a PanelProvider");
   }
   return context;
 };

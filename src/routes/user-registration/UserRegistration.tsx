@@ -62,7 +62,7 @@ const UserRegistration = () => {
     async (registerData: RegistrationPayload) => {
       const response = await axiosInstance.post(
         "/api/v1/auth/register",
-        registerData
+        registerData,
       );
       return response.data;
     },
@@ -79,7 +79,7 @@ const UserRegistration = () => {
           t("user.validation.login_failed");
         setErrors((prev) => ({ ...prev, general: message }));
       },
-    }
+    },
   );
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -111,7 +111,7 @@ const UserRegistration = () => {
       validationErrors.confirmPassword = t("user.validation.required");
     } else if (password !== confirmPassword) {
       validationErrors.confirmPassword = t(
-        "user.validation.password_do_not_match"
+        "user.validation.password_do_not_match",
       );
     }
 
@@ -199,10 +199,10 @@ const UserRegistration = () => {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">
-                {t("sign_up.form.first_name")}
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-foreground">
+                  {t("sign_up.form.first_name")}
+                </span>
               </div>
               <input
                 type="text"
@@ -224,10 +224,10 @@ const UserRegistration = () => {
             </label>
 
             <label className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">
-                {t("sign_up.form.last_name")}
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-foreground">
+                  {t("sign_up.form.last_name")}
+                </span>
               </div>
               <input
                 type="text"
@@ -250,77 +250,79 @@ const UserRegistration = () => {
           </div>
 
           <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-foreground">
-                  {t("common.email")}
-                </span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground">
+                {t("common.email")}
+              </span>
+            </div>
+            <input
+              type="email"
+              autoComplete="email"
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+              placeholder={t("common.email")}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? "email-error" : undefined}
+              required
+            />
+            {errors.email && (
+              <div
+                id="email-error"
+                className="flex items-center gap-2 text-sm text-destructive"
+              >
+                <IoAlertCircleOutline className="size-4" />
+                <span>{errors.email}</span>
               </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground">
+                {t("common.password")}
+              </span>
+            </div>
+            <div className="relative">
               <input
-                type="email"
-                autoComplete="email"
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
-                placeholder={t("common.email")}
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                aria-invalid={Boolean(errors.email)}
-                aria-describedby={errors.email ? "email-error" : undefined}
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+                placeholder={t("common.password")}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                aria-invalid={Boolean(errors.password)}
+                aria-describedby={
+                  errors.password ? "password-error" : undefined
+                }
                 required
               />
-              {errors.email && (
-                <div
-                  id="email-error"
-                  className="flex items-center gap-2 text-sm text-destructive"
-                >
-                  <IoAlertCircleOutline className="size-4" />
-                  <span>{errors.email}</span>
-                </div>
-              )}
-   
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-foreground">
-                  {t("common.password")}
-                </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute right-2 top-1/2 -translate-y-1/2"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={
+                  showPassword
+                    ? t("login.hide_password")
+                    : t("login.show_password")
+                }
+              >
+                {showPassword ? (
+                  <IoEyeOutline className="size-4" />
+                ) : (
+                  <IoEyeOffOutline className="size-4" />
+                )}
+              </Button>
+            </div>
+            {errors.password && (
+              <div
+                id="password-error"
+                className="flex flex-wrap gap-x-2 text-sm text-destructive"
+              >
+                <IoAlertCircleOutline className="size-4" />
+                <span>{errors.password}</span>
               </div>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
-                  placeholder={t("common.password")}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  aria-invalid={Boolean(errors.password)}
-                  aria-describedby={errors.password ? "password-error" : undefined}
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="absolute right-2 top-1/2 -translate-y-1/2"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label={
-                    showPassword
-                      ? t("login.hide_password")
-                      : t("login.show_password")
-                  }
-                >
-                  {showPassword ? (
-                    <IoEyeOutline className="size-4" />
-                  ) : (
-                    <IoEyeOffOutline className="size-4" />
-                  )}
-                </Button>
-              </div>
-              {errors.password && (
-                <div
-                  id="password-error"
-                  className="flex flex-wrap gap-x-2 text-sm text-destructive"
-                >
-                  <IoAlertCircleOutline className="size-4" />
-                  <span>{errors.password}</span>
-                </div>
-              )}
+            )}
 
             <label className="space-y-2">
               <div className="flex items-center justify-between">
@@ -338,7 +340,9 @@ const UserRegistration = () => {
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   aria-invalid={Boolean(errors.confirmPassword)}
                   aria-describedby={
-                    errors.confirmPassword ? "confirm-password-error" : undefined
+                    errors.confirmPassword
+                      ? "confirm-password-error"
+                      : undefined
                   }
                   required
                 />

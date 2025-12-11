@@ -17,7 +17,7 @@ describe("PaginationComponent", () => {
         totalPages={totalPages}
         handlePageChange={mockHandlePageChange}
         setPagination={mockSetPagination}
-      />
+      />,
     );
   };
 
@@ -26,7 +26,7 @@ describe("PaginationComponent", () => {
     return {
       prevButton: buttons[0],
       nextButton: buttons[buttons.length - 1],
-      allButtons: buttons
+      allButtons: buttons,
     };
   };
 
@@ -51,7 +51,7 @@ describe("PaginationComponent", () => {
         totalPages={0}
         handlePageChange={mockHandlePageChange}
         setPagination={mockSetPagination}
-      />
+      />,
     );
     expect(container.firstChild).toBeNull();
   });
@@ -63,7 +63,7 @@ describe("PaginationComponent", () => {
         totalPages={totalPages}
         handlePageChange={mockHandlePageChange}
         setPagination={mockSetPagination}
-      />
+      />,
     );
     const { nextButton } = getPaginationButtons();
     expect(nextButton).toBeDisabled();
@@ -89,7 +89,7 @@ describe("PaginationComponent", () => {
         totalPages={totalPages}
         handlePageChange={mockHandlePageChange}
         setPagination={mockSetPagination}
-      />
+      />,
     );
     const { prevButton } = getPaginationButtons();
     await userEvent.click(prevButton);
@@ -100,6 +100,9 @@ describe("PaginationComponent", () => {
     setup();
     const select = screen.getByRole("combobox");
     await fireEvent.change(select, { target: { value: "20" } });
-    expect(mockSetPagination).toHaveBeenCalledWith({ currentPage: 1, limit: 20 });
+    expect(mockSetPagination).toHaveBeenCalledWith({
+      currentPage: 1,
+      limit: 20,
+    });
   });
 });

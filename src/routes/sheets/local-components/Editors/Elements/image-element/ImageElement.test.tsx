@@ -9,8 +9,8 @@ describe("ImageElement Component", () => {
     children: <span>Child content</span>,
     element: {
       src: "https://example.com/image.jpg",
-      url: "https://example.com/image"
-    }
+      url: "https://example.com/image",
+    },
   };
 
   const setup = (props = {}) => {
@@ -19,7 +19,7 @@ describe("ImageElement Component", () => {
 
   test("renders image with correct attributes when src is provided", () => {
     setup();
-    
+
     const image = screen.getByRole("img");
     expect(image).toBeInTheDocument();
     expect(image).toHaveAttribute("src", defaultProps.element.src);
@@ -32,10 +32,10 @@ describe("ImageElement Component", () => {
       element: {
         ...defaultProps.element,
         src: null,
-        error: "Image not found"
-      }
+        error: "Image not found",
+      },
     });
-    
+
     expect(screen.getByText("Image link:")).toBeInTheDocument();
     expect(screen.getByText("https://example.com/image")).toBeInTheDocument();
     expect(screen.getByText("(Error: Image not found)")).toBeInTheDocument();
@@ -46,22 +46,25 @@ describe("ImageElement Component", () => {
       element: {
         ...defaultProps.element,
         src: null,
-        url: null
-      }
+        url: null,
+      },
     });
-    
+
     expect(screen.getByText("Image link:")).toBeInTheDocument();
     expect(screen.getByText("Pasted image link")).toBeInTheDocument();
   });
 
   test("handles image load error by switching to fallback image", () => {
     setup();
-    
+
     const image = screen.getByRole("img");
     expect(image).toHaveAttribute("src", defaultProps.element.src);
     fireEvent.error(image);
-    
+
     // Check that the image src is changed to the fallback URL
-    expect(image).toHaveAttribute("src", "https://icrier.org/wp-content/uploads/2022/12/media-Event-Image-Not-Found.jpg");
+    expect(image).toHaveAttribute(
+      "src",
+      "https://icrier.org/wp-content/uploads/2022/12/media-Event-Image-Not-Found.jpg",
+    );
   });
 });

@@ -1,11 +1,15 @@
-import {useTranslate} from "@tolgee/react";
+import { useTranslate } from "@tolgee/react";
 import axiosInstance from "../../config/axios-config.ts";
-import {LANGUAGE, siteName} from "../../utils/constants.ts";
-import {useQuery} from "react-query";
-import {Link, useNavigate} from "react-router-dom";
-import {getEarlyReturn, getLanguageClass, mapLanguageCode} from "../../utils/helperFunctions.tsx"; 
+import { LANGUAGE, siteName } from "../../utils/constants.ts";
+import { useQuery } from "react-query";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  getEarlyReturn,
+  getLanguageClass,
+  mapLanguageCode,
+} from "../../utils/helperFunctions.tsx";
 import Seo from "../commons/seo/Seo.tsx";
-import {useCollectionColor} from "../../context/CollectionColorContext.tsx";
+import { useCollectionColor } from "../../context/CollectionColorContext.tsx";
 import clsx from "clsx";
 import { Button } from "@/components/ui/button.tsx";
 import TwoColumnLayout from "../../components/layout/TwoColumnLayout";
@@ -36,35 +40,39 @@ type CollectionColorContextValue = {
 
 export const fetchCollections = async (): Promise<CollectionsResponse> => {
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = (storedLanguage ? mapLanguageCode(storedLanguage) : "en");
-  const {data} = await axiosInstance.get("/api/v1/collections", {
+  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
+  const { data } = await axiosInstance.get("/api/v1/collections", {
     params: {
       language,
       limit: 50,
-      skip: 0
-    }
+      skip: 0,
+    },
   });
   return data;
 };
 
 const Collections = (props: CollectionsProps) => {
-  const {
-    showDescription = true,
-    setRendererInfo
-  } = props;
+  const { showDescription = true, setRendererInfo } = props;
   const navigate = useNavigate();
-  const {t} = useTranslate();
-  const {setCollectionColor} = useCollectionColor() as CollectionColorContextValue;
-  const {data: collectionsData, isLoading: collectionsIsLoading, error: collectionsError} = useQuery<CollectionsResponse>(
-    ["collections"],
-    () => fetchCollections(),
-    {refetchOnWindowFocus: false}
-  );
+  const { t } = useTranslate();
+  const { setCollectionColor } =
+    useCollectionColor() as CollectionColorContextValue;
+  const {
+    data: collectionsData,
+    isLoading: collectionsIsLoading,
+    error: collectionsError,
+  } = useQuery<CollectionsResponse>(["collections"], () => fetchCollections(), {
+    refetchOnWindowFocus: false,
+  });
 
   // ----------------------------- helpers ---------------------------------------
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
-  const earlyReturn = getEarlyReturn({ isLoading: collectionsIsLoading, error: collectionsError, t });
+  const earlyReturn = getEarlyReturn({
+    isLoading: collectionsIsLoading,
+    error: collectionsError,
+    t,
+  });
   if (earlyReturn) return earlyReturn;
 
   const collectionColors = [
@@ -89,7 +97,7 @@ const Collections = (props: CollectionsProps) => {
   const renderCollectionNames = (collection: Collection, index: number) => {
     const sharedClasses = clsx(
       "block w-full text-left wrap-break-word",
-      getLanguageClass(collection.language || "en")
+      getLanguageClass(collection.language || "en"),
     );
 
     if (setRendererInfo) {
@@ -98,7 +106,7 @@ const Collections = (props: CollectionsProps) => {
         setRendererInfo((prev: any) => ({
           ...prev,
           requiredId: collection.id,
-          renderer: collection.has_child ? "sub-collections" : "works"
+          renderer: collection.has_child ? "sub-collections" : "works",
         }));
       };
 
@@ -114,7 +122,9 @@ const Collections = (props: CollectionsProps) => {
       );
     }
 
-    const targetPath = collection.has_child ? `/collections/${collection.id}` : `/works/${collection.id}`;
+    const targetPath = collection.has_child
+      ? `/collections/${collection.id}`
+      : `/works/${collection.id}`;
 
     return (
       <Link
@@ -126,8 +136,6 @@ const Collections = (props: CollectionsProps) => {
       </Link>
     );
   };
-
-
 
   return (
     <TwoColumnLayout
@@ -142,17 +150,22 @@ const Collections = (props: CollectionsProps) => {
             {t("home.browse_text")}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {collectionsData?.collections.map((collection: Collection, index: number) => (
-              <div className="w-full" key={collection.id}>
-                <div className="h-1 w-full mb-4" style={{ backgroundColor: getColorFromIndex(index) }} />
-                {renderCollectionNames(collection, index)}
-                {showDescription && (
-                  <p className="content text-left text-[#666666] text-base m-0 wrap-break-word">
-                    {collection.description}
-                  </p>
-                )}
-              </div>
-            ))}
+            {collectionsData?.collections.map(
+              (collection: Collection, index: number) => (
+                <div className="w-full" key={collection.id}>
+                  <div
+                    className="h-1 w-full mb-4"
+                    style={{ backgroundColor: getColorFromIndex(index) }}
+                  />
+                  {renderCollectionNames(collection, index)}
+                  {showDescription && (
+                    <p className="content text-left text-[#666666] text-base m-0 wrap-break-word">
+                      {collection.description}
+                    </p>
+                  )}
+                </div>
+              ),
+            )}
           </div>
         </div>
       }
@@ -182,7 +195,7 @@ const Collections = (props: CollectionsProps) => {
             onClick={() => navigate("/note")}
             className="w-full mt-4"
           >
-           {t("side_nav.community.join_conversation")}
+            {t("side_nav.community.join_conversation")}
           </Button>
         </div>
       }
@@ -191,4 +204,3 @@ const Collections = (props: CollectionsProps) => {
 };
 
 export default Collections;
-

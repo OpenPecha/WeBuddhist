@@ -4,30 +4,27 @@ import { Navigate } from "react-router-dom";
 import { LOGGED_IN_VIA } from "../utils/constants.js";
 import { useTranslate } from "@tolgee/react";
 
-export const AuthenticationGuard = ({component}) => {
-    const {isLoggedIn} = useAuth();
-    const {isAuthenticated} = useAuth0();
-    const { t } = useTranslate();
-    const ViaSocialLogin = withAuthenticationRequired(component, {
-        onRedirecting: () => (
-            <div className="page-layout listsubtitle">
-                {t("common.loading")} {/* TODO: Create a loading component, mostly a spinner using React suspense */}
-            </div>
-        ),
-    });
+export const AuthenticationGuard = ({ component }) => {
+  const { isLoggedIn } = useAuth();
+  const { isAuthenticated } = useAuth0();
+  const { t } = useTranslate();
+  const ViaSocialLogin = withAuthenticationRequired(component, {
+    onRedirecting: () => (
+      <div className="page-layout listsubtitle">
+        {t("common.loading")}{" "}
+        {/* TODO: Create a loading component, mostly a spinner using React suspense */}
+      </div>
+    ),
+  });
 
-    const ViaPechaLogin = () => {
-        const Component = component;
-        return isLoggedIn || localStorage.getItem(LOGGED_IN_VIA) ? <Component /> : <Navigate to="/login" />;
-    };
-
-    return (
-        <>
-            {
-                isAuthenticated
-                    ? <ViaSocialLogin/>
-                    : <ViaPechaLogin/>
-            }
-        </>
+  const ViaPechaLogin = () => {
+    const Component = component;
+    return isLoggedIn || localStorage.getItem(LOGGED_IN_VIA) ? (
+      <Component />
+    ) : (
+      <Navigate to="/login" />
     );
+  };
+
+  return <>{isAuthenticated ? <ViaSocialLogin /> : <ViaPechaLogin />}</>;
 };

@@ -1,6 +1,5 @@
-
 import React from "react";
-import {BrowserRouter as Router, useParams} from "react-router-dom";
+import { BrowserRouter as Router, useParams } from "react-router-dom";
 
 import "@testing-library/jest-dom";
 import { mockTolgee } from "../../../test-utils/CommonMocks.js";
@@ -39,10 +38,7 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
 vi.mock("../../commons/pagination/PaginationComponent.jsx", () => ({
   default: ({ pagination, totalPages, handlePageChange, setPagination }) => (
     <div className="pagination">
-      <button
-        className="page-link"
-        onClick={() => handlePageChange(2)}
-      >
+      <button className="page-link" onClick={() => handlePageChange(2)}>
         2
       </button>
     </div>
@@ -56,24 +52,24 @@ describe("Versions Component", () => {
         id: "version1",
         title: "Version 1 Title",
         language: "bo",
-        table_of_contents: ["content1"]
+        table_of_contents: ["content1"],
       },
       {
         id: "version2",
         title: "Version 2 Title",
         language: "en",
-        table_of_contents: ["content2"]
+        table_of_contents: ["content2"],
       },
       {
         id: "version3",
         title: "Version 3 Title",
         language: "sa",
-        table_of_contents: ["content3"]
-      }
+        table_of_contents: ["content3"],
+      },
     ],
     total: 3,
     skip: 0,
-    limit: 10
+    limit: 10,
   };
 
   const mockSetVersionsPagination = vi.fn();
@@ -95,36 +91,32 @@ describe("Versions Component", () => {
   const setup = (props = {}) => {
     const mergedProps = {
       ...defaultProps,
-      ...props
+      ...props,
     };
 
     return render(
       <Router>
-        <TolgeeProvider
-          fallback={"Loading tolgee..."}
-          tolgee={mockTolgee}
-        >
+        <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
           <Versions {...mergedProps} />
         </TolgeeProvider>
-      </Router>
+      </Router>,
     );
   };
 
   describe("Component rendering", () => {
-
     test("displays loading state when data is loading", () => {
-      setup({ 
-        versionsIsLoading: true, 
-        versions: null 
+      setup({
+        versionsIsLoading: true,
+        versions: null,
       });
 
       expect(screen.getByText("Loading...")).toBeInTheDocument();
     });
 
     test("displays error state when there's an error", () => {
-      setup({ 
-        versionsIsError: new Error("API Error"), 
-        versions: null 
+      setup({
+        versionsIsError: new Error("API Error"),
+        versions: null,
       });
 
       expect(screen.getByText("Error occurred")).toBeInTheDocument();
@@ -142,13 +134,12 @@ describe("Versions Component", () => {
     });
 
     test("displays not found message when no versions exist", () => {
-      setup({ 
-        versions: { versions: [], total: 0 } 
+      setup({
+        versions: { versions: [], total: 0 },
       });
 
       expect(screen.getByText("global.not_found")).toBeInTheDocument();
     });
-
   });
 
   describe("Pagination", () => {
@@ -156,8 +147,8 @@ describe("Versions Component", () => {
       setup({
         versions: {
           versions: [],
-          total: 0
-        }
+          total: 0,
+        },
       });
 
       const paginationComponent = document.querySelector(".pagination");
@@ -170,8 +161,8 @@ describe("Versions Component", () => {
       setup({
         versions: {
           versions: [],
-          total: 0
-        }
+          total: 0,
+        },
       });
 
       const versionElements = document.querySelectorAll(".version-details");
@@ -190,7 +181,7 @@ describe("Versions Component", () => {
 
     test("uses textId from URL params when prop not provided", () => {
       useParams.mockReturnValue({ id: "url-456" });
-      
+
       setup({ textId: undefined });
 
       expect(document.querySelector(".versions-container")).toBeInTheDocument();
@@ -207,9 +198,9 @@ describe("Versions Component", () => {
             language: "bo",
             table_of_contents: ["content1"],
             source_link: "Test Source",
-            license: "CC BY 4.0"
-          }
-        ]
+            license: "CC BY 4.0",
+          },
+        ],
       };
 
       setup({ versions: versionsWithMetadata });
@@ -228,7 +219,7 @@ describe("Versions Component", () => {
 
       setup({
         addChapter: mockAddChapter,
-        currentChapter: mockCurrentChapter
+        currentChapter: mockCurrentChapter,
       });
 
       const button = document.querySelector(".version-title-button");
@@ -237,9 +228,9 @@ describe("Versions Component", () => {
       expect(mockAddChapter).toHaveBeenCalledWith(
         {
           textId: "version1",
-          contentId: "content1"
+          contentId: "content1",
         },
-        mockCurrentChapter
+        mockCurrentChapter,
       );
     });
   });

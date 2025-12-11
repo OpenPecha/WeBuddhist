@@ -11,14 +11,14 @@ export default function Chat() {
   const { setActiveThread, threads, resetToNewChat } = useChatStore();
 
   useEffect(() => {
-    if (threadId === 'new') {
+    if (threadId === "new") {
       resetToNewChat();
     } else if (threadId) {
-      const threadExists = threads.some(t => t.id === threadId);
+      const threadExists = threads.some((t) => t.id === threadId);
       if (threadExists) {
         setActiveThread(threadId);
       } else {
-        navigate('/ai/new', { replace: true });
+        navigate("/ai/new", { replace: true });
       }
     }
   }, [threadId, threads, setActiveThread, resetToNewChat, navigate]);
@@ -31,7 +31,10 @@ export default function Chat() {
     <div className="flex h-[calc(100vh-80px)] w-full overallfont">
       <Sidebar isOpen={isSidebarOpen} onToggle={handleToggleSidebar} />
       <div className="flex-1">
-        <ChatArea isSidebarOpen={isSidebarOpen} onOpenSidebar={() => setIsSidebarOpen(true)} />
+        <ChatArea
+          isSidebarOpen={isSidebarOpen}
+          onOpenSidebar={() => setIsSidebarOpen(true)}
+        />
       </div>
     </div>
   );

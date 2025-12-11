@@ -16,7 +16,7 @@ vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
-    useNavigate: () => mockNavigate
+    useNavigate: () => mockNavigate,
   };
 });
 
@@ -34,7 +34,7 @@ vi.mock("../../../utils/highlightUtils.jsx", () => ({
 
 vi.mock("../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: () => "bo",
-  mapLanguageCode: (code) => code === "bo-IN" ? "bo" : "en",
+  mapLanguageCode: (code) => (code === "bo-IN" ? "bo" : "en"),
 }));
 
 vi.mock("../../../utils/constants.js", () => ({
@@ -53,19 +53,17 @@ vi.mock("@tolgee/react", async () => {
 
 describe("Sources Component", () => {
   const queryClient = new QueryClient();
-  
+
   const renderWithProviders = (ui) => {
     return render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading..."} tolgee={mockTolgee}>
-          <MemoryRouter>
-            {ui}
-          </MemoryRouter>
+          <MemoryRouter>{ui}</MemoryRouter>
         </TolgeeProvider>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
   };
-  
+
   const mockSourceData = {
     query: "word that is being searched",
     sources: [
@@ -74,37 +72,37 @@ describe("Sources Component", () => {
           text_id: "uuid-1",
           language: "bo",
           title: "text title",
-          published_date: "12-02-2025"
+          published_date: "12-02-2025",
         },
         segment_matches: [
           {
             segment_id: "segment-uuid-1",
-            content: "segment content"
+            content: "segment content",
           },
           {
             segment_id: "segment-uuid-2",
-            content: "segment content"
-          }
-        ]
+            content: "segment content",
+          },
+        ],
       },
       {
         text: {
           text_id: "uuid-2",
           language: "en",
           title: "text title",
-          published_date: "12-02-2025"
+          published_date: "12-02-2025",
         },
         segment_matches: [
           {
             segment_id: "segment-uuid-3",
-            content: "segment content"
-          }
-        ]
-      }
+            content: "segment content",
+          },
+        ],
+      },
     ],
     skip: 0,
     limit: 10,
-    total: 2
+    total: 2,
   };
 
   beforeEach(() => {
@@ -118,7 +116,7 @@ describe("Sources Component", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockSourceData,
       isLoading: false,
-      error: null
+      error: null,
     }));
 
     renderWithProviders(<Sources query="test" />);
@@ -126,7 +124,7 @@ describe("Sources Component", () => {
     expect(screen.getAllByText("text title")).toHaveLength(2);
     expect(screen.getAllByText("12-02-2025")).toHaveLength(2);
     expect(screen.getAllByText("segment content")).toHaveLength(3);
-    
+
     expect(screen.getByTestId("pagination-component")).toBeInTheDocument();
   });
 
@@ -134,7 +132,7 @@ describe("Sources Component", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: null,
       isLoading: true,
-      error: null
+      error: null,
     }));
 
     renderWithProviders(<Sources query="test" />);
@@ -146,7 +144,7 @@ describe("Sources Component", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: null,
       isLoading: false,
-      error: { message: "Failed to fetch data" }
+      error: { message: "Failed to fetch data" },
     }));
 
     renderWithProviders(<Sources query="test" />);
@@ -162,10 +160,10 @@ describe("Sources Component", () => {
         sources: [],
         skip: 0,
         limit: 10,
-        total: 0
+        total: 0,
       },
       isLoading: false,
-      error: null
+      error: null,
     }));
 
     renderWithProviders(<Sources query="test" />);
@@ -177,7 +175,7 @@ describe("Sources Component", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: null,
       isLoading: false,
-      error: { response: { status: 404 } }
+      error: { response: { status: 404 } },
     }));
 
     renderWithProviders(<Sources query="test" />);
@@ -188,13 +186,13 @@ describe("Sources Component", () => {
   test("handles pagination correctly", () => {
     const sourcesData = {
       ...mockSourceData,
-      sources: Array(30).fill(mockSourceData.sources[0]) // Create 30 copies of the first source
+      sources: Array(30).fill(mockSourceData.sources[0]), // Create 30 copies of the first source
     };
-    
+
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: sourcesData,
       isLoading: false,
-      error: null
+      error: null,
     }));
 
     renderWithProviders(<Sources query="test" />);
@@ -202,7 +200,7 @@ describe("Sources Component", () => {
     // Check if pagination appears for 30 items (default: 10 per page)
     const paginationComponent = screen.getByTestId("pagination-component");
     expect(paginationComponent).toBeInTheDocument();
-    
+
     fireEvent.click(paginationComponent);
   });
 
@@ -210,18 +208,18 @@ describe("Sources Component", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: mockSourceData,
       isLoading: false,
-      error: null
+      error: null,
     }));
-  
+
     renderWithProviders(<Sources query="test" />);
-    
+
     const firstSegment = screen.getAllByText("segment content")[0];
     fireEvent.click(firstSegment);
-    
+
     // Verify navigation was called with the correct URL format
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith(
-      "/chapter?text_id=uuid-1&segment_id=segment-uuid-1&versionId="
+      "/chapter?text_id=uuid-1&segment_id=segment-uuid-1&versionId=",
     );
   });
 });

@@ -3,7 +3,11 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import UserLogin from "./UserLogin.js";
 import "@testing-library/jest-dom";
-import { mockAxios, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
+import {
+  mockAxios,
+  mockTolgee,
+  mockUseAuth,
+} from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
 import axiosInstance from "../../config/axios-config.js";
 
@@ -15,19 +19,19 @@ describe("UserLogin Component", () => {
   const setup = () => {
     render(
       <Router>
-        <QueryClientProvider client={ queryClient }>
-          <TolgeeProvider fallback={ "Loading tolgee..." } tolgee={ mockTolgee }>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
             <UserLogin />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
 
   test("renders the login form correctly", () => {
     setup();
 
-    expect(screen.getByRole('heading', { name: "Login" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Email Address")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
@@ -56,7 +60,7 @@ describe("UserLogin Component", () => {
     fireEvent.click(loginButton);
 
     expect(
-      screen.queryByText("Please fill in all fields")
+      screen.queryByText("Please fill in all fields"),
     ).not.toBeInTheDocument();
   });
 
@@ -91,62 +95,62 @@ describe("UserLogin Component", () => {
     fireEvent.click(loginButton);
 
     expect(
-      screen.queryByText("Please fill in all fields")
+      screen.queryByText("Please fill in all fields"),
     ).not.toBeInTheDocument();
 
     expect(handleSubmit).not.toHaveBeenCalled();
   });
-  
+
   test("toggles password visibility when eye icon is clicked", () => {
     setup();
-  
+
     const passwordInput = screen.getByPlaceholderText("Password");
     expect(passwordInput).toHaveAttribute("type", "password");
-  
+
     const eyeButton = document.querySelector(".password-toggle");
     fireEvent.click(eyeButton);
-  
+
     expect(passwordInput).toHaveAttribute("type", "text");
-  
+
     fireEvent.click(eyeButton);
     expect(passwordInput).toHaveAttribute("type", "password");
   });
 
   test("handles Google login button click", async () => {
     setup();
-  
+
     // Find and click Google login button
     const googleLoginButton = screen.getByText("Google");
-    
+
     // Click the button - this should call loginWithGoogle function
     fireEvent.click(googleLoginButton);
-    
+
     // Verify button still exists after click
     expect(googleLoginButton).toBeInTheDocument();
   });
 
   test("handles Apple login button click", async () => {
     setup();
-  
+
     // Find and click Apple login button
     const appleLoginButton = screen.getByText("Apple");
-    
+
     // Click the button - this should call loginWithApple function
     fireEvent.click(appleLoginButton);
-    
+
     // Verify button still exists after click
     expect(appleLoginButton).toBeInTheDocument();
   });
 
   test("shows validation error when submitting empty form", () => {
     setup();
-  
+
     const loginButton = screen.getByRole("button", { name: "Login" });
 
     fireEvent.click(loginButton);
     // getAllByText to handle multiple validation messages
     const errorMessages = screen.getAllByText(/required/i);
-    
+
     // Validation errors for both email and password
     expect(errorMessages).toHaveLength(2);
     expect(errorMessages[0]).toBeInTheDocument();
@@ -155,21 +159,22 @@ describe("UserLogin Component", () => {
 
   test("validates password length correctly", () => {
     setup();
-  
+
     const emailInput = screen.getByPlaceholderText("Email Address");
     const passwordInput = screen.getByPlaceholderText("Password");
     const loginButton = screen.getByRole("button", { name: "Login" });
-  
+
     // Test with valid email but short password (less than 8 characters)
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-    fireEvent.change(passwordInput, { target: { value: "123" } }); 
-  
+    fireEvent.change(passwordInput, { target: { value: "123" } });
+
     fireEvent.click(loginButton);
-  
-    // Trigger password validation logic 
+
+    // Trigger password validation logic
     expect(passwordInput.value).toBe("123");
     expect(emailInput.value).toBe("test@example.com");
-    expect(screen.getByText("user.validation.invalid_password")).toBeInTheDocument();
+    expect(
+      screen.getByText("user.validation.invalid_password"),
+    ).toBeInTheDocument();
   });
-  
 });

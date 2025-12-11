@@ -25,7 +25,7 @@ const ForgotPassword = () => {
     async (payload: { email: string }) => {
       const response = await axiosInstance.post(
         "api/v1/auth/request-reset-password",
-        payload
+        payload,
       );
       return response.data;
     },
@@ -41,7 +41,7 @@ const ForgotPassword = () => {
           t("user.validation.login_failed");
         setErrors((prev) => ({ ...prev, general: errorMsg }));
       },
-    }
+    },
   );
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -70,44 +70,44 @@ const ForgotPassword = () => {
         description={t("user.forgot_password")}
         footer={
           <div className="w-full text-center text-sm text-muted-foreground">
-          <span>{t("sign_up.already_have_account")} </span>
-          <Link
-            to="/login"
-            className="text-primary transition hover:underline"
-          >
-            {t("login.form.button.login_in")}
-          </Link>
-        </div>
+            <span>{t("sign_up.already_have_account")} </span>
+            <Link
+              to="/login"
+              className="text-primary transition hover:underline"
+            >
+              {t("login.form.button.login_in")}
+            </Link>
+          </div>
         }
       >
         <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-foreground">
-                  {t("common.email")}
-                </span>
-              </div>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                aria-invalid={Boolean(errors.email)}
-                aria-describedby={errors.email ? "email-error" : undefined}
-                required
-              />
-              {errors.email && (
-                <div
-                  id="email-error"
-                  className="flex items-center gap-2 text-sm text-destructive"
-                >
-                  <IoAlertCircleOutline className="size-4" />
-                  <span>{errors.email}</span>
-                </div>
-              )}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground">
+                {t("common.email")}
+              </span>
             </div>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? "email-error" : undefined}
+              required
+            />
+            {errors.email && (
+              <div
+                id="email-error"
+                className="flex items-center gap-2 text-sm text-destructive"
+              >
+                <IoAlertCircleOutline className="size-4" />
+                <span>{errors.email}</span>
+              </div>
+            )}
+          </div>
 
           {errors.general && (
             <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">

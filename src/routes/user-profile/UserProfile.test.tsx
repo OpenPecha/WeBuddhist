@@ -1,11 +1,31 @@
-import { fireEvent, render, screen, act, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  act,
+  waitFor,
+} from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
 import UserProfile, { fetchUserInfo } from "./UserProfile.js";
-import { QueryClient, QueryClientProvider, useQuery, useMutation } from "react-query";
-import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+  useMutation,
+} from "react-query";
+import {
+  mockAxios,
+  mockReactQuery,
+  mockTolgee,
+  mockUseAuth,
+} from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
-import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "../../utils/constants.js";
+import {
+  ACCESS_TOKEN,
+  LOGGED_IN_VIA,
+  REFRESH_TOKEN,
+} from "../../utils/constants.js";
 import * as ReactRouterDom from "react-router-dom";
 import axiosInstance from "../../config/axios-config.js";
 
@@ -40,7 +60,9 @@ vi.mock("./tabs/sheet-listing/SheetListing.jsx", () => ({
 
 // Mock other tab components
 vi.mock("./tabs/collections/CollectionsTab.jsx", () => ({
-  default: () => <div data-testid="collections-tab">profile.tab.collection.description</div>,
+  default: () => (
+    <div data-testid="collections-tab">profile.tab.collection.description</div>
+  ),
 }));
 
 vi.mock("./tabs/notes/Notes.jsx", () => ({
@@ -48,18 +70,27 @@ vi.mock("./tabs/notes/Notes.jsx", () => ({
 }));
 
 vi.mock("./tabs/buddhist-tracker/BuddhistTracker.jsx", () => ({
-  default: () => <div data-testid="buddhist-tracker-tab">profile.text_tracker.descriptions</div>,
-}));
-
-// Mock ImageUploadModal
-vi.mock("../sheets/local-components/modals/image-upload-modal/ImageUploadModal.jsx", () => ({
-  default: ({ onClose, onUpload }) => (
-    <div role="dialog" data-testid="image-upload-modal">
-      <button onClick={onClose}>Close</button>
-      <button onClick={() => onUpload("test-url", "test-file.jpg")}>Upload</button>
+  default: () => (
+    <div data-testid="buddhist-tracker-tab">
+      profile.text_tracker.descriptions
     </div>
   ),
 }));
+
+// Mock ImageUploadModal
+vi.mock(
+  "../sheets/local-components/modals/image-upload-modal/ImageUploadModal.jsx",
+  () => ({
+    default: ({ onClose, onUpload }) => (
+      <div role="dialog" data-testid="image-upload-modal">
+        <button onClick={onClose}>Close</button>
+        <button onClick={() => onUpload("test-url", "test-file.jpg")}>
+          Upload
+        </button>
+      </div>
+    ),
+  }),
+);
 
 mockAxios();
 mockUseAuth();
@@ -70,7 +101,10 @@ const mockUserInfo = {
   lastname: "Doe",
   title: "Senior Software Engineer",
   location: "Bangalore",
-  educations: ["Master of Computer Application (MCA)", "Bachelor of Science, Physics"],
+  educations: [
+    "Master of Computer Application (MCA)",
+    "Bachelor of Science, Physics",
+  ],
   organization: "pecha org",
   following: 1,
   followers: 1,
@@ -101,7 +135,7 @@ const setup = () => {
           <UserProfile />
         </TolgeeProvider>
       </QueryClientProvider>
-    </Router>
+    </Router>,
   );
 };
 
@@ -109,7 +143,7 @@ describe("UserProfile Component", () => {
   const mockedNavigate = vi.fn();
 
   beforeAll(() => {
-    vi.spyOn(window, 'alert').mockImplementation(() => {});
+    vi.spyOn(window, "alert").mockImplementation(() => {});
   });
 
   afterAll(() => {
@@ -119,7 +153,7 @@ describe("UserProfile Component", () => {
   beforeEach(() => {
     // Reset all mocks before each test
     vi.clearAllMocks();
-    
+
     // Mock localStorage and sessionStorage methods
     const mockStorage = {
       removeItem: vi.fn(),
@@ -172,7 +206,11 @@ describe("UserProfile Component", () => {
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("Senior Software Engineer")).toBeInTheDocument();
     expect(screen.getByText("Bangalore")).toBeInTheDocument();
-    expect(screen.getByText("Master of Computer Application (MCA) Bachelor of Science, Physics")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Master of Computer Application (MCA) Bachelor of Science, Physics",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText("1 Followers")).toBeInTheDocument();
     expect(screen.getByText("1 Following")).toBeInTheDocument();
   });
@@ -199,7 +237,6 @@ describe("UserProfile Component", () => {
     expect(facebookLink.querySelector("svg")).toBeInTheDocument();
     expect(emailLink.querySelector("svg")).toBeInTheDocument();
   });
-
 
   test("handles image upload modal and image upload process", async () => {
     const mockRefetch = vi.fn();
@@ -237,8 +274,6 @@ describe("UserProfile Component", () => {
     expect(screen.queryByTestId("image-upload-modal")).not.toBeInTheDocument();
   });
 
-  
-
   test("handles edit profile navigation correctly", async () => {
     setup();
 
@@ -247,7 +282,9 @@ describe("UserProfile Component", () => {
       fireEvent.click(editButton);
     });
 
-    expect(mockedNavigate).toHaveBeenCalledWith("/edit-profile", { state: { userInfo: mockUserInfo } });
+    expect(mockedNavigate).toHaveBeenCalledWith("/edit-profile", {
+      state: { userInfo: mockUserInfo },
+    });
   });
 
   test("shows loading state when user info is loading", () => {
@@ -264,7 +301,7 @@ describe("UserProfile Component", () => {
   test("displays profile image with edit overlay when avatar_url exists", () => {
     const userInfoWithAvatar = {
       ...mockUserInfo,
-      avatar_url: "https://example.com/avatar.jpg"
+      avatar_url: "https://example.com/avatar.jpg",
     };
 
     useQuery.mockImplementation(() => ({
@@ -276,9 +313,12 @@ describe("UserProfile Component", () => {
     setup();
 
     const profileImage = screen.getByAltText("Profile");
-    expect(profileImage).toHaveAttribute("src", "https://example.com/avatar.jpg");
+    expect(profileImage).toHaveAttribute(
+      "src",
+      "https://example.com/avatar.jpg",
+    );
     expect(screen.getByRole("img")).toBeInTheDocument();
-    
+
     // Check for edit overlay
     const editOverlay = screen.getByTestId("edit-overlay");
     expect(editOverlay).toBeInTheDocument();
@@ -302,8 +342,8 @@ describe("fetchUserInfo Function", () => {
       followers: 1,
       avatar_url: "https://example.com/avatar.jpg",
       social_profiles: [
-        { account: "linkedin", url: "https://linkedin.com/johndoe" }
-      ]
+        { account: "linkedin", url: "https://linkedin.com/johndoe" },
+      ],
     };
 
     axiosInstance.get.mockResolvedValueOnce({ data: mockUserData });
@@ -326,15 +366,15 @@ describe("fetchUserInfo Function", () => {
     const errorCases = [
       { status: 401, message: "Unauthorized" },
       { status: 404, message: "User not found" },
-      { status: 500, message: "Internal Server Error" }
+      { status: 500, message: "Internal Server Error" },
     ];
 
     for (const errorCase of errorCases) {
       const mockError = {
         response: {
           status: errorCase.status,
-          data: { message: errorCase.message }
-        }
+          data: { message: errorCase.message },
+        },
       };
       axiosInstance.get.mockRejectedValueOnce(mockError);
 
@@ -355,10 +395,10 @@ describe("fetchUserInfo Function", () => {
     result = await fetchUserInfo();
     expect(result).toEqual(partialData);
   });
-  
+
   test("handles logout correctly", async () => {
     setup();
-    
+
     const logoutElement = screen.getByText("Log Out");
     await act(async () => {
       fireEvent.click(logoutElement);

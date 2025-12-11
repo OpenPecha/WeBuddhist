@@ -1,5 +1,11 @@
 import React from "react";
-import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockLocalStorage } from "../../../test-utils/CommonMocks.js";
+import {
+  mockAxios,
+  mockReactQuery,
+  mockTolgee,
+  mockUseAuth,
+  mockLocalStorage,
+} from "../../../test-utils/CommonMocks.js";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
@@ -31,16 +37,22 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
 
 vi.mock("../utils/header/ChapterHeader.jsx", () => ({
   __esModule: true,
-  default: (props) => <div data-testid="chapter-header-mock">ChapterHeader</div>,
+  default: (props) => (
+    <div data-testid="chapter-header-mock">ChapterHeader</div>
+  ),
 }));
 
 vi.mock("./helpers/UseChapterHook.jsx", () => ({
   __esModule: true,
-  default: (props) => <div data-testid="use-chapter-hook-mock">UseChapterHook</div>,
+  default: (props) => (
+    <div data-testid="use-chapter-hook-mock">UseChapterHook</div>
+  ),
 }));
 
 vi.mock("../../../context/PanelContext.jsx", () => ({
-  PanelProvider: ({ children }) => <div data-testid="panel-provider-mock">{children}</div>,
+  PanelProvider: ({ children }) => (
+    <div data-testid="panel-provider-mock">{children}</div>
+  ),
 }));
 
 vi.mock("../../../config/axios-config.js", () => ({
@@ -71,7 +83,7 @@ const setup = (props = {}) => {
           <ContentsChapter {...defaultProps} {...props} />
         </TolgeeProvider>
       </QueryClientProvider>
-    </Router>
+    </Router>,
   );
 };
 
@@ -105,7 +117,9 @@ describe("ContentsChapter", () => {
       error: null,
     });
     setup();
-    expect(document.querySelector(".contents-chapter-container")).toBeInTheDocument();
+    expect(
+      document.querySelector(".contents-chapter-container"),
+    ).toBeInTheDocument();
     expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
     expect(screen.getByTestId("panel-provider-mock")).toBeInTheDocument();
   });
@@ -140,39 +154,53 @@ describe("ContentsChapter", () => {
       error: null,
     });
     setup();
-    expect(document.querySelector(".contents-chapter-container")).toBeInTheDocument();
+    expect(
+      document.querySelector(".contents-chapter-container"),
+    ).toBeInTheDocument();
   });
 
   describe("fetchContentDetails function", () => {
     test("calls axios with correct parameters when all props are provided", async () => {
       const mockData = { content: { sections: [] } };
       axiosInstance.post.mockResolvedValue({ data: mockData });
-      
-      const queryKey = ["content", "text-1", "content-1", "version-1", 20, "segment-1"];
+
+      const queryKey = [
+        "content",
+        "text-1",
+        "content-1",
+        "version-1",
+        20,
+        "segment-1",
+      ];
       const pageParam = { segmentId: "test-segment", direction: "next" };
 
       let capturedFetchFunction;
-      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation((key, fetchFn, options) => {
-        capturedFetchFunction = fetchFn;
-        return {
-          data: null,
-          isLoading: false,
-          error: null,
-        };
-      });
+      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+        (key, fetchFn, options) => {
+          capturedFetchFunction = fetchFn;
+          return {
+            data: null,
+            isLoading: false,
+            error: null,
+          };
+        },
+      );
 
       setup();
       if (capturedFetchFunction) {
         await capturedFetchFunction({ pageParam, queryKey });
       }
 
-      expect(axiosInstance.post).toHaveBeenCalledWith("/api/v1/texts/text-1/details", {
-        content_id: "content-1",
-        segment_id: "test-segment",
-        version_id: "version-1",
-        direction: "next",
-        size: 20,
-      });
+      expect(axiosInstance.post).toHaveBeenCalledWith(
+        "/api/v1/texts/text-1/details",
+        {
+          content_id: "content-1",
+          segment_id: "test-segment",
+          version_id: "version-1",
+          direction: "next",
+          size: 20,
+        },
+      );
     });
 
     test("calls axios with default direction when pageParam is null", async () => {
@@ -180,30 +208,42 @@ describe("ContentsChapter", () => {
       axiosInstance.post.mockResolvedValue({ data: mockData });
 
       let capturedFetchFunction;
-      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation((key, fetchFn, options) => {
-        capturedFetchFunction = fetchFn;
-        return {
-          data: null,
-          isLoading: false,
-          error: null,
-        };
-      });
+      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+        (key, fetchFn, options) => {
+          capturedFetchFunction = fetchFn;
+          return {
+            data: null,
+            isLoading: false,
+            error: null,
+          };
+        },
+      );
 
       setup();
 
-      const queryKey = ["content", "text-1", "content-1", "version-1", 20, "segment-1"];
-      
+      const queryKey = [
+        "content",
+        "text-1",
+        "content-1",
+        "version-1",
+        20,
+        "segment-1",
+      ];
+
       if (capturedFetchFunction) {
         await capturedFetchFunction({ pageParam: null, queryKey });
       }
 
-      expect(axiosInstance.post).toHaveBeenCalledWith("/api/v1/texts/text-1/details", {
-        content_id: "content-1",
-        segment_id: "segment-1",
-        version_id: "version-1",
-        direction: "next",
-        size: 20,
-      });
+      expect(axiosInstance.post).toHaveBeenCalledWith(
+        "/api/v1/texts/text-1/details",
+        {
+          content_id: "content-1",
+          segment_id: "segment-1",
+          version_id: "version-1",
+          direction: "next",
+          size: 20,
+        },
+      );
     });
 
     test("calls axios without optional parameters when they are null/undefined", async () => {
@@ -211,14 +251,16 @@ describe("ContentsChapter", () => {
       axiosInstance.post.mockResolvedValue({ data: mockData });
 
       let capturedFetchFunction;
-      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation((key, fetchFn, options) => {
-        capturedFetchFunction = fetchFn;
-        return {
-          data: null,
-          isLoading: false,
-          error: null,
-        };
-      });
+      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+        (key, fetchFn, options) => {
+          capturedFetchFunction = fetchFn;
+          return {
+            data: null,
+            isLoading: false,
+            error: null,
+          };
+        },
+      );
 
       setup({
         contentId: null,
@@ -227,37 +269,42 @@ describe("ContentsChapter", () => {
       });
 
       const queryKey = ["content", "text-1", null, null, 20, null];
-      
+
       if (capturedFetchFunction) {
         await capturedFetchFunction({ pageParam: null, queryKey });
       }
 
-      expect(axiosInstance.post).toHaveBeenCalledWith("/api/v1/texts/text-1/details", {
-        direction: "next",
-        size: 20,
-      });
+      expect(axiosInstance.post).toHaveBeenCalledWith(
+        "/api/v1/texts/text-1/details",
+        {
+          direction: "next",
+          size: 20,
+        },
+      );
     });
   });
 
   describe("getNextPageParam logic", () => {
     test("returns null when current_segment_position equals total_segments", () => {
       let capturedGetNextPageParam;
-      
-      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation((key, fetchFn, options) => {
-        capturedGetNextPageParam = options.getNextPageParam;
-        return {
-          data: null,
-          isLoading: false,
-          error: null,
-        };
-      });
+
+      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+        (key, fetchFn, options) => {
+          capturedGetNextPageParam = options.getNextPageParam;
+          return {
+            data: null,
+            isLoading: false,
+            error: null,
+          };
+        },
+      );
 
       setup();
 
       const lastPage = {
         current_segment_position: 10,
         total_segments: 10,
-        content: { sections: [{ id: 1 }] }
+        content: { sections: [{ id: 1 }] },
       };
 
       const result = capturedGetNextPageParam(lastPage);
@@ -266,15 +313,17 @@ describe("ContentsChapter", () => {
 
     test("handles undefined lastPage gracefully", () => {
       let capturedGetNextPageParam;
-      
-      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation((key, fetchFn, options) => {
-        capturedGetNextPageParam = options.getNextPageParam;
-        return {
-          data: null,
-          isLoading: false,
-          error: null,
-        };
-      });
+
+      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+        (key, fetchFn, options) => {
+          capturedGetNextPageParam = options.getNextPageParam;
+          return {
+            data: null,
+            isLoading: false,
+            error: null,
+          };
+        },
+      );
 
       setup();
 
@@ -286,21 +335,23 @@ describe("ContentsChapter", () => {
   describe("getPreviousPageParam logic", () => {
     test("returns null when current_segment_position equals 1", () => {
       let capturedGetPreviousPageParam;
-      
-      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation((key, fetchFn, options) => {
-        capturedGetPreviousPageParam = options.getPreviousPageParam;
-        return {
-          data: null,
-          isLoading: false,
-          error: null,
-        };
-      });
+
+      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+        (key, fetchFn, options) => {
+          capturedGetPreviousPageParam = options.getPreviousPageParam;
+          return {
+            data: null,
+            isLoading: false,
+            error: null,
+          };
+        },
+      );
 
       setup();
 
       const firstPage = {
         current_segment_position: 1,
-        content: { sections: [{ id: 1 }] }
+        content: { sections: [{ id: 1 }] },
       };
 
       const result = capturedGetPreviousPageParam(firstPage);
@@ -311,15 +362,17 @@ describe("ContentsChapter", () => {
   describe("useInfiniteQuery configuration", () => {
     test("query is enabled when textId is provided", () => {
       let capturedOptions;
-      
-      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation((key, fetchFn, options) => {
-        capturedOptions = options;
-        return {
-          data: null,
-          isLoading: false,
-          error: null,
-        };
-      });
+
+      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+        (key, fetchFn, options) => {
+          capturedOptions = options;
+          return {
+            data: null,
+            isLoading: false,
+            error: null,
+          };
+        },
+      );
 
       setup({ textId: "valid-text-id" });
 
@@ -328,15 +381,17 @@ describe("ContentsChapter", () => {
 
     test("query is disabled when textId is not provided", () => {
       let capturedOptions;
-      
-      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation((key, fetchFn, options) => {
-        capturedOptions = options;
-        return {
-          data: null,
-          isLoading: false,
-          error: null,
-        };
-      });
+
+      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+        (key, fetchFn, options) => {
+          capturedOptions = options;
+          return {
+            data: null,
+            isLoading: false,
+            error: null,
+          };
+        },
+      );
 
       setup({ textId: null });
 
@@ -345,15 +400,17 @@ describe("ContentsChapter", () => {
 
     test("refetchOnWindowFocus is disabled", () => {
       let capturedOptions;
-      
-      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation((key, fetchFn, options) => {
-        capturedOptions = options;
-        return {
-          data: null,
-          isLoading: false,
-          error: null,
-        };
-      });
+
+      vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+        (key, fetchFn, options) => {
+          capturedOptions = options;
+          return {
+            data: null,
+            isLoading: false,
+            error: null,
+          };
+        },
+      );
 
       setup();
 

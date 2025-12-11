@@ -4,24 +4,27 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { expect } from "vitest";
 import UserRegistration from "./UserRegistration.js";
 import "@testing-library/jest-dom";
-import { mockAxios, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
+import {
+  mockAxios,
+  mockTolgee,
+  mockUseAuth,
+} from "../../test-utils/CommonMocks.js";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 
 mockAxios();
-mockUseAuth()
+mockUseAuth();
 describe("UserRegistration Component", () => {
-
   const queryClient = new QueryClient();
   const setup = () => {
     render(
       <Router>
-        <QueryClientProvider client={ queryClient }>
-          <TolgeeProvider fallback={ "Loading tolgee..." } tolgee={ mockTolgee }>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
             <UserRegistration />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
 
@@ -42,36 +45,44 @@ describe("UserRegistration Component", () => {
     expect(screen.getByText("Already have an account?")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Login" })).toHaveAttribute(
       "href",
-      "/login"
+      "/login",
     );
   });
-  
+
   test("handles invalid user input correctly", async () => {
     setup();
-  
+
     const emailInput = screen.getByPlaceholderText("Email Address");
     const lastNameInput = screen.getByPlaceholderText("Last Name");
     const passwordInput = screen.getByPlaceholderText("Password");
-    const confirmPasswordInput = screen.getByPlaceholderText("common.confirm_password");
-  
+    const confirmPasswordInput = screen.getByPlaceholderText(
+      "common.confirm_password",
+    );
+
     await userEvent.type(emailInput, "test@example");
     expect(emailInput).toHaveValue("test@example");
-  
+
     await userEvent.type(lastNameInput, "Arisu");
     expect(lastNameInput).toHaveValue("Arisu");
-  
+
     await userEvent.type(passwordInput, "pass");
     expect(passwordInput).toHaveValue("pass");
-  
+
     await userEvent.type(confirmPasswordInput, "password121");
     expect(confirmPasswordInput).toHaveValue("password121");
-  
+
     const submitButton = screen.getByRole("button", { name: "Sign up" });
     await userEvent.click(submitButton);
-  
-    expect(screen.getByText("user.validation.password_do_not_match")).toBeInTheDocument();
-    expect(screen.getByText("user.validation.invalid_password")).toBeInTheDocument();
-    expect(screen.getByText("user.validation.invalid_email")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("user.validation.password_do_not_match"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("user.validation.invalid_password"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("user.validation.invalid_email"),
+    ).toBeInTheDocument();
     expect(screen.getByText("user.validation.required")).toBeInTheDocument();
   });
 
@@ -107,13 +118,19 @@ describe("UserRegistration Component", () => {
 
   test("validates form and prevents submission with invalid data", async () => {
     setup();
-    
-    await userEvent.type(screen.getByPlaceholderText("Email Address"), "invalid-email");
+
+    await userEvent.type(
+      screen.getByPlaceholderText("Email Address"),
+      "invalid-email",
+    );
     await userEvent.type(screen.getByPlaceholderText("First Name"), "Ryohei");
     await userEvent.type(screen.getByPlaceholderText("Last Name"), "Arisu");
     await userEvent.type(screen.getByPlaceholderText("Password"), "pass");
-    await userEvent.type(screen.getByPlaceholderText("common.confirm_password"), "password121");
-    
+    await userEvent.type(
+      screen.getByPlaceholderText("common.confirm_password"),
+      "password121",
+    );
+
     const submitButton = screen.getByRole("button", { name: "Sign up" });
     await userEvent.click(submitButton);
 
@@ -122,16 +139,19 @@ describe("UserRegistration Component", () => {
 
   test("confirm password toggle button works correctly", async () => {
     setup();
-  
-    const confirmPasswordInput = screen.getByPlaceholderText("common.confirm_password");
-    const confirmPasswordGroup = confirmPasswordInput.closest('.form-group');
-    const confirmToggleButton = confirmPasswordGroup.querySelector('.password-toggle');
-  
+
+    const confirmPasswordInput = screen.getByPlaceholderText(
+      "common.confirm_password",
+    );
+    const confirmPasswordGroup = confirmPasswordInput.closest(".form-group");
+    const confirmToggleButton =
+      confirmPasswordGroup.querySelector(".password-toggle");
+
     expect(confirmPasswordInput).toHaveAttribute("type", "password");
-    
+
     await userEvent.click(confirmToggleButton);
     expect(confirmPasswordInput).toHaveAttribute("type", "text");
-    
+
     await userEvent.click(confirmToggleButton);
     expect(confirmPasswordInput).toHaveAttribute("type", "password");
   });

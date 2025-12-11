@@ -4,7 +4,10 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TolgeeProvider } from "@tolgee/react";
 import "@testing-library/jest-dom";
-import { mockTolgee, mockLocalStorage } from "../../../test-utils/CommonMocks.js";
+import {
+  mockTolgee,
+  mockLocalStorage,
+} from "../../../test-utils/CommonMocks.js";
 import Commentaries from "./Commentaries.js";
 
 let localStorageMock;
@@ -63,14 +66,16 @@ describe("Commentaries Component", () => {
         <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
           <Commentaries {...mergedProps} />
         </TolgeeProvider>
-      </Router>
+      </Router>,
     );
   };
 
   test("renders items with language labels", () => {
     setup();
 
-    expect(document.querySelector(".commentaries-container")).toBeInTheDocument();
+    expect(
+      document.querySelector(".commentaries-container"),
+    ).toBeInTheDocument();
 
     const items = document.querySelectorAll(".commentary-details");
     expect(items).toHaveLength(2);

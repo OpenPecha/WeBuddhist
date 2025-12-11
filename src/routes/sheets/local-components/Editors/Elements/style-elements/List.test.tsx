@@ -7,7 +7,7 @@ describe("List Component", () => {
   const defaultProps = {
     attributes: { "data-testid": "list-element" },
     children: "Sample list content",
-    element: { type: "unordered-list", align: "left" }
+    element: { type: "unordered-list", align: "left" },
   };
 
   const setup = (props = {}) => {
@@ -17,32 +17,32 @@ describe("List Component", () => {
   test("renders ordered list with correct styling and attributes", () => {
     setup({
       element: { type: "ordered-list", align: "right" },
-      children: "Ordered list items"
+      children: "Ordered list items",
     });
-    
+
     const ol = screen.getByTestId("list-element");
     expect(ol).toBeInTheDocument();
     expect(ol.tagName).toBe("OL");
     expect(ol).toHaveStyle({
       paddingLeft: "2em",
       margin: "0.5em 0",
-      textAlign: "right"
+      textAlign: "right",
     });
     expect(screen.getByText("Ordered list items")).toBeInTheDocument();
   });
 
   test("renders unordered list with default styling and attributes", () => {
     setup({
-      element: { type: "unordered-list" }
+      element: { type: "unordered-list" },
     });
-    
+
     const ul = screen.getByTestId("list-element");
     expect(ul).toBeInTheDocument();
     expect(ul.tagName).toBe("UL");
     expect(ul).toHaveStyle({
       paddingLeft: "2em",
       margin: "0.5em 0",
-      textAlign: "left"
+      textAlign: "left",
     });
     expect(screen.getByText("Sample list content")).toBeInTheDocument();
   });

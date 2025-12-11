@@ -7,7 +7,7 @@ describe("QuoteElement Component", () => {
   const defaultProps = {
     attributes: { "data-testid": "quote-element" },
     children: "Sample quote content",
-    element: {}
+    element: {},
   };
 
   const setup = (props = {}) => {
@@ -20,11 +20,11 @@ describe("QuoteElement Component", () => {
         <strong>Bold text</strong> and <em>italic text</em>
       </div>
     );
-    
+
     setup({
-      children: complexChildren
+      children: complexChildren,
     });
-    
+
     expect(screen.getByText("Bold text")).toBeInTheDocument();
     expect(screen.getByText("italic text")).toBeInTheDocument();
   });

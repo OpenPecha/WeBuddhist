@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -16,69 +15,69 @@
 #root {
   text-align: center;
   --title-font-size: 16px;
-  --title-font-family: 'EBGaramond-Regular', sans-serif;
+  --title-font-family: "EBGaramond-Regular", sans-serif;
   --subtitle-font-size: 16px;
-  --subtitle-font-family: 'sub-title-font',"Inter";
+  --subtitle-font-family: "sub-title-font", "Inter";
   --content-font-size: 16px;
-  --content-font-family: 'content-font',"Inter";
+  --content-font-family: "content-font", "Inter";
   --subcontent-font-size: 11px;
-  --subcontent-font-family: 'sub-content-font',"Inter";
+  --subcontent-font-family: "sub-content-font", "Inter";
   --listtitle-font-size: 16px;
-  --listtitle-font-family: 'list-title-font',"Inter";
+  --listtitle-font-family: "list-title-font", "Inter";
   --listsubtitle-font-size: 14px;
-  --listsubtitle-font-family: 'list-subtitle-font',"Inter";
+  --listsubtitle-font-family: "list-subtitle-font", "Inter";
   --navbaritems-font-size: 16px;
-  --navbaritems-font-family: 'navbar-items-font',"Inter";
+  --navbaritems-font-family: "navbar-items-font", "Inter";
   --overalltext-font-size: 24px;
-  --overalltext-font-family: 'EBGaramond-Regular', sans-serif;
+  --overalltext-font-family: "EBGaramond-Regular", sans-serif;
   --collection-link-font-size: 16px;
-  --collection-link-font-family: 'collection-link-font';
+  --collection-link-font-family: "collection-link-font";
 }
 
-.div-color{
+.div-color {
   height: 1px;
   background-color: #dd0707;
   margin-bottom: 1rem;
-  width: 100%
+  width: 100%;
 }
 
 @font-face {
-  font-family: 'Jomolhari-Regular';
+  font-family: "Jomolhari-Regular";
   src: url("./assets/fonts/Jomolhari-Regular.ttf");
 }
 
-@font-face{
-  font-family: 'Atisha';
+@font-face {
+  font-family: "Atisha";
   src: url("./assets/fonts/Atisha.ttf");
 }
 
 @font-face {
-  font-family: 'EBGaramond-Regular';
+  font-family: "EBGaramond-Regular";
   src: url("./assets/fonts/EBGaramond-Regular.ttf");
 }
 
 @font-face {
-  font-family: 'NotoSerifTibetan-Medium';
+  font-family: "NotoSerifTibetan-Medium";
   src: url("./assets/fonts/NotoSerifTibetan-Medium.ttf");
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: url("./assets/fonts/InterRegular.woff") format('woff');
+  font-family: "Inter";
+  src: url("./assets/fonts/InterRegular.woff") format("woff");
 }
-.bo-text{
-  font-family: 'Atisha', sans-serif;
+.bo-text {
+  font-family: "Atisha", sans-serif;
 }
-.en-text{
-  font-family: 'Inter', sans-serif;
+.en-text {
+  font-family: "Inter", sans-serif;
   font-size: 18px;
 }
-.en-serif-text{
-  font-family: 'EBGaramond-Regular', sans-serif;
+.en-serif-text {
+  font-family: "EBGaramond-Regular", sans-serif;
   font-size: 20px;
 }
-.serif-title-text{
-  font-family: 'EBGaramond-Regular', sans-serif;
+.serif-title-text {
+  font-family: "EBGaramond-Regular", sans-serif;
 }
 .title {
   font-size: var(--title-font-size);
@@ -89,7 +88,7 @@
   font-size: var(--subtitle-font-size);
   font-family: var(--subtitle-font-family);
 }
-.collectionfont{
+.collectionfont {
   font-family: var(--collection-link-font-family);
   font-size: var(--collection-link-font-size);
 }
@@ -104,23 +103,23 @@
   font-family: var(--subcontent-font-family);
 }
 
-.listtitle{
+.listtitle {
   font-size: var(--listtitle-font-size);
   font-family: var(--listtitle-font-family);
 }
-.listtitle p.bo-text{
+.listtitle p.bo-text {
   margin-top: 1rem;
 }
-.overalltext{
+.overalltext {
   font-size: var(--overalltext-font-size);
   font-family: var(--overalltext-font-family);
 }
-.listsubtitle{
+.listsubtitle {
   font-size: var(--listsubtitle-font-size);
   font-family: var(--listsubtitle-font-family);
 }
 
-.navbaritems{ 
+.navbaritems {
   font-size: var(--navbaritems-font-size);
   font-family: var(--navbaritems-font-family);
 }

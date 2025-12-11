@@ -39,20 +39,22 @@ describe("MarkButton", () => {
     mockIsMarkActive.mockClear();
     mockToggleMark.mockClear();
     mockEditor = createEditor();
-    
+
     const slateReact = await import("slate-react");
     useSlate = slateReact.useSlate;
     useSlate.mockReturnValue(mockEditor);
-    
+
     mockIsMarkActive.mockReturnValue(false);
   });
 
   const renderWithSlate = (component) => {
-    const initialValue = [{ type: "paragraph", children: [{ text: "Test content" }] }];
+    const initialValue = [
+      { type: "paragraph", children: [{ text: "Test content" }] },
+    ];
     return render(
       <Slate editor={withReact(createEditor())} initialValue={initialValue}>
         {component}
-      </Slate>
+      </Slate>,
     );
   };
 
@@ -63,40 +65,40 @@ describe("MarkButton", () => {
 
   test("displays button with children content", () => {
     renderWithSlate(<MarkButton {...defaultProps} />);
-    
+
     expect(screen.getByRole("button", { name: "B" })).toBeInTheDocument();
   });
 
   test("applies active class when text format is active", () => {
     mockIsMarkActive.mockReturnValue(true);
-    
+
     renderWithSlate(<MarkButton {...defaultProps} />);
-    
+
     const button = screen.getByRole("button", { name: "B" });
     expect(button).toHaveClass("active");
   });
 
   test("applies custom className when provided", () => {
     renderWithSlate(<MarkButton {...defaultProps} className="custom-class" />);
-    
+
     const button = screen.getByRole("button", { name: "B" });
     expect(button).toHaveClass("custom-class");
   });
 
   test("toggles text format when button clicked", () => {
     renderWithSlate(<MarkButton {...defaultProps} />);
-    
+
     const button = screen.getByRole("button", { name: "B" });
     fireEvent.mouseDown(button);
-    
+
     expect(mockToggleMark).toHaveBeenCalledWith(mockEditor, "bold");
   });
 
   test("checks if text format is active on render", () => {
     const format = "italic";
-    
+
     renderWithSlate(<MarkButton format={format} children="I" />);
-    
+
     expect(mockIsMarkActive).toHaveBeenCalledWith(mockEditor, format);
   });
 });

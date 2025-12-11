@@ -1,4 +1,4 @@
-import { Pen } from 'lucide-react';
+import { Pen } from "lucide-react";
 
 export function WritingIndicator() {
   return (

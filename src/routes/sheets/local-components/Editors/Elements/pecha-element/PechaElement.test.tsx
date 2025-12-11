@@ -4,35 +4,38 @@ import "@testing-library/jest-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import PechaElement, { fetchSegmentDetails } from "./PechaElement.js";
 import { vi } from "vitest";
-import { mockAxios, mockReactQuery } from "../../../../../../test-utils/CommonMocks.js";
+import {
+  mockAxios,
+  mockReactQuery,
+} from "../../../../../../test-utils/CommonMocks.js";
 import * as reactQuery from "react-query";
-import { removeFootnotes } from '../../../../sheet-utils/Constant.js';
-import axiosInstance from '../../../../../../config/axios-config.js';
-import {getLanguageClass} from "../../../../../../utils/helperFunctions.js";
+import { removeFootnotes } from "../../../../sheet-utils/Constant.js";
+import axiosInstance from "../../../../../../config/axios-config.js";
+import { getLanguageClass } from "../../../../../../utils/helperFunctions.js";
 
 mockAxios();
 mockReactQuery();
 
-vi.mock('../../../../../../utils/helperFunctions.jsx', () => ({
-  getLanguageClass: vi.fn(() => 'tibetan-class')
+vi.mock("../../../../../../utils/helperFunctions.jsx", () => ({
+  getLanguageClass: vi.fn(() => "tibetan-class"),
 }));
 
-vi.mock('../../../../sheet-utils/Constant', () => ({
-  removeFootnotes: vi.fn((content) => content)
+vi.mock("../../../../sheet-utils/Constant", () => ({
+  removeFootnotes: vi.fn((content) => content),
 }));
 
-vi.mock('../../../../../../assets/icons/pecha_icon.png', () => ({
-  default: 'mocked-pecha-icon.png'
+vi.mock("../../../../../../assets/icons/pecha_icon.png", () => ({
+  default: "mocked-pecha-icon.png",
 }));
 
 describe("PechaElement Component", () => {
   const queryClient = new QueryClient();
   const mockSegmentData = {
-    content: '<p>Sample content with [footnote]</p>',
+    content: "<p>Sample content with [footnote]</p>",
     text: {
-      title: 'Sample Text Title',
-      language: 'tibetan'
-    }
+      title: "Sample Text Title",
+      language: "tibetan",
+    },
   };
 
   beforeEach(() => {
@@ -41,7 +44,7 @@ describe("PechaElement Component", () => {
       data: mockSegmentData,
       isLoading: false,
     }));
-    getLanguageClass.mockReturnValue('tibetan-class');
+    getLanguageClass.mockReturnValue("tibetan-class");
     removeFootnotes.mockImplementation((content) => content);
   });
 
@@ -49,15 +52,15 @@ describe("PechaElement Component", () => {
     attributes: { "data-testid": "pecha-element" },
     children: null,
     element: {
-      src: "segment-123"
-    }
+      src: "segment-123",
+    },
   };
 
   const setup = (props = {}) => {
     return render(
       <QueryClientProvider client={queryClient}>
         <PechaElement {...defaultProps} {...props} />
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
   };
 
@@ -66,9 +69,9 @@ describe("PechaElement Component", () => {
       data: null,
       isLoading: true,
     }));
-    
+
     setup();
-    
+
     expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
@@ -76,7 +79,7 @@ describe("PechaElement Component", () => {
     setup();
 
     await waitFor(() => {
-      expect(screen.getByText('Sample Text Title')).toBeInTheDocument();
+      expect(screen.getByText("Sample Text Title")).toBeInTheDocument();
     });
 
     const container = screen.getByTestId("pecha-element");
@@ -87,7 +90,7 @@ describe("PechaElement Component", () => {
     expect(pechaIcon).toHaveAttribute("src", "mocked-pecha-icon.png");
     expect(pechaIcon).toHaveClass("webuddhist-icon");
 
-    const titleElement = screen.getByText('Sample Text Title');
+    const titleElement = screen.getByText("Sample Text Title");
     expect(titleElement).toHaveClass("webuddhist-title");
   });
 
@@ -97,49 +100,57 @@ describe("PechaElement Component", () => {
     setup({ element: { src: null } });
 
     expect(querySpy).toHaveBeenCalledWith(
-      ['segment', null],
+      ["segment", null],
       expect.any(Function),
       {
         enabled: false,
-        refetchOnWindowFocus: false
-      }
+        refetchOnWindowFocus: false,
+      },
     );
   });
 
   test("fetchSegmentDetails function makes correct API call", async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockSegmentData });
-    
+
     const segmentId = "segment-123";
     const result = await fetchSegmentDetails(segmentId);
-    
-    expect(axiosInstance.get).toHaveBeenCalledWith('/api/v1/segments/segment-123', {
-      params: {
-        text_details: true
-      }
-    });
-    
+
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      "/api/v1/segments/segment-123",
+      {
+        params: {
+          text_details: true,
+        },
+      },
+    );
+
     expect(result).toEqual(mockSegmentData);
   });
 
   test("useQuery executes fetchSegmentDetails function", async () => {
     axiosInstance.get.mockResolvedValueOnce({ data: mockSegmentData });
-    
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((_queryKey, queryFn, options) => {
-      if (options?.enabled) {
-        queryFn();
-      }
-      return {
-        data: mockSegmentData,
-        isLoading: false,
-      };
-    });
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(
+      (_queryKey, queryFn, options) => {
+        if (options?.enabled) {
+          queryFn();
+        }
+        return {
+          data: mockSegmentData,
+          isLoading: false,
+        };
+      },
+    );
 
     setup();
 
-    expect(axiosInstance.get).toHaveBeenCalledWith('/api/v1/segments/segment-123', {
-      params: {
-        text_details: true
-      }
-    });
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      "/api/v1/segments/segment-123",
+      {
+        params: {
+          text_details: true,
+        },
+      },
+    );
   });
 });

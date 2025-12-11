@@ -4,27 +4,30 @@ import "@testing-library/jest-dom";
 import DefaultElement from "./DefaultElement.js";
 import { vi } from "vitest";
 
-import { useSelected } from 'slate-react';
-import {getLanguageClass} from "../../../../../../utils/helperFunctions.js";
+import { useSelected } from "slate-react";
+import { getLanguageClass } from "../../../../../../utils/helperFunctions.js";
 
-vi.mock('../../../../../../utils/helperFunctions.jsx', () => ({
-  getLanguageClass: vi.fn(() => 'en-class')
+vi.mock("../../../../../../utils/helperFunctions.jsx", () => ({
+  getLanguageClass: vi.fn(() => "en-class"),
 }));
 
-vi.mock('slate-react', () => ({
-  useSelected: vi.fn()
+vi.mock("slate-react", () => ({
+  useSelected: vi.fn(),
 }));
 
 vi.mock("react-icons/md", () => ({
-  MdDragIndicator: (props) => <span data-testid="drag-indicator" {...props}>Drag</span>
+  MdDragIndicator: (props) => (
+    <span data-testid="drag-indicator" {...props}>
+      Drag
+    </span>
+  ),
 }));
-
 
 describe("DefaultElement Component", () => {
   const defaultProps = {
     attributes: { "data-testid": "default-element" },
     children: "Sample text content",
-    element: {}
+    element: {},
   };
 
   const setup = (props = {}) => {
@@ -34,26 +37,28 @@ describe("DefaultElement Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     useSelected.mockReturnValue(false);
-    getLanguageClass.mockReturnValue('en-class');
+    getLanguageClass.mockReturnValue("en-class");
   });
 
   test("applies custom alignment when specified", () => {
     setup({
-      element: { align: "center" }
+      element: { align: "center" },
     });
-    
+
     const paragraph = screen.getByTestId("default-element");
     expect(paragraph).toHaveStyle({
       textAlign: "center",
-      whiteSpace: "pre-wrap"
+      whiteSpace: "pre-wrap",
     });
   });
 
   test("shows drag indicator when element is selected", () => {
     useSelected.mockReturnValue(true);
     setup();
-    
+
     expect(screen.getByTestId("drag-indicator")).toBeInTheDocument();
-    expect(screen.getByTestId("drag-indicator")).toHaveClass("newline-indicator");
+    expect(screen.getByTestId("drag-indicator")).toHaveClass(
+      "newline-indicator",
+    );
   });
 });

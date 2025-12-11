@@ -9,7 +9,7 @@ import { mockTolgee } from "../../../../test-utils/CommonMocks.js";
 import { BrowserRouter as Router } from "react-router-dom";
 
 vi.mock("../../../../utils/helperFunctions.jsx", () => ({
-  getLanguageClass: (lang) => lang ? `lang-${lang}` : "",
+  getLanguageClass: (lang) => (lang ? `lang-${lang}` : ""),
 }));
 vi.mock("./view-selector/ViewSelector.jsx", () => ({
   __esModule: true,
@@ -38,7 +38,7 @@ describe("ChapterHeader Component", () => {
             <ChapterHeader {...defaultProps} {...props} />
           </PanelProvider>
         </TolgeeProvider>
-      </Router>
+      </Router>,
     );
 
   beforeEach(() => {
@@ -47,7 +47,9 @@ describe("ChapterHeader Component", () => {
 
   test("renders ChapterHeader container and title", () => {
     setup();
-    expect(document.querySelector(".chapter-header-container")).toBeInTheDocument();
+    expect(
+      document.querySelector(".chapter-header-container"),
+    ).toBeInTheDocument();
     expect(document.querySelector(".title-container")).toBeInTheDocument();
     expect(screen.getByText("Test Chapter")).toBeInTheDocument();
     expect(document.querySelector(".title-container")).toHaveClass("lang-bo");
@@ -56,13 +58,17 @@ describe("ChapterHeader Component", () => {
   test("renders table of contents open icon when showTableOfContents is false", () => {
     setup({ showTableOfContents: false });
     expect(document.querySelector(".toc-icon-container")).toBeInTheDocument();
-    expect(document.querySelector(".toc-icon-container svg")).toBeInTheDocument();
+    expect(
+      document.querySelector(".toc-icon-container svg"),
+    ).toBeInTheDocument();
   });
 
   test("renders table of contents close icon when showTableOfContents is true", () => {
     setup({ showTableOfContents: true });
     expect(document.querySelector(".toc-icon-container")).toBeInTheDocument();
-    expect(document.querySelector(".toc-icon-container svg")).toBeInTheDocument();
+    expect(
+      document.querySelector(".toc-icon-container svg"),
+    ).toBeInTheDocument();
   });
 
   test("calls setShowTableOfContents when toc icon is clicked", () => {
@@ -100,7 +106,7 @@ describe("ChapterHeader Component", () => {
       <Router>
         <TolgeeProvider tolgee={mockTolgee} fallback={"Loading tolgee..."}>
           <PanelProvider>
-            <ChapterHeader 
+            <ChapterHeader
               viewMode="single"
               setViewMode={vi.fn()}
               layoutMode="default"
@@ -113,9 +119,11 @@ describe("ChapterHeader Component", () => {
             />
           </PanelProvider>
         </TolgeeProvider>
-      </Router>
+      </Router>,
     );
-    expect(document.querySelector(".chapter-header-container")).toBeInTheDocument();
+    expect(
+      document.querySelector(".chapter-header-container"),
+    ).toBeInTheDocument();
   });
 
   test("calls setShowTableOfContents when TOC close icon is clicked", () => {

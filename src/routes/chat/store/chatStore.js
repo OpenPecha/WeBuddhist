@@ -80,7 +80,7 @@ export const useChatStore = create()(
         content,
         searchResults,
         queries,
-        isFinalized = false
+        isFinalized = false,
       ) => {
         set((state) => ({
           threads: state.threads.map((t) => {
@@ -106,6 +106,6 @@ export const useChatStore = create()(
     }),
     {
       name: "chat-storage",
-    }
-  )
+    },
+  ),
 );

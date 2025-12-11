@@ -10,8 +10,8 @@ describe("Leaf Component", () => {
     leaf: {
       bold: false,
       italic: false,
-      underline: false
-    }
+      underline: false,
+    },
   };
 
   const setup = (props = {}) => {
@@ -20,13 +20,13 @@ describe("Leaf Component", () => {
 
   test("renders with default styling and children content", () => {
     setup({
-      attributes: { 
+      attributes: {
         "data-testid": "leaf-element",
         "data-custom": "custom-value",
-        className: "custom-class"
-      }
+        className: "custom-class",
+      },
     });
-    
+
     const span = screen.getByTestId("leaf-element");
     expect(span).toBeInTheDocument();
     expect(span).toHaveAttribute("data-custom", "custom-value");
@@ -37,14 +37,14 @@ describe("Leaf Component", () => {
   test("applies all text formatting styles when leaf properties are true", () => {
     setup({
       leaf: { bold: true, italic: true, underline: true },
-      children: "Formatted text"
+      children: "Formatted text",
     });
-    
+
     const span = screen.getByTestId("leaf-element");
     expect(span).toHaveStyle({
       fontWeight: "bold",
       fontStyle: "italic",
-      textDecoration: "underline"
+      textDecoration: "underline",
     });
     expect(screen.getByText("Formatted text")).toBeInTheDocument();
   });

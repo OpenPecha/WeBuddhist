@@ -38,20 +38,22 @@ describe("BlockButton", () => {
     mockIsBlockActive.mockClear();
     mockToggleBlock.mockClear();
     mockEditor = createEditor();
-    
+
     const slateReact = await import("slate-react");
     useSlate = slateReact.useSlate;
     useSlate.mockReturnValue(mockEditor);
-    
+
     mockIsBlockActive.mockReturnValue(false);
   });
 
   const renderWithSlate = (component) => {
-    const initialValue = [{ type: "paragraph", children: [{ text: "Test content" }] }];
+    const initialValue = [
+      { type: "paragraph", children: [{ text: "Test content" }] },
+    ];
     return render(
       <Slate editor={withReact(createEditor())} initialValue={initialValue}>
         {component}
-      </Slate>
+      </Slate>,
     );
   };
 
@@ -62,40 +64,40 @@ describe("BlockButton", () => {
 
   test("displays button with children content", () => {
     renderWithSlate(<BlockButton {...defaultProps} />);
-    
+
     expect(screen.getByRole("button", { name: "H1" })).toBeInTheDocument();
   });
 
   test("applies active class when block format is active", () => {
     mockIsBlockActive.mockReturnValue(true);
-    
+
     renderWithSlate(<BlockButton {...defaultProps} />);
-    
+
     const button = screen.getByRole("button", { name: "H1" });
     expect(button).toHaveClass("active");
   });
 
   test("applies custom className when provided", () => {
     renderWithSlate(<BlockButton {...defaultProps} className="custom-class" />);
-    
+
     const button = screen.getByRole("button", { name: "H1" });
     expect(button).toHaveClass("custom-class");
   });
 
   test("toggles block format when button clicked", () => {
     renderWithSlate(<BlockButton {...defaultProps} />);
-    
+
     const button = screen.getByRole("button", { name: "H1" });
     fireEvent.mouseDown(button);
-    
+
     expect(mockToggleBlock).toHaveBeenCalledWith(mockEditor, "heading-one");
   });
 
   test("checks if block format is active on render", () => {
     const format = "heading-two";
-    
+
     renderWithSlate(<BlockButton format={format} children="H2" />);
-    
+
     expect(mockIsBlockActive).toHaveBeenCalledWith(mockEditor, format);
   });
 });

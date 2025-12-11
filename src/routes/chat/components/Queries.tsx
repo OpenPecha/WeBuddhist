@@ -1,11 +1,11 @@
-import { Search } from 'lucide-react';
+import { Search } from "lucide-react";
 
 export function Queries({ queries }) {
   if (!queries) return null;
 
   // Extract unique query values
   const uniqueQueries = [...new Set(Object.values(queries))].filter(
-    (q) => q && q.trim()
+    (q) => q && q.trim(),
   );
 
   if (uniqueQueries.length === 0) return null;
@@ -18,8 +18,8 @@ export function Queries({ queries }) {
             key={index}
             style={{
               opacity: 0,
-              animation: 'fadeInUp 0.6s ease-out forwards',
-              animationDelay: `${index * 0.1}s`
+              animation: "fadeInUp 0.6s ease-out forwards",
+              animationDelay: `${index * 0.1}s`,
             }}
             className="flex items-center gap-2 p-1 bg-[#E5F3FE] border-blue-200 rounded text-[#00457D]"
           >
@@ -31,4 +31,3 @@ export function Queries({ queries }) {
     </div>
   );
 }
-

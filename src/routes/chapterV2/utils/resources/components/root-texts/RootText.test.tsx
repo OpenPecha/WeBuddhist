@@ -6,9 +6,9 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
 import RootTextView, { fetchRootTextData } from "./RootText.js";
 import "@testing-library/jest-dom";
-import {mockTolgee} from "../../../../../../test-utils/CommonMocks.js";
+import { mockTolgee } from "../../../../../../test-utils/CommonMocks.js";
 import axiosInstance from "../../../../../../config/axios-config.js";
-import {PanelProvider} from "../../../../../../context/PanelContext.js";
+import { PanelProvider } from "../../../../../../context/PanelContext.js";
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
   return {
@@ -128,7 +128,7 @@ describe("RootTextView", () => {
             </PanelProvider>
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
 
@@ -144,7 +144,7 @@ describe("RootTextView", () => {
     const result = await fetchRootTextData(segmentId);
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
-      `/api/v1/segments/${segmentId}/root_text`
+      `/api/v1/segments/${segmentId}/root_text`,
     );
     expect(result).toEqual(mockRootTextData);
   });
@@ -165,11 +165,11 @@ describe("RootTextView", () => {
   test("renders correctly with empty root texts", () => {
     vi.spyOn(reactQuery, "useQuery").mockImplementationOnce(() => ({
       data: mockEmptyRootTextData,
-      isLoading: false
+      isLoading: false,
     }));
 
     setup();
-    
+
     // Should not display any count when there are no root texts
     expect(screen.getByText("text.root_text")).toBeInTheDocument();
     expect(screen.queryByText(/\(\d+\)/)).not.toBeInTheDocument();
@@ -177,25 +177,25 @@ describe("RootTextView", () => {
 
   test("applies correct language class to root text titles", () => {
     setup();
-    
+
     // First, find all elements with the class 'root-text-title'
-    const rootTextTitles = document.querySelectorAll('.root-text-title');
-    
+    const rootTextTitles = document.querySelectorAll(".root-text-title");
+
     // Check that we have the expected number of titles
     expect(rootTextTitles.length).toBe(2);
-    
+
     // Check that the first title (Tibetan) has the bo-text class
-    expect(rootTextTitles[0]).toHaveClass('bo-text');
-    
+    expect(rootTextTitles[0]).toHaveClass("bo-text");
+
     // Check that the second title (English) has the en-text class
-    expect(rootTextTitles[1]).toHaveClass('en-text');
+    expect(rootTextTitles[1]).toHaveClass("en-text");
   });
-  
+
   test("calls setIsRootTextView when close icon is clicked", () => {
     setup();
     // Find the close icon
-    const closeIcon = document.getElementsByClassName('close-icon')[0];
-    
+    const closeIcon = document.getElementsByClassName("close-icon")[0];
+
     // Click the close icon
     fireEvent.click(closeIcon);
     // Verify
@@ -206,7 +206,7 @@ describe("RootTextView", () => {
     // Mock a real DOM element
     const mockRootTextsList = {
       addEventListener: vi.fn(),
-      removeEventListener: vi.fn()
+      removeEventListener: vi.fn(),
     };
     // Mock document.querySelector to return our mock element
     document.querySelector = vi.fn().mockImplementation((selector) => {
@@ -215,39 +215,42 @@ describe("RootTextView", () => {
       }
       return null;
     });
-    
+
     setup();
     // Verify addEventListener was called correctly
     expect(mockRootTextsList.addEventListener).toHaveBeenCalledWith(
-      'click', 
-      expect.any(Function)
+      "click",
+      expect.any(Function),
     );
     // Actual handler function
-    const handleFootnoteClick = mockRootTextsList.addEventListener.mock.calls[0][1];
-    
+    const handleFootnoteClick =
+      mockRootTextsList.addEventListener.mock.calls[0][1];
+
     const mockFootnoteMarker = {
       classList: {
-        contains: vi.fn().mockReturnValue(true)
+        contains: vi.fn().mockReturnValue(true),
       },
       nextElementSibling: {
         classList: {
           contains: vi.fn().mockReturnValue(true),
-          toggle: vi.fn()
-        }
-      }
+          toggle: vi.fn(),
+        },
+      },
     };
-    
+
     const mockEvent = {
       target: mockFootnoteMarker,
       stopPropagation: vi.fn(),
-      preventDefault: vi.fn()
+      preventDefault: vi.fn(),
     };
     // Call the handler function
     const result = handleFootnoteClick(mockEvent);
     //Verify
     expect(mockEvent.stopPropagation).toHaveBeenCalled();
     expect(mockEvent.preventDefault).toHaveBeenCalled();
-    expect(mockFootnoteMarker.nextElementSibling.classList.toggle).toHaveBeenCalledWith('active');
+    expect(
+      mockFootnoteMarker.nextElementSibling.classList.toggle,
+    ).toHaveBeenCalledWith("active");
     expect(result).toBe(false);
   });
 });

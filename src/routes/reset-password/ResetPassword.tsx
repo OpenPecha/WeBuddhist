@@ -43,7 +43,7 @@ const ResetPassword = () => {
     async (resetPasswordData: { password: string }) => {
       const response = await axiosInstance.post(
         "/api/v1/auth/reset-password",
-        resetPasswordData
+        resetPasswordData,
       );
       return response.data;
     },
@@ -62,7 +62,7 @@ const ResetPassword = () => {
           t("user.validation.login_failed");
         setErrors((prev) => ({ ...prev, general: message }));
       },
-    }
+    },
   );
 
   const validateForm = (): FormErrors => {
@@ -78,7 +78,7 @@ const ResetPassword = () => {
       validationErrors.confirmPassword = t("user.validation.required");
     } else if (formData.newPassword !== formData.confirmPassword) {
       validationErrors.confirmPassword = t(
-        "user.validation.password_do_not_match"
+        "user.validation.password_do_not_match",
       );
     }
 
@@ -137,7 +137,9 @@ const ResetPassword = () => {
                   value={formData.newPassword}
                   onChange={handleInputChange}
                   aria-invalid={Boolean(errors.newPassword)}
-                  aria-describedby={errors.newPassword ? "new-password-error" : undefined}
+                  aria-describedby={
+                    errors.newPassword ? "new-password-error" : undefined
+                  }
                   required
                 />
                 <Button
@@ -187,7 +189,9 @@ const ResetPassword = () => {
                   onChange={handleInputChange}
                   aria-invalid={Boolean(errors.confirmPassword)}
                   aria-describedby={
-                    errors.confirmPassword ? "confirm-password-error" : undefined
+                    errors.confirmPassword
+                      ? "confirm-password-error"
+                      : undefined
                   }
                   required
                 />

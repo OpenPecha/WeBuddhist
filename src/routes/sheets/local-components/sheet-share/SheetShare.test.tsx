@@ -57,7 +57,7 @@ describe("SheetShare Component", () => {
         <QueryClientProvider client={queryClient}>
           <SheetShare />
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
 
   test("renders share button", () => {
@@ -76,7 +76,9 @@ describe("SheetShare Component", () => {
     fireEvent.click(document.querySelector(".share-button"));
     const copyBtn = screen.getByText(/copy link/i).closest("button");
     fireEvent.click(copyBtn);
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockShortUrlData.shortUrl);
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      mockShortUrlData.shortUrl,
+    );
     await waitFor(() => {
       expect(screen.getByText(/copy link/i)).toBeInTheDocument();
     });
@@ -99,11 +101,11 @@ describe("SheetShare Component", () => {
     const xLink = screen.getByText(/share on x/i).closest("a");
     expect(facebookLink).toHaveAttribute(
       "href",
-      expect.stringContaining(encodeURIComponent(mockShortUrlData.shortUrl))
+      expect.stringContaining(encodeURIComponent(mockShortUrlData.shortUrl)),
     );
     expect(xLink).toHaveAttribute(
       "href",
-      expect.stringContaining(encodeURIComponent(mockShortUrlData.shortUrl))
+      expect.stringContaining(encodeURIComponent(mockShortUrlData.shortUrl)),
     );
   });
 

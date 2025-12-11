@@ -10,8 +10,8 @@ describe("CustomPecha Component", () => {
     element: {
       src: "https://example.com/image.jpg",
       url: "https://example.com/link",
-      segmentId: "segment-123"
-    }
+      segmentId: "segment-123",
+    },
   };
 
   const setup = (props = {}) => {
@@ -25,20 +25,20 @@ describe("CustomPecha Component", () => {
 
   test("renders with correct structure and attributes", () => {
     setup();
-    
+
     const container = screen.getByTestId("custom-webuddhist");
     expect(container).toHaveClass("custom-webuddhist-container");
-    
+
     const wrapper = container.querySelector(".custom-webuddhist-wrapper");
     expect(wrapper).toBeInTheDocument();
     expect(wrapper).toHaveAttribute("contentEditable", "false");
-    
+
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute("href", "https://example.com/link");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
     expect(link).toHaveClass("custom-webuddhist-link");
-    
+
     const image = screen.getByRole("img");
     expect(image).toHaveAttribute("src", "https://example.com/image.jpg");
     expect(image).toHaveAttribute("alt", "segment-123");

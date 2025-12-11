@@ -5,7 +5,7 @@ export async function streamChat(
   onQueries,
   onFinish,
   onError,
-  signal
+  signal,
 ) {
   try {
     const response = await fetch("/chat/api/chat/stream", {

@@ -90,7 +90,10 @@ const PaginationComponent: React.FC<PaginationProps> = ({
 
       <div className="flex w-fit items-center gap-2">
         <span className="text-sm text-muted-foreground">Per page</span>
-        <Select value={String(pagination.limit)} onValueChange={handleSelectChange}>
+        <Select
+          value={String(pagination.limit)}
+          onValueChange={handleSelectChange}
+        >
           <SelectTrigger className="w-[90px]">
             <SelectValue />
           </SelectTrigger>

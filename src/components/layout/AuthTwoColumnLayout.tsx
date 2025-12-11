@@ -37,23 +37,30 @@ const AuthTwoColumnLayout: React.FC<AuthTwoColumnLayoutProps> = ({
     <div
       className={clsx(
         "flex h-dvh w-full items-center justify-center bg-[#FAFAF9]",
-        containerClassName
+        containerClassName,
       )}
     >
       <div className="flex h-full w-full flex-col md:flex-row">
         <aside
           className={clsx(
             "hidden w-full flex-1 flex-col justify-between space-y-6 px-8 py-10 md:flex",
-            sidebarClassName
+            sidebarClassName,
           )}
         >
           <div className="flex items-start">
-            <img src={webuddhist_logo} alt="WeBuddhist" className="h-fit w-40" />
+            <img
+              src={webuddhist_logo}
+              alt="WeBuddhist"
+              className="h-fit w-40"
+            />
           </div>
           <div className="flex w-full flex-col space-y-2 text-start">
             <div className="flex items-center space-x-2">
               <p className="text-2xl font-medium serif-title-text">{title}</p>
-              <Badge variant="outline" className="text-sm text-muted-foreground">
+              <Badge
+                variant="outline"
+                className="text-sm text-muted-foreground"
+              >
                 {badgeText}
               </Badge>
             </div>
@@ -66,7 +73,10 @@ const AuthTwoColumnLayout: React.FC<AuthTwoColumnLayoutProps> = ({
               <span key={feature} className="flex items-center">
                 <p className="text-sm text-muted-foreground">{feature}</p>
                 {index < features.length - 1 && (
-                  <span className="mx-2 text-muted-foreground" aria-hidden="true">
+                  <span
+                    className="mx-2 text-muted-foreground"
+                    aria-hidden="true"
+                  >
                     •
                   </span>
                 )}
@@ -77,7 +87,7 @@ const AuthTwoColumnLayout: React.FC<AuthTwoColumnLayoutProps> = ({
         <main
           className={clsx(
             "flex w-full flex-1 items-center justify-center bg-white px-6 py-10 md:bg-[#F6F6F6] md:px-10",
-            mainClassName
+            mainClassName,
           )}
         >
           {children}

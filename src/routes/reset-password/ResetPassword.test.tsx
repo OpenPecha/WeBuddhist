@@ -4,11 +4,15 @@ import "@testing-library/jest-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import ResetPassword from "./ResetPassword.js";
 import { BrowserRouter as Router } from "react-router-dom";
-import { mockAxios, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
+import {
+  mockAxios,
+  mockTolgee,
+  mockUseAuth,
+} from "../../test-utils/CommonMocks.js";
 import { TolgeeProvider } from "@tolgee/react";
 
 mockAxios();
-mockUseAuth()
+mockUseAuth();
 
 const queryClient = new QueryClient();
 
@@ -16,14 +20,14 @@ describe("ResetPassword Component", () => {
   const setup = () => {
     render(
       <Router>
-        <QueryClientProvider client={ queryClient }>
-          <TolgeeProvider fallback={ "Loading tolgee..." } tolgee={ mockTolgee }>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
             <ResetPassword />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
-  }
+  };
   it("renders the component with required fields", () => {
     setup();
     expect(screen.getByLabelText("New Password")).toBeInTheDocument();
@@ -60,8 +64,10 @@ describe("ResetPassword Component", () => {
   // });
 
   it("toggles password visibility", () => {
-    setup()
-    const toggleButton = screen.getAllByRole("button", { name: "toggle-password" });
+    setup();
+    const toggleButton = screen.getAllByRole("button", {
+      name: "toggle-password",
+    });
 
     expect(screen.getByLabelText("New Password").type).toBe("password");
 
@@ -73,9 +79,13 @@ describe("ResetPassword Component", () => {
   });
 
   it("submits the form successfully with valid inputs", async () => {
-    setup()
-    fireEvent.change(screen.getByLabelText("New Password"), { target: { value: "NewPassword123" } });
-    fireEvent.change(screen.getByLabelText("Confirm Password"), { target: { value: "NewPassword123" } });
+    setup();
+    fireEvent.change(screen.getByLabelText("New Password"), {
+      target: { value: "NewPassword123" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm Password"), {
+      target: { value: "NewPassword123" },
+    });
 
     fireEvent.click(screen.getByText("Reset Password"));
 

@@ -23,7 +23,7 @@ vi.mock("../../sheet-utils/CustomEditor", () => ({
     toggleMark: vi.fn(),
     isBlockActive: vi.fn(),
     toggleBlock: vi.fn(),
-    toggleCodeBlock: vi.fn(), 
+    toggleCodeBlock: vi.fn(),
     toggleImage: vi.fn(),
     toggleSheetSegment: vi.fn(),
   })),
@@ -121,7 +121,7 @@ describe("Toolsbar", () => {
   let mockNavigate;
   let mockCreatePayload;
   let mockUseCustomEditor;
-  
+
   const defaultProps = {
     editor: null,
     value: [{ type: "paragraph", children: [{ text: "Test content" }] }],
@@ -131,23 +131,23 @@ describe("Toolsbar", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    
+
     mockToggleCodeBlock = vi.fn();
     mockToggleImage = vi.fn();
     mockToggleSheetSegment = vi.fn();
     mockUpdateSheet = vi.fn();
     mockNavigate = vi.fn();
     mockCreatePayload = vi.fn();
-    
+
     mockEditor = createEditor();
     mockEditor.children = [
-      { type: "paragraph", children: [{ text: "Test content" }] }
+      { type: "paragraph", children: [{ text: "Test content" }] },
     ];
-    
+
     const slateReact = await import("slate-react");
     useSlate = slateReact.useSlate;
     useSlate.mockReturnValue(mockEditor);
-    
+
     const customEditorModule = await import("../../sheet-utils/CustomEditor");
     mockUseCustomEditor = customEditorModule.useCustomEditor;
     mockUseCustomEditor.mockReturnValue({
@@ -159,25 +159,25 @@ describe("Toolsbar", () => {
       toggleImage: mockToggleImage,
       toggleSheetSegment: mockToggleSheetSegment,
     });
-    
+
     CustomEditor.isMarkActive.mockReturnValue(false);
     CustomEditor.isBlockActive.mockReturnValue(false);
-    
+
     const constantModule = await import("../../sheet-utils/Constant");
     constantModule.createPayload.mockImplementation(mockCreatePayload);
-    
+
     const editorWrapperModule = await import("../Editors/EditorWrapper");
     editorWrapperModule.updateSheet.mockImplementation(mockUpdateSheet);
-    
+
     const routerModule = await import("react-router-dom");
     routerModule.useNavigate.mockReturnValue(mockNavigate);
-    
+
     mockCreatePayload.mockReturnValue({ test: "payload" });
     mockUpdateSheet.mockResolvedValue({ success: true });
-    
-    Object.defineProperty(window, 'sessionStorage', {
+
+    Object.defineProperty(window, "sessionStorage", {
       value: {
-        getItem: vi.fn(() => 'Test Sheet Title'),
+        getItem: vi.fn(() => "Test Sheet Title"),
         setItem: vi.fn(),
         removeItem: vi.fn(),
         clear: vi.fn(),
@@ -187,17 +187,19 @@ describe("Toolsbar", () => {
   });
 
   const renderWithSlate = (component) => {
-    const initialValue = [{ type: "paragraph", children: [{ text: "Test content" }] }];
+    const initialValue = [
+      { type: "paragraph", children: [{ text: "Test content" }] },
+    ];
     return render(
       <Slate editor={withReact(createEditor())} initialValue={initialValue}>
         {component}
-      </Slate>
+      </Slate>,
     );
   };
 
   test("displays pecha icon with correct source", () => {
     renderWithSlate(<Toolsbar {...defaultProps} editor={mockEditor} />);
-    
+
     const pechaIcon = screen.getByAltText("source");
     expect(pechaIcon).toBeInTheDocument();
     expect(pechaIcon).toHaveAttribute("src", "mocked-pecha-icon.png");
@@ -205,7 +207,7 @@ describe("Toolsbar", () => {
 
   test("toggles sheet segment when pecha icon clicked", () => {
     renderWithSlate(<Toolsbar {...defaultProps} editor={mockEditor} />);
-    
+
     const pechaButton = screen.getByAltText("source").closest("button");
     fireEvent.mouseDown(pechaButton);
 
@@ -214,7 +216,7 @@ describe("Toolsbar", () => {
 
   test("toggles code block when code button clicked", () => {
     renderWithSlate(<Toolsbar {...defaultProps} editor={mockEditor} />);
-    
+
     const codeButton = screen.getByTestId("code-icon").closest("button");
     fireEvent.mouseDown(codeButton);
 
@@ -223,94 +225,96 @@ describe("Toolsbar", () => {
 
   test("toggles image when image button clicked", () => {
     renderWithSlate(<Toolsbar {...defaultProps} editor={mockEditor} />);
-    
+
     const imageButton = screen.getByTestId("image-icon").closest("button");
     fireEvent.mouseDown(imageButton);
-    
+
     expect(mockToggleImage).toHaveBeenCalledWith(mockEditor);
   });
 
   test("publishes sheet when publish button clicked", async () => {
     renderWithSlate(<Toolsbar {...defaultProps} editor={mockEditor} />);
-    
+
     const publishButton = screen.getByText("publish");
     fireEvent.click(publishButton);
-    
+
     expect(mockCreatePayload).toHaveBeenCalledWith(
       defaultProps.value,
       defaultProps.title,
-      true
+      true,
     );
-    expect(mockUpdateSheet).toHaveBeenCalledWith(
-      defaultProps.sheetId,
-      { test: "payload" }
-    );
+    expect(mockUpdateSheet).toHaveBeenCalledWith(defaultProps.sheetId, {
+      test: "payload",
+    });
   });
 
   test("shows success alert after successful publish", async () => {
     renderWithSlate(<Toolsbar {...defaultProps} editor={mockEditor} />);
-    
+
     const publishButton = screen.getByText("publish");
     fireEvent.click(publishButton);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId("alert-modal")).toBeInTheDocument();
-      expect(screen.getByTestId("alert-modal")).toHaveAttribute("data-type", "success");
-      expect(screen.getByText("Sheet published successfully!")).toBeInTheDocument();
+      expect(screen.getByTestId("alert-modal")).toHaveAttribute(
+        "data-type",
+        "success",
+      );
+      expect(
+        screen.getByText("Sheet published successfully!"),
+      ).toBeInTheDocument();
     });
   });
 
   test("shows error alert when publish fails", async () => {
     mockUpdateSheet.mockRejectedValue(new Error("Failed to update"));
     renderWithSlate(<Toolsbar {...defaultProps} editor={mockEditor} />);
-    
+
     const publishButton = screen.getByText("publish");
     fireEvent.click(publishButton);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId("alert-modal")).toBeInTheDocument();
-      expect(screen.getByTestId("alert-modal")).toHaveAttribute("data-type", "error");
+      expect(screen.getByTestId("alert-modal")).toHaveAttribute(
+        "data-type",
+        "error",
+      );
       expect(screen.getByText("Failed to publish sheet.")).toBeInTheDocument();
     });
   });
 
-
-
   test("uses session storage title when title prop is not provided", async () => {
     const propsWithoutTitle = { ...defaultProps, title: undefined };
     renderWithSlate(<Toolsbar {...propsWithoutTitle} editor={mockEditor} />);
-    
+
     const publishButton = screen.getByText("publish");
     fireEvent.click(publishButton);
-    
+
     expect(mockCreatePayload).toHaveBeenCalledWith(
       defaultProps.value,
-      'Test Sheet Title',
-      true
+      "Test Sheet Title",
+      true,
     );
   });
 
   test("disables publish button when sheetId is not provided", () => {
     const propsWithoutSheetId = { ...defaultProps, sheetId: undefined };
     renderWithSlate(<Toolsbar {...propsWithoutSheetId} editor={mockEditor} />);
-    
+
     const publishButton = screen.getByText("publish");
     expect(publishButton).toBeDisabled();
     expect(publishButton).toHaveClass("disabled-button");
   });
 
- 
-
   test("prevents default behavior on mouseDown events", () => {
     renderWithSlate(<Toolsbar {...defaultProps} editor={mockEditor} />);
-    
+
     const codeButton = screen.getByTestId("code-icon").closest("button");
-    const mouseDownEvent = new MouseEvent('mousedown', { bubbles: true });
-    const preventDefaultSpy = vi.spyOn(mouseDownEvent, 'preventDefault');
-    
+    const mouseDownEvent = new MouseEvent("mousedown", { bubbles: true });
+    const preventDefaultSpy = vi.spyOn(mouseDownEvent, "preventDefault");
+
     fireEvent(codeButton, mouseDownEvent);
-    
+
     expect(preventDefaultSpy).toHaveBeenCalled();
   });
-
 });

@@ -50,17 +50,17 @@ describe("SearchResultsPage", () => {
             <SearchResultsPage />
           </TolgeeProvider>
         </QueryClientProvider>
-      </BrowserRouter>
+      </BrowserRouter>,
     );
   };
 
   test("renders the search results page with query", () => {
     setup();
-    
+
     // Use a more flexible approach to find the heading
-    const heading = screen.getByRole('heading', { level: 2 });
-    expect(heading).toHaveTextContent('Results for:');
-    
+    const heading = screen.getByRole("heading", { level: 2 });
+    expect(heading).toHaveTextContent("Results for:");
+
     expect(screen.getByText("Sources")).toBeInTheDocument();
     // expect(screen.getByText("Sheets")).toBeInTheDocument();
     expect(screen.queryByText("Sort")).not.toBeInTheDocument();
@@ -70,7 +70,7 @@ describe("SearchResultsPage", () => {
 
   // test("switches between tabs correctly", () => {
   //   setup();
-    
+
   //   expect(screen.getByTestId("sources-component")).toBeInTheDocument();
   //   fireEvent.click(screen.getByText("Sheets"));
   //   expect(screen.getByTestId("sheets-component")).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe("SearchResultsPage", () => {
 
   test("changes sort options correctly", () => {
     setup();
-    
+
     // Sort UI is currently hidden in the component
     expect(screen.queryByText("Sort")).not.toBeInTheDocument();
     expect(screen.queryByText("Relevance")).not.toBeInTheDocument();
@@ -93,17 +93,17 @@ describe("SearchResultsPage", () => {
 
   test("handles empty search query gracefully", () => {
     setup();
-    
+
     // Even with empty query, the component should render without errors
-    const heading = screen.getByRole('heading', { level: 2 });
-    expect(heading).toHaveTextContent('Results for:');
+    const heading = screen.getByRole("heading", { level: 2 });
+    expect(heading).toHaveTextContent("Results for:");
     expect(screen.getByText("Sources")).toBeInTheDocument();
     // expect(screen.getByText("Sheets")).toBeInTheDocument();
   });
 
   test("maintains sort option state within the same tab", () => {
     setup();
-    
+
     // Sort UI is currently hidden in the component, nothing to maintain
     expect(screen.queryByText("Sort")).not.toBeInTheDocument();
     expect(screen.queryByText("Chronological")).not.toBeInTheDocument();

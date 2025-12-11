@@ -40,7 +40,10 @@ const UserLogin = () => {
 
   const loginMutation = useMutation(
     async (loginData: LoginPayload) => {
-      const response = await axiosInstance.post("/api/v1/auth/login", loginData);
+      const response = await axiosInstance.post(
+        "/api/v1/auth/login",
+        loginData,
+      );
       return response.data;
     },
     {
@@ -57,7 +60,7 @@ const UserLogin = () => {
           t("user.validation.login_failed");
         setErrors((prev) => ({ ...prev, general: errorMsg }));
       },
-    }
+    },
   );
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -146,11 +149,7 @@ const UserLogin = () => {
           </div>
         }
       >
-        <form
-          className="space-y-6"
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <form className="space-y-6" onSubmit={handleSubmit} noValidate>
           <div className="grid gap-3">
             <div className="grid grid-cols-2 gap-2">
               <Button
@@ -176,77 +175,79 @@ const UserLogin = () => {
           </div>
 
           <div className="space-y-4 w-full">
-              <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground">
-            {t("common.email")}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground">
+                {t("common.email")}
               </span>
+            </div>
+            <input
+              type="email"
+              autoComplete="email"
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+              placeholder={t("common.email")}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? "email-error" : undefined}
+              required
+            />
+            {errors.email && (
+              <div
+                id="email-error"
+                className="flex items-center gap-2 text-sm text-destructive"
+              >
+                <IoAlertCircleOutline className="size-4" />
+                <span>{errors.email}</span>
               </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground">
+                {t("common.password")}
+              </span>
+            </div>
+            <div className="relative">
               <input
-                type="email"
-                autoComplete="email"
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
-                placeholder={t("common.email")}
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                aria-invalid={Boolean(errors.email)}
-                aria-describedby={errors.email ? "email-error" : undefined}
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
+                placeholder={t("common.password")}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                aria-invalid={Boolean(errors.password)}
+                aria-describedby={
+                  errors.password ? "password-error" : undefined
+                }
                 required
               />
-              {errors.email && (
-                <div
-                  id="email-error"
-                  className="flex items-center gap-2 text-sm text-destructive"
-                >
-                  <IoAlertCircleOutline className="size-4" />
-                  <span>{errors.email}</span>
-                </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="absolute right-2 top-1/2 -translate-y-1/2"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={
+                  showPassword
+                    ? t("login.hide_password")
+                    : t("login.show_password")
+                }
+              >
+                {showPassword ? (
+                  <IoEyeOutline className="size-4" />
+                ) : (
+                  <IoEyeOffOutline className="size-4" />
                 )}
-
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-foreground">
-                  {t("common.password")}
-                </span>
+              </Button>
+            </div>
+            {errors.password && (
+              <div
+                id="password-error"
+                className="flex flex-wrap gap-x-2 text-sm text-destructive"
+              >
+                <IoAlertCircleOutline className="size-4" />
+                <span>{errors.password}</span>
               </div>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
-                  placeholder={t("common.password")}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  aria-invalid={Boolean(errors.password)}
-                  aria-describedby={errors.password ? "password-error" : undefined}
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="absolute right-2 top-1/2 -translate-y-1/2"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label={
-                    showPassword
-                      ? t("login.hide_password")
-                      : t("login.show_password")
-                  }
-                >
-                  {showPassword ? (
-                    <IoEyeOutline className="size-4" />
-                  ) : (
-                    <IoEyeOffOutline className="size-4" />
-                  )}
-                </Button>
-              </div>
-              {errors.password && (
-                <div
-                  id="password-error"
-                  className="flex flex-wrap gap-x-2 text-sm text-destructive"
-                >
-                  <IoAlertCircleOutline className="size-4" />
-                  <span>{errors.password}</span>
-                </div>
-              )}
+            )}
           </div>
 
           {errors.general && (

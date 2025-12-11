@@ -3,7 +3,12 @@ import * as ReactRouterDom from "react-router-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 import EditUserProfile from "./EditUserProfile.js";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { mockAxios, mockReactQuery, mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
+import {
+  mockAxios,
+  mockReactQuery,
+  mockTolgee,
+  mockUseAuth,
+} from "../../test-utils/CommonMocks.js";
 import "@testing-library/jest-dom";
 import { TolgeeProvider } from "@tolgee/react";
 
@@ -82,8 +87,8 @@ vi.mock("@tolgee/react", async () => {
           "profile.enter-your-youtube": "Enter your YouTube",
         };
         return translations[key] || key;
-      }
-    })
+      },
+    }),
   };
 });
 
@@ -93,18 +98,18 @@ describe("EditUserProfile Component", () => {
   const setup = (customUserInfo = null) => {
     if (customUserInfo) {
       vi.spyOn(ReactRouterDom, "useLocation").mockReturnValue({
-        state: { userInfo: customUserInfo }
+        state: { userInfo: customUserInfo },
       });
     }
-    
+
     render(
       <Router>
-        <QueryClientProvider client={ queryClient }>
-          <TolgeeProvider fallback={ "Loading tolgee..." } tolgee={ mockTolgee }>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
             <EditUserProfile />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
 
@@ -136,15 +141,21 @@ describe("EditUserProfile Component", () => {
     it("renders both Personal Details and Contact Details tabs", () => {
       setup();
 
-      expect(screen.getByRole('button', { name: "Personal Details" })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: "Contact Details" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Personal Details" }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Contact Details" }),
+      ).toBeInTheDocument();
     });
 
     it("renders Personal Details tab as active by default", () => {
       setup();
 
-      const personalDetailsTab = screen.getByRole('button', { name: "Personal Details" });
-      expect(personalDetailsTab).toHaveClass('active');
+      const personalDetailsTab = screen.getByRole("button", {
+        name: "Personal Details",
+      });
+      expect(personalDetailsTab).toHaveClass("active");
     });
   });
 
@@ -187,36 +198,44 @@ describe("EditUserProfile Component", () => {
   describe("Education Management", () => {
     it("adds a new education field when the add button is clicked", () => {
       setup();
-      
+
       const addButton = screen.getByText("Add line");
       fireEvent.click(addButton);
 
-      const educationInputs = screen.getAllByPlaceholderText("Enter your education");
+      const educationInputs = screen.getAllByPlaceholderText(
+        "Enter your education",
+      );
       expect(educationInputs).toHaveLength(2);
     });
 
     it("removes education field when remove button is clicked", () => {
       setup();
-      
+
       const addButton = screen.getByText("Add line");
       fireEvent.click(addButton);
-      
-      let educationInputs = screen.getAllByPlaceholderText("Enter your education");
+
+      let educationInputs = screen.getAllByPlaceholderText(
+        "Enter your education",
+      );
       expect(educationInputs).toHaveLength(2);
-      
+
       const removeButtons = screen.getAllByText("✕");
       fireEvent.click(removeButtons[0]);
-      
+
       educationInputs = screen.getAllByPlaceholderText("Enter your education");
       expect(educationInputs).toHaveLength(1);
     });
 
     it("updates education field values correctly", () => {
       setup();
-      
-      const educationInput = screen.getByPlaceholderText("Enter your education");
-      fireEvent.change(educationInput, { target: { value: "M.Sc. Computer Science" } });
-      
+
+      const educationInput = screen.getByPlaceholderText(
+        "Enter your education",
+      );
+      fireEvent.change(educationInput, {
+        target: { value: "M.Sc. Computer Science" },
+      });
+
       expect(educationInput).toHaveValue("M.Sc. Computer Science");
     });
   });
@@ -231,20 +250,30 @@ describe("EditUserProfile Component", () => {
         { account: "x.com", url: "https://x.com/johndoe" },
         { account: "linkedin", url: "https://linkedin.com/in/johndoe" },
         { account: "facebook", url: "https://facebook.com/johndoe" },
-        { account: "youtube", url: "" }
-      ]
+        { account: "youtube", url: "" },
+      ],
     };
 
     it("populates social media fields from social_profiles array", () => {
       setup(userInfoWithSocialProfiles);
 
-      const contactDetailsTab = screen.getByRole('button', { name: "Contact Details" });
+      const contactDetailsTab = screen.getByRole("button", {
+        name: "Contact Details",
+      });
       fireEvent.click(contactDetailsTab);
 
-      expect(screen.getByPlaceholderText("Enter your email")).toHaveValue("john@example.com");
-      expect(screen.getByPlaceholderText("Enter your X.com")).toHaveValue("https://x.com/johndoe");
-      expect(screen.getByPlaceholderText("Enter your LinkedIn")).toHaveValue("https://linkedin.com/in/johndoe");
-      expect(screen.getByPlaceholderText("Enter your Facebook")).toHaveValue("https://facebook.com/johndoe");
+      expect(screen.getByPlaceholderText("Enter your email")).toHaveValue(
+        "john@example.com",
+      );
+      expect(screen.getByPlaceholderText("Enter your X.com")).toHaveValue(
+        "https://x.com/johndoe",
+      );
+      expect(screen.getByPlaceholderText("Enter your LinkedIn")).toHaveValue(
+        "https://linkedin.com/in/johndoe",
+      );
+      expect(screen.getByPlaceholderText("Enter your Facebook")).toHaveValue(
+        "https://facebook.com/johndoe",
+      );
       expect(screen.getByPlaceholderText("Enter your YouTube")).toHaveValue("");
     });
 
@@ -252,29 +281,41 @@ describe("EditUserProfile Component", () => {
       const userInfoWithoutSocialProfiles = {
         firstname: "John",
         lastname: "Doe",
-        email: "john@example.com"
+        email: "john@example.com",
       };
 
       setup(userInfoWithoutSocialProfiles);
 
-      const contactDetailsTab = screen.getByRole('button', { name: "Contact Details" });
+      const contactDetailsTab = screen.getByRole("button", {
+        name: "Contact Details",
+      });
       fireEvent.click(contactDetailsTab);
 
-      expect(screen.getByPlaceholderText("Enter your email")).toHaveValue("john@example.com");
+      expect(screen.getByPlaceholderText("Enter your email")).toHaveValue(
+        "john@example.com",
+      );
       expect(screen.getByPlaceholderText("Enter your X.com")).toHaveValue("");
-      expect(screen.getByPlaceholderText("Enter your LinkedIn")).toHaveValue("");
-      expect(screen.getByPlaceholderText("Enter your Facebook")).toHaveValue("");
+      expect(screen.getByPlaceholderText("Enter your LinkedIn")).toHaveValue(
+        "",
+      );
+      expect(screen.getByPlaceholderText("Enter your Facebook")).toHaveValue(
+        "",
+      );
       expect(screen.getByPlaceholderText("Enter your YouTube")).toHaveValue("");
     });
 
     it("updates social profile URLs correctly", () => {
       setup(userInfoWithSocialProfiles);
 
-      const contactDetailsTab = screen.getByRole('button', { name: "Contact Details" });
+      const contactDetailsTab = screen.getByRole("button", {
+        name: "Contact Details",
+      });
       fireEvent.click(contactDetailsTab);
 
       const linkedInInput = screen.getByPlaceholderText("Enter your LinkedIn");
-      fireEvent.change(linkedInInput, { target: { value: "https://linkedin.com/in/newprofile" } });
+      fireEvent.change(linkedInInput, {
+        target: { value: "https://linkedin.com/in/newprofile" },
+      });
 
       expect(linkedInInput).toHaveValue("https://linkedin.com/in/newprofile");
     });
@@ -283,39 +324,49 @@ describe("EditUserProfile Component", () => {
   describe("Tab Navigation", () => {
     it("switches between tabs correctly", () => {
       setup();
-    
+
       expect(screen.getByLabelText("First Name")).toBeInTheDocument();
-      
-      const personalDetailsTab = screen.getByRole('button', { name: "Personal Details" });
+
+      const personalDetailsTab = screen.getByRole("button", {
+        name: "Personal Details",
+      });
       fireEvent.click(personalDetailsTab);
-      
-      const contactDetailsTab = screen.getByRole('button', { name: "Contact Details" });
+
+      const contactDetailsTab = screen.getByRole("button", {
+        name: "Contact Details",
+      });
       fireEvent.click(contactDetailsTab);
-      
+
       expect(screen.getByLabelText("Email")).toBeInTheDocument();
-      expect(screen.getByText("Personal Details")).toBeInTheDocument(); 
+      expect(screen.getByText("Personal Details")).toBeInTheDocument();
     });
 
     it("shows correct tab as active when clicked", () => {
       setup();
 
-      const personalDetailsTab = screen.getByRole('button', { name: "Personal Details" });
-      const contactDetailsTab = screen.getByRole('button', { name: "Contact Details" });
+      const personalDetailsTab = screen.getByRole("button", {
+        name: "Personal Details",
+      });
+      const contactDetailsTab = screen.getByRole("button", {
+        name: "Contact Details",
+      });
 
-      expect(personalDetailsTab).toHaveClass('active');
-      expect(contactDetailsTab).not.toHaveClass('active');
+      expect(personalDetailsTab).toHaveClass("active");
+      expect(contactDetailsTab).not.toHaveClass("active");
 
       fireEvent.click(contactDetailsTab);
 
-      expect(contactDetailsTab).toHaveClass('active');
-      expect(personalDetailsTab).not.toHaveClass('active');
+      expect(contactDetailsTab).toHaveClass("active");
+      expect(personalDetailsTab).not.toHaveClass("active");
     });
   });
 
   describe("Form Actions", () => {
     it("calls navigate on Cancel button click", () => {
       const mockedUsedNavigate = vi.fn();
-      vi.spyOn(ReactRouterDom, "useNavigate").mockImplementation(() => mockedUsedNavigate);
+      vi.spyOn(ReactRouterDom, "useNavigate").mockImplementation(
+        () => mockedUsedNavigate,
+      );
 
       setup();
 
@@ -349,12 +400,14 @@ describe("EditUserProfile Component", () => {
       const userInfoWithEmptyEducations = {
         firstname: "John",
         lastname: "Doe",
-        educations: []
+        educations: [],
       };
 
       setup(userInfoWithEmptyEducations);
 
-      const educationInputs = screen.getAllByPlaceholderText("Enter your education");
+      const educationInputs = screen.getAllByPlaceholderText(
+        "Enter your education",
+      );
       expect(educationInputs).toHaveLength(1);
       expect(educationInputs[0]).toHaveValue("");
     });

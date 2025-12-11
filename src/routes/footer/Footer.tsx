@@ -78,33 +78,28 @@ const Footer = () => {
       aria-label="Site footer"
     >
       <div className=" mx-auto grid grid-cols-2  md:grid-cols-4 gap-2 md:gap-4">
-        {columns.map(
-          ({ title, links, useTranslation = true }) => (
-            <div
-              key={title}
-              className="text-left"
-            >
-              <h3 className="font-bold text-[#676767] mb-4 text-base">
-                {useTranslation ? t(title) : title}
-              </h3>
-              <ul className="list-none p-0 m-0 flex flex-col gap-2">
-                {links.map(({ href, labelKey }) => (
-                  <li key={labelKey}>
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#666666] text-base transition-colors hover:text-[#AB1A20] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#AB1A20]"
-                      aria-label={t(labelKey)}
-                    >
-                      {t(labelKey)}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )
-        )}
+        {columns.map(({ title, links, useTranslation = true }) => (
+          <div key={title} className="text-left">
+            <h3 className="font-bold text-[#676767] mb-4 text-base">
+              {useTranslation ? t(title) : title}
+            </h3>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2">
+              {links.map(({ href, labelKey }) => (
+                <li key={labelKey}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#666666] text-base transition-colors hover:text-[#AB1A20] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#AB1A20]"
+                    aria-label={t(labelKey)}
+                  >
+                    {t(labelKey)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </footer>
   );

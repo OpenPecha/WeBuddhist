@@ -41,7 +41,9 @@ const Breadcrumbs = ({ items }: { items: BreadcrumbItemType[] }) => {
           return (
             <BreadcrumbItem key={item.path || index}>
               {isLast ? (
-                <BreadcrumbPage className="truncate max-w-[200px]">{item.label}</BreadcrumbPage>
+                <BreadcrumbPage className="truncate max-w-[200px]">
+                  {item.label}
+                </BreadcrumbPage>
               ) : (
                 <>
                   <BreadcrumbLink asChild>

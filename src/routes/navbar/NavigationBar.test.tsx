@@ -1,19 +1,25 @@
-import {mockAxios, mockReactQuery, mockTolgee, mockUseAuth, mockUseAuth0, mockLocalStorage} from "../../test-utils/CommonMocks.js";
-import {QueryClient, QueryClientProvider} from "react-query";
-import {BrowserRouter as Router} from "react-router-dom";
-import {TolgeeProvider} from "@tolgee/react";
-import {render, screen, waitFor} from "@testing-library/react";
+import {
+  mockAxios,
+  mockReactQuery,
+  mockTolgee,
+  mockUseAuth,
+  mockUseAuth0,
+  mockLocalStorage,
+} from "../../test-utils/CommonMocks.js";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { BrowserRouter as Router } from "react-router-dom";
+import { TolgeeProvider } from "@tolgee/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Navigation from "./NavigationBar.js"; // Fix import
 import userEvent from "@testing-library/user-event";
-import {vi} from "vitest";
-import * as useAuthContext from '../../config/AuthContext.js'
-
+import { vi } from "vitest";
+import * as useAuthContext from "../../config/AuthContext.js";
 
 mockAxios();
-mockUseAuth()
-mockReactQuery()
-mockUseAuth0()
+mockUseAuth();
+mockReactQuery();
+mockUseAuth0();
 
 const sessionStorageMock = {
   getItem: vi.fn(),
@@ -22,27 +28,28 @@ const sessionStorageMock = {
   clear: vi.fn(),
 };
 
-Object.defineProperty(window, 'sessionStorage', {
+Object.defineProperty(window, "sessionStorage", {
   value: sessionStorageMock,
   writable: true,
 });
 
-const mockLoggedInStatusForIndividualTestCase = () => { vi.spyOn(useAuthContext, "useAuth").mockReturnValue({
+const mockLoggedInStatusForIndividualTestCase = () => {
+  vi.spyOn(useAuthContext, "useAuth").mockReturnValue({
     isLoggedIn: true,
     login: vi.fn(),
     logout: vi.fn(),
   });
-  
-  const mockUseAuth0 = vi.spyOn(require('@auth0/auth0-react'), 'useAuth0');
+
+  const mockUseAuth0 = vi.spyOn(require("@auth0/auth0-react"), "useAuth0");
   mockUseAuth0.mockReturnValue({
-    isAuthenticated: true,  // Mocked value for this test case
+    isAuthenticated: true, // Mocked value for this test case
     logout: vi.fn(),
     loginWithRedirect: vi.fn(),
     user: null,
   });
-
-}
-describe("NavigationBar Component", () => { // Fix describe name
+};
+describe("NavigationBar Component", () => {
+  // Fix describe name
 
   const queryClient = new QueryClient();
   let localStorageMock;
@@ -60,10 +67,10 @@ describe("NavigationBar Component", () => { // Fix describe name
       <Router>
         <QueryClientProvider client={queryClient}>
           <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <Navigation/>
+            <Navigation />
           </TolgeeProvider>
         </QueryClientProvider>
-      </Router>
+      </Router>,
     );
   };
   test("renders navigation links", () => {
@@ -87,7 +94,7 @@ describe("NavigationBar Component", () => { // Fix describe name
   });
 
   test("renders logout button when authenticated", async () => {
-    mockLoggedInStatusForIndividualTestCase()
+    mockLoggedInStatusForIndividualTestCase();
     setup();
     await waitFor(() => {
       expect(screen.getByText("Log Out")).toBeInTheDocument();
@@ -96,7 +103,7 @@ describe("NavigationBar Component", () => { // Fix describe name
   });
 
   test("calls logout function on logout button click", async () => {
-    mockLoggedInStatusForIndividualTestCase()
+    mockLoggedInStatusForIndividualTestCase();
     setup();
     const logoutButton = screen.getByText("Log Out");
     await userEvent.click(logoutButton);

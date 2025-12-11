@@ -5,7 +5,11 @@ const Seo = ({
   title,
   description,
   canonical,
-}: { title: string, description: string, canonical: string }) => {
+}: {
+  title: string;
+  description: string;
+  canonical: string;
+}) => {
   const location = useLocation();
   const siteBaseUrl = window.location.origin;
   const computedCanonical = canonical || `${siteBaseUrl}${location.pathname}`;
