@@ -3,19 +3,30 @@ import {
   mockReactQuery,
   mockTolgee,
   mockUseAuth,
-} from "../../test-utils/CommonMocks.js";
+} from "../../test-utils/CommonMocks.ts";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { BrowserRouter as Router } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
-import CommunityPage, { fetchsheet } from "./CommunityPage.js";
+import CommunityPage, { fetchsheet } from "./CommunityPage.tsx";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import axiosInstance from "../../config/axios-config.js";
+import axiosInstance from "../../config/axios-config.ts";
 import { fireEvent } from "@testing-library/react";
+import { expect, beforeEach, vi, test, describe } from "vitest";
 
 mockAxios();
 mockUseAuth();
 mockReactQuery();
+
+vi.mock("@tolgee/react", async () => {
+  const actual = await vi.importActual("@tolgee/react");
+  return {
+    ...actual,
+    useTranslate: () => ({
+      t: (key: string) => key,
+    }),
+  };
+});
 
 describe("CommunityPage Component", () => {
   const queryClient = new QueryClient();
@@ -28,6 +39,7 @@ describe("CommunityPage Component", () => {
         summary: "This is a test sheet summary",
         publisher: {
           name: "Test User",
+          username: "testuser",
           avatar_url: "https://example.com/image.jpg",
         },
         time_passed: "2 days ago",
@@ -38,6 +50,7 @@ describe("CommunityPage Component", () => {
         summary: "Another test summary content",
         publisher: {
           name: "John Doe",
+          username: "johndoe",
           avatar_url: null,
         },
         time_passed: "5 hours ago",
@@ -63,6 +76,11 @@ describe("CommunityPage Component", () => {
       },
       writable: true,
     });
+
+    useQuery.mockImplementation(() => ({
+      data: mockSheetsData,
+      isLoading: false,
+    }));
   });
   const setup = () => {
     render(
@@ -76,24 +94,17 @@ describe("CommunityPage Component", () => {
     );
   };
 
-  beforeEach(() => {
-    useQuery.mockImplementation(() => ({
-      data: mockSheetsData,
-      isLoading: false,
-    }));
-  });
-
   test("renders main community page structure", () => {
     setup();
-    expect(screen.getByText("Recently Published")).toBeInTheDocument();
-    // expect(screen.getByText("Who to Follow")).toBeInTheDocument();
-    // expect(screen.getByText("Collections")).toBeInTheDocument();
-    // expect(screen.getByText(/Organizations, communities and individuals/)).toBeInTheDocument();
-    // expect(screen.getByText("Explore Collections")).toBeInTheDocument();
     expect(
-      screen.getByText(/Combine sources from our library/),
+      screen.getByText("community.sheets.recently_published"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Make a Sheet")).toBeInTheDocument();
+    expect(
+      screen.getByText("side_nav.join_conversation.descriptions"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("side_nav.join_conversation.button.make_sheet"),
+    ).toBeInTheDocument();
   });
 
   test("renders sheet items correctly", () => {
@@ -132,7 +143,7 @@ describe("CommunityPage Component", () => {
     }));
 
     setup();
-    expect(screen.getByText("Loading stories...")).toBeInTheDocument();
+    expect(screen.getByText("Loading notes...")).toBeInTheDocument();
   });
 
   test("handles empty sheets data", () => {
@@ -143,7 +154,7 @@ describe("CommunityPage Component", () => {
 
     setup();
     expect(screen.queryByText("Test Sheet Title")).not.toBeInTheDocument();
-    expect(screen.queryByText("Loading stories...")).not.toBeInTheDocument();
+    expect(screen.queryByText("Loading notes...")).not.toBeInTheDocument();
   });
 
   test("fetches sheet with correct parameters", async () => {
@@ -169,7 +180,9 @@ describe("CommunityPage Component", () => {
 
   test("handles Make a Sheet button interaction", () => {
     setup();
-    const makeSheetButton = screen.getByText("Make a Sheet");
+    const makeSheetButton = screen.getByText(
+      "side_nav.join_conversation.button.make_sheet",
+    );
     expect(makeSheetButton).toBeInTheDocument();
     expect(makeSheetButton).not.toBeDisabled();
     fireEvent.click(makeSheetButton);

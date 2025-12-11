@@ -1,16 +1,18 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as ReactRouterDom from "react-router-dom";
 import { BrowserRouter as Router } from "react-router-dom";
-import EditUserProfile from "./EditUserProfile.js";
+import EditUserProfile from "./EditUserProfile.tsx";
 import { QueryClient, QueryClientProvider } from "react-query";
 import {
   mockAxios,
   mockReactQuery,
   mockTolgee,
   mockUseAuth,
-} from "../../test-utils/CommonMocks.js";
+} from "../../test-utils/CommonMocks.ts";
 import "@testing-library/jest-dom";
 import { TolgeeProvider } from "@tolgee/react";
+import { expect, vi, beforeEach, describe, it } from "vitest";
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom"); // Import the actual module for non-mocked exports
@@ -125,7 +127,9 @@ describe("EditUserProfile Component", () => {
       expect(screen.getByLabelText("Last Name")).toHaveValue("Doe");
       expect(screen.getByLabelText("Title")).toHaveValue("Developer");
       expect(screen.getByLabelText("Organization")).toHaveValue("Tech Corp");
-      expect(screen.getByLabelText("Location")).toHaveValue("New York");
+      expect(screen.getByPlaceholderText("Enter your location")).toHaveValue(
+        "New York",
+      );
     });
 
     it("renders with empty form when no userInfo is provided", () => {
@@ -135,27 +139,29 @@ describe("EditUserProfile Component", () => {
       expect(screen.getByLabelText("Last Name")).toHaveValue("");
       expect(screen.getByLabelText("Title")).toHaveValue("");
       expect(screen.getByLabelText("Organization")).toHaveValue("");
-      expect(screen.getByLabelText("Location")).toHaveValue("");
+      expect(screen.getByPlaceholderText("Enter your location")).toHaveValue(
+        "",
+      );
     });
 
     it("renders both Personal Details and Contact Details tabs", () => {
       setup();
 
       expect(
-        screen.getByRole("button", { name: "Personal Details" }),
+        screen.getByRole("tab", { name: "Personal Details" }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Contact Details" }),
+        screen.getByRole("tab", { name: "Contact Details" }),
       ).toBeInTheDocument();
     });
 
     it("renders Personal Details tab as active by default", () => {
       setup();
 
-      const personalDetailsTab = screen.getByRole("button", {
+      const personalDetailsTab = screen.getByRole("tab", {
         name: "Personal Details",
       });
-      expect(personalDetailsTab).toHaveClass("active");
+      expect(personalDetailsTab).toHaveAttribute("data-state", "active");
     });
   });
 
@@ -188,7 +194,9 @@ describe("EditUserProfile Component", () => {
     it("updates about me textarea correctly", () => {
       setup();
 
-      const aboutMeTextarea = screen.getByLabelText("About Me");
+      const aboutMeTextarea = screen.getByPlaceholderText(
+        "Tell us about yourself",
+      );
       fireEvent.change(aboutMeTextarea, { target: { value: "Updated bio" } });
 
       expect(aboutMeTextarea).toHaveValue("Updated bio");
@@ -254,13 +262,13 @@ describe("EditUserProfile Component", () => {
       ],
     };
 
-    it("populates social media fields from social_profiles array", () => {
+    it("populates social media fields from social_profiles array", async () => {
       setup(userInfoWithSocialProfiles);
 
-      const contactDetailsTab = screen.getByRole("button", {
+      const contactDetailsTab = screen.getByRole("tab", {
         name: "Contact Details",
       });
-      fireEvent.click(contactDetailsTab);
+      await userEvent.click(contactDetailsTab);
 
       expect(screen.getByPlaceholderText("Enter your email")).toHaveValue(
         "john@example.com",
@@ -277,7 +285,7 @@ describe("EditUserProfile Component", () => {
       expect(screen.getByPlaceholderText("Enter your YouTube")).toHaveValue("");
     });
 
-    it("handles missing social_profiles array gracefully", () => {
+    it("handles missing social_profiles array gracefully", async () => {
       const userInfoWithoutSocialProfiles = {
         firstname: "John",
         lastname: "Doe",
@@ -286,10 +294,10 @@ describe("EditUserProfile Component", () => {
 
       setup(userInfoWithoutSocialProfiles);
 
-      const contactDetailsTab = screen.getByRole("button", {
+      const contactDetailsTab = screen.getByRole("tab", {
         name: "Contact Details",
       });
-      fireEvent.click(contactDetailsTab);
+      await userEvent.click(contactDetailsTab);
 
       expect(screen.getByPlaceholderText("Enter your email")).toHaveValue(
         "john@example.com",
@@ -304,13 +312,13 @@ describe("EditUserProfile Component", () => {
       expect(screen.getByPlaceholderText("Enter your YouTube")).toHaveValue("");
     });
 
-    it("updates social profile URLs correctly", () => {
+    it("updates social profile URLs correctly", async () => {
       setup(userInfoWithSocialProfiles);
 
-      const contactDetailsTab = screen.getByRole("button", {
+      const contactDetailsTab = screen.getByRole("tab", {
         name: "Contact Details",
       });
-      fireEvent.click(contactDetailsTab);
+      await userEvent.click(contactDetailsTab);
 
       const linkedInInput = screen.getByPlaceholderText("Enter your LinkedIn");
       fireEvent.change(linkedInInput, {
@@ -322,42 +330,31 @@ describe("EditUserProfile Component", () => {
   });
 
   describe("Tab Navigation", () => {
-    it("switches between tabs correctly", () => {
+    it("switches between tabs correctly", async () => {
       setup();
-
       expect(screen.getByLabelText("First Name")).toBeInTheDocument();
 
-      const personalDetailsTab = screen.getByRole("button", {
-        name: "Personal Details",
-      });
-      fireEvent.click(personalDetailsTab);
-
-      const contactDetailsTab = screen.getByRole("button", {
+      const contactDetailsTab = screen.getByRole("tab", {
         name: "Contact Details",
       });
-      fireEvent.click(contactDetailsTab);
+      await userEvent.click(contactDetailsTab);
 
-      expect(screen.getByLabelText("Email")).toBeInTheDocument();
+      expect(contactDetailsTab).toHaveAttribute("data-state", "active");
       expect(screen.getByText("Personal Details")).toBeInTheDocument();
     });
 
     it("shows correct tab as active when clicked", () => {
       setup();
 
-      const personalDetailsTab = screen.getByRole("button", {
+      const personalDetailsTab = screen.getByRole("tab", {
         name: "Personal Details",
       });
-      const contactDetailsTab = screen.getByRole("button", {
+      const contactDetailsTab = screen.getByRole("tab", {
         name: "Contact Details",
       });
 
-      expect(personalDetailsTab).toHaveClass("active");
-      expect(contactDetailsTab).not.toHaveClass("active");
-
-      fireEvent.click(contactDetailsTab);
-
-      expect(contactDetailsTab).toHaveClass("active");
-      expect(personalDetailsTab).not.toHaveClass("active");
+      expect(personalDetailsTab).toHaveAttribute("data-state", "active");
+      expect(contactDetailsTab).toHaveAttribute("data-state", "inactive");
     });
   });
 

@@ -5,17 +5,17 @@ import {
   mockTolgee,
   mockUseAuth,
   mockLocalStorage,
-} from "../../test-utils/CommonMocks.js";
+} from "../../test-utils/CommonMocks.ts";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
 import * as reactRouterDom from "react-router-dom";
-import Collections, { fetchCollections } from "./Collections.js";
-import { vi } from "vitest";
+import Collections, { fetchCollections } from "./Collections.tsx";
+import { vi, beforeEach, describe, test, expect } from "vitest";
 import "@testing-library/jest-dom";
-import axiosInstance from "../../config/axios-config.js";
+import axiosInstance from "../../config/axios-config.ts";
 
 mockAxios();
 mockUseAuth();
@@ -39,19 +39,19 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("../../utils/helperFunctions.jsx", () => ({
+vi.mock("../../utils/helperFunctions.tsx", () => ({
   mapLanguageCode: (code) => (code === "bo-IN" ? "bo" : code),
   getEarlyReturn: () => null,
   getLanguageClass: (language) => (language === "bo" ? "tibetan-font" : ""),
 }));
 
-vi.mock("../../utils/constants.js", () => ({
+vi.mock("../../utils/constants.ts", () => ({
   LANGUAGE: "LANGUAGE",
   siteName: "WeBuddhist",
 }));
 
 const setCollectionColorMock = vi.fn();
-vi.mock("../../context/CollectionColorContext.jsx", () => ({
+vi.mock("../../context/CollectionColorContext.tsx", () => ({
   useCollectionColor: () => ({ setCollectionColor: setCollectionColorMock }),
 }));
 
@@ -60,14 +60,17 @@ describe("Collections Component", () => {
   const mockCollectionsData = {
     collections: [
       {
+        id: "1",
         title: "content.title.words_of_buddha",
         description: "content.subtitle.words_of_buddha",
       },
       {
+        id: "2",
         title: "content.title.liturgy",
         description: "content.subtitle.prayers_rutuals",
       },
       {
+        id: "3",
         title: "content.title.Buddhavacana",
         description: "content.subtitle.buddhavacana",
       },
@@ -104,11 +107,11 @@ describe("Collections Component", () => {
 
   test("renders Collections component", () => {
     setup();
+    expect(screen.getByText("home.browse_text")).toBeInTheDocument();
+    expect(screen.getByText("side_nav.about_pecha_title")).toBeInTheDocument();
     expect(
-      document.querySelector(".collections-container"),
+      screen.getByText("content.title.words_of_buddha"),
     ).toBeInTheDocument();
-    expect(document.querySelector(".left-section")).toBeInTheDocument();
-    expect(document.querySelector(".right-section")).toBeInTheDocument();
   });
 
   test("does not display loading state when data is being fetched", () => {
@@ -118,9 +121,8 @@ describe("Collections Component", () => {
     }));
 
     setup();
-    expect(
-      document.querySelector(".collections-container"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("home.browse_text")).toBeInTheDocument();
+    expect(screen.getByText("side_nav.about_pecha_title")).toBeInTheDocument();
   });
 
   test("handles language selection correctly", () => {
@@ -132,43 +134,42 @@ describe("Collections Component", () => {
 
   test("renders the browse section correctly", () => {
     setup();
-    const browseSection = document.querySelector(".browse-section");
-    expect(browseSection).toBeInTheDocument();
-    expect(browseSection.querySelector("h2")).toBeInTheDocument();
+    expect(screen.getByText("home.browse_text")).toBeInTheDocument();
+    expect(screen.getByText("side_nav.about_pecha_title")).toBeInTheDocument();
   });
 
   test("renders the content section correctly", () => {
     setup();
-    const contentSection = document.querySelector(
-      ".collections-list-container",
-    );
-    expect(contentSection).toBeInTheDocument();
-    expect(contentSection.textContent).toContain(
-      "content.title.words_of_buddha",
-    );
-    expect(contentSection.textContent).toContain(
-      "content.subtitle.words_of_buddha",
-    );
+    expect(
+      screen.getByText("content.title.words_of_buddha"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("content.title.liturgy")).toBeInTheDocument();
+    expect(
+      screen.getByText("content.subtitle.words_of_buddha"),
+    ).toBeInTheDocument();
   });
 
   test("renders the about section correctly", () => {
     setup();
-    const rightSection = document.querySelector(".right-section");
-    expect(rightSection).toBeInTheDocument();
-    const heading = rightSection.querySelector(".about-title");
-    expect(heading).toBeInTheDocument();
-    expect(heading.textContent).toBe("side_nav.about_pecha_title");
-    const paragraph = rightSection.querySelector("p");
-    expect(paragraph).toBeInTheDocument();
+    expect(screen.getByText("side_nav.about_pecha_title")).toBeInTheDocument();
+    expect(
+      screen.getAllByText("side_nav.community.join_conversation"),
+    ).toHaveLength(2);
+    expect(
+      screen.getByText("side_nav.about_pecha_description"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("side_nav.collection.description"),
+    ).toBeInTheDocument();
   });
 
   test("renders correct number of collections from data", () => {
     const customCollectionsData = {
       collections: [
-        { title: "Term 1", description: "Description 1" },
-        { title: "Term 2", description: "Description 2" },
-        { title: "Term 3", description: "Description 3" },
-        { title: "Term 4", description: "Description 4" },
+        { id: "1", title: "Term 1", description: "Description 1" },
+        { id: "2", title: "Term 2", description: "Description 2" },
+        { id: "3", title: "Term 3", description: "Description 3" },
+        { id: "4", title: "Term 4", description: "Description 4" },
       ],
       total: 4,
       skip: 0,
@@ -182,27 +183,25 @@ describe("Collections Component", () => {
 
     setup();
 
-    const collectionElements = document.querySelectorAll(".collections");
-    expect([...collectionElements].map((e) => e.textContent)).toEqual(
-      expect.arrayContaining([
-        "Term 1Description 1",
-        "Term 2Description 2",
-        "Term 3Description 3",
-        "Term 4Description 4",
-      ]),
-    );
+    expect(screen.getByText("Term 1")).toBeInTheDocument();
+    expect(screen.getByText("Term 2")).toBeInTheDocument();
+    expect(screen.getByText("Term 3")).toBeInTheDocument();
+    expect(screen.getByText("Term 4")).toBeInTheDocument();
+
+    expect(screen.getByText("Description 1")).toBeInTheDocument();
+    expect(screen.getByText("Description 2")).toBeInTheDocument();
+    expect(screen.getByText("Description 3")).toBeInTheDocument();
+    expect(screen.getByText("Description 4")).toBeInTheDocument();
   });
 
   test("handles async data loading correctly", async () => {
     let isLoadingValue = true;
     let dataValue = null;
 
-    const useQueryMock = vi.fn().mockImplementation(() => ({
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
       data: dataValue,
       isLoading: isLoadingValue,
     }));
-
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(useQueryMock);
 
     const { rerender } = setup();
 
@@ -218,11 +217,9 @@ describe("Collections Component", () => {
         </QueryClientProvider>
       </Router>,
     );
-
-    const contentSection = document.querySelector(
-      ".collections-list-container",
-    );
-    expect(contentSection).toBeInTheDocument();
+    expect(
+      screen.getByText("content.title.words_of_buddha"),
+    ).toBeInTheDocument();
   });
 
   test("handles null data gracefully", () => {
@@ -232,11 +229,11 @@ describe("Collections Component", () => {
     }));
 
     setup();
-
-    const container = document.querySelector(".collections-container");
-    expect(container).toBeInTheDocument();
-    expect(document.querySelector(".left-section")).toBeInTheDocument();
-    expect(document.querySelector(".right-section")).toBeInTheDocument();
+    expect(screen.getByText("home.browse_text")).toBeInTheDocument();
+    expect(screen.getByText("side_nav.about_pecha_title")).toBeInTheDocument();
+    expect(
+      screen.queryByText("content.title.words_of_buddha"),
+    ).not.toBeInTheDocument();
   });
 
   test("fetches collections with correct parameters", async () => {
@@ -360,7 +357,7 @@ describe("Collections Component", () => {
     expect(leafLink.getAttribute("href")).toBe("/works/w1");
   });
 
-  test("navigates to community when Explore Stories is clicked", () => {
+  test("navigates to note when Explore Stories is clicked", () => {
     const navigateMock = vi.fn();
     const useNavigateSpy = vi
       .spyOn(reactRouterDom, "useNavigate")
@@ -372,7 +369,7 @@ describe("Collections Component", () => {
     });
     fireEvent.click(button);
 
-    expect(navigateMock).toHaveBeenCalledWith("/community");
+    expect(navigateMock).toHaveBeenCalledWith("/note");
     useNavigateSpy.mockRestore();
   });
 
@@ -395,19 +392,13 @@ describe("Collections Component", () => {
     }));
 
     setup();
+    fireEvent.click(screen.getByRole("link", { name: "T0" }));
+    expect(setCollectionColorMock).toHaveBeenLastCalledWith("#802F3E");
 
-    expect(document.querySelectorAll(".red-line").length).toBe(1);
-    expect(document.querySelectorAll(".green-line").length).toBe(1);
-    expect(document.querySelectorAll(".lightgreen-line").length).toBe(1);
-    expect(document.querySelectorAll(".blue-line").length).toBe(1);
-    expect(document.querySelectorAll(".purple-line").length).toBe(1);
-    expect(document.querySelectorAll(".lightpurpleline-line").length).toBe(1);
-    expect(document.querySelectorAll(".orangeline-line").length).toBe(1);
-    expect(document.querySelectorAll(".pink-line").length).toBe(1);
-    expect(document.querySelectorAll(".gold-line").length).toBe(1);
+    fireEvent.click(screen.getByRole("link", { name: "T4" }));
+    expect(setCollectionColorMock).toHaveBeenLastCalledWith("#594176");
 
-    const lastLink = screen.getByRole("link", { name: "T8" });
-    fireEvent.click(lastLink);
-    expect(setCollectionColorMock).toHaveBeenCalledWith("#CCB478");
+    fireEvent.click(screen.getByRole("link", { name: "T8" }));
+    expect(setCollectionColorMock).toHaveBeenLastCalledWith("#CCB478");
   });
 });
