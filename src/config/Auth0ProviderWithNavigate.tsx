@@ -1,13 +1,15 @@
 import { Auth0Provider } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
-import { LOGGED_IN_VIA } from "../utils/constants.js";
+import { LOGGED_IN_VIA } from "../utils/constants.ts";
 import { useQuery } from "react-query";
-import axiosInstance from "./axios-config.js";
-import { useTranslate } from "@tolgee/react";
+import axiosInstance from "./axios-config.ts";
 
-export const Auth0ProviderWithNavigate = ({ children }) => {
+export const Auth0ProviderWithNavigate = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const navigate = useNavigate();
-  const { t } = useTranslate();
   const redirectUri = window.location.origin;
 
   const { data: auth0Provider, isLoading: auth0ProvideIsLoading } = useQuery(
@@ -25,7 +27,7 @@ export const Auth0ProviderWithNavigate = ({ children }) => {
     },
   );
 
-  const onRedirectCallback = (appState) => {
+  const onRedirectCallback = (appState: any) => {
     localStorage.setItem(LOGGED_IN_VIA, "okta");
     navigate(appState?.returnTo || window.location.pathname);
   };

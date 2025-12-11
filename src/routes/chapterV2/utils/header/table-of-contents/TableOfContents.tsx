@@ -18,16 +18,7 @@ type TocResponse = {
   text_detail?: { language?: string };
 };
 
-type TableOfContentsProps = {
-  textId: string;
-  showTableOfContents: boolean;
-  currentSectionId?: string | null;
-  onSegmentSelect: (segmentId: string) => void;
-  language?: string;
-  onClose: () => void;
-};
-
-const TableOfContents = (props: TableOfContentsProps) => {
+const TableOfContents = (props: any) => {
   const {
     textId,
     showTableOfContents,
