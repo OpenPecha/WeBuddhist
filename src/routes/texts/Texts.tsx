@@ -68,11 +68,17 @@ export const fetchCommentaries = async (
   return { items: data };
 };
 
-const Texts = () => {
+const Texts = (props: any) => {
+  const {
+    collection_id,
+    addChapter,
+    currentChapter,
+    isCompactView = false,
+  } = props || {};
   const { t } = useTranslate();
   const { id: urlId } = useParams();
   const location = useLocation();
-  const textId = urlId ?? "";
+  const textId = collection_id || urlId || "";
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const [versionsPagination] = useState({ currentPage: 1, limit: 10 });
   const [commentariesPagination, setCommentariesPagination] = useState({
@@ -177,6 +183,50 @@ const Texts = () => {
       </Tabs>
     );
   };
+
+  const handleTextTitleClick = (e: React.MouseEvent) => {
+    if (addChapter && tableOfContents?.contents[0]?.id) {
+      e.preventDefault();
+      const chapterData = {
+        textId: textId,
+        contentId: tableOfContents.contents[0].id,
+        segmentId: undefined,
+      };
+      addChapter(chapterData, currentChapter);
+    }
+  };
+
+  if (isCompactView) {
+    return (
+      <div className="space-y-4 p-4">
+        {addChapter ? (
+          <button
+            type="button"
+            onClick={handleTextTitleClick}
+            className="text-left cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <h1
+              className={`text-gray-800 ${getLanguageClass(versions?.text?.language)}`}
+            >
+              {versions?.text?.title}
+            </h1>
+          </button>
+        ) : (
+          <Link
+            to={`/chapter?text_id=${textId}&content_id=${tableOfContents?.contents[0]?.id}&versionId=&contentIndex=${0}`}
+            className="text-left"
+          >
+            <h1
+              className={`text-gray-800 ${getLanguageClass(versions?.text?.language)}`}
+            >
+              {versions?.text?.title}
+            </h1>
+          </Link>
+        )}
+        {renderTabs()}
+      </div>
+    );
+  }
 
   return (
     <TwoColumnLayout

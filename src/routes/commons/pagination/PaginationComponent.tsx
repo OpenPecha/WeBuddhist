@@ -46,9 +46,9 @@ const PaginationComponent: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="flex justify-between mt-4  w-full items-center">
+    <div className="flex flex-wrap justify-between mt-4 w-full items-center gap-4">
       <Pagination className="w-fit justify-center">
-        <PaginationContent>
+        <PaginationContent className="flex-wrap">
           <PaginationItem>
             <PaginationPrevious
               href="#"
@@ -89,7 +89,6 @@ const PaginationComponent: React.FC<PaginationProps> = ({
       </Pagination>
 
       <div className="flex w-fit items-center gap-2">
-        <span className="text-sm text-muted-foreground">Per page</span>
         <Select
           value={String(pagination.limit)}
           onValueChange={handleSelectChange}

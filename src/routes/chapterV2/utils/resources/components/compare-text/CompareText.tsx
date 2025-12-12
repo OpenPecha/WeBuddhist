@@ -5,17 +5,22 @@ import Works from "@/routes/works/Works";
 import Texts from "@/routes/texts/Texts";
 import ResourceHeader from "../common/ResourceHeader";
 
+type RendererInfo = {
+  renderer: string;
+  requiredId: string;
+};
+
 const CompareText = ({
   setIsCompareTextView,
   addChapter,
   currentChapter,
   handleNavigate,
 }: any) => {
-  const [rendererInfo, setRendererInfo] = useState({
+  const [rendererInfo, setRendererInfo] = useState<RendererInfo>({
     renderer: "collections",
     requiredId: "",
   });
-  const historyRef = useRef([]);
+  const historyRef = useRef<RendererInfo[]>([]);
 
   const { t } = useTranslate();
 
@@ -38,19 +43,19 @@ const CompareText = ({
       case "works":
         return (
           <Works
-            requiredInfo={{ from: "compare-text" }}
             setRendererInfo={handleSetRendererInfo}
             collection_id={rendererInfo.requiredId}
+            isCompactView={true}
           />
         );
       case "texts":
         return (
           <Texts
-            requiredInfo={{ from: "compare-text" }}
             setRendererInfo={handleSetRendererInfo}
             collection_id={rendererInfo.requiredId}
             addChapter={addChapter}
             currentChapter={currentChapter}
+            isCompactView={true}
           />
         );
     }

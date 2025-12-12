@@ -144,6 +144,7 @@ const Collections = (props: CollectionsProps) => {
         collectionsData={collectionsData}
         renderCollectionNames={renderCollectionNames}
         getColorFromIndex={getColorFromIndex}
+        handleCollectionClick={handleCollectionClick}
       />
     );
   }

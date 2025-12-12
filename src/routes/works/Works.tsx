@@ -35,10 +35,17 @@ type TextItem = {
   language: string;
 };
 
-const Works = () => {
+type WorksProps = {
+  setRendererInfo?: (updater: any) => void;
+  collection_id?: string;
+  isCompactView?: boolean;
+};
+
+const Works = (props?: WorksProps) => {
+  const { collection_id, setRendererInfo, isCompactView = false } = props || {};
   const { id: paramId } = useParams();
   const { t } = useTranslate();
-  const id = paramId ?? "";
+  const id = collection_id || paramId || "";
 
   const [pagination, setPagination] = useState<{
     currentPage: number;
@@ -92,6 +99,13 @@ const Works = () => {
 
   const handleTextClick = (text: TextItem) => {
     sessionStorage.setItem("textLanguage", text.language);
+    if (setRendererInfo) {
+      setRendererInfo((prev: any) => ({
+        ...prev,
+        requiredId: text.id,
+        renderer: "texts",
+      }));
+    }
   };
 
   const getParentCollectionState = () => ({
@@ -109,24 +123,58 @@ const Works = () => {
             <h1 className="text-xl font-semibold tracking-wide text-gray-700">
               {worksData?.collection?.title}
             </h1>
-            <div className="grid grid-cols-1 gap-6 pr-0 sm:grid-cols-2 lg:grid-cols-2 md:gap-8">
-              {rootTexts.map((text) => (
-                <Link
-                  onClick={() => handleTextClick(text)}
-                  key={text.id}
-                  to={`/texts/${text.id}?type=root_text`}
-                  state={getParentCollectionState()}
-                  className={`${getLanguageClass(text.language)} flex flex-col gap-2 text-left text-gray-800 transition-colors hover:text-gray-600`}
-                >
-                  <p className="text-lg pt-4 border-t">{text.title}</p>
-                </Link>
-              ))}
+            <div
+              className={`grid grid-cols-1 gap-6 pr-0 ${!isCompactView && "sm:grid-cols-2 lg:grid-cols-2"} md:gap-8`}
+            >
+              {rootTexts.map((text) => {
+                if (setRendererInfo) {
+                  return (
+                    <button
+                      type="button"
+                      key={text.id}
+                      onClick={() => handleTextClick(text)}
+                      className={`${getLanguageClass(text.language)} flex flex-col gap-2 text-left text-gray-800 transition-colors hover:text-gray-600 cursor-pointer`}
+                    >
+                      <p className="text-lg pt-4 border-t">{text.title}</p>
+                    </button>
+                  );
+                }
+
+                return (
+                  <Link
+                    onClick={() => handleTextClick(text)}
+                    key={text.id}
+                    to={`/texts/${text.id}?type=root_text`}
+                    state={getParentCollectionState()}
+                    className={`${getLanguageClass(text.language)} flex flex-col gap-2 text-left text-gray-800 transition-colors hover:text-gray-600`}
+                  >
+                    <p className="text-lg pt-4 border-t">{text.title}</p>
+                  </Link>
+                );
+              })}
             </div>
           </>
         )}
       </div>
     );
   };
+
+  if (isCompactView) {
+    return (
+      <div className="space-y-4 p-4">
+        <h1 className="overalltext text-left text-2xl font-semibold text-gray-700">
+          {worksData.term?.title}
+        </h1>
+        {renderRootTexts()}
+        <PaginationComponent
+          pagination={pagination}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+          setPagination={setPagination}
+        />
+      </div>
+    );
+  }
 
   return (
     <TwoColumnLayout
