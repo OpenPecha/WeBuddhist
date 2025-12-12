@@ -32,7 +32,7 @@ const CompareText = ({
         return (
           <Collections
             setRendererInfo={handleSetRendererInfo}
-            showDescription={false}
+            isCompactView={true}
           />
         );
       case "works":

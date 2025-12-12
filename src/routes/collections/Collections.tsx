@@ -13,6 +13,7 @@ import { useCollectionColor } from "../../context/CollectionColorContext.tsx";
 import clsx from "clsx";
 import { Button } from "@/components/ui/button.tsx";
 import TwoColumnLayout from "../../components/layout/TwoColumnLayout";
+import CompactCollections from "../chapterV2/utils/resources/components/compare-text/CompactCollections.tsx";
 
 type Collection = {
   id: string;
@@ -30,8 +31,8 @@ type CollectionsResponse = {
 };
 
 type CollectionsProps = {
-  showDescription?: boolean;
   setRendererInfo?: (updater: (prev: any) => any) => void;
+  isCompactView?: boolean;
 };
 
 type CollectionColorContextValue = {
@@ -52,7 +53,7 @@ export const fetchCollections = async (): Promise<CollectionsResponse> => {
 };
 
 const Collections = (props: CollectionsProps) => {
-  const { showDescription = true, setRendererInfo } = props;
+  const { setRendererInfo, isCompactView = false } = props;
   const navigate = useNavigate();
   const { t } = useTranslate();
   const { setCollectionColor } =
@@ -137,6 +138,16 @@ const Collections = (props: CollectionsProps) => {
     );
   };
 
+  if (isCompactView) {
+    return (
+      <CompactCollections
+        collectionsData={collectionsData}
+        renderCollectionNames={renderCollectionNames}
+        getColorFromIndex={getColorFromIndex}
+      />
+    );
+  }
+
   return (
     <TwoColumnLayout
       main={
@@ -158,11 +169,9 @@ const Collections = (props: CollectionsProps) => {
                     style={{ backgroundColor: getColorFromIndex(index) }}
                   />
                   {renderCollectionNames(collection, index)}
-                  {showDescription && (
-                    <p className="content text-left text-[#666666] text-base m-0 wrap-break-word">
-                      {collection.description}
-                    </p>
-                  )}
+                  <p className="content text-left text-[#666666] text-base m-0 wrap-break-word">
+                    {collection.description}
+                  </p>
                 </div>
               ),
             )}
