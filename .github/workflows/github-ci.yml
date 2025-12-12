@@ -1,4 +1,4 @@
-name: app-pecha-frontend
+name: WeBuddhist
 
 on: [push, pull_request, workflow_dispatch]
 jobs:
