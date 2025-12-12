@@ -1,22 +1,24 @@
-# OpenPecha Frontend
+# Webuddhist
 
-This is the frontend application for the OpenPecha platform, designed to manage and interact with Buddhist texts in the OpenPecha format.
+This is the frontend application for the Webuddhist platform, designed to manage and interact with Buddhist texts in the pecha format.
 
 ## Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js (v20 or higher)
 - npm (v9 or higher)
 
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/OpenPecha/app-pecha-frontend.git
    ```
 
-2. Navigate to app-pecha-frontend directory:
+2. Navigate to Webuddhist directory:
+
    ```bash
-   cd app-pecha-frontend
+   cd Webuddhist
    ```
 
 3. Install the dependencies:
@@ -27,9 +29,11 @@ This is the frontend application for the OpenPecha platform, designed to manage 
 ## Development
 
 1. Start the development server:
+
    ```bash
    npm run dev
    ```
+
    The application will be available at [http://localhost:5173](http://localhost:5173)
 
 2. Run the test cases:

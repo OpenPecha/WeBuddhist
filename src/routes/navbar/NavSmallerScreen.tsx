@@ -1,0 +1,111 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
+import { SearchNavbarIcon } from "../../utils/Icon.tsx";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTrigger,
+} from "../../components/ui/sheet";
+import { Button } from "../../components/ui/button";
+import { Separator } from "../../components/ui/separator";
+
+export type NavItem = { to: string; label: string; key: string };
+
+type NavSmallerScreenProps = {
+  searchTerm: string;
+  onSearchTermChange: (value: string) => void;
+  onSearchSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  navItems: NavItem[];
+  renderAuthButtons: (variant: "desktop" | "mobile") => React.ReactNode;
+  isAuthenticated: boolean;
+  isLoggedIn: boolean;
+  onProfileNavigate: () => void;
+  translate: (key: string) => string;
+};
+
+const NavSmallerScreen = ({
+  searchTerm,
+  onSearchTermChange,
+  onSearchSubmit,
+  navItems,
+  renderAuthButtons,
+  isAuthenticated,
+  isLoggedIn,
+  onProfileNavigate,
+  translate,
+}: NavSmallerScreenProps) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onSearchTermChange(event.target.value);
+  };
+
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <button className="flex md:hidden items-center justify-center rounded p-2 hover:bg-accent">
+          <SearchNavbarIcon className="text-[#676767]" />
+        </button>
+      </SheetTrigger>
+      <SheetContent
+        side="top"
+        className="p-0 w-full max-h-[85vh] overflow-y-auto"
+      >
+        <div className="flex items-center h-[60px] bg-[#FAFAF9] px-4 py-3 border-b-2">
+          <Link to="/" className="flex items-center">
+            <img
+              className="h-[30px]"
+              src="/img/webuddhist_logo.svg"
+              alt="Webuddhist"
+            />
+          </Link>
+        </div>
+        <div className="px-2">
+          <form
+            className="flex items-center rounded-lg border border-[#e0e0e0] bg-[#EDEDEC]"
+            onSubmit={onSearchSubmit}
+          >
+            <FaSearch className="ml-1.5 text-[#5b5b5b]" />
+            <input
+              type="search"
+              placeholder={translate("common.placeholder.search")}
+              value={searchTerm}
+              onChange={handleInputChange}
+              className="w-full border-none bg-transparent outline-none px-1 py-1.5"
+            />
+          </form>
+        </div>
+        <Separator />
+        <div className="flex flex-col space-y-2 p-2">
+          {navItems.map((navItem) => (
+            <SheetClose asChild key={navItem.key}>
+              <Link
+                className="no-underline text-center text-[#676767] font-medium hover:underline transition-all"
+                to={navItem.to}
+              >
+                {navItem.label}
+              </Link>
+            </SheetClose>
+          ))}
+        </div>
+        <Separator />
+        <div className="flex flex-col pb-10">
+          {renderAuthButtons("mobile")}
+          {(isAuthenticated || isLoggedIn) && (
+            <SheetClose asChild>
+              <Button
+                variant="ghost"
+                onClick={onProfileNavigate}
+                className="w-full rounded text-[#676767]"
+              >
+                {translate("header.profileMenu.profile")}
+              </Button>
+            </SheetClose>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+export default NavSmallerScreen;

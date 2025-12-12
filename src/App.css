@@ -1,68 +1,83 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 #root {
   text-align: center;
   --title-font-size: 16px;
-  --title-font-family: 'EBGaramond-Regular', sans-serif;
+  --title-font-family: "EBGaramond-Regular", sans-serif;
   --subtitle-font-size: 16px;
-  --subtitle-font-family: 'sub-title-font',"Inter";
+  --subtitle-font-family: "sub-title-font", "Inter";
   --content-font-size: 16px;
-  --content-font-family: 'content-font',"Inter";
+  --content-font-family: "content-font", "Inter";
   --subcontent-font-size: 11px;
-  --subcontent-font-family: 'sub-content-font',"Inter";
+  --subcontent-font-family: "sub-content-font", "Inter";
   --listtitle-font-size: 16px;
-  --listtitle-font-family: 'list-title-font',"Inter";
+  --listtitle-font-family: "list-title-font", "Inter";
   --listsubtitle-font-size: 14px;
-  --listsubtitle-font-family: 'list-subtitle-font',"Inter";
+  --listsubtitle-font-family: "list-subtitle-font", "Inter";
   --navbaritems-font-size: 16px;
-  --navbaritems-font-family: 'navbar-items-font',"Inter";
+  --navbaritems-font-family: "navbar-items-font", "Inter";
   --overalltext-font-size: 24px;
-  --overalltext-font-family: 'EBGaramond-Regular', sans-serif;
+  --overalltext-font-family: "EBGaramond-Regular", sans-serif;
   --collection-link-font-size: 16px;
-  --collection-link-font-family: 'collection-link-font';
+  --collection-link-font-family: "collection-link-font";
 }
 
-.div-color{
+.div-color {
   height: 1px;
   background-color: #dd0707;
   margin-bottom: 1rem;
-  width: 100%
+  width: 100%;
 }
 
 @font-face {
-  font-family: 'Jomolhari-Regular';
+  font-family: "Jomolhari-Regular";
   src: url("./assets/fonts/Jomolhari-Regular.ttf");
 }
 
-@font-face{
-  font-family: 'Atisha';
+@font-face {
+  font-family: "Atisha";
   src: url("./assets/fonts/Atisha.ttf");
 }
 
 @font-face {
-  font-family: 'EBGaramond-Regular';
+  font-family: "EBGaramond-Regular";
   src: url("./assets/fonts/EBGaramond-Regular.ttf");
 }
 
 @font-face {
-  font-family: 'NotoSerifTibetan-Medium';
+  font-family: "NotoSerifTibetan-Medium";
   src: url("./assets/fonts/NotoSerifTibetan-Medium.ttf");
 }
 
 @font-face {
-  font-family: 'Inter';
-  src: url("./assets/fonts/InterRegular.woff") format('woff');
+  font-family: "Inter";
+  src: url("./assets/fonts/InterRegular.woff") format("woff");
 }
-.bo-text{
-  font-family: 'Atisha', sans-serif;
-  font-size: 22px;
+.bo-text {
+  font-family: "Atisha", sans-serif;
 }
-.en-text{
-  font-family: 'Inter', sans-serif;
+.en-text {
+  font-family: "Inter", sans-serif;
   font-size: 18px;
 }
-.en-serif-text{
-  font-family: 'EBGaramond-Regular', sans-serif;
+.en-serif-text {
+  font-family: "EBGaramond-Regular", sans-serif;
   font-size: 20px;
+}
+.serif-title-text {
+  font-family: "EBGaramond-Regular", sans-serif;
 }
 .title {
   font-size: var(--title-font-size);
@@ -73,7 +88,7 @@
   font-size: var(--subtitle-font-size);
   font-family: var(--subtitle-font-family);
 }
-.collectionfont{
+.collectionfont {
   font-family: var(--collection-link-font-family);
   font-size: var(--collection-link-font-size);
 }
@@ -88,23 +103,23 @@
   font-family: var(--subcontent-font-family);
 }
 
-.listtitle{
+.listtitle {
   font-size: var(--listtitle-font-size);
   font-family: var(--listtitle-font-family);
 }
-.listtitle p.bo-text{
+.listtitle p.bo-text {
   margin-top: 1rem;
 }
-.overalltext{
+.overalltext {
   font-size: var(--overalltext-font-size);
   font-family: var(--overalltext-font-family);
 }
-.listsubtitle{
+.listsubtitle {
   font-size: var(--listsubtitle-font-size);
   font-family: var(--listsubtitle-font-family);
 }
 
-.navbaritems{ 
+.navbaritems {
   font-size: var(--navbaritems-font-size);
   font-family: var(--navbaritems-font-family);
 }
@@ -149,11 +164,119 @@ div::-webkit-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.global-container{
-  width: 100%;
-  height:80vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #102544;
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
