@@ -61,7 +61,7 @@ const SheetShare = () => {
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex items-center justify-center py-2 rounded hover:bg-accent transition-colors"
+          className="flex items-center justify-center p-2 cursor-pointer rounded hover:bg-accent transition-colors"
           aria-label="Change language"
         >
           <FiShare2 className="size-4" />

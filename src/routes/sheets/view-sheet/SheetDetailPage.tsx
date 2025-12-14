@@ -428,7 +428,7 @@ const SheetDetailPage = ({
     );
   };
   return (
-    <div className="flex w-full">
+    <div className="flex w-full h-screen overflow-y-auto">
       <main className={`flex-1 p-8`}>
         <article className="mx-auto max-w-3xl space-y-4">
           <h1 className=" text-2xl font-semibold text-gray-700">

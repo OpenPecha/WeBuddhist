@@ -42,13 +42,13 @@ const layoutOptions = [
     id: "layout-1",
     icon: <ImParagraphJustify className="size-5" />,
     value: LAYOUT_MODES.PROSE,
-    label: "Prose layout",
+    label: "Prose",
   },
   {
     id: "layout-2",
     icon: <LuAlignJustify className="size-5" />,
     value: LAYOUT_MODES.SEGMENTED,
-    label: "Segmented layout",
+    label: "Segmented",
   },
 ];
 
@@ -71,7 +71,7 @@ const ViewSelector = ({
 
   const renderViewModeOptions = () => {
     return (
-      <div className="flex flex-col p-2 space-y-2">
+      <div className="flex flex-col">
         <DropdownMenuRadioGroup
           className="space-y-2"
           value={viewMode}
@@ -92,7 +92,7 @@ const ViewSelector = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex  p-2 space-y-2 flex-col">
       {renderViewModeOptions()}
       <DropdownMenuLabel className="text-sm font-medium text-[#676767]">
         {t("text.reader_option_menu.layout")}

@@ -72,8 +72,13 @@ const ChapterHeader = (props: any) => {
         </Button>
       )}
 
-      <div className="flex w-full max-w-[500px] items-center justify-between">
-        <Button variant="ghost" size="icon-sm" onClick={handleBackClick}>
+      <div className="flex w-full md:max-w-[700px] items-center justify-between">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="cursor-pointer"
+          onClick={handleBackClick}
+        >
           <IoChevronBackSharp size={20} />
         </Button>
         <p
@@ -86,7 +91,7 @@ const ChapterHeader = (props: any) => {
           onOpenChange={handleViewSelectorOpenChange}
         >
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center justify-center">
+            <button className="flex cursor-pointer items-center justify-center">
               <img
                 src={langicon}
                 alt="view selector"

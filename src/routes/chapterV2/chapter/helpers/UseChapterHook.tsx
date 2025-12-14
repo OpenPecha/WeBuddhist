@@ -448,9 +448,7 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
               return (
                 <div
                   key={segment.segment_id}
-                  className={`cursor-pointer flex items-baseline mt-2.5 w-[700px] max-w-full gap-4 ${
-                    isSelected && "bg-blue-50"
-                  }`}
+                  className={`cursor-pointer flex items-baseline mt-2.5 w-[700px] max-w-full gap-4`}
                   onClick={() => handleSegmentClick(segment.segment_id)}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") {
@@ -460,8 +458,10 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
                   }}
                   role="button"
                 >
-                  <p className="mr-8 text-xs">{segment.segment_number}</p>
-                  <div className="flex flex-col items-start w-full text-justify">
+                  <p className="md:mr-4 text-xs">{segment.segment_number}</p>
+                  <div
+                    className={`flex flex-col items-start w-full text-justify ${isSelected && "bg-blue-50"}`}
+                  >
                     {(viewMode === VIEW_MODES.SOURCE ||
                       viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
                       <p
