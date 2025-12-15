@@ -1,20 +1,12 @@
 import React from "react";
-import { BrowserRouter as Router, useParams } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import "@testing-library/jest-dom";
-import { mockTolgee } from "../../../test-utils/CommonMocks.js";
+import { mockTolgee } from "../../../test-utils/CommonMocks.ts";
 import { TolgeeProvider } from "@tolgee/react";
-import { fireEvent, render, screen } from "@testing-library/react";
-import Versions from "./Versions.js";
-import { vi } from "vitest";
-
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
-  return {
-    ...actual,
-    useParams: vi.fn(),
-  };
-});
+import { render, screen } from "@testing-library/react";
+import Versions from "./Versions.tsx";
+import { vi, beforeEach, describe, test, expect } from "vitest";
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -33,16 +25,6 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
     if (error) return <div>Error occurred</div>;
     return null;
   },
-}));
-
-vi.mock("../../commons/pagination/PaginationComponent.jsx", () => ({
-  default: ({ pagination, totalPages, handlePageChange, setPagination }) => (
-    <div className="pagination">
-      <button className="page-link" onClick={() => handlePageChange(2)}>
-        2
-      </button>
-    </div>
-  ),
 }));
 
 describe("Versions Component", () => {
@@ -67,25 +49,17 @@ describe("Versions Component", () => {
         table_of_contents: ["content3"],
       },
     ],
-    total: 3,
-    skip: 0,
-    limit: 10,
   };
 
-  const mockSetVersionsPagination = vi.fn();
-
   const defaultProps = {
-    textId: "123",
+    contentId: "123",
     versions: mockVersionsData,
     versionsIsLoading: false,
     versionsIsError: null,
-    versionsPagination: { currentPage: 1, limit: 10 },
-    setVersionsPagination: mockSetVersionsPagination,
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    useParams.mockReturnValue({ id: "123" });
   });
 
   const setup = (props = {}) => {
@@ -107,7 +81,7 @@ describe("Versions Component", () => {
     test("displays loading state when data is loading", () => {
       setup({
         versionsIsLoading: true,
-        versions: null,
+        versions: { versions: [] },
       });
 
       expect(screen.getByText("Loading...")).toBeInTheDocument();
@@ -116,7 +90,7 @@ describe("Versions Component", () => {
     test("displays error state when there's an error", () => {
       setup({
         versionsIsError: new Error("API Error"),
-        versions: null,
+        versions: { versions: [] },
       });
 
       expect(screen.getByText("Error occurred")).toBeInTheDocument();
@@ -125,71 +99,50 @@ describe("Versions Component", () => {
     test("displays correct language translations", () => {
       setup();
 
-      const languageElements = document.querySelectorAll(".version-language p");
-      expect(languageElements).toHaveLength(3);
-
-      expect(languageElements[0].textContent).toBe("language.tibetan");
-      expect(languageElements[1].textContent).toBe("language.english");
-      expect(languageElements[2].textContent).toBe("language.sanskrit");
+      expect(screen.getByText("language.tibetan")).toBeInTheDocument();
+      expect(screen.getByText("language.english")).toBeInTheDocument();
+      expect(screen.getByText("language.sanskrit")).toBeInTheDocument();
     });
 
     test("displays not found message when no versions exist", () => {
       setup({
-        versions: { versions: [], total: 0 },
+        versions: { versions: [] },
       });
 
       expect(screen.getByText("global.not_found")).toBeInTheDocument();
     });
-  });
 
-  describe("Pagination", () => {
-    test("does not render pagination component when no versions exist", () => {
-      setup({
-        versions: {
-          versions: [],
-          total: 0,
-        },
-      });
+    test("renders version titles", () => {
+      setup();
 
-      const paginationComponent = document.querySelector(".pagination");
-      expect(paginationComponent).not.toBeInTheDocument();
+      expect(screen.getByText("Version 1 Title")).toBeInTheDocument();
+      expect(screen.getByText("Version 2 Title")).toBeInTheDocument();
+      expect(screen.getByText("Version 3 Title")).toBeInTheDocument();
     });
   });
 
   describe("Component behavior", () => {
     test("handles empty versions array", () => {
       setup({
-        versions: {
-          versions: [],
-          total: 0,
-        },
+        versions: { versions: [] },
       });
 
-      const versionElements = document.querySelectorAll(".version-details");
-      expect(versionElements).toHaveLength(0);
+      expect(screen.getByText("global.not_found")).toBeInTheDocument();
     });
 
     test("component is memoized", () => {
       expect(Versions.$$typeof).toBeDefined();
     });
 
-    test("uses textId from props when provided", () => {
-      setup({ textId: "prop-123" });
+    test("renders with contentId prop", () => {
+      setup({ contentId: "prop-123" });
 
-      expect(document.querySelector(".versions-container")).toBeInTheDocument();
-    });
-
-    test("uses textId from URL params when prop not provided", () => {
-      useParams.mockReturnValue({ id: "url-456" });
-
-      setup({ textId: undefined });
-
-      expect(document.querySelector(".versions-container")).toBeInTheDocument();
+      expect(screen.getByText("Version 1 Title")).toBeInTheDocument();
     });
   });
 
   describe("Version metadata rendering", () => {
-    test("renders version source and source_url when available", () => {
+    test("renders version source_link when available", () => {
       const versionsWithMetadata = {
         versions: [
           {
@@ -205,33 +158,59 @@ describe("Versions Component", () => {
 
       setup({ versions: versionsWithMetadata });
 
-      expect(screen.getByText("Source:")).toBeInTheDocument();
-      expect(screen.getByText("Test Source")).toBeInTheDocument();
-      expect(screen.getByText("License:")).toBeInTheDocument();
-      expect(screen.getByText("CC BY 4.0")).toBeInTheDocument();
+      expect(screen.getByText("Source: Test Source")).toBeInTheDocument();
+      expect(screen.getByText("License: CC BY 4.0")).toBeInTheDocument();
+    });
+
+    test("does not render source when source_link is null", () => {
+      const versionsWithoutSource = {
+        versions: [
+          {
+            id: "version1",
+            title: "Version 1",
+            language: "bo",
+            table_of_contents: ["content1"],
+            source_link: null,
+            license: null,
+          },
+        ],
+      };
+
+      setup({ versions: versionsWithoutSource });
+
+      expect(screen.queryByText(/Source:/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/License:/)).not.toBeInTheDocument();
     });
   });
 
-  describe("addChapter mode", () => {
-    test("calls addChapter when button is clicked", () => {
-      const mockAddChapter = vi.fn();
-      const mockCurrentChapter = { id: "chapter1" };
+  describe("Version links", () => {
+    test("renders links to chapter page with correct params", () => {
+      setup({ contentId: "main-content" });
 
-      setup({
-        addChapter: mockAddChapter,
-        currentChapter: mockCurrentChapter,
-      });
+      const links = screen.getAllByRole("link");
+      expect(links).toHaveLength(3);
 
-      const button = document.querySelector(".version-title-button");
-      fireEvent.click(button);
-
-      expect(mockAddChapter).toHaveBeenCalledWith(
-        {
-          textId: "version1",
-          contentId: "content1",
-        },
-        mockCurrentChapter,
+      expect(links[0]).toHaveAttribute(
+        "href",
+        "/chapter?text_id=version1&content_id=content1",
       );
+    });
+  });
+
+  describe("Versions with text property", () => {
+    test("renders text version when provided", () => {
+      const versionsWithText = {
+        versions: [],
+        text: {
+          id: "main-text",
+          title: "Main Text Title",
+          language: "bo",
+        },
+      };
+
+      setup({ versions: versionsWithText, contentId: "content-123" });
+
+      expect(screen.getByText("Main Text Title")).toBeInTheDocument();
     });
   });
 });

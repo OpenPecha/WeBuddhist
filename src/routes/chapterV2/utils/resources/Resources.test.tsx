@@ -1,14 +1,14 @@
-import { vi } from "vitest";
+import { vi, beforeEach, describe, test, expect } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
-import Resources, { fetchSidePanelData } from "./Resources.js";
-import { mockTolgee } from "../../../../test-utils/CommonMocks.js";
-import axiosInstance from "../../../../config/axios-config.js";
+import Resources, { fetchSidePanelData } from "./Resources.tsx";
+import { mockTolgee } from "../../../../test-utils/CommonMocks.ts";
+import axiosInstance from "../../../../config/axios-config.ts";
 
-vi.mock("../../../../utils/helperFunctions.jsx", () => ({
+vi.mock("../../../../utils/helperFunctions.tsx", () => ({
   mapLanguageCode: (code) => (code === "bo-IN" ? "bo" : code),
 }));
 
@@ -23,7 +23,7 @@ const mockContext = {
   toggleTranslationSource: vi.fn(),
 };
 
-vi.mock("../../../../context/PanelContext.jsx", () => ({
+vi.mock("../../../../context/PanelContext.tsx", () => ({
   usePanelContext: () => mockContext,
 }));
 
@@ -37,16 +37,15 @@ vi.mock("@tolgee/react", async () => {
   };
 });
 
-vi.mock("../../../../utils/constants.js", () => ({
+vi.mock("../../../../utils/constants.ts", () => ({
   LANGUAGE: "LANGUAGE",
   MENU_ITEMS: [
-    { label: "common.share", icon: vi.fn() },
-    { label: "menu.item2", icon: vi.fn(), isHeader: true },
-    { label: "connection_panel.compare_text", icon: vi.fn() },
+    { label: "common.share", icon: () => null },
+    { label: "connection_panel.compare_text", icon: () => null },
   ],
 }));
 
-vi.mock("./components/root-texts/RootText.jsx", () => ({
+vi.mock("./components/root-texts/RootText.tsx", () => ({
   default: ({ setIsRootTextView }) => (
     <div data-testid="root-text-view">
       Root Text View
@@ -55,7 +54,7 @@ vi.mock("./components/root-texts/RootText.jsx", () => ({
   ),
 }));
 
-vi.mock("../../../chapterV2/utils/compare-text/CompareText.jsx", () => {
+vi.mock("./components/compare-text/CompareText.tsx", () => {
   return {
     default: ({ setIsCompareTextView, addChapter, currentChapter }) => (
       <div data-testid="compare-text-view">
@@ -208,8 +207,8 @@ describe("Resources Side Panel", () => {
       </Router>,
     );
 
-    let panel = container.querySelector(".right-panel");
-    expect(panel).not.toHaveClass("show");
+    const panel = container.firstChild;
+    expect(panel).toHaveClass("hidden");
     mockContext.isResourcesPanelOpen = originalIsResourcesPanelOpen;
   });
 
@@ -236,20 +235,24 @@ describe("Resources Side Panel", () => {
     expect(screen.getByTestId("root-text-view")).toBeInTheDocument();
   });
 
-  test("renders menu items correctly including header items", () => {
+  test("renders menu items correctly", () => {
     setup();
 
-    const headerItem = screen.getByText("menu.item2");
-    expect(headerItem.closest("button")).toHaveClass("text-great");
+    expect(screen.getByText("common.share")).toBeInTheDocument();
+    expect(
+      screen.getByText("connection_panel.compare_text"),
+    ).toBeInTheDocument();
   });
 
-  test("renders the panel backdrop that closes the panel when clicked", () => {
-    setup();
+  test("closes panel when close button is clicked", () => {
+    const { container } = setup();
 
-    const backdrop = document.querySelector(".panel-backdrop");
-    expect(backdrop).toBeInTheDocument();
-
-    fireEvent.click(backdrop);
+    const header = container.querySelector(".sticky.top-0");
+    const closeButton = header?.querySelector(
+      'button[type="button"]:last-child',
+    ) as HTMLButtonElement;
+    expect(closeButton).toBeInTheDocument();
+    fireEvent.click(closeButton);
     expect(mockContext.closeResourcesPanel).toHaveBeenCalled();
   });
 

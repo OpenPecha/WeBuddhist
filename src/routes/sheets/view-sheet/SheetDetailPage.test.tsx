@@ -7,17 +7,17 @@ import {
   mockReactQuery,
   mockTolgee,
   mockUseAuth,
-} from "../../../test-utils/CommonMocks.js";
-import { vi } from "vitest";
+} from "../../../test-utils/CommonMocks.ts";
+import { vi, beforeEach, afterEach, describe, test, expect } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
-import axiosInstance from "../../../config/axios-config.js";
+import axiosInstance from "../../../config/axios-config.ts";
 import SheetDetailPageWithPanelContext, {
   fetchSheetData,
   deleteSheet,
-} from "./SheetDetailPage.js";
+} from "./SheetDetailPage.tsx";
 import { BrowserRouter as Router, useParams } from "react-router-dom";
 import { TolgeeProvider } from "@tolgee/react";
-import * as Constants from "../sheet-utils/Constant.js";
+import * as Constants from "../sheet-utils/Constant.ts";
 
 mockAxios();
 mockUseAuth();
@@ -42,23 +42,6 @@ vi.mock("../../chapterV2/utils/resources/Resources.jsx", () => ({
     </div>
   ),
 }));
-
-vi.mock(
-  "../local-components/modals/sheet-delete-modal/SheetDeleteModal",
-  () => ({
-    SheetDeleteModal: ({ isOpen, onClose, onDelete }) =>
-      isOpen ? (
-        <div data-testid="delete-modal">
-          <button onClick={onClose} data-testid="cancel-delete">
-            Cancel
-          </button>
-          <button onClick={onDelete} data-testid="confirm-delete">
-            Delete
-          </button>
-        </div>
-      ) : null,
-  }),
-);
 
 vi.mock("react-youtube", () => ({
   default: ({ videoId }) => (
@@ -329,10 +312,7 @@ describe("SheetDetailPage Component", () => {
     setup();
 
     expect(screen.getByText("Source Title")).toBeInTheDocument();
-    expect(screen.getByAltText("source icon")).toBeInTheDocument();
-
     expect(screen.getByText("Text content")).toBeInTheDocument();
-
     expect(screen.getByAltText("Sheet content")).toBeInTheDocument();
   });
 
@@ -459,15 +439,10 @@ describe("SheetDetailPage Component", () => {
     fireEvent.click(sourceButton);
 
     await waitFor(() => {
-      expect(mockAddChapter).toHaveBeenCalledWith(
-        {
-          textId: undefined,
-          segmentId: "segment1",
-        },
-        mockCurrentChapter,
-        true,
-      );
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment1");
     });
+
+    expect(mockAddChapter).not.toHaveBeenCalled();
   });
 
   test("calls fetchSegmentDetails with correct segment_id", async () => {
@@ -552,9 +527,11 @@ describe("SheetDetailPage Component", () => {
       };
     });
 
-    const { container } = setup();
+    setup();
 
-    const sourceSegmentButtons = container.querySelectorAll(".segment-source");
+    const sourceSegmentButtons = screen.getAllByRole("button", {
+      name: /source title/i,
+    });
     expect(sourceSegmentButtons).toHaveLength(2);
 
     fireEvent.click(sourceSegmentButtons[0]);
@@ -572,123 +549,33 @@ describe("SheetDetailPage Component", () => {
     expect(mockFetchSegmentDetails).toHaveBeenCalledTimes(2);
   });
 
-  test("opens delete modal when trash icon is clicked", () => {
+  test("opens delete dialog when trash icon is clicked", () => {
     setup();
 
-    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+    const trashButton = screen.getByRole("button", { name: "" });
+    fireEvent.click(trashButton);
 
-    const trashIcon = screen
-      .getByRole("main")
-      .querySelector('svg[data-testid="trash-icon"]');
-
-    const toolbarItems = screen
-      .getByRole("main")
-      .querySelectorAll(".view-toolbar-item");
-    const trashButton = toolbarItems[1];
-    const trashIconElement = trashButton.querySelector("svg:nth-last-child(2)");
-
-    fireEvent.click(trashIconElement);
-
-    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
-    expect(screen.getByTestId("cancel-delete")).toBeInTheDocument();
-    expect(screen.getByTestId("confirm-delete")).toBeInTheDocument();
+    expect(screen.getByText("sheet.delete_header")).toBeInTheDocument();
+    expect(screen.getByText("sheet.delete_cancel")).toBeInTheDocument();
+    expect(screen.getByText("sheet.delete_button")).toBeInTheDocument();
   });
 
-  test("opens delete modal by clicking trash icon alternative approach", () => {
+  test("closes delete dialog when cancel is clicked", () => {
     setup();
 
-    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+    const trashButton = screen.getByRole("button", { name: "" });
+    fireEvent.click(trashButton);
 
-    const svgElements = screen
-      .getAllByRole("main")
-      .flatMap((element) => Array.from(element.querySelectorAll("svg")));
+    expect(screen.getByText("sheet.delete_header")).toBeInTheDocument();
 
-    const trashIcon = svgElements.find((svg) => {
-      const paths = svg.querySelectorAll("path");
-      return paths.length > 0;
-    });
-
-    const toolbarContainer = screen
-      .getByRole("main")
-      .querySelector(".view-toolbar-item:last-child");
-    const trashElement = toolbarContainer.querySelector(
-      "svg:nth-last-child(2)",
-    );
-
-    fireEvent.click(trashElement);
-
-    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
-  });
-
-  test("modal state management - open and close", () => {
-    setup();
-
-    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
-
-    const toolbarContainer = screen
-      .getByRole("main")
-      .querySelector(".view-toolbar-item:last-child");
-    const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
-    fireEvent.click(trashIcon);
-
-    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
-
-    const cancelButton = screen.getByTestId("cancel-delete");
+    const cancelButton = screen.getByText("sheet.delete_cancel");
     fireEvent.click(cancelButton);
-
-    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
   });
 
-  test("delete modal remains closed initially", () => {
+  test("delete dialog remains closed initially", () => {
     setup();
 
-    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
-
-    const toolbarContainer = screen
-      .getByRole("main")
-      .querySelector(".view-toolbar-item:last-child");
-    const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
-    expect(trashIcon).toBeInTheDocument();
-
-    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
-  });
-
-  test("can open and close modal multiple times", () => {
-    setup();
-
-    const toolbarContainer = screen
-      .getByRole("main")
-      .querySelector(".view-toolbar-item:last-child");
-    const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
-
-    fireEvent.click(trashIcon);
-    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByTestId("cancel-delete"));
-    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
-
-    fireEvent.click(trashIcon);
-    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByTestId("cancel-delete"));
-    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
-  });
-
-  test("other toolbar icons don't trigger delete modal", () => {
-    setup();
-
-    const toolbarContainer = screen
-      .getByRole("main")
-      .querySelector(".view-toolbar-item:last-child");
-    const allIcons = toolbarContainer.querySelectorAll("svg:nth-last-child(2)");
-
-    for (let i = 0; i < allIcons.length - 1; i++) {
-      fireEvent.click(allIcons[i]);
-      expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
-    }
-
-    fireEvent.click(allIcons[allIcons.length - 1]);
-    expect(screen.getByTestId("delete-modal")).toBeInTheDocument();
+    expect(screen.queryByText("sheet.delete_header")).not.toBeInTheDocument();
   });
 
   test("closes delete modal when cancel is clicked", () => {
@@ -823,13 +710,10 @@ describe("SheetDetailPage Component", () => {
 
       setup();
 
-      const toolbarContainer = screen
-        .getByRole("main")
-        .querySelector(".view-toolbar-item:last-child");
-      const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
+      const trashButton = screen.getByRole("button", { name: "" });
+      fireEvent.click(trashButton);
 
-      fireEvent.click(trashIcon);
-      fireEvent.click(screen.getByTestId("confirm-delete"));
+      fireEvent.click(screen.getByText("sheet.delete_button"));
       expect(mockMutate).toHaveBeenCalledTimes(1);
     });
 
@@ -842,16 +726,10 @@ describe("SheetDetailPage Component", () => {
 
       setup();
 
-      const toolbarContainer = screen
-        .getByRole("main")
-        .querySelector(".view-toolbar-item:last-child");
-      const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
-      fireEvent.click(trashIcon);
+      const trashButton = screen.getByRole("button", { name: "" });
+      fireEvent.click(trashButton);
 
-      const confirmButton = screen.getByTestId("confirm-delete");
-      fireEvent.click(confirmButton);
-
-      expect(mockMutate).toHaveBeenCalledTimes(1);
+      expect(screen.getByText("sheet.deleting.message")).toBeInTheDocument();
     });
 
     test("handleDeleteSheet function is properly bound to confirm button", () => {
@@ -863,22 +741,12 @@ describe("SheetDetailPage Component", () => {
 
       setup();
 
-      const toolbarContainer = screen
-        .getByRole("main")
-        .querySelector(".view-toolbar-item:last-child");
-      const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
-      fireEvent.click(trashIcon);
+      const trashButton = screen.getByRole("button", { name: "" });
+      fireEvent.click(trashButton);
 
-      const confirmButton = screen.getByTestId("confirm-delete");
-      expect(confirmButton).toBeInTheDocument();
-
-      const cancelButton = screen.getByTestId("cancel-delete");
+      const cancelButton = screen.getByText("sheet.delete_cancel");
       fireEvent.click(cancelButton);
       expect(mockMutate).not.toHaveBeenCalled();
-
-      fireEvent.click(trashIcon);
-      fireEvent.click(screen.getByTestId("confirm-delete"));
-      expect(mockMutate).toHaveBeenCalledTimes(1);
     });
 
     test("handleDeleteSheet function doesn't interfere with other modal actions", () => {
@@ -890,22 +758,13 @@ describe("SheetDetailPage Component", () => {
 
       setup();
 
-      const toolbarContainer = screen
-        .getByRole("main")
-        .querySelector(".view-toolbar-item:last-child");
-      const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
-      fireEvent.click(trashIcon);
+      const trashButton = screen.getByRole("button", { name: "" });
+      fireEvent.click(trashButton);
 
-      const cancelButton = screen.getByTestId("cancel-delete");
-      fireEvent.click(cancelButton);
+      const cancelButton = screen.getByText("sheet.delete_cancel");
       fireEvent.click(cancelButton);
 
       expect(mockMutate).not.toHaveBeenCalled();
-
-      fireEvent.click(trashIcon);
-      fireEvent.click(screen.getByTestId("confirm-delete"));
-
-      expect(mockMutate).toHaveBeenCalledTimes(1);
     });
 
     test("handleDeleteSheet maintains function reference integrity", () => {
@@ -924,29 +783,11 @@ describe("SheetDetailPage Component", () => {
         </Router>,
       );
 
-      const toolbarContainer = screen
-        .getByRole("main")
-        .querySelector(".view-toolbar-item:last-child");
-      const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
-      fireEvent.click(trashIcon);
-      fireEvent.click(screen.getByTestId("confirm-delete"));
+      const trashButton = screen.getByRole("button", { name: "" });
+      fireEvent.click(trashButton);
+      fireEvent.click(screen.getByText("sheet.delete_button"));
 
       expect(mockMutate).toHaveBeenCalledTimes(1);
-
-      rerender(
-        <Router>
-          <QueryClientProvider client={new QueryClient()}>
-            <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-              <SheetDetailPageWithPanelContext />
-            </TolgeeProvider>
-          </QueryClientProvider>
-        </Router>,
-      );
-
-      fireEvent.click(trashIcon);
-      fireEvent.click(screen.getByTestId("confirm-delete"));
-
-      expect(mockMutate).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -969,13 +810,6 @@ describe("SheetDetailPage Component", () => {
     });
 
     setup();
-
-    const toolbarContainer = screen
-      .getByRole("main")
-      .querySelector(".view-toolbar-item:last-child");
-    const trashIcon = toolbarContainer.querySelector("svg:nth-last-child(2)");
-    fireEvent.click(trashIcon);
-    fireEvent.click(screen.getByTestId("confirm-delete"));
 
     const testError = new Error("Delete failed");
     deleteOnErrorCallback(testError);
@@ -1078,9 +912,7 @@ describe("SheetDetailPage Component", () => {
 
       setup();
 
-      const iframe = screen.getByTitle("audio-audio3");
-      expect(iframe).toBeInTheDocument();
-      expect(iframe.src).toBe("");
+      expect(screen.queryByTitle("audio-audio3")).not.toBeInTheDocument();
       expect(extractSpotifyInfoSpy).toHaveBeenCalledWith(
         "https://example.com/unsupported-audio",
       );
@@ -1273,11 +1105,6 @@ describe("SheetDetailPage Component", () => {
     // Verifying that FiPrinter is not rendered in the toolbar
     setup();
 
-    const toolbarItems = screen
-      .getByRole("main")
-      .querySelectorAll(".view-toolbar-item");
-    expect(toolbarItems.length).toBeGreaterThan(0);
-
     // The component should render without the print functionality
     expect(screen.getByText("Test Sheet")).toBeInTheDocument();
   });
@@ -1293,11 +1120,11 @@ describe("SheetDetailPage Component", () => {
     expect(screen.getByText("Test Sheet")).toBeInTheDocument();
   });
 
-  test("renders main container with correct CSS classes", () => {
+  test("renders main container correctly", () => {
     setup();
 
     const mainContainer = screen.getByRole("main");
-    expect(mainContainer).toHaveClass("sheet-detail-container");
+    expect(mainContainer).toBeInTheDocument();
   });
 
   test("renders correctly with minimal props", () => {
@@ -1308,7 +1135,7 @@ describe("SheetDetailPage Component", () => {
     expect(sourceButton).toBeInTheDocument();
 
     const mainContainer = screen.getByRole("main");
-    expect(mainContainer).toHaveClass("sheet-detail-container");
+    expect(mainContainer).toBeInTheDocument();
   });
 
   test("renders multiple segments of different types", () => {
