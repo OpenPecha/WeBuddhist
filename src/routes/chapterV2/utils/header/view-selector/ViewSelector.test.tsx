@@ -81,8 +81,8 @@ describe("ViewSelector Component", () => {
 
   test("renders layout options with correct labels", () => {
     setup();
-    expect(screen.getByText("Prose layout")).toBeInTheDocument();
-    expect(screen.getByText("Segmented layout")).toBeInTheDocument();
+    expect(screen.getByText("Prose")).toBeInTheDocument();
+    expect(screen.getByText("Segmented")).toBeInTheDocument();
   });
 
   test("menu items have correct data-value attributes", () => {

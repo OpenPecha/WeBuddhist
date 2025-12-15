@@ -16,34 +16,22 @@ vi.mock("@tolgee/react", async () => {
 
 import Footer from "./Footer";
 
-const expectedLinks: { href: string; labelKey: string }[] = [
-  { href: "https://dharmaduta.in/about", labelKey: "footer.about_us" },
-  { href: "https://dharmaduta.in/team", labelKey: "footer.team" },
-  { href: "https://dharmaduta.in/projects", labelKey: "footer.products" },
-  { href: "https://buddhistai.tools/", labelKey: "footer.buddhist_ai_tools" },
-  { href: "https://sherab.org/", labelKey: "footer.sherab" },
-  {
-    href: "https://github.com/OpenPecha",
-    labelKey: "footer.fork_us_on_github",
-  },
-  { href: "https://discord.com/invite/7GFpPFSTeA", labelKey: "footer.discord" },
-  {
-    href: "https://www.instagram.com/we.buddhist/",
-    labelKey: "footer.instagram",
-  },
-  {
-    href: "https://www.facebook.com/profile.php?id=61578322432088",
-    labelKey: "footer.facebook",
-  },
-  {
-    href: "https://www.youtube.com/@WeBuddhistmedia",
-    labelKey: "footer.youtube",
-  },
-  {
-    href: "https://www.linkedin.com/company/webuddhist/",
-    labelKey: "footer.linkedin",
-  },
-  { href: "mailto:contact@dharmaduta.in", labelKey: "footer.email" },
+const expectedColumnLinks: { href: string; label: string }[] = [
+  { href: "https://dharmaduta.in/about", label: "About Us" },
+  { href: "https://dharmaduta.in/team", label: "Team" },
+  { href: "https://dharmaduta.in/projects", label: "Products" },
+  { href: "https://buddhistai.tools/", label: "Buddhist AI Studio" },
+  { href: "https://sherab.org/", label: "Sherab" },
+  { href: "https://github.com/OpenPecha", label: "Fork us on GitHub" },
+  { href: "https://discord.com/invite/7GFpPFSTeA", label: "Discord" },
+];
+
+const expectedSocialLinks: { href: string }[] = [
+  { href: "https://www.instagram.com/we.buddhist/" },
+  { href: "https://www.facebook.com/profile.php?id=61578322432088" },
+  { href: "mailto:contact@dharmaduta.in" },
+  { href: "https://www.linkedin.com/company/webuddhist/" },
+  { href: "https://www.youtube.com/@WeBuddhistmedia" },
 ];
 
 describe("Footer", () => {
@@ -56,40 +44,53 @@ describe("Footer", () => {
   test("renders footer landmark and headings", () => {
     setup();
 
-    expect(
-      screen.getByRole("contentinfo", { name: "Site footer" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo")).toBeInTheDocument();
     expect(screen.getByText("translated-footer.about")).toBeInTheDocument();
     expect(screen.getByText("translated-footer.tools")).toBeInTheDocument();
     expect(
       screen.getByText("translated-footer.developers"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Connect")).toBeInTheDocument();
   });
 
-  test("renders all links with correct attributes", () => {
+  test("renders all column links with correct attributes", () => {
     setup();
 
-    expectedLinks.forEach(({ href, labelKey }) => {
-      const link = screen.getByRole("link", {
-        name: `translated-${labelKey}`,
-      });
+    expectedColumnLinks.forEach(({ href, label }) => {
+      const link = screen.getByRole("link", { name: label });
 
       expect(link).toHaveAttribute("href", href);
       expect(link).toHaveAttribute("target", "_blank");
       expect(link).toHaveAttribute("rel", "noopener noreferrer");
     });
-
-    expect(screen.getAllByRole("link")).toHaveLength(expectedLinks.length);
   });
 
-  test("uses translation helper for labels while leaving raw headings when requested", () => {
+  test("renders all social media links with correct attributes", () => {
+    setup();
+
+    expectedSocialLinks.forEach(({ href }) => {
+      const links = screen.getAllByRole("link");
+      const socialLink = links.find((l) => l.getAttribute("href") === href);
+
+      expect(socialLink).toBeInTheDocument();
+      expect(socialLink).toHaveAttribute("href", href);
+      expect(socialLink).toHaveAttribute("target", "_blank");
+      expect(socialLink).toHaveAttribute("rel", "noopener noreferrer");
+    });
+  });
+
+  test("renders correct total number of links", () => {
+    setup();
+    const links = screen.getAllByRole("link");
+    expect(links).toHaveLength(
+      expectedColumnLinks.length + expectedSocialLinks.length,
+    );
+  });
+
+  test("uses translation helper for column headings", () => {
     setup();
 
     expect(translateMock).toHaveBeenCalledWith("footer.about");
     expect(translateMock).toHaveBeenCalledWith("footer.tools");
     expect(translateMock).toHaveBeenCalledWith("footer.developers");
-    expect(translateMock).toHaveBeenCalledWith("footer.instagram");
-    expect(translateMock).not.toHaveBeenCalledWith("Connect");
   });
 });
