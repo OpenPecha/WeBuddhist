@@ -246,7 +246,7 @@ const Resources = ({
   return (
     <>
       <div
-        className={`flex lg:w-[580px] flex-col text-left bg-[#FBFBFA] transition-all duration-300 overflow-y-auto ${showPanel ? "block" : "hidden"}  fixed inset-x-0 bottom-0 h-[45vh] w-full border-gray-200 sm:static sm:h-full  sm:max-w-full`}
+        className={`flex lg:w-[450px] md:w-[350px] flex-col text-left bg-[#FBFBFA] transition-all duration-300 overflow-y-auto ${showPanel ? "block" : "hidden"} w-full h-full border-gray-200`}
       >
         {renderSidePanel()}
       </div>

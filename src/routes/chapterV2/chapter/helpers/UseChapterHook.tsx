@@ -12,6 +12,11 @@ import {
 } from "../../../../utils/helperFunctions";
 import { usePanelContext } from "../../../../context/PanelContext";
 import Resources from "../../utils/resources/Resources";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 
 type ViewMode = (typeof VIEW_MODES)[keyof typeof VIEW_MODES];
 type LayoutMode = (typeof LAYOUT_MODES)[keyof typeof LAYOUT_MODES];
@@ -527,11 +532,49 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
     return null;
   };
 
+  const rendersmallscreens = () => {
+    return (
+      <div className="flex flex-col w-full h-full overflow-hidden min-h-0 md:hidden">
+        {isResourcesPanelOpen && selectedSegmentId ? (
+          <ResizablePanelGroup direction="vertical">
+            <ResizablePanel defaultSize={55} minSize={30}>
+              <div className="flex flex-col w-full h-full overflow-hidden">
+                {renderChapterHeader()}
+                <div
+                  className="flex flex-1 min-h-0 w-full overflow-y-auto"
+                  ref={contentsContainerRef}
+                >
+                  {renderContents()}
+                </div>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={45} minSize={20}>
+              {renderResources()}
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        ) : (
+          <>
+            {renderChapterHeader()}
+            <div
+              className="flex flex-1 min-h-0 w-full overflow-y-auto"
+              ref={contentsContainerRef}
+            >
+              {renderContents()}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col w-full min-h-full flex-1">
       <div className="flex w-full h-full min-h-0">
         {renderTableOfContents()}
-        <div className="flex flex-col w-full h-full overflow-hidden min-h-0">
+        {rendersmallscreens()}
+
+        <div className="hidden md:flex md:flex-col w-full h-full overflow-hidden min-h-0">
           {renderChapterHeader()}
           <div
             className="flex flex-1 min-h-0 w-full overflow-y-auto"
@@ -540,7 +583,8 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
             {renderContents()}
           </div>
         </div>
-        {renderResources()}
+
+        <div className="hidden md:block">{renderResources()}</div>
       </div>
     </div>
   );
