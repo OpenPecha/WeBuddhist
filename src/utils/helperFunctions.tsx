@@ -68,6 +68,8 @@ export const getLanguageClass = (language: string): string => {
   switch (language) {
     case "bo":
       return "bo-text";
+    case "en-san":
+      return "en-text";
     case "en":
       return "en-serif-text";
     case "sa":
