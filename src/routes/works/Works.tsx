@@ -115,7 +115,7 @@ const Works = (props?: WorksProps) => {
 
   const renderRootTexts = () => {
     return (
-      <div className="space-y-2 mt-6">
+      <div className="space-y-2">
         {rootTexts.length !== 0 && (
           <>
             <h1 className="text-xl font-semibold overalltext text-gray-700">

@@ -82,7 +82,7 @@ const ChapterHeader = (props: any) => {
           <IoChevronBackSharp size={20} />
         </Button>
         <p
-          className={`min-w-0 w-fit truncate whitespace-nowrap text-base font-medium ${getLanguageClass(textdetail?.language)}`}
+          className={`min-w-0 w-fit truncate whitespace-nowrap text-lg font-medium ${getLanguageClass(textdetail?.language)}`}
         >
           {textdetail?.title}
         </p>

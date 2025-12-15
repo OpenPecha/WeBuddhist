@@ -392,13 +392,13 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
       >
         {section.title && (
           <h2
-            className={`${languageClass} mt-2 w-fit border-b-4 border-zinc-500 p-2.5`}
+            className={` ${getLanguageClass(language || "en")} w-fit border-b-2 border-zinc-500 p-2 text-lg`}
           >
             {section.title}
           </h2>
         )}
         <div
-          className={`flex flex-col w-full px-2.5 items-center mx-auto ${isProse && "block max-w-[800px]"}`}
+          className={`flex flex-col w-full px-2.5 items-center mx-auto ${isProse && "block max-w-[700px]"}`}
         >
           {isProse ? (
             <p className="leading-7 text-justify m-0">
@@ -407,7 +407,7 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
                 return (
                   <span
                     key={segment.segment_id}
-                    className={`inline cursor-pointer mr-0.5 ${
+                    className={`inline cursor-pointer text-lg mr-0.5 ${
                       isSelected && "bg-blue-50"
                     }`}
                     onClick={() => handleSegmentClick(segment.segment_id)}
@@ -460,7 +460,7 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
                 >
                   <p className="md:mr-4 text-xs">{segment.segment_number}</p>
                   <div
-                    className={`flex flex-col items-start w-full text-justify ${isSelected && "bg-blue-50"}`}
+                    className={`flex flex-col items-start text-lg w-full text-justify ${isSelected && "bg-blue-50"}`}
                   >
                     {(viewMode === VIEW_MODES.SOURCE ||
                       viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
