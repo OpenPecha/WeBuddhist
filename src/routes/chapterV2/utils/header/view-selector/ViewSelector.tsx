@@ -93,7 +93,7 @@ const ViewSelector = ({
 
   return (
     <div className="flex  p-2 space-y-2 flex-col">
-      {renderViewModeOptions()}
+      {versionSelected && renderViewModeOptions()}
       <DropdownMenuLabel className="text-sm font-medium text-[#676767]">
         {t("text.reader_option_menu.layout")}
       </DropdownMenuLabel>

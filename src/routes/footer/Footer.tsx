@@ -91,7 +91,6 @@ const Footer = () => {
           </div>
           <div className="flex  w-full max-w-xl">
             <p className="text-base text-muted-foreground">
-              {" "}
               Buddhism in your own words
             </p>
           </div>
@@ -114,7 +113,7 @@ const Footer = () => {
       <div className="flex-1 md:flex md:justify-around grid grid-cols-2 md:grid-cols-4 gap-4">
         {columns.map(({ title, links, useTranslation = true }) => (
           <div key={title} className="text-left">
-            <h3 className=" text-[#313131] uppercase font-semibold mb-4 text-base">
+            <h3 className=" text-[#313131] uppercase font-semibold  mb-2 text-base">
               {useTranslation ? t(title) : title}
             </h3>
             <ul className="list-none p-0 m-0 flex flex-col gap-2">

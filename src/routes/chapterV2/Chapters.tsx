@@ -8,10 +8,6 @@ const Chapters = ({
   renderChapter = null,
 }: any) => {
   const [searchParams] = useSearchParams();
-  const [versionId, setVersionId] = useState(() => {
-    const savedVersionId = sessionStorage.getItem("versionId");
-    return savedVersionId || "";
-  });
   const [chapters, setChapters] = useState(() => {
     const savedChapters = sessionStorage.getItem("chapters");
     if (savedChapters) {
@@ -46,12 +42,10 @@ const Chapters = ({
 
   useEffect(() => {
     sessionStorage.setItem("chapters", JSON.stringify(chapters));
-    sessionStorage.setItem("versionId", versionId || "");
     return () => {
       sessionStorage.removeItem("chapters");
-      sessionStorage.removeItem("versionId");
     };
-  }, [chapters, versionId]);
+  }, [chapters]);
 
   const addChapter = useCallback(
     (chapterInformation: any, currentChapter: any, isFromSheet = false) => {
@@ -84,17 +78,27 @@ const Chapters = ({
     );
   }, []);
 
+  const createSetVersionId = useCallback((currentChapterId: string) => {
+    return (versionId: any) => {
+      setChapters((prev: any) =>
+        prev.map((chap: any) =>
+          chap.id === currentChapterId ? { ...chap, versionId } : chap,
+        ),
+      );
+    };
+  }, []);
+
   const defaultRenderChapter = (chapter: any) => (
     <ContentsChapter
       textId={chapter.textId}
       contentId={chapter.contentId}
       segmentId={chapter.segmentId}
-      versionId={versionId}
+      versionId={chapter.versionId}
       addChapter={addChapter}
       removeChapter={removeChapter}
       currentChapter={chapter}
       totalChapters={chapters.length}
-      setVersionId={setVersionId}
+      setVersionId={createSetVersionId(chapter.id)}
     />
   );
 
@@ -108,10 +112,10 @@ const Chapters = ({
         >
           {renderChapter
             ? renderChapter(chapter, index, {
-                versionId,
+                versionId: chapter.versionId,
                 addChapter,
                 removeChapter,
-                setVersionId,
+                setVersionId: createSetVersionId(chapter.id),
               })
             : defaultRenderChapter(chapter)}
         </div>
