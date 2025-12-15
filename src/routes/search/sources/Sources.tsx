@@ -79,23 +79,23 @@ const Sources = (query: any) => {
   const searchText = sourceData?.query || stringq;
 
   if (isLoading)
-    return <div className="listsubtitle">{t("common.loading")}</div>;
+    return <div className="overalltext">{t("common.loading")}</div>;
 
   if (error) {
     if (error.response?.status === 404) {
       return (
-        <div className="listtitle">
+        <div className="overalltext">
           {t("search.zero_result", "No results to display.")}
         </div>
       );
     }
     return (
-      <div className="listtitle">Error loading content: {error.message}</div>
+      <div className="overalltext">Error loading content: {error.message}</div>
     );
   }
   if (!sourceData?.sources || sourceData.sources.length === 0) {
     return (
-      <div className="listtitle">
+      <div className="overalltext">
         {t("search.zero_result", "No results to display.")}
       </div>
     );

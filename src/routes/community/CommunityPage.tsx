@@ -84,15 +84,17 @@ const CommunityPage = () => {
       main={
         <div className="mx-auto flex w-full max-w-2xl flex-col  pt-10">
           <div className="flex items-baseline justify-between">
-            <h2 className="text-xl font-semibold text-[#333030] ">
+            <h2 className="text-lg font-semibold text-[#333030] overalltext ">
               {t("community.sheets.recently_published")}
             </h2>
             {sheetsData?.sheets?.length > 0 && (
               <Select value={sortOrder} onValueChange={handleSortChange}>
-                <SelectTrigger className="navbaritems cursor-pointer border border-[#18345D] bg-white px-3 text-base font-medium text-[#0b0b0b]">
+                <SelectTrigger
+                  className={`${getLanguageClass("en-san")} cursor-pointer border border-[#18345D] bg-white px-3 text-base font-medium text-[#0b0b0b]`}
+                >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="navbaritems">
+                <SelectContent>
                   <SelectItem value="asc">
                     {t("community.sheets.ascending")}
                   </SelectItem>
@@ -112,7 +114,7 @@ const CommunityPage = () => {
                 </p>
               ) : sheetsData?.sheets?.length === 0 ? (
                 <div className="py-4 text-center text-gray-600">
-                  <p className="navbaritems">{t("community_empty_story")}</p>
+                  <p className="overalltext">{t("community_empty_story")}</p>
                 </div>
               ) : (
                 sheetsData?.sheets.map((sheet: any) => (

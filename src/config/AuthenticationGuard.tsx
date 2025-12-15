@@ -14,7 +14,7 @@ export const AuthenticationGuard = ({
   const { t } = useTranslate();
   const ViaSocialLogin = withAuthenticationRequired(component, {
     onRedirecting: () => (
-      <div className="page-layout listsubtitle">{t("common.loading")} </div>
+      <div className="page-layout overalltext">{t("common.loading")} </div>
     ),
   });
 

@@ -99,14 +99,14 @@ const TranslationView = ({
           )}`}
         >
           {translation.source && (
-            <p className="navbaritems">
+            <p className="overalltext">
               {t("connection_panel.menuscript.source")}:
               <span className={`${getLanguageClass("en")} text-sm`}>
                 {translation.source}
               </span>
             </p>
           )}
-          <div className="flex min-h-10 items-center justify-between navbaritems">
+          <div className="flex min-h-10 items-center justify-between overalltext">
             {addChapter && (
               <Button
                 variant="secondary"
@@ -145,7 +145,7 @@ const TranslationView = ({
             Object.entries(groupedTranslations).map(
               ([language, translations]: any) => (
                 <div key={language}>
-                  <h3 className="navbaritems mb-3 flex items-center gap-1 border-b-2 border-[#C74444] text-[#7d7d7d]">
+                  <h3 className="overalltext mb-3 flex items-center gap-1 border-b-2 border-[#C74444] text-[#7d7d7d]">
                     {t(languageMap[language as keyof typeof languageMap])}
                     <span className="ml-1 text-sm text-[#718096]">
                       ({translations.length})

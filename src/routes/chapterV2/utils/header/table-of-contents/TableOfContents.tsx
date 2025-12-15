@@ -130,7 +130,7 @@ const TableOfContents = (props: any) => {
   const renderTocContent = () => {
     if (isLoading) {
       return (
-        <div className="listtitle px-4 py-2 text-sm text-gray-700">
+        <div className="overalltext px-4 py-2 text-sm text-gray-700">
           {t("common.loading")}
         </div>
       );
@@ -138,7 +138,7 @@ const TableOfContents = (props: any) => {
 
     if (error) {
       return (
-        <div className="listtitle px-4 py-2 text-sm text-gray-700">
+        <div className="overalltext px-4 py-2 text-sm text-gray-700">
           {t("global.not_found")}
         </div>
       );
@@ -146,7 +146,7 @@ const TableOfContents = (props: any) => {
 
     if (!contentData || contentData.length === 0) {
       return (
-        <div className="listtitle px-4 py-2 text-sm text-gray-700">
+        <div className="overalltext px-4 py-2 text-sm text-gray-700">
           No content found
         </div>
       );
@@ -184,7 +184,7 @@ const TableOfContents = (props: any) => {
           .join(" ")}
       >
         <div className="sticky top-0 z-20 flex items-center justify-between border-b border-gray-200 bg-gray-100 px-4 pt-4 pb-3">
-          <p className="listtitle m-0 text-lg font-semibold text-gray-800">
+          <p className="overalltext m-0 text-lg font-semibold text-gray-800">
             {t("text.table_of_contents")}
           </p>
         </div>

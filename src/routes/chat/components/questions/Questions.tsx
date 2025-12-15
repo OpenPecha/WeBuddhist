@@ -1,10 +1,4 @@
-import React from "react";
-
 const questions = [
-  {
-    id: 1,
-    question: "What is the first Verse of The Way of the Bodhisattva?",
-  },
   {
     id: 2,
     question: " what is self?",
@@ -12,14 +6,6 @@ const questions = [
   {
     id: 3,
     question: "How one can attain enlightenment?",
-  },
-  {
-    id: 4,
-    question: "What are some ways we can learn Buddhism?",
-  },
-  {
-    id: 5,
-    question: "What is the Buddha's teaching about the compassion?",
   },
 ];
 

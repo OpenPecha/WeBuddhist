@@ -62,7 +62,7 @@ const SheetSegmentModal = ({
   const renderModalHeader = () => {
     return (
       <div className="flex items-start justify-between">
-        <p className="search-segment-title listtitle m-0 text-2xl font-semibold text-[#A9080E]">
+        <p className="search-segment-title overalltext m-0 text-2xl font-semibold text-[#A9080E]">
           Search Segment
         </p>
         <button
@@ -83,12 +83,12 @@ const SheetSegmentModal = ({
     const renderSegmentList = () => {
       if (sources.length === 0) {
         return (
-          <div className="state-message empty flex flex-1 items-center justify-center rounded-lg border border-dashed border-gray-200 p-10 text-center">
+          <div className="empty flex flex-1 items-center justify-center rounded-lg border border-dashed border-gray-200 p-10 text-center">
             <div>
               <p className="m-0 mb-2 text-lg font-medium text-[#2c3e50]">
                 No data found
               </p>
-              <span className="empty-description text-sm text-gray-600">
+              <span className="text-sm text-gray-600">
                 Try adjusting your search terms
               </span>
             </div>
