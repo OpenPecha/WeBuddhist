@@ -1,6 +1,9 @@
 import React from "react";
 import { useTranslate } from "@tolgee/react";
-import { getEarlyReturn } from "../../../utils/helperFunctions.tsx";
+import {
+  getEarlyReturn,
+  getLanguageClass,
+} from "../../../utils/helperFunctions.tsx";
 import PaginationComponent from "../../commons/pagination/PaginationComponent.tsx";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge.tsx";
@@ -30,6 +33,8 @@ type CommentariesProps = {
   isError: unknown;
   pagination: PaginationState;
   setPagination: React.Dispatch<React.SetStateAction<PaginationState>>;
+  addChapter?: (chapterData: any, currentChapter: any) => void;
+  currentChapter?: any;
 };
 
 const Commentaries = ({
@@ -38,13 +43,15 @@ const Commentaries = ({
   isError,
   pagination,
   setPagination,
+  addChapter,
+  currentChapter,
 }: CommentariesProps) => {
   const { t } = useTranslate();
 
   const earlyReturn = getEarlyReturn({ isLoading, error: isError, t });
   if (earlyReturn) return earlyReturn;
 
-  if (!items || items.length === 0) {
+  if (!items) {
     return (
       <div className="content">
         <p className="mt-4 text-gray-400">{t("global.not_found")}</p>
@@ -58,35 +65,69 @@ const Commentaries = ({
     setPagination((prev) => ({ ...prev, currentPage: pageNumber }));
   };
 
-  const CommentaryCard = ({ commentary }: { commentary: CommentaryItem }) => (
-    <div className="w-full flex items-center bg-white py-1 border-t">
-      <div className="flex flex-1 flex-col gap-2">
+  const CommentaryCard = ({ commentary }: { commentary: CommentaryItem }) => {
+    const renderTitle = () => {
+      if (addChapter) {
+        return (
+          <button
+            type="button"
+            onClick={() => {
+              addChapter(
+                {
+                  textId: commentary.id,
+                },
+                currentChapter,
+              );
+            }}
+            className="text-left cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <div
+              className={` text-lg font-medium text-zinc-600 ${getLanguageClass(commentary.language)}`}
+            >
+              {commentary.title}
+            </div>
+          </button>
+        );
+      }
+      return (
         <Link to={`/chapter?text_id=${commentary.id}`} className="text-left">
-          <div className={` text-lg font-medium text-zinc-600`}>
+          <div
+            className={` text-lg font-medium text-zinc-600 ${getLanguageClass(commentary.language)}`}
+          >
             {commentary.title}
           </div>
         </Link>
+      );
+    };
 
-        <div className="space-y-1 text-sm text-gray-600">
-          {commentary.source_link && (
-            <div className="flex gap-2">
-              <span className="font-medium">
-                Source: {commentary.source_link}
-              </span>
-            </div>
-          )}
-          {commentary.license && (
-            <div className="flex gap-2">
-              <span className="font-medium">License: {commentary.license}</span>
-            </div>
-          )}
+    return (
+      <div className="w-full flex items-center bg-white py-1 border-t">
+        <div className="flex flex-1 flex-col gap-2">
+          {renderTitle()}
+
+          <div className="space-y-1 text-sm text-gray-600">
+            {commentary.source_link && (
+              <div className="flex gap-2">
+                <span className="font-medium">
+                  Source: {commentary.source_link}
+                </span>
+              </div>
+            )}
+            {commentary.license && (
+              <div className="flex gap-2">
+                <span className="font-medium">
+                  License: {commentary.license}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
+        <Badge variant="outline" className="w-fit px-4 py-2">
+          {t(LANGUAGE_MAP[commentary.language])}
+        </Badge>
       </div>
-      <Badge variant="outline" className="w-fit px-4 py-2">
-        {t(LANGUAGE_MAP[commentary.language])}
-      </Badge>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="flex flex-col">

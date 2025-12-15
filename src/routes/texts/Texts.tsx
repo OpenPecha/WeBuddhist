@@ -157,9 +157,11 @@ const Texts = (props: any) => {
       <Tabs className="w-full space-y-4" defaultValue="versions">
         <TabsList className="overalltext">
           <TabsTrigger value="versions">{t("common.version")}</TabsTrigger>
-          <TabsTrigger value="commentaries">
-            {t("text.type.commentary")}
-          </TabsTrigger>
+          {commentaries?.items.length > 0 && (
+            <TabsTrigger value="commentaries">
+              {t("text.type.commentary")}
+            </TabsTrigger>
+          )}
         </TabsList>
         <TabsContent value="versions">
           <Versions
@@ -167,9 +169,10 @@ const Texts = (props: any) => {
             versions={versions}
             versionsIsLoading={versionsIsLoading}
             versionsIsError={versionsIsError}
+            addChapter={addChapter}
+            currentChapter={currentChapter}
           />
         </TabsContent>
-
         <TabsContent value="commentaries" className="mt-2">
           <Commentaries
             textId={textId}
@@ -178,6 +181,8 @@ const Texts = (props: any) => {
             isError={commentariesIsError}
             pagination={commentariesPagination}
             setPagination={setCommentariesPagination}
+            addChapter={addChapter}
+            currentChapter={currentChapter}
           />
         </TabsContent>
       </Tabs>
@@ -190,7 +195,6 @@ const Texts = (props: any) => {
       const chapterData = {
         textId: textId,
         contentId: tableOfContents.contents[0].id,
-        segmentId: undefined,
       };
       addChapter(chapterData, currentChapter);
     }
@@ -206,7 +210,7 @@ const Texts = (props: any) => {
             className="text-left cursor-pointer hover:opacity-80 transition-opacity"
           >
             <h1
-              className={`text-gray-800 ${getLanguageClass(versions?.text?.language)}`}
+              className={`text-gray-800 text-lg ${getLanguageClass(versions?.text?.language)}`}
             >
               {versions?.text?.title}
             </h1>

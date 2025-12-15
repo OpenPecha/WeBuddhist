@@ -191,7 +191,7 @@ const Collections = (props: CollectionsProps) => {
             },
           ].map(({ titleKey, bodyKey }, index) => (
             <div key={titleKey} className={index > 0 ? "mt-4" : ""}>
-              <h2 className="subtitle overalltext text-start font-semibold text-[#292929] border-b py-2">
+              <h2 className=" overalltext text-start font-bold text-[#292929] border-b py-2">
                 {t(titleKey)}
               </h2>
               <p className="text-sm leading-loose text-start overalltext text-[#666666] my-2">

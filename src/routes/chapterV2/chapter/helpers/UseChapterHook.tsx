@@ -392,7 +392,7 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
       >
         {section.title && (
           <h2
-            className={` ${getLanguageClass(language || "en")} w-fit border-b-2 border-zinc-500 p-2 text-lg`}
+            className={` ${getLanguageClass("en")} w-fit border-b-2 border-zinc-500 p-2 text-lg`}
           >
             {section.title}
           </h2>

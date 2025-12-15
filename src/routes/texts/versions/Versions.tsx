@@ -26,6 +26,8 @@ type VersionsProps = {
   versions: VersionsData;
   versionsIsLoading: boolean;
   versionsIsError: unknown;
+  addChapter?: (chapterData: any, currentChapter: any) => void;
+  currentChapter?: any;
 };
 
 const languageMap = {
@@ -41,24 +43,60 @@ const languageMap = {
 const CommonCard = ({
   version,
   contentId,
+  addChapter,
+  currentChapter,
 }: {
   version: VersionItem;
   contentId?: string;
+  addChapter?: (chapterData: any, currentChapter: any) => void;
+  currentChapter?: any;
 }) => {
   const { t } = useTranslate();
-  return (
-    <div className="w-full flex items-center bg-white py-1 border-t">
-      <div className="flex flex-1 flex-col gap-2">
-        <Link
-          to={`/chapter?text_id=${version.id}&content_id=${contentId}`}
-          className="text-left"
+
+  const renderTitle = () => {
+    if (addChapter) {
+      return (
+        <button
+          type="button"
+          onClick={() => {
+            if (contentId) {
+              addChapter(
+                {
+                  textId: version.id,
+                  contentId: contentId,
+                },
+                currentChapter,
+              );
+            }
+          }}
+          className="text-left cursor-pointer hover:opacity-80 transition-opacity"
         >
           <div
             className={` text-lg font-medium text-zinc-600 ${getLanguageClass(version.language)}`}
           >
             {version.title}
           </div>
-        </Link>
+        </button>
+      );
+    }
+    return (
+      <Link
+        to={`/chapter?text_id=${version.id}&content_id=${contentId}`}
+        className="text-left"
+      >
+        <div
+          className={` text-lg font-medium text-zinc-600 ${getLanguageClass(version.language)}`}
+        >
+          {version.title}
+        </div>
+      </Link>
+    );
+  };
+
+  return (
+    <div className="w-full flex items-center bg-white py-1 border-t">
+      <div className="flex flex-1 flex-col gap-2">
+        {renderTitle()}
         <div className="space-y-1 text-sm text-zinc-600">
           {version.source_link && (
             <div className="flex gap-2">
@@ -84,6 +122,8 @@ const Versions = ({
   versions,
   versionsIsLoading,
   versionsIsError,
+  addChapter,
+  currentChapter,
 }: VersionsProps) => {
   const { t } = useTranslate();
 
@@ -104,7 +144,12 @@ const Versions = ({
   return (
     <div className="flex flex-col gap-2">
       {versions.text && (
-        <CommonCard version={versions.text} contentId={propContentId} />
+        <CommonCard
+          version={versions.text}
+          contentId={propContentId}
+          addChapter={addChapter}
+          currentChapter={currentChapter}
+        />
       )}
 
       {versions?.versions.map((version) => {
@@ -114,6 +159,8 @@ const Versions = ({
             key={version.id}
             version={version}
             contentId={firstContentId}
+            addChapter={addChapter}
+            currentChapter={currentChapter}
           />
         );
       })}
