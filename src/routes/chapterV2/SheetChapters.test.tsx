@@ -1,8 +1,8 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { vi } from "vitest";
+import { vi, beforeEach, test, expect, describe } from "vitest";
 import { MemoryRouter } from "react-router-dom";
-import SheetChapters from "./SheetChapters.js";
+import SheetChapters from "./SheetChapters.tsx";
 
 const mockUseParams = vi.fn();
 vi.mock("react-router-dom", async () => {
@@ -36,7 +36,7 @@ vi.mock("./Chapters", () => ({
           data-chapter-type={chapter.type}
         >
           {renderChapter &&
-            renderChapter(chapter, index, {
+            renderChapter(chapter, {
               versionId: "test-version",
               addChapter: vi.fn(),
               removeChapter: vi.fn(),
@@ -76,12 +76,11 @@ vi.mock("./chapter/ContentsChapter", () => ({
 
 vi.mock("../sheets/view-sheet/SheetDetailPage", () => ({
   __esModule: true,
-  default: ({ addChapter, currentChapter, setVersionId }) => (
+  default: ({ addChapter, currentChapter }) => (
     <div
       data-testid="sheet-detail-page-mock"
       data-has-addchapter={!!addChapter}
       data-has-currentchapter={!!currentChapter}
-      data-has-setversionid={!!setVersionId}
       data-chapter-type={currentChapter?.type}
       data-sheet-slug-and-id={currentChapter?.sheetSlugAndId}
       data-username={currentChapter?.username}
@@ -197,7 +196,6 @@ describe("SheetChapters Component", () => {
         "data-has-currentchapter",
         "true",
       );
-      expect(sheetDetailPage).toHaveAttribute("data-has-setversionid", "true");
       expect(sheetDetailPage).toHaveAttribute("data-chapter-type", "sheet");
       expect(sheetDetailPage).toHaveAttribute(
         "data-sheet-slug-and-id",

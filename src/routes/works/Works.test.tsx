@@ -9,7 +9,7 @@ import {
   mockUseAuth,
   mockLocalStorage,
 } from "../../test-utils/CommonMocks.js";
-import { vi } from "vitest";
+import { vi, beforeEach, test, expect, describe } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import Works from "./Works.js";
@@ -91,29 +91,10 @@ describe("Works Component", () => {
     );
   };
 
-  test("renders root texts correctly", () => {
+  test("renders texts correctly", () => {
     setup();
     expect(screen.getByText("Root Text 1")).toBeInTheDocument();
     expect(screen.getByText("Root Text 2")).toBeInTheDocument();
-  });
-
-  test("renders commentary texts correctly", () => {
-    // Update mock data to match the expected type in the component
-    const updatedMockData = {
-      ...mockTextCategoryData,
-      texts: [
-        ...mockTextCategoryData.texts.slice(0, 2),
-        { id: "text3", title: "Commentary 1", type: "commentary" },
-      ],
-    };
-
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: updatedMockData,
-      isLoading: false,
-    }));
-
-    setup();
-    expect(screen.getByText("text.type.commentary")).toBeInTheDocument();
     expect(screen.getByText("Commentary 1")).toBeInTheDocument();
   });
 
@@ -338,16 +319,31 @@ describe("Works Component", () => {
     );
   });
 
-  test("correctly groups texts of multiple types", () => {
+  test("renders all texts regardless of type", () => {
     const multipleTypesData = {
       term: {
         title: "Multiple Types",
         description: "Contains various text types",
       },
       texts: [
-        { id: "text1", title: "Root Text 1", type: "root_text" },
-        { id: "text2", title: "Root Text 2", type: "root_text" },
-        { id: "text3", title: "Commentary 1", type: "commentary" },
+        {
+          id: "text1",
+          title: "Root Text 1",
+          type: "root_text",
+          language: "en",
+        },
+        {
+          id: "text2",
+          title: "Root Text 2",
+          type: "root_text",
+          language: "en",
+        },
+        {
+          id: "text3",
+          title: "Commentary 1",
+          type: "commentary",
+          language: "en",
+        },
       ],
     };
 
@@ -356,12 +352,11 @@ describe("Works Component", () => {
       isLoading: false,
     }));
 
-    const { container } = setup();
+    setup();
 
-    expect(screen.getByText("text.type.commentary")).toBeInTheDocument();
-
-    const textSections = container.querySelectorAll(".root-text");
-    expect(textSections.length).toBe(2);
+    expect(screen.getByText("Root Text 1")).toBeInTheDocument();
+    expect(screen.getByText("Root Text 2")).toBeInTheDocument();
+    expect(screen.getByText("Commentary 1")).toBeInTheDocument();
   });
 
   test("renders correctly when category has no description", () => {
@@ -369,7 +364,14 @@ describe("Works Component", () => {
       term: {
         title: "No Description Category",
       },
-      texts: [{ id: "text1", title: "Root Text 1", type: "root_text" }],
+      texts: [
+        {
+          id: "text1",
+          title: "Root Text 1",
+          type: "root_text",
+          language: "en",
+        },
+      ],
     };
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({

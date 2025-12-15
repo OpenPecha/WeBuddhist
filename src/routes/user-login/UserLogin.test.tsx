@@ -1,15 +1,16 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
-import UserLogin from "./UserLogin.js";
+import UserLogin from "./UserLogin.tsx";
 import "@testing-library/jest-dom";
+import { vi, test, expect, describe } from "vitest";
 import {
   mockAxios,
   mockTolgee,
   mockUseAuth,
-} from "../../test-utils/CommonMocks.js";
+} from "../../test-utils/CommonMocks.ts";
 import { TolgeeProvider } from "@tolgee/react";
-import axiosInstance from "../../config/axios-config.js";
+import axiosInstance from "../../config/axios-config.ts";
 
 mockUseAuth();
 mockAxios();
@@ -31,7 +32,7 @@ describe("UserLogin Component", () => {
   test("renders the login form correctly", () => {
     setup();
 
-    expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
+    expect(screen.getByText("Welcome to WeBuddhist")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Email Address")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
@@ -107,12 +108,17 @@ describe("UserLogin Component", () => {
     const passwordInput = screen.getByPlaceholderText("Password");
     expect(passwordInput).toHaveAttribute("type", "password");
 
-    const eyeButton = document.querySelector(".password-toggle");
+    const eyeButton = screen.getByRole("button", {
+      name: "login.show_password",
+    });
     fireEvent.click(eyeButton);
 
     expect(passwordInput).toHaveAttribute("type", "text");
 
-    fireEvent.click(eyeButton);
+    const hideButton = screen.getByRole("button", {
+      name: "login.hide_password",
+    });
+    fireEvent.click(hideButton);
     expect(passwordInput).toHaveAttribute("type", "password");
   });
 
@@ -149,7 +155,7 @@ describe("UserLogin Component", () => {
 
     fireEvent.click(loginButton);
     // getAllByText to handle multiple validation messages
-    const errorMessages = screen.getAllByText(/required/i);
+    const errorMessages = screen.getAllByText("user.validation.required");
 
     // Validation errors for both email and password
     expect(errorMessages).toHaveLength(2);

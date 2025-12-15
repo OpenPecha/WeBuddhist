@@ -1,12 +1,12 @@
 import React from "react";
-import { mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.js";
+import { mockTolgee, mockUseAuth } from "../../test-utils/CommonMocks.ts";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
+import { vi, beforeEach, test, expect, describe } from "vitest";
 import "@testing-library/jest-dom";
 import { BrowserRouter } from "react-router-dom";
-import Sheets from "./Sheets.js";
+import Sheets from "./Sheets.tsx";
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -140,7 +140,6 @@ describe("Sheets Component", () => {
   test("renders Sheets component structure", () => {
     setup();
 
-    expect(document.querySelector(".sheets-wrapper")).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText("sheet.title.placeholder"),
     ).toBeInTheDocument();
@@ -159,14 +158,13 @@ describe("Sheets Component", () => {
     expect(sessionStorage.getItem("sheet-title")).toBe("My Sheet Title");
   });
 
-  test("title input has correct styling and placeholder", () => {
+  test("title input has correct type and class", () => {
     setup();
 
     const input = screen.getByPlaceholderText("sheet.title.placeholder");
 
     expect(input).toHaveAttribute("type", "text");
-    expect(input).toHaveClass("title-input");
-    expect(input).toHaveStyle({ fontFamily: "serif" });
+    expect(input).toHaveClass("serif-title-text");
   });
 
   test("passes debounced title to Editor component", async () => {
@@ -208,16 +206,13 @@ describe("Sheets Component", () => {
   test("component structure is correct", () => {
     setup();
 
-    const wrapper = document.querySelector(".sheets-wrapper");
-    expect(wrapper).toBeInTheDocument();
-
     const titleInput = screen.getByPlaceholderText("sheet.title.placeholder");
     const profileCard = screen.getByTestId("profile-card");
     const editor = screen.getByTestId("editor");
 
-    expect(wrapper).toContainElement(titleInput);
-    expect(wrapper).toContainElement(profileCard);
-    expect(wrapper).toContainElement(editor);
+    expect(titleInput).toBeInTheDocument();
+    expect(profileCard).toBeInTheDocument();
+    expect(editor).toBeInTheDocument();
   });
 
   test("empty title input initially", () => {

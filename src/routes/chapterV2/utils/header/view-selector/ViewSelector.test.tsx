@@ -1,21 +1,41 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
-import ViewSelector, { VIEW_MODES, LAYOUT_MODES } from "./ViewSelector.js";
+import { render, screen } from "@testing-library/react";
+import { vi, beforeEach, test, expect, describe } from "vitest";
+import ViewSelector, { VIEW_MODES, LAYOUT_MODES } from "./ViewSelector.tsx";
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
   return {
     ...actual,
     useTranslate: () => ({
-      t: (key) => key,
+      t: (key: string) => key,
     }),
   };
 });
 
+vi.mock("@/components/ui/dropdown-menu.tsx", () => ({
+  DropdownMenuLabel: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  DropdownMenuRadioGroup: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  DropdownMenuRadioItem: ({
+    children,
+    value,
+  }: {
+    children: React.ReactNode;
+    value: string;
+  }) => (
+    <div role="menuitemradio" data-value={value}>
+      {children}
+    </div>
+  ),
+}));
+
 describe("ViewSelector Component", () => {
-  const setShowViewSelector = vi.fn();
   const setViewMode = vi.fn();
+  const setLayoutMode = vi.fn();
 
   const setup = (
     viewMode = VIEW_MODES.SOURCE,
@@ -23,12 +43,11 @@ describe("ViewSelector Component", () => {
   ) => {
     return render(
       <ViewSelector
-        setShowViewSelector={setShowViewSelector}
         setViewMode={setViewMode}
         viewMode={viewMode}
         versionSelected={true}
         layoutMode={layoutMode}
-        setLayoutMode={vi.fn()}
+        setLayoutMode={setLayoutMode}
       />,
     );
   };
@@ -37,57 +56,52 @@ describe("ViewSelector Component", () => {
     vi.clearAllMocks();
   });
 
-  test("renders options container and layout radios", () => {
+  test("renders layout label and all menu items", () => {
     setup();
-    expect(
-      document.querySelector(".view-selector-options-container"),
-    ).toBeInTheDocument();
     expect(
       screen.getByText("text.reader_option_menu.layout"),
     ).toBeInTheDocument();
-    const radios = screen.getAllByRole("radio");
-    expect(radios).toHaveLength(2);
+
+    const menuItems = screen.getAllByRole("menuitemradio");
+    expect(menuItems).toHaveLength(5);
   });
 
-  test("renders all radio options with correct checked state", () => {
-    setup(VIEW_MODES.TRANSLATIONS);
-    const radios = screen.getAllByRole("radio");
-    expect(radios).toHaveLength(2);
-    expect(radios[1]).toBeChecked();
-    expect(radios[0]).not.toBeChecked();
-  });
-
-  test("outside click closes the selector", () => {
+  test("renders view mode options with correct labels", () => {
     setup();
-    fireEvent.mouseDown(document.body);
-    expect(setShowViewSelector).toHaveBeenCalledWith(false);
+    expect(
+      screen.getByText("text.reader_option_menu.source"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("text.reader_option_menu.translation"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("text.reader_option_menu.source_with_translation"),
+    ).toBeInTheDocument();
   });
 
-  test("radio options are accessible", () => {
+  test("renders layout options with correct labels", () => {
     setup();
-    const radios = screen.getAllByRole("radio");
-    radios.forEach((radio) => {
-      expect(radio).toHaveAttribute("type", "radio");
-      expect(radio).toHaveAttribute("name", "layout-mode");
-    });
+    expect(screen.getByText("Prose layout")).toBeInTheDocument();
+    expect(screen.getByText("Segmented layout")).toBeInTheDocument();
   });
 
-  test("calls setLayoutMode when layout option is selected", () => {
-    const setLayoutMode = vi.fn();
+  test("menu items have correct data-value attributes", () => {
+    setup();
+    const menuItems = screen.getAllByRole("menuitemradio");
 
-    render(
-      <ViewSelector
-        setShowViewSelector={vi.fn()}
-        setViewMode={vi.fn()}
-        viewMode={VIEW_MODES.SOURCE}
-        versionSelected={true}
-        layoutMode={LAYOUT_MODES.SEGMENTED}
-        setLayoutMode={setLayoutMode}
-      />,
+    expect(menuItems[0]).toHaveAttribute("data-value", VIEW_MODES.SOURCE);
+    expect(menuItems[1]).toHaveAttribute("data-value", VIEW_MODES.TRANSLATIONS);
+    expect(menuItems[2]).toHaveAttribute(
+      "data-value",
+      VIEW_MODES.SOURCE_AND_TRANSLATIONS,
     );
+    expect(menuItems[3]).toHaveAttribute("data-value", LAYOUT_MODES.PROSE);
+    expect(menuItems[4]).toHaveAttribute("data-value", LAYOUT_MODES.SEGMENTED);
+  });
 
-    const radios = screen.getAllByRole("radio");
-    fireEvent.click(radios[0]);
-    expect(setLayoutMode).toHaveBeenCalledWith(LAYOUT_MODES.PROSE);
+  test("renders correct number of menu items", () => {
+    setup();
+    const menuItems = screen.getAllByRole("menuitemradio");
+    expect(menuItems).toHaveLength(5);
   });
 });
