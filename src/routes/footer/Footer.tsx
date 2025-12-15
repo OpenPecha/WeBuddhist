@@ -1,3 +1,4 @@
+import { getLanguageClass } from "@/utils/helperFunctions";
 import { useTranslate } from "@tolgee/react";
 import {
   FaEnvelope,
@@ -24,9 +25,9 @@ const columns: FooterColumn[] = [
     links: [
       {
         href: "https://buddhistai.tools/",
-        labelKey: "footer.buddhist_ai_tools",
+        labelKey: "Buddhist AI Studio",
       },
-      { href: "https://sherab.org/", labelKey: "footer.sherab" },
+      { href: "https://sherab.org/", labelKey: "Sherab" },
     ],
   },
   {
@@ -34,20 +35,20 @@ const columns: FooterColumn[] = [
     links: [
       {
         href: "https://github.com/OpenPecha",
-        labelKey: "footer.fork_us_on_github",
+        labelKey: "Fork us on GitHub",
       },
       {
         href: "https://discord.com/invite/7GFpPFSTeA",
-        labelKey: "footer.discord",
+        labelKey: "Discord",
       },
     ],
   },
   {
     title: "footer.about",
     links: [
-      { href: "https://dharmaduta.in/about", labelKey: "footer.about_us" },
-      { href: "https://dharmaduta.in/team", labelKey: "footer.team" },
-      { href: "https://dharmaduta.in/projects", labelKey: "footer.products" },
+      { href: "https://dharmaduta.in/about", labelKey: "About Us" },
+      { href: "https://dharmaduta.in/team", labelKey: "Team" },
+      { href: "https://dharmaduta.in/projects", labelKey: "Products" },
     ],
   },
 ];
@@ -81,7 +82,7 @@ const Footer = () => {
     <footer className="flex max-sm:space-y-8 max-sm:flex-col border-t border-[#F4F4F4] px-3 py-4 sm:p-6 md:py-12 lg:px-8">
       <div className="flex-1 items-center justify-center">
         <div className="flex w-full flex-col text-start">
-          <div className=" flex  items-center">
+          <div className=" flex items-center">
             <img
               src="/img/webuddhist_logo.svg"
               alt="logo"
@@ -89,8 +90,8 @@ const Footer = () => {
               height={150}
             />
           </div>
-          <div className="flex  w-full max-w-xl">
-            <p className="text-base text-muted-foreground">
+          <div className="flex w-full max-w-xl">
+            <p className="text-sm md:text-base text-muted-foreground">
               Buddhism in your own words
             </p>
           </div>
@@ -111,10 +112,10 @@ const Footer = () => {
         </div>
       </div>
       <div className="flex-1 md:flex md:justify-around grid grid-cols-2 md:grid-cols-4 gap-4">
-        {columns.map(({ title, links, useTranslation = true }) => (
+        {columns.map(({ title, links }) => (
           <div key={title} className="text-left">
-            <h3 className=" text-[#313131] uppercase font-semibold  mb-2 text-base">
-              {useTranslation ? t(title) : title}
+            <h3 className=" text-[#313131] uppercase overalltext font-semibold  mb-2 text-sm">
+              {t(title)}
             </h3>
             <ul className="list-none p-0 m-0 flex flex-col gap-2">
               {links.map(({ href, labelKey }) => (
@@ -123,10 +124,9 @@ const Footer = () => {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#666666] text-base hover:text-black transition-colors"
-                    aria-label={t(labelKey)}
+                    className={`text-[#666666] ${getLanguageClass("en-san")} text-sm hover:text-black transition-colors`}
                   >
-                    {t(labelKey)}
+                    {labelKey}
                   </a>
                 </li>
               ))}
