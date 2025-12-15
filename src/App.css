@@ -13,37 +13,8 @@
 }
 
 #root {
-  text-align: center;
-  --title-font-size: 16px;
-  --title-font-family: "EBGaramond-Regular", sans-serif;
-  --subtitle-font-size: 16px;
-  --subtitle-font-family: "sub-title-font", "Inter";
-  --content-font-size: 16px;
   --content-font-family: "content-font", "Inter";
-  --subcontent-font-size: 11px;
-  --subcontent-font-family: "sub-content-font", "Inter";
-  --listtitle-font-size: 16px;
-  --listtitle-font-family: "list-title-font", "Inter";
-  --listsubtitle-font-size: 14px;
-  --listsubtitle-font-family: "list-subtitle-font", "Inter";
-  --navbaritems-font-size: 16px;
-  --navbaritems-font-family: "navbar-items-font", "Inter";
-  --overalltext-font-size: 24px;
   --overalltext-font-family: "EBGaramond-Regular", sans-serif;
-  --collection-link-font-size: 16px;
-  --collection-link-font-family: "collection-link-font";
-}
-
-.div-color {
-  height: 1px;
-  background-color: #dd0707;
-  margin-bottom: 1rem;
-  width: 100%;
-}
-
-@font-face {
-  font-family: "Jomolhari-Regular";
-  src: url("./assets/fonts/Jomolhari-Regular.ttf");
 }
 
 @font-face {
@@ -65,91 +36,25 @@
   font-family: "Inter";
   src: url("./assets/fonts/InterRegular.woff") format("woff");
 }
+
 .bo-text {
   font-family: "Atisha", sans-serif;
 }
 .en-text {
   font-family: "Inter", sans-serif;
-  font-size: 18px;
 }
 .en-serif-text {
   font-family: "EBGaramond-Regular", sans-serif;
-  font-size: 20px;
-}
-.serif-title-text {
-  font-family: "EBGaramond-Regular", sans-serif;
-}
-.title {
-  font-size: var(--title-font-size);
-  font-family: var(--title-font-family);
-}
-
-.subtitle {
-  font-size: var(--subtitle-font-size);
-  font-family: var(--subtitle-font-family);
-}
-.collectionfont {
-  font-family: var(--collection-link-font-family);
-  font-size: var(--collection-link-font-size);
 }
 
 .content {
-  font-size: var(--content-font-size);
   font-family: var(--content-font-family);
 }
 
-.subcontent {
-  font-size: var(--subcontent-font-size);
-  font-family: var(--subcontent-font-family);
-}
-
-.listtitle {
-  font-size: var(--listtitle-font-size);
-  font-family: var(--listtitle-font-family);
-}
-.listtitle p.bo-text {
-  margin-top: 1rem;
-}
 .overalltext {
-  font-size: var(--overalltext-font-size);
   font-family: var(--overalltext-font-family);
 }
-.listsubtitle {
-  font-size: var(--listsubtitle-font-size);
-  font-family: var(--listsubtitle-font-family);
-}
 
-.navbaritems {
-  font-size: var(--navbaritems-font-size);
-  font-family: var(--navbaritems-font-family);
-}
-
-.logo {
-  height: 1em;
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
 ::-webkit-scrollbar,
 html::-webkit-scrollbar,
 body::-webkit-scrollbar,
