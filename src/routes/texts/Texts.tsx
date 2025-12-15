@@ -155,7 +155,7 @@ const Texts = (props: any) => {
   const renderTabs = () => {
     return (
       <Tabs className="w-full space-y-4" defaultValue="versions">
-        <TabsList>
+        <TabsList className="overalltext">
           <TabsTrigger value="versions">{t("common.version")}</TabsTrigger>
           <TabsTrigger value="commentaries">
             {t("text.type.commentary")}
@@ -243,11 +243,11 @@ const Texts = (props: any) => {
               to={`/chapter?text_id=${textId}&content_id=${tableOfContents?.contents[0]?.id}&versionId=&contentIndex=${0}`}
               className="text-left"
             >
-              <h1
-                className={`text-gray-800 ${getLanguageClass(versions?.text?.language)}`}
+              <p
+                className={`text-gray-800 text-lg ${getLanguageClass(versions?.text?.language)}`}
               >
                 {versions?.text?.title}
-              </h1>
+              </p>
             </Link>
             {renderTabs()}
           </div>

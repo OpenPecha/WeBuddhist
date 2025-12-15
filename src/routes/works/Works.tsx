@@ -66,8 +66,6 @@ const Works = (props?: WorksProps) => {
     { refetchOnWindowFocus: false },
   );
 
-  // ---------------------------------- helpers ----------------------------------
-
   const texts: TextItem[] = (worksData?.texts as TextItem[]) || [];
 
   const siteBaseUrl = window.location.origin;
@@ -117,10 +115,10 @@ const Works = (props?: WorksProps) => {
 
   const renderRootTexts = () => {
     return (
-      <div className="space-y-2">
+      <div className="space-y-2 mt-6">
         {rootTexts.length !== 0 && (
           <>
-            <h1 className="text-xl font-semibold tracking-wide text-gray-700">
+            <h1 className="text-xl font-semibold overalltext text-gray-700">
               {worksData?.collection?.title}
             </h1>
             <div
@@ -162,9 +160,6 @@ const Works = (props?: WorksProps) => {
   if (isCompactView) {
     return (
       <div className="space-y-4 p-4">
-        <h1 className="overalltext text-left text-2xl font-semibold text-gray-700">
-          {worksData.term?.title}
-        </h1>
         {renderRootTexts()}
         <PaginationComponent
           pagination={pagination}
@@ -187,9 +182,6 @@ const Works = (props?: WorksProps) => {
               canonical={canonicalUrl}
             />
             <Breadcrumbs items={breadcrumbItems} />
-            <h1 className="overalltext text-left text-2xl font-semibold text-gray-700">
-              {worksData.term?.title}
-            </h1>
             {renderRootTexts()}
             <PaginationComponent
               pagination={pagination}

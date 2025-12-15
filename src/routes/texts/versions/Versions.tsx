@@ -1,5 +1,8 @@
 import React from "react";
-import { getEarlyReturn } from "../../../utils/helperFunctions.tsx";
+import {
+  getEarlyReturn,
+  getLanguageClass,
+} from "../../../utils/helperFunctions.tsx";
 import { Link } from "react-router-dom";
 import { useTranslate } from "@tolgee/react";
 import { Badge } from "@/components/ui/badge.tsx";
@@ -50,7 +53,9 @@ const CommonCard = ({
           to={`/chapter?text_id=${version.id}&content_id=${contentId}`}
           className="text-left"
         >
-          <div className={` text-lg font-medium text-zinc-600`}>
+          <div
+            className={` text-lg font-medium text-zinc-600 ${getLanguageClass(version.language)}`}
+          >
             {version.title}
           </div>
         </Link>
@@ -67,7 +72,7 @@ const CommonCard = ({
           )}
         </div>
       </div>
-      <Badge variant="outline" className="w-fit py-2 px-4">
+      <Badge variant="outline" className={`w-fit py-2 px-4 overalltext`}>
         {t(languageMap[version.language])}
       </Badge>
     </div>
