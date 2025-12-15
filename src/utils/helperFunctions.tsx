@@ -77,7 +77,7 @@ export const getLanguageClass = (language: string): string => {
     case "tib":
       return "bo-text";
     case "zh":
-      return "bo-text";
+      return "zh-text";
     case "it":
       return "en-serif-text";
     default:

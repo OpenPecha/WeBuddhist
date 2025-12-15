@@ -1,10 +1,10 @@
 const fontConfig = {
   en: {
     content: {
-      fontFamily: "Inter",
+      fontFamily: "EBGaramond-Regular",
     },
     overalltext: {
-      fontFamily: "EBGaramond-Regular",
+      fontFamily: "Inter",
     },
   },
   "bo-IN": {

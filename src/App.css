@@ -13,8 +13,8 @@
 }
 
 #root {
-  --content-font-family: "content-font", "Inter";
-  --overalltext-font-family: "EBGaramond-Regular", sans-serif;
+  --content-font-family: "EBGaramond-Regular", sans-serif;
+  --overalltext-font-family: "overalltext-font", "Inter";
 }
 
 @font-face {
@@ -37,6 +37,11 @@
   src: url("./assets/fonts/InterRegular.woff") format("woff");
 }
 
+@font-face {
+  font-family: "NotoSerifTC-Regular";
+  src: url("./assets/fonts/NotoSerifTC-Regular.ttf");
+}
+
 .bo-text {
   font-family: "Atisha", sans-serif;
 }
@@ -45,6 +50,9 @@
 }
 .en-serif-text {
   font-family: "EBGaramond-Regular", sans-serif;
+}
+.zh-text {
+  font-family: "NotoSerifTC-Regular", sans-serif;
 }
 
 .content {

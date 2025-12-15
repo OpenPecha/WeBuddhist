@@ -191,24 +191,24 @@ const Navigation = () => {
 
   return (
     <div
-      className="bg-[#FAFAF9] flex justify-between items-center h-[60px] w-full px-4 md:px-7"
+      className={`${isTibetan && "text-sm"} overalltext bg-[#FAFAF9]  h-[60px]  flex justify-between items-center w-full px-4 md:px-7`}
       style={{
         borderBottom: `2px solid ${shouldHideColorBorder ? "#E7E5E4" : collectionColor || "#E7E5E4"}`,
       }}
     >
       <div className="flex items-center gap-x-4">
-        <Link to="/" className="flex items-center" aria-label="Go home">
+        <Link to="/" className="flex items-center">
           <img
             className="h-[30px]"
             src="/img/webuddhist_logo.svg"
             alt="Webuddhist"
           />
         </Link>
-        <div className={`hidden md:flex space-x-8 ${isTibetan ? "mt-2" : ""}`}>
+        <div className={`hidden md:flex space-x-8`}>
           {navItems.map((navItem) => (
             <Link
               key={navItem.key}
-              className="no-underline text-[#676767] font-medium hover:underline transition-all"
+              className={`no-underline text-[#676767] font-medium hover:underline transition-all`}
               to={navItem.to}
             >
               {navItem.label}
@@ -227,7 +227,7 @@ const Navigation = () => {
             placeholder={t("common.placeholder.search")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full border-none bg-transparent outline-none px-1 py-1.5"
+            className="w-full border-none bg-transparent outline-none px-1 py-1.5 content"
           />
         </form>
         {renderAuthButtons("desktop")}
