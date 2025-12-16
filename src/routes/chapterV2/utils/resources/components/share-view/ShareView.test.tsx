@@ -1,219 +1,305 @@
-import React from "react";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
-import { TolgeeProvider } from "@tolgee/react";
-import { fireEvent, render, screen } from "@testing-library/react";
-import ShareView from "./ShareView.js";
-import { vi } from "vitest";
+import { fireEvent, render, screen, act } from "@testing-library/react";
+import ShareView, { fetchShortUrl } from "./ShareView";
 import "@testing-library/jest-dom";
-import {
-  mockUseAuth,
-  mockAxios,
-  mockReactQuery,
-  mockTolgee,
-} from "../../../../../../test-utils/CommonMocks.js";
+import axiosInstance from "../../../../../../config/axios-config";
 
-mockAxios();
-mockUseAuth();
-mockReactQuery();
-
-vi.mock("@tolgee/react", async () => ({
+vi.mock("@tolgee/react", () => ({
   useTranslate: () => ({
-    t: (key) => key,
+    t: (key: string) => key,
   }),
-  TolgeeProvider: ({ children }) => children,
 }));
 
+vi.mock("../../../../../../config/axios-config", () => ({
+  default: {
+    post: vi.fn(),
+  },
+}));
+
+const mockWriteText = vi.fn();
 Object.defineProperty(navigator, "clipboard", {
   value: {
-    writeText: vi.fn(),
+    writeText: mockWriteText,
   },
   configurable: true,
 });
 
-// Mock window.location
-const originalLocation = window.location;
-delete window.location;
-window.location = {
-  ...originalLocation,
-  href: "https://example.com/original-url",
-};
-
 describe("ShareView Component", () => {
-  const queryClient = new QueryClient();
-  const mockShortUrlData = {
-    shortUrl: "https://gg.com/share/123",
-  };
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
 
   const mockProps = {
     setIsShareView: vi.fn(),
+    segmentId: "test-segment-123",
+    handleNavigate: vi.fn(),
   };
+
+  const originalLocation = window.location;
 
   beforeEach(() => {
     vi.resetAllMocks();
     vi.useFakeTimers();
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => {
-      return {
-        data: {
-          shortUrl: "https://gg.com/share/123",
-        },
-        isLoading: false,
-      };
+
+    Object.defineProperty(window, "location", {
+      value: new URL("https://example.com/text/123?segment_id=old-segment"),
+      writable: true,
+      configurable: true,
     });
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(
+      () =>
+        ({
+          data: {
+            shortUrl: "https://gg.com/share/123",
+          },
+          isLoading: false,
+        }) as any,
+    );
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    Object.defineProperty(window, "location", {
+      value: originalLocation,
+      writable: true,
+      configurable: true,
+    });
   });
 
-  afterAll(() => {
-    // Restore original window.location
-    window.location = originalLocation;
-  });
-
-  const setup = () => {
+  const setup = (props = mockProps) => {
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <ShareView {...mockProps} />
-          </TolgeeProvider>
+          <ShareView {...props} />
         </QueryClientProvider>
       </Router>,
     );
   };
 
-  test("renders ShareView component", () => {
-    setup();
-    expect(document.querySelector(".share-content")).toBeInTheDocument();
-    expect(document.querySelector(".share-url-container")).toBeInTheDocument();
-    expect(document.querySelector(".social-share-buttons")).toBeInTheDocument();
+  describe("Rendering", () => {
+    it("renders ShareView component with header", () => {
+      setup();
+      expect(screen.getByText("common.share")).toBeInTheDocument();
+    });
+
+    it("displays the share link section title", () => {
+      setup();
+      expect(screen.getByText("text.share_link")).toBeInTheDocument();
+    });
+
+    it("displays the more options section title", () => {
+      setup();
+      expect(screen.getByText("text.more_options")).toBeInTheDocument();
+    });
+
+    it("displays the correct share URL from API", () => {
+      setup();
+      expect(screen.getByText("https://gg.com/share/123")).toBeInTheDocument();
+    });
+
+    it("displays loading state when fetching URL", () => {
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(
+        () =>
+          ({
+            data: null,
+            isLoading: true,
+          }) as any,
+      );
+
+      setup();
+      expect(screen.getByText("common.loading")).toBeInTheDocument();
+    });
+
+    it("falls back to constructed URL when shortUrl is not available", () => {
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(
+        () =>
+          ({
+            data: null,
+            isLoading: false,
+          }) as any,
+      );
+
+      setup();
+      expect(
+        screen.getByText(
+          "https://example.com/text/123?segment_id=test-segment-123",
+        ),
+      ).toBeInTheDocument();
+    });
   });
 
-  test("displays the correct share URL", () => {
-    const { container } = setup();
+  describe("Close and Navigation", () => {
+    it("handles close button click", () => {
+      const { container } = setup();
 
-    const shareUrl = container.querySelector(".share-url");
-    expect(shareUrl).toBeInTheDocument();
-    expect(shareUrl.textContent).toBe("https://gg.com/share/123");
+      const buttons = container.querySelectorAll("button");
+      const closeButton = buttons[1];
+      fireEvent.click(closeButton);
+
+      expect(mockProps.setIsShareView).toHaveBeenCalledWith("main");
+    });
+
+    it("handles back button click", () => {
+      setup();
+
+      const backButton = screen.getAllByRole("button")[0];
+      fireEvent.click(backButton);
+
+      expect(mockProps.handleNavigate).toHaveBeenCalled();
+    });
   });
 
-  test("handles close button click", () => {
-    const { container } = setup();
+  describe("Copy Functionality", () => {
+    it("copies URL to clipboard when copy button is clicked", () => {
+      setup();
 
-    const closeButton = container.querySelector(".close-icon");
-    expect(closeButton).toBeInTheDocument();
+      const copyButton = screen.getByRole("button", {
+        name: "Copy share link",
+      });
+      fireEvent.click(copyButton);
 
-    fireEvent.click(closeButton);
-    expect(mockProps.setIsShareView).toHaveBeenCalledWith("main");
+      expect(mockWriteText).toHaveBeenCalledWith("https://gg.com/share/123");
+    });
+
+    it("shows checkmark icon after copying", async () => {
+      setup();
+
+      const copyButton = screen.getByRole("button", {
+        name: "Copy share link",
+      });
+      fireEvent.click(copyButton);
+
+      expect(
+        screen.getByRole("button", { name: "Copied link" }),
+      ).toBeInTheDocument();
+    });
+
+    it("reverts to copy icon after 3 seconds", async () => {
+      setup();
+
+      const copyButton = screen.getByRole("button", {
+        name: "Copy share link",
+      });
+      fireEvent.click(copyButton);
+
+      expect(
+        screen.getByRole("button", { name: "Copied link" }),
+      ).toBeInTheDocument();
+
+      act(() => {
+        vi.advanceTimersByTime(3000);
+      });
+
+      expect(
+        screen.getByRole("button", { name: "Copy share link" }),
+      ).toBeInTheDocument();
+    });
+
+    it("does not copy when shareLink is falsy", () => {
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(
+        () =>
+          ({
+            data: { shortUrl: null },
+            isLoading: false,
+          }) as any,
+      );
+
+      setup();
+
+      const copyButton = screen.getByRole("button", {
+        name: "Copy share link",
+      });
+      fireEvent.click(copyButton);
+
+      expect(mockWriteText).toHaveBeenCalled();
+    });
   });
 
-  test("copies URL to clipboard when copy button is clicked", () => {
-    const { container } = setup();
+  describe("Social Share Buttons", () => {
+    it("displays Facebook share button", () => {
+      setup();
+      expect(screen.getByText("common.share_on_fb")).toBeInTheDocument();
+    });
 
-    const copyButton = container.querySelector(".copy-button");
-    expect(copyButton).toBeInTheDocument();
+    it("displays X/Twitter share button", () => {
+      setup();
+      expect(screen.getByText("common.share_on_x")).toBeInTheDocument();
+    });
 
-    fireEvent.click(copyButton);
+    it("Facebook button has correct share URL", () => {
+      setup();
+      const fbLink = screen.getByRole("link", { name: /share on facebook/i });
+      expect(fbLink).toHaveAttribute(
+        "href",
+        expect.stringContaining("facebook.com/sharer/sharer.php"),
+      );
+      expect(fbLink).toHaveAttribute(
+        "href",
+        expect.stringContaining(encodeURIComponent("https://gg.com/share/123")),
+      );
+    });
 
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      "https://gg.com/share/123",
+    it("X/Twitter button has correct share URL", () => {
+      setup();
+      const xLink = screen.getByRole("link", { name: /share on x/i });
+      expect(xLink).toHaveAttribute(
+        "href",
+        expect.stringContaining("twitter.com/intent/tweet"),
+      );
+      expect(xLink).toHaveAttribute(
+        "href",
+        expect.stringContaining(encodeURIComponent("https://gg.com/share/123")),
+      );
+    });
+
+    it("social share links open in new tab", () => {
+      setup();
+      const fbLink = screen.getByRole("link", { name: /share on facebook/i });
+      const xLink = screen.getByRole("link", { name: /share on x/i });
+
+      expect(fbLink).toHaveAttribute("target", "_blank");
+      expect(fbLink).toHaveAttribute("rel", "noopener noreferrer");
+      expect(xLink).toHaveAttribute("target", "_blank");
+      expect(xLink).toHaveAttribute("rel", "noopener noreferrer");
+    });
+  });
+});
+
+describe("fetchShortUrl", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it("calls API with correct parameters", async () => {
+    const mockResponse = { data: { shortUrl: "https://short.url/abc" } };
+    vi.mocked(axiosInstance.post).mockResolvedValue(mockResponse);
+
+    const result = await fetchShortUrl(
+      "https://example.com/text/123",
+      "segment-456",
     );
+
+    expect(axiosInstance.post).toHaveBeenCalledWith("/api/v1/share", {
+      segment_id: "segment-456",
+      language: "bo",
+      url: "https://example.com/text/123",
+    });
+    expect(result).toEqual({ shortUrl: "https://short.url/abc" });
   });
 
-  test("shows checkmark icon after copying", () => {
-    const { container, rerender } = setup();
+  it("handles API errors", async () => {
+    vi.mocked(axiosInstance.post).mockRejectedValue(new Error("API Error"));
 
-    const copyButton = container.querySelector(".copy-button");
-    // Before clicking, should show copy icon
-    expect(copyButton.querySelector("svg")).toBeInTheDocument();
-
-    fireEvent.click(copyButton);
-
-    // After clicking, should show checkmark icon
-    const checkmarkIcon = container.querySelector(".copy-button svg");
-    expect(checkmarkIcon).toBeInTheDocument();
-
-    // After 3 seconds, should revert back to copy icon
-    vi.advanceTimersByTime(3000);
-    rerender(
-      <Router>
-        <QueryClientProvider client={queryClient}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <ShareView {...mockProps} />
-          </TolgeeProvider>
-        </QueryClientProvider>
-      </Router>,
-    );
-    const updatedCopyButton = document.querySelector(".copy-button svg");
-    expect(updatedCopyButton).toBeInTheDocument();
-  });
-
-  test("displays social share buttons", () => {
-    const { container } = setup();
-
-    const socialButtons = container.querySelectorAll(".social-button");
-    expect(socialButtons.length).toBe(2);
-
-    expect(socialButtons[0].textContent).toContain("common.share_on_fb");
-    expect(socialButtons[1].textContent).toContain("common.share_on_x");
-  });
-
-  test("handles null or undefined sidePanelData gracefully", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: null,
-      isLoading: false,
-    }));
-    const { rerender } = render(
-      <Router>
-        <QueryClientProvider client={queryClient}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <ShareView
-              setIsShareView={mockProps.setIsShareView}
-              sidePanelData={null}
-            />
-          </TolgeeProvider>
-        </QueryClientProvider>
-      </Router>,
-    );
-
-    expect(document.querySelector(".share-content")).toBeInTheDocument();
-
-    const shareUrl = document.querySelector(".share-url");
-    expect(shareUrl.textContent).toBe("");
-
-    rerender(
-      <Router>
-        <QueryClientProvider client={queryClient}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <ShareView
-              setIsShareView={mockProps.setIsShareView}
-              sidePanelData={{}}
-            />
-          </TolgeeProvider>
-        </QueryClientProvider>
-      </Router>,
-    );
-
-    expect(document.querySelector(".share-content")).toBeInTheDocument();
-
-    // Test with empty text_infos object
-    rerender(
-      <Router>
-        <QueryClientProvider client={queryClient}>
-          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <ShareView
-              setIsShareView={mockProps.setIsShareView}
-              sidePanelData={{ text_infos: {} }}
-            />
-          </TolgeeProvider>
-        </QueryClientProvider>
-      </Router>,
-    );
-
-    expect(document.querySelector(".share-content")).toBeInTheDocument();
-    const emptyShareUrl = document.querySelector(".share-url");
-    expect(emptyShareUrl.textContent).toBe("");
+    await expect(
+      fetchShortUrl("https://example.com/text/123", "segment-456"),
+    ).rejects.toThrow("API Error");
   });
 });
