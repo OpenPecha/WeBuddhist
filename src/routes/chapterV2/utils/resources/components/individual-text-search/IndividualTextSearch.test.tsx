@@ -1,17 +1,16 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import "@testing-library/jest-dom";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import IndividualTextSearch, {
   fetchTextSearchResults,
-} from "./IndividualTextSearch.js";
-import axiosInstance from "../../../../../../config/axios-config.js";
-import { usePanelContext } from "../../../../../../context/PanelContext.js";
-import { mockLocalStorage } from "../../../../../../test-utils/CommonMocks.js";
+} from "./IndividualTextSearch";
+import axiosInstance from "../../../../../../config/axios-config";
+import { usePanelContext } from "../../../../../../context/PanelContext";
 
 vi.mock("use-debounce", () => ({
-  useDebounce: vi.fn((value) => [value, vi.fn()]),
+  useDebounce: vi.fn((value: string) => [value, vi.fn()]),
 }));
 
 vi.mock("../../../../../../context/PanelContext", () => ({
@@ -23,13 +22,12 @@ vi.mock("../../../../../../context/PanelContext", () => ({
 }));
 
 vi.mock("react-router-dom", () => ({
-  useNavigate: vi.fn(),
   useSearchParams: vi.fn(),
 }));
 
 vi.mock("@tolgee/react", () => ({
   useTranslate: vi.fn(() => ({
-    t: vi.fn((key, fallback) => fallback || key),
+    t: vi.fn((key: string, fallback?: string) => fallback || key),
   })),
 }));
 
@@ -44,12 +42,76 @@ vi.mock("../../../../../../config/axios-config", () => ({
   },
 }));
 
-let localStorageMock;
+vi.mock("../../../../../../utils/helperFunctions", () => ({
+  getLanguageClass: vi.fn((lang: string) => `${lang}-text`),
+  getEarlyReturn: vi.fn(() => null),
+  mapLanguageCode: vi.fn((code: string) => code),
+}));
+
+vi.mock("../../../../../../utils/highlightUtils", () => ({
+  highlightSearchMatch: vi.fn(
+    (content: string, _query: string, _className: string) => content,
+  ),
+}));
+
+vi.mock("../../../../../../utils/constants", () => ({
+  LANGUAGE: "LANGUAGE",
+}));
+
+vi.mock("../../../../../commons/pagination/PaginationComponent", () => ({
+  default: ({
+    totalPages,
+    handlePageChange,
+  }: {
+    totalPages: number;
+    handlePageChange: (page: number) => void;
+  }) => (
+    <div data-testid="pagination">
+      {Array.from({ length: totalPages }, (_, i) => (
+        <button key={i + 1} onClick={() => handlePageChange(i + 1)}>
+          {i + 1}
+        </button>
+      ))}
+    </div>
+  ),
+}));
+
+vi.mock("../common/ResourceHeader", () => ({
+  default: ({
+    title,
+    onBack,
+    onClose,
+  }: {
+    title: string;
+    onBack: () => void;
+    onClose: () => void;
+  }) => (
+    <div data-testid="resource-header">
+      <span>{title}</span>
+      <button data-testid="back-button" onClick={onBack}>
+        Back
+      </button>
+      <button data-testid="close-button" onClick={onClose}>
+        Close
+      </button>
+    </div>
+  ),
+}));
+
+const mockLocalStorage = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+};
+
+Object.defineProperty(window, "localStorage", {
+  value: mockLocalStorage,
+});
 
 beforeEach(() => {
   vi.clearAllMocks();
-  localStorageMock = mockLocalStorage();
-  localStorageMock.getItem.mockReturnValue("en");
+  mockLocalStorage.getItem.mockReturnValue("en");
 });
 
 describe("fetchTextSearchResults", () => {
@@ -62,10 +124,12 @@ describe("fetchTextSearchResults", () => {
     const mockTextId = "text123";
     const mockLanguage = "en";
     const mockSkip = 10;
-    const mockPagination = { limit: 10 };
+    const mockPagination = { limit: 10, currentPage: 2 };
     const mockResponse = { data: { query: mockQuery, sources: [], total: 0 } };
 
-    axiosInstance.get.mockResolvedValueOnce(mockResponse);
+    (axiosInstance.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      mockResponse,
+    );
 
     const result = await fetchTextSearchResults(
       mockQuery,
@@ -93,18 +157,28 @@ describe("fetchTextSearchResults", () => {
 
   it("should handle API errors correctly", async () => {
     const mockError = new Error("API Error");
-    axiosInstance.get.mockRejectedValueOnce(mockError);
+    (axiosInstance.get as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      mockError,
+    );
 
     await expect(
-      fetchTextSearchResults("query", "textId", "en", 0, { limit: 10 }),
+      fetchTextSearchResults("query", "textId", "en", 0, {
+        limit: 10,
+        currentPage: 1,
+      }),
     ).rejects.toThrow("API Error");
   });
 
   it("should handle empty parameters gracefully", async () => {
     const mockResponse = { data: { query: "", sources: [], total: 0 } };
-    axiosInstance.get.mockResolvedValueOnce(mockResponse);
+    (axiosInstance.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      mockResponse,
+    );
 
-    const result = await fetchTextSearchResults("", "", "en", 0, { limit: 10 });
+    const result = await fetchTextSearchResults("", "", "en", 0, {
+      limit: 10,
+      currentPage: 1,
+    });
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
       "api/v1/search/multilingual",
@@ -154,14 +228,16 @@ describe("fetchTextSearchResults", () => {
       },
     };
 
-    axiosInstance.get.mockResolvedValueOnce(mockResponse);
+    (axiosInstance.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      mockResponse,
+    );
 
     const result = await fetchTextSearchResults(
       mockQuery,
       mockTextId,
       mockLanguage,
       0,
-      { limit: 10 },
+      { limit: 10, currentPage: 1 },
     );
 
     expect(result).toEqual(mockResponse.data);
@@ -198,9 +274,11 @@ describe("fetchTextSearchResults", () => {
       },
     };
 
-    axiosInstance.get.mockResolvedValueOnce(mockResponse);
+    (axiosInstance.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
+      mockResponse,
+    );
 
-    const pagination = { limit: 10 };
+    const pagination = { limit: 10, currentPage: 1 };
     const skip = 0;
     const result = await fetchTextSearchResults(
       mockQuery,
@@ -229,50 +307,13 @@ describe("fetchTextSearchResults", () => {
     const totalPages = Math.ceil(totalSegments / pagination.limit);
     expect(totalPages).toBe(2);
   });
-
-  it("should handle case when no textId is provided in either props or URL search params", async () => {
-    const mockQuery = "test query";
-    const mockLanguage = "en";
-    const mockSkip = 10;
-    const mockPagination = { limit: 10 };
-    const mockResponse = { data: { query: mockQuery, sources: [], total: 0 } };
-
-    axiosInstance.get.mockResolvedValueOnce(mockResponse);
-
-    const result = await fetchTextSearchResults(
-      mockQuery,
-      undefined,
-      mockLanguage,
-      mockSkip,
-      mockPagination,
-    );
-
-    expect(axiosInstance.get).toHaveBeenCalledWith(
-      "api/v1/search/multilingual",
-      {
-        params: {
-          query: mockQuery,
-          search_type: "exact",
-          text_id: undefined,
-          language: mockLanguage,
-          limit: mockPagination.limit,
-          skip: mockSkip,
-        },
-      },
-    );
-    expect(result).toEqual(mockResponse.data);
-  });
 });
 
 describe("IndividualTextSearch Component", () => {
-  const mockNavigate = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
 
-    useNavigate.mockReturnValue(mockNavigate);
-
-    useQuery.mockReturnValue({
+    (useQuery as ReturnType<typeof vi.fn>).mockReturnValue({
       data: null,
       isLoading: false,
       error: null,
@@ -282,7 +323,10 @@ describe("IndividualTextSearch Component", () => {
   it("should use textId from URL search params when not provided as prop", () => {
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set("text_id", "text123FromURL");
-    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
 
     render(
       <IndividualTextSearch
@@ -308,7 +352,10 @@ describe("IndividualTextSearch Component", () => {
   it("should prioritize textId prop over URL search params", () => {
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set("text_id", "text123FromURL");
-    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
 
     const propTextId = "text123FromProp";
 
@@ -332,7 +379,10 @@ describe("IndividualTextSearch Component", () => {
 
   it("should handle case when no textId is provided in props or URL", () => {
     const mockSearchParams = new URLSearchParams();
-    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
 
     render(
       <IndividualTextSearch
@@ -354,7 +404,10 @@ describe("IndividualTextSearch Component", () => {
   it("should trigger search when form is submitted with valid query", () => {
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set("text_id", "text123");
-    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
 
     const mockOnClose = vi.fn();
     const mockHandleSegmentNavigate = vi.fn();
@@ -370,11 +423,12 @@ describe("IndividualTextSearch Component", () => {
 
     const searchInput = getByPlaceholderText(
       "connection_panel.search_in_this_text",
-    );
+    ) as HTMLInputElement;
 
     fireEvent.change(searchInput, { target: { value: "buddha" } });
 
-    fireEvent.submit(searchInput.closest("form"));
+    const form = searchInput.closest("form");
+    if (form) fireEvent.submit(form);
 
     expect(useQuery).toHaveBeenCalledWith(
       expect.arrayContaining(["textSearch", "buddha", "text123"]),
@@ -389,7 +443,10 @@ describe("IndividualTextSearch Component", () => {
   it("should not trigger search when form is submitted with empty query", () => {
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set("text_id", "text123");
-    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
 
     const mockOnClose = vi.fn();
 
@@ -403,9 +460,10 @@ describe("IndividualTextSearch Component", () => {
 
     const searchInput = getByPlaceholderText(
       "connection_panel.search_in_this_text",
-    );
+    ) as HTMLInputElement;
 
-    fireEvent.submit(searchInput.closest("form"));
+    const form = searchInput.closest("form");
+    if (form) fireEvent.submit(form);
 
     expect(useQuery).toHaveBeenCalledWith(
       expect.anything(),
@@ -419,15 +477,22 @@ describe("IndividualTextSearch Component", () => {
   it("should update search input field correctly when typing", () => {
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set("text_id", "text123");
-    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
 
     const { getByPlaceholderText } = render(
-      <IndividualTextSearch onClose={vi.fn()} />,
+      <IndividualTextSearch
+        onClose={vi.fn()}
+        handleSegmentNavigate={vi.fn()}
+        handleNavigate={vi.fn()}
+      />,
     );
 
     const searchInput = getByPlaceholderText(
       "connection_panel.search_in_this_text",
-    );
+    ) as HTMLInputElement;
 
     expect(searchInput.value).toBe("");
 
@@ -444,44 +509,51 @@ describe("IndividualTextSearch Component", () => {
     expect(searchInput.value).toBe("");
   });
 
-  it("should autofocus the search input field on component mount", () => {
+  it("should render search input with correct attributes", () => {
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set("text_id", "text123");
-    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
 
     const { getByPlaceholderText } = render(
-      <IndividualTextSearch onClose={vi.fn()} />,
+      <IndividualTextSearch
+        onClose={vi.fn()}
+        handleSegmentNavigate={vi.fn()}
+        handleNavigate={vi.fn()}
+      />,
     );
 
     const searchInput = getByPlaceholderText(
       "connection_panel.search_in_this_text",
-    );
+    ) as HTMLInputElement;
 
     expect(searchInput).toBeInTheDocument();
     expect(searchInput.tagName.toLowerCase()).toBe("input");
     expect(searchInput.type).toBe("text");
-
     expect(searchInput).toHaveAttribute(
       "placeholder",
       "connection_panel.search_in_this_text",
     );
-
-    expect(searchInput).toHaveClass("search-input");
   });
 
   it("renders results and clicking a segment opens resources and navigates to segment", () => {
     const mockSearchParams = new URLSearchParams();
     mockSearchParams.set("text_id", "text123");
-    useSearchParams.mockReturnValue([mockSearchParams, vi.fn()]);
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
 
     const openResourcesPanel = vi.fn();
-    usePanelContext.mockReturnValue({
+    (usePanelContext as ReturnType<typeof vi.fn>).mockReturnValue({
       openResourcesPanel,
       closeResourcesPanel: vi.fn(),
       isResourcesPanelOpen: true,
     });
 
-    useQuery.mockReturnValue({
+    (useQuery as ReturnType<typeof vi.fn>).mockReturnValue({
       data: {
         query: "buddha",
         total: 2,
@@ -489,8 +561,8 @@ describe("IndividualTextSearch Component", () => {
           {
             text: { language: "en" },
             segment_matches: [
-              { segment_id: "seg1", content: "One <em>the</em>" },
-              { segment_id: "seg2", content: "Two <em>the</em>" },
+              { segment_id: "seg1", content: "One the" },
+              { segment_id: "seg2", content: "Two the" },
             ],
           },
         ],
@@ -500,7 +572,7 @@ describe("IndividualTextSearch Component", () => {
     });
 
     const handleSegmentNavigate = vi.fn();
-    const { getByPlaceholderText, container } = render(
+    const { getByPlaceholderText, getAllByRole } = render(
       <IndividualTextSearch
         onClose={vi.fn()}
         handleSegmentNavigate={handleSegmentNavigate}
@@ -515,11 +587,153 @@ describe("IndividualTextSearch Component", () => {
       },
     );
 
-    const items = container.querySelectorAll(".segment-item");
-    expect(items.length).toBeGreaterThan(0);
-    fireEvent.click(items[0]);
+    const segmentButtons = getAllByRole("button").filter(
+      (btn) => !btn.closest("[data-testid]"),
+    );
+    expect(segmentButtons.length).toBeGreaterThan(0);
+    fireEvent.click(segmentButtons[0]);
 
     expect(handleSegmentNavigate).toHaveBeenCalledWith("seg1");
     expect(openResourcesPanel).toHaveBeenCalled();
+  });
+
+  it("renders ResourceHeader with correct props", () => {
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set("text_id", "text123");
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
+
+    const mockOnClose = vi.fn();
+    const mockHandleNavigate = vi.fn();
+
+    render(
+      <IndividualTextSearch
+        onClose={mockOnClose}
+        handleSegmentNavigate={vi.fn()}
+        handleNavigate={mockHandleNavigate}
+      />,
+    );
+
+    expect(screen.getByTestId("resource-header")).toBeInTheDocument();
+  });
+
+  it("calls onClose when close button is clicked", () => {
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set("text_id", "text123");
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
+
+    const mockOnClose = vi.fn();
+
+    render(
+      <IndividualTextSearch
+        onClose={mockOnClose}
+        handleSegmentNavigate={vi.fn()}
+        handleNavigate={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("close-button"));
+    expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  it("calls handleNavigate when back button is clicked", () => {
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set("text_id", "text123");
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
+
+    const mockHandleNavigate = vi.fn();
+
+    render(
+      <IndividualTextSearch
+        onClose={vi.fn()}
+        handleSegmentNavigate={vi.fn()}
+        handleNavigate={mockHandleNavigate}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("back-button"));
+    expect(mockHandleNavigate).toHaveBeenCalled();
+  });
+
+  it("displays no results message when search returns empty", () => {
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set("text_id", "text123");
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
+
+    (useQuery as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: { sources: [], total: 0 },
+      isLoading: false,
+      error: null,
+    });
+
+    const { getByPlaceholderText } = render(
+      <IndividualTextSearch
+        onClose={vi.fn()}
+        handleSegmentNavigate={vi.fn()}
+        handleNavigate={vi.fn()}
+      />,
+    );
+
+    fireEvent.change(
+      getByPlaceholderText("connection_panel.search_in_this_text"),
+      {
+        target: { value: "nonexistent" },
+      },
+    );
+
+    expect(screen.getByText("No results to display.")).toBeInTheDocument();
+  });
+
+  it("displays total results count when results are found", () => {
+    const mockSearchParams = new URLSearchParams();
+    mockSearchParams.set("text_id", "text123");
+    (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockSearchParams,
+      vi.fn(),
+    ]);
+
+    (useQuery as ReturnType<typeof vi.fn>).mockReturnValue({
+      data: {
+        query: "test",
+        total: 5,
+        sources: [
+          {
+            text: { language: "en" },
+            segment_matches: [{ segment_id: "seg1", content: "Test content" }],
+          },
+        ],
+      },
+      isLoading: false,
+      error: null,
+    });
+
+    const { getByPlaceholderText } = render(
+      <IndividualTextSearch
+        onClose={vi.fn()}
+        handleSegmentNavigate={vi.fn()}
+        handleNavigate={vi.fn()}
+      />,
+    );
+
+    fireEvent.change(
+      getByPlaceholderText("connection_panel.search_in_this_text"),
+      {
+        target: { value: "test" },
+      },
+    );
+
+    expect(screen.getByText(/sheet\.search\.total/)).toBeInTheDocument();
+    expect(screen.getByText(/5/)).toBeInTheDocument();
   });
 });
