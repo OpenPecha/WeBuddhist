@@ -65,43 +65,6 @@ vi.mock("../../../../commons/pagination/PaginationComponent", () => ({
   ),
 }));
 
-vi.mock("./SourceItem", () => ({
-  default: ({
-    source,
-    onSegment,
-  }: {
-    source: {
-      text: { text_id: string; title: string; language: string };
-      segment_matches: { segment_id: string; content: string }[];
-    };
-    onSegment: (segment: { segment_id: string; content: string }) => void;
-  }) => (
-    <div data-testid="source-item">
-      <p>{source.text.title}</p>
-      <img src="" alt="source icon" />
-      {source.segment_matches.map((segment) => (
-        <button
-          key={segment.segment_id}
-          data-testid="segment-button"
-          onClick={() => onSegment(segment)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              onSegment(segment);
-            }
-          }}
-        >
-          <span
-            dangerouslySetInnerHTML={{
-              __html: segment.content.replace(/<[^>]*>/g, ""),
-            }}
-          />
-        </button>
-      ))}
-    </div>
-  ),
-}));
-
 vi.mock("react-icons/io5", () => ({
   IoClose: () => <span data-testid="close-icon">Close</span>,
 }));
@@ -195,7 +158,9 @@ describe("SheetSegmentModal", () => {
 
     render(<SheetSegmentModal {...defaultProps} />);
 
-    const segmentButton = screen.getByTestId("segment-button");
+    const segmentButton = screen.getByRole("button", {
+      name: /Sample segment content/i,
+    });
     fireEvent.click(segmentButton);
 
     expect(mockOnSegment).toHaveBeenCalledWith({
@@ -256,7 +221,9 @@ describe("SheetSegmentModal", () => {
 
     render(<SheetSegmentModal {...defaultProps} />);
 
-    const segmentButton = screen.getByTestId("segment-button");
+    const segmentButton = screen.getByRole("button", {
+      name: /Sample segment content/i,
+    });
     fireEvent.keyDown(segmentButton, { key: "Enter" });
 
     expect(mockOnSegment).toHaveBeenCalledWith({
@@ -274,7 +241,9 @@ describe("SheetSegmentModal", () => {
 
     render(<SheetSegmentModal {...defaultProps} />);
 
-    const segmentButton = screen.getByTestId("segment-button");
+    const segmentButton = screen.getByRole("button", {
+      name: /Sample segment content/i,
+    });
     fireEvent.keyDown(segmentButton, { key: " " });
 
     expect(mockOnSegment).toHaveBeenCalledWith({
@@ -292,7 +261,9 @@ describe("SheetSegmentModal", () => {
 
     render(<SheetSegmentModal {...defaultProps} />);
 
-    const segmentButton = screen.getByTestId("segment-button");
+    const segmentButton = screen.getByRole("button", {
+      name: /Sample segment content/i,
+    });
     fireEvent.keyDown(segmentButton, { key: "Tab" });
 
     expect(mockOnSegment).not.toHaveBeenCalled();
