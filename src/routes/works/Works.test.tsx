@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as reactQuery from "react-query";
 import "@testing-library/jest-dom";
 import {
@@ -9,7 +10,7 @@ import {
   mockUseAuth,
   mockLocalStorage,
 } from "../../test-utils/CommonMocks.js";
-import { vi, beforeEach, test, expect, describe } from "vitest";
+import { vi, beforeEach, afterEach, test, expect, describe } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import axiosInstance from "../../config/axios-config.js";
 import Works from "./Works.js";
@@ -79,12 +80,12 @@ describe("Works Component", () => {
     vi.clearAllMocks();
   });
 
-  const setup = () => {
+  const setup = (props = {}) => {
     return render(
       <Router>
         <QueryClientProvider client={queryClient}>
           <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
-            <Works />
+            <Works {...props} />
           </TolgeeProvider>
         </QueryClientProvider>
       </Router>,
@@ -383,5 +384,34 @@ describe("Works Component", () => {
 
     expect(screen.getAllByText("No Description Category")).toHaveLength(2);
     expect(screen.getByText("Root Text 1")).toBeInTheDocument();
+  });
+
+  test("renders button and calls setRendererInfo when prop is provided", async () => {
+    const user = userEvent.setup();
+    const mockSetRendererInfo = vi.fn();
+    const dataWithTexts = {
+      collection: { title: "Click Collection" },
+      texts: [
+        {
+          id: "text-click-1",
+          title: "Clickable Text",
+          type: "root_text",
+          language: "bo",
+        },
+      ],
+      total: 1,
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: dataWithTexts,
+      isLoading: false,
+    }));
+
+    setup({ setRendererInfo: mockSetRendererInfo });
+
+    const button = screen.getByRole("button", { name: /Clickable Text/i });
+    await user.click(button);
+
+    expect(mockSetRendererInfo).toHaveBeenCalled();
   });
 });
