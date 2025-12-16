@@ -10,7 +10,7 @@ import {
 } from "../../test-utils/CommonMocks.ts";
 import ForgotPassword from "./ForgotPassword.tsx";
 import axiosInstance from "../../config/axios-config.ts";
-import { expect, describe, it, vi } from "vitest";
+import { expect, describe, it, vi, beforeEach } from "vitest";
 
 mockAxios();
 mockUseAuth();
@@ -43,6 +43,10 @@ describe("Forgot Password Component", () => {
     );
   };
 
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should render the component with required fields", () => {
     setup();
     expect(screen.getByText("common.email")).toBeInTheDocument();
@@ -64,5 +68,16 @@ describe("Forgot Password Component", () => {
       "api/v1/auth/request-reset-password",
       { email: "test@gmail.com" },
     );
+  });
+
+  it("should show error when email is empty", async () => {
+    setup();
+    const submitButton = screen.getByRole("button", {
+      name: "common.button.submit",
+    });
+    fireEvent.click(submitButton);
+
+    expect(screen.getByText("user.validation.required")).toBeInTheDocument();
+    expect(axiosInstance.post).not.toHaveBeenCalled();
   });
 });
