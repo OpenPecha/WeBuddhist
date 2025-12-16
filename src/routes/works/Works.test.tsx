@@ -361,7 +361,7 @@ describe("Works Component", () => {
 
   test("renders correctly when category has no description", () => {
     const noDescriptionData = {
-      term: {
+      collection: {
         title: "No Description Category",
       },
       texts: [
@@ -381,7 +381,7 @@ describe("Works Component", () => {
 
     setup();
 
-    expect(screen.getByText("No Description Category")).toBeInTheDocument();
+    expect(screen.getAllByText("No Description Category")).toHaveLength(2);
     expect(screen.getByText("Root Text 1")).toBeInTheDocument();
   });
 });

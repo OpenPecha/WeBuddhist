@@ -112,10 +112,10 @@ describe("Texts Component", () => {
   };
 
   test("renders title with language class", () => {
-    setup();
-    const heading = screen.getByRole("heading", { name: "Sample Text" });
-    expect(heading).toBeInTheDocument();
-    expect(heading).toHaveClass("language-class");
+    const { container } = setup();
+    const title = container.querySelector("p.language-class");
+    expect(title).toBeInTheDocument();
+    expect(title).toHaveTextContent("Sample Text");
   });
 
   test("shows versions tab by default and switches to commentaries", async () => {
