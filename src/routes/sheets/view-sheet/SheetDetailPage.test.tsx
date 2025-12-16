@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import * as reactQuery from "react-query";
 import "@testing-library/jest-dom";
@@ -1301,5 +1300,41 @@ describe("SheetDetailPage Component", () => {
     expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({
       queryKey: ["sheetData", expect.any(String)],
     });
+  });
+
+  test("edit icon click navigates to sheet edit page", () => {
+    setup();
+
+    const editIcon = document.querySelector("svg[width='20'][height='20']");
+    expect(editIcon).toBeInTheDocument();
+
+    fireEvent.click(editIcon);
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "/sheets/test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3",
+    );
+  });
+
+  test("deleteSheetMutation onSuccess closes dialog and navigates", () => {
+    let deleteOnSuccessCallback;
+
+    vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
+      if (
+        config.mutationFn &&
+        config.mutationFn.toString().includes("deleteSheet")
+      ) {
+        deleteOnSuccessCallback = config.onSuccess;
+      }
+      return {
+        mutate: vi.fn(),
+        isLoading: false,
+      };
+    });
+
+    setup();
+
+    deleteOnSuccessCallback();
+
+    expect(mockNavigate).toHaveBeenCalledWith("/community");
   });
 });
