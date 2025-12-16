@@ -5,6 +5,7 @@ import { createEditor } from "slate";
 import { Slate, withReact } from "slate-react";
 import Toolsbar from "./Toolsbar";
 import CustomEditor from "../../sheet-utils/CustomEditor";
+import { toast } from "sonner";
 import "@testing-library/jest-dom";
 
 vi.mock("../../sheet-utils/CustomEditor", () => ({
@@ -77,13 +78,33 @@ vi.mock("react-router-dom", () => ({
   useNavigate: vi.fn(),
 }));
 
-vi.mock("../modals/alert-modal/AlertModal", () => ({
-  __esModule: true,
-  default: ({ type, message, onClose }) => (
-    <div data-testid="alert-modal" data-type={type}>
-      <span>{message}</span>
-      <button onClick={onClose}>Close</button>
-    </div>
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
+vi.mock("@/components/ui/button", () => ({
+  Button: ({
+    children,
+    onClick,
+    onMouseDown,
+    disabled,
+    className,
+    title,
+    type,
+  }) => (
+    <button
+      onClick={onClick}
+      onMouseDown={onMouseDown}
+      disabled={disabled}
+      className={className}
+      title={title}
+      type={type}
+    >
+      {children}
+    </button>
   ),
 }));
 
@@ -248,25 +269,20 @@ describe("Toolsbar", () => {
     });
   });
 
-  test("shows success alert after successful publish", async () => {
+  test("shows success toast after successful publish", async () => {
     renderWithSlate(<Toolsbar {...defaultProps} editor={mockEditor} />);
 
     const publishButton = screen.getByText("publish");
     fireEvent.click(publishButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId("alert-modal")).toBeInTheDocument();
-      expect(screen.getByTestId("alert-modal")).toHaveAttribute(
-        "data-type",
-        "success",
+      expect(toast.success).toHaveBeenCalledWith(
+        "Sheet published successfully!",
       );
-      expect(
-        screen.getByText("Sheet published successfully!"),
-      ).toBeInTheDocument();
     });
   });
 
-  test("shows error alert when publish fails", async () => {
+  test("shows error toast when publish fails", async () => {
     mockUpdateSheet.mockRejectedValue(new Error("Failed to update"));
     renderWithSlate(<Toolsbar {...defaultProps} editor={mockEditor} />);
 
@@ -274,12 +290,7 @@ describe("Toolsbar", () => {
     fireEvent.click(publishButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId("alert-modal")).toBeInTheDocument();
-      expect(screen.getByTestId("alert-modal")).toHaveAttribute(
-        "data-type",
-        "error",
-      );
-      expect(screen.getByText("Failed to publish sheet.")).toBeInTheDocument();
+      expect(toast.error).toHaveBeenCalledWith("Failed to publish sheet.");
     });
   });
 
@@ -303,7 +314,6 @@ describe("Toolsbar", () => {
 
     const publishButton = screen.getByText("publish");
     expect(publishButton).toBeDisabled();
-    expect(publishButton).toHaveClass("disabled-button");
   });
 
   test("prevents default behavior on mouseDown events", () => {
