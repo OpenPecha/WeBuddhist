@@ -269,4 +269,39 @@ describe("UseChapterHook", () => {
       });
     });
   });
+
+  test("handles keyboard navigation with Enter key in segmented layout", () => {
+    const { container } = setup({
+      viewMode: VIEW_MODES.SOURCE,
+      layoutMode: LAYOUT_MODES.SEGMENTED,
+    });
+
+    const segmentContainer = container.querySelector(".cursor-pointer");
+    fireEvent.keyDown(segmentContainer as Element, { key: "Enter" });
+
+    expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
+  });
+
+  test("handles keyboard navigation with Space key in prose layout", () => {
+    const { container } = setup({
+      viewMode: VIEW_MODES.SOURCE,
+      layoutMode: LAYOUT_MODES.PROSE,
+    });
+
+    const segmentSpan = container.querySelector(".inline.cursor-pointer");
+    fireEvent.keyDown(segmentSpan as Element, { key: " " });
+
+    expect(mockState.panelContext.openResourcesPanel).toHaveBeenCalled();
+  });
+
+  test("sets selectedSegmentId from currentChapter.segmentId", () => {
+    mockState.panelContext.isResourcesPanelOpen = true;
+
+    setup({
+      currentChapter: { segmentId: "seg1" },
+    });
+
+    expect(screen.getByTestId("resources")).toBeInTheDocument();
+    expect(screen.getByText("Resources seg1")).toBeInTheDocument();
+  });
 });
