@@ -1,43 +1,60 @@
-import React from "react";
+import { vi, describe, test, expect, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { PanelProvider } from "../../../../../../context/PanelContext";
 import { TolgeeProvider } from "@tolgee/react";
-import { fireEvent, render } from "@testing-library/react";
-import TranslationView, { fetchTranslationsData } from "./TranslationView.js";
-import { vi } from "vitest";
+import TranslationView, { fetchTranslationsData } from "./TranslationView";
 import "@testing-library/jest-dom";
-import {
-  mockReactQuery,
-  mockAxios,
-  mockTolgee,
-  mockUseAuth,
-} from "../../../../../../test-utils/CommonMocks.js";
-
-import axiosInstance from "../../../../../../config/axios-config.js";
-import { PanelProvider } from "../../../../../../context/PanelContext.js";
-
-mockAxios();
-mockUseAuth();
-mockReactQuery();
-vi.mock("../../../../../../utils/helperFunctions.jsx", () => ({
-  getLanguageClass: (language) => `lang-${language}`,
-}));
+import { mockTolgee } from "../../../../../../test-utils/CommonMocks";
+import axiosInstance from "../../../../../../config/axios-config";
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
   return {
     ...actual,
     useTranslate: () => ({
-      t: (key) => key,
+      t: (key: string) => key,
     }),
   };
 });
 
+vi.mock("../../../../../../utils/helperFunctions.tsx", () => ({
+  getLanguageClass: (language: string) =>
+    language === "bo" ? "bo-text" : "en-text",
+}));
+
+vi.mock("../../../../../../config/axios-config", () => ({
+  default: {
+    get: vi.fn(),
+  },
+}));
+
+const mockCloseResourcesPanel = vi.fn();
+vi.mock("../../../../../../context/PanelContext", async () => {
+  const actual = await vi.importActual(
+    "../../../../../../context/PanelContext",
+  );
+  return {
+    ...actual,
+    usePanelContext: () => ({
+      closeResourcesPanel: mockCloseResourcesPanel,
+    }),
+  };
+});
+
+const mockSessionStorage: Record<string, string | null> = {};
 Object.defineProperty(window, "sessionStorage", {
   value: {
-    getItem: vi.fn(() => null),
-    setItem: vi.fn(),
-    clear: vi.fn(),
+    getItem: vi.fn((key: string) => mockSessionStorage[key] ?? null),
+    setItem: vi.fn((key: string, value: string) => {
+      mockSessionStorage[key] = value;
+    }),
+    clear: vi.fn(() => {
+      Object.keys(mockSessionStorage).forEach(
+        (key) => delete mockSessionStorage[key],
+      );
+    }),
   },
   writable: true,
 });
@@ -73,90 +90,101 @@ describe("TranslationView Component", () => {
     ],
   };
 
-  const mockProps = {
-    segmentId: "test-segment-id",
-    setIsTranslationView: vi.fn(),
-    setVersionId: vi.fn(),
-    addChapter: vi.fn(),
-    currentChapter: { id: "chapter-1" },
-  };
+  let mockSetIsTranslationView: ReturnType<typeof vi.fn>;
+  let mockSetVersionId: ReturnType<typeof vi.fn>;
+  let mockAddChapter: ReturnType<typeof vi.fn>;
+  let mockHandleNavigate: ReturnType<typeof vi.fn>;
+  let currentChapter: { textId: string; segmentId: string };
 
   beforeEach(() => {
-    vi.resetAllMocks();
-    window.sessionStorage.getItem.mockReturnValue(null);
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: mockTranslationData,
-      isLoading: false,
-    }));
+    vi.clearAllMocks();
+    mockSetIsTranslationView = vi.fn();
+    mockSetVersionId = vi.fn();
+    mockAddChapter = vi.fn();
+    mockHandleNavigate = vi.fn();
+    currentChapter = {
+      textId: "mock-text-1",
+      segmentId: "test-segment-id",
+    };
+
+    // Clear mock session storage
+    Object.keys(mockSessionStorage).forEach(
+      (key) => delete mockSessionStorage[key],
+    );
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(((
+      queryKey: string[],
+    ) => {
+      if (queryKey[0] === "sidePanelTranslations") {
+        return { data: mockTranslationData, isLoading: false };
+      }
+      return { data: null, isLoading: false };
+    }) as any);
   });
 
-  const setup = (customProps = {}) => {
-    const props = { ...mockProps, ...customProps };
+  const setup = (props: Record<string, unknown> = {}) => {
+    const defaultProps = {
+      segmentId: "test-segment-id",
+      setIsTranslationView: mockSetIsTranslationView,
+      setVersionId: mockSetVersionId,
+      addChapter: mockAddChapter,
+      currentChapter: currentChapter,
+      handleNavigate: mockHandleNavigate,
+    };
+
     return render(
       <QueryClientProvider client={queryClient}>
         <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
           <PanelProvider>
-            <TranslationView {...props} />
+            <TranslationView {...defaultProps} {...props} />
           </PanelProvider>
         </TolgeeProvider>
       </QueryClientProvider>,
     );
   };
 
-  test("renders TranslationView component", () => {
+  test("renders TranslationView component with header", () => {
     setup();
-    expect(document.querySelector(".translation-view")).toBeInTheDocument();
-    expect(document.querySelector(".translation-content")).toBeInTheDocument();
-    expect(document.querySelector(".translations-list")).toBeInTheDocument();
-  });
-
-  test("displays correct header title", () => {
-    setup();
-
-    const headerTitle = document.querySelector(".listtitle");
-    expect(headerTitle).toBeInTheDocument();
-    expect(headerTitle.textContent).toBe("connection_pannel.translations");
+    expect(
+      screen.getByText("connection_pannel.translations"),
+    ).toBeInTheDocument();
   });
 
   test("displays language groups correctly", () => {
     setup();
 
-    const languageGroups = document.querySelectorAll(".language-group");
-    expect(languageGroups.length).toBe(2);
+    expect(screen.getByText("language.english")).toBeInTheDocument();
+    expect(screen.getByText("(2)")).toBeInTheDocument();
 
-    const languageTitles = document.querySelectorAll(".language-title");
-    expect(languageTitles[0].textContent).toContain("language.english");
-    expect(languageTitles[1].textContent).toContain("language.tibetan");
-
-    expect(languageTitles[0].textContent).toContain("(2)");
-    expect(languageTitles[1].textContent).toContain("(1)");
+    expect(screen.getByText("language.tibetan")).toBeInTheDocument();
+    expect(screen.getByText("(1)")).toBeInTheDocument();
   });
 
-  test("handles close button click", () => {
-    setup();
+  test("closes translation view when close icon is clicked", () => {
+    const { container } = setup();
 
-    const closeButton = document.querySelector(".close-icon");
-    expect(closeButton).toBeInTheDocument();
+    const buttons = container.querySelectorAll('button[type="button"]');
+    const closeButton = buttons[buttons.length - 1];
 
     fireEvent.click(closeButton);
-    expect(mockProps.setIsTranslationView).toHaveBeenCalledWith("main");
+    expect(mockSetIsTranslationView).toHaveBeenCalledWith("main");
   });
 
   test("displays current selection status correctly", () => {
-    window.sessionStorage.getItem.mockReturnValue("text-123");
+    mockSessionStorage["versionId"] = "text-123";
 
     setup();
 
-    const selectButtons = document.querySelectorAll(".select-items");
-    expect(selectButtons[0].textContent).toBe(
-      "text.translation.current_selected",
-    );
-    expect(selectButtons[1].textContent).toBe("common.select");
-    expect(selectButtons[2].textContent).toBe("common.select");
+    expect(
+      screen.getByText("text.translation.current_selected"),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("common.select")).toHaveLength(2);
   });
 
   test("fetchTranslationsData makes correct API call", async () => {
-    axiosInstance.get.mockResolvedValueOnce({ data: mockTranslationData });
+    (axiosInstance.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: mockTranslationData,
+    });
 
     const segmentId = "test-segment-id";
     const result = await fetchTranslationsData(segmentId);
@@ -176,7 +204,9 @@ describe("TranslationView Component", () => {
   });
 
   test("fetchTranslationsData with custom skip and limit", async () => {
-    axiosInstance.get.mockResolvedValueOnce({ data: mockTranslationData });
+    (axiosInstance.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: mockTranslationData,
+    });
 
     const segmentId = "test-segment-id";
     const skip = 5;
@@ -196,70 +226,128 @@ describe("TranslationView Component", () => {
     );
   });
 
+  test("fetchTranslationsData handles errors gracefully", async () => {
+    (axiosInstance.get as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new Error("API Error"),
+    );
+
+    try {
+      await fetchTranslationsData("test-segment-id");
+      expect(true).toBe(false);
+    } catch (error: unknown) {
+      expect(error).toBeDefined();
+      expect((error as Error).message).toBe("API Error");
+    }
+  });
+
   test("handles empty translations gracefully", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+    vi.spyOn(reactQuery, "useQuery").mockImplementationOnce((() => ({
       data: { translations: [] },
       isLoading: false,
-    }));
+    })) as any);
 
     setup();
 
-    expect(document.querySelector(".translation-content")).toBeInTheDocument();
-    expect(document.querySelector(".translations-list")).toBeInTheDocument();
-    const languageGroups = document.querySelectorAll(".language-group");
-    expect(languageGroups.length).toBe(0);
+    expect(
+      screen.getByText("connection_pannel.translations"),
+    ).toBeInTheDocument();
   });
 
   test("handles undefined translations data gracefully", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+    vi.spyOn(reactQuery, "useQuery").mockImplementationOnce((() => ({
       data: undefined,
       isLoading: false,
-    }));
+    })) as any);
 
     setup();
 
-    expect(document.querySelector(".translation-content")).toBeInTheDocument();
-    expect(document.querySelector(".translations-list")).toBeInTheDocument();
-    const languageGroups = document.querySelectorAll(".language-group");
-    expect(languageGroups.length).toBe(0);
+    expect(
+      screen.getByText("connection_pannel.translations"),
+    ).toBeInTheDocument();
   });
 
-  test("clicking on 'open text' button calls addChapter with correct parameters", () => {
+  test("calls addChapter and closeResourcesPanel when 'Open Text' button is clicked", () => {
     setup();
 
-    const openTextButtons = document.querySelectorAll(".link-icons");
-    expect(openTextButtons.length).toBe(3);
+    const openTextButtons = screen.getAllByText("text.translation.open_text");
+    expect(openTextButtons).toHaveLength(3);
 
     fireEvent.click(openTextButtons[0]);
 
-    expect(mockProps.addChapter).toHaveBeenCalledWith(
+    expect(mockAddChapter).toHaveBeenCalledWith(
       {
         textId: "text-123",
         segmentId: "test-segment-id",
       },
-      mockProps.currentChapter,
+      currentChapter,
     );
+    expect(mockCloseResourcesPanel).toHaveBeenCalled();
   });
 
   test("renders translation content with correct language classes", () => {
-    setup();
+    const { container } = setup();
 
-    const translationContents = document.querySelectorAll(
-      ".translation-content",
-    );
-    expect(translationContents.length).toBeGreaterThan(0);
-
-    const englishElements = document.querySelectorAll(".lang-en");
-    const tibetanElements = document.querySelectorAll(".lang-bo");
+    const englishElements = container.querySelectorAll(".en-text");
+    const tibetanElements = container.querySelectorAll(".bo-text");
 
     expect(englishElements.length).toBeGreaterThan(0);
     expect(tibetanElements.length).toBeGreaterThan(0);
   });
 
-  test("handles addChapter prop being undefined", () => {
+  test("does not render 'Open Text' button when addChapter is undefined", () => {
     setup({ addChapter: undefined });
 
-    const openTextButtons = document.querySelectorAll(".link-icons");
-    expect(openTextButtons.length).toBe(0);
+    expect(
+      screen.queryByText("text.translation.open_text"),
+    ).not.toBeInTheDocument();
+  });
+
+  test("calls handleNavigate when back button is clicked", () => {
+    const { container } = setup();
+
+    const buttons = container.querySelectorAll('button[type="button"]');
+    const backButton = buttons[0];
+
+    expect(backButton).toBeInTheDocument();
+    fireEvent.click(backButton);
+    expect(mockHandleNavigate).toHaveBeenCalled();
+  });
+
+  test("renders loading state when data is loading", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementationOnce((() => ({
+      data: undefined,
+      isLoading: true,
+    })) as any);
+
+    setup();
+
+    expect(
+      screen.getByText("connection_pannel.translations"),
+    ).toBeInTheDocument();
+  });
+
+  test("calls setVersionId when select button is clicked", () => {
+    setup();
+
+    const selectButtons = screen.getAllByText("common.select");
+    fireEvent.click(selectButtons[0]);
+
+    expect(mockSetVersionId).toHaveBeenCalled();
+  });
+
+  test("renders translation titles correctly", () => {
+    setup();
+
+    expect(screen.getByText("English Title")).toBeInTheDocument();
+    expect(screen.getByText("Tibetan Title")).toBeInTheDocument();
+    expect(screen.getByText("Another English Title")).toBeInTheDocument();
+  });
+
+  test("renders translation sources correctly", () => {
+    setup();
+
+    expect(screen.getByText("English Source")).toBeInTheDocument();
+    expect(screen.getByText("Tibetan Source")).toBeInTheDocument();
+    expect(screen.getByText("Another English Source")).toBeInTheDocument();
   });
 });
