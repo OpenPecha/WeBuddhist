@@ -135,7 +135,7 @@ describe("UseChapterHook", () => {
 
   test("renders section and segment content", () => {
     setup({ viewMode: VIEW_MODES.SOURCE });
-    expect(screen.getAllByText("Segment 1 Content")).toHaveLength(2);
+    expect(screen.getByText("Segment 1 Content")).toBeInTheDocument();
   });
 
   test("renders loading indicators when fetching", () => {
@@ -145,7 +145,7 @@ describe("UseChapterHook", () => {
         isFetchingNextPage: true,
       },
     });
-    expect(screen.getAllByText("Loading more content...")).toHaveLength(2);
+    expect(screen.getByText("Loading more content...")).toBeInTheDocument();
   });
 
   test("renders loading indicators when fetching previous", () => {
@@ -155,7 +155,7 @@ describe("UseChapterHook", () => {
         isFetchingPreviousPage: true,
       },
     });
-    expect(screen.getAllByText("Loading previous content...")).toHaveLength(2);
+    expect(screen.getByText("Loading previous content...")).toBeInTheDocument();
   });
 
   test("renders scroll sentinels when hasNextPage", () => {
@@ -200,8 +200,7 @@ describe("UseChapterHook", () => {
       },
     });
 
-    const desktopContainer = container.querySelector(".hidden.md\\:flex");
-    const marker = desktopContainer?.querySelector(".footnote-marker");
+    const marker = container.querySelector(".footnote-marker");
     const footnote = marker?.nextElementSibling;
 
     expect(footnote).toBeInTheDocument();
@@ -223,8 +222,8 @@ describe("UseChapterHook", () => {
     const segmentContainer = container.querySelector(".cursor-pointer");
     fireEvent.click(segmentContainer as Element);
 
-    expect(screen.getAllByTestId("resources")).toHaveLength(2);
-    expect(screen.getAllByText("Resources seg1")).toHaveLength(2);
+    expect(screen.getByTestId("resources")).toBeInTheDocument();
+    expect(screen.getByText("Resources seg1")).toBeInTheDocument();
   });
 
   test("handleSegmentClick opens resources panel", () => {
