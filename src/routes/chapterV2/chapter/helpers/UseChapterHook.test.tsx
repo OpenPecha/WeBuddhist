@@ -11,6 +11,7 @@ const mockState = {
   panelContext: {
     isResourcesPanelOpen: false,
     openResourcesPanel: vi.fn(),
+    closeResourcesPanel: vi.fn(),
   },
   intersectionObserver: {
     topSentinelInView: false,
@@ -112,6 +113,7 @@ describe("UseChapterHook", () => {
     vi.clearAllMocks();
     mockState.panelContext.isResourcesPanelOpen = false;
     mockState.panelContext.openResourcesPanel = vi.fn();
+    mockState.panelContext.closeResourcesPanel = vi.fn();
     mockState.intersectionObserver.topSentinelInView = false;
     mockState.intersectionObserver.bottomSentinelInView = false;
   });
@@ -133,7 +135,7 @@ describe("UseChapterHook", () => {
 
   test("renders section and segment content", () => {
     setup({ viewMode: VIEW_MODES.SOURCE });
-    expect(screen.getByText("Segment 1 Content")).toBeInTheDocument();
+    expect(screen.getAllByText("Segment 1 Content")).toHaveLength(2);
   });
 
   test("renders loading indicators when fetching", () => {
@@ -143,7 +145,7 @@ describe("UseChapterHook", () => {
         isFetchingNextPage: true,
       },
     });
-    expect(screen.getByText("Loading more content...")).toBeInTheDocument();
+    expect(screen.getAllByText("Loading more content...")).toHaveLength(2);
   });
 
   test("renders loading indicators when fetching previous", () => {
@@ -153,7 +155,7 @@ describe("UseChapterHook", () => {
         isFetchingPreviousPage: true,
       },
     });
-    expect(screen.getByText("Loading previous content...")).toBeInTheDocument();
+    expect(screen.getAllByText("Loading previous content...")).toHaveLength(2);
   });
 
   test("renders scroll sentinels when hasNextPage", () => {
@@ -197,9 +199,11 @@ describe("UseChapterHook", () => {
         ],
       },
     });
-    const marker = container.querySelector(".footnote-marker");
-    expect(marker).toBeInTheDocument();
+
+    const desktopContainer = container.querySelector(".hidden.md\\:flex");
+    const marker = desktopContainer?.querySelector(".footnote-marker");
     const footnote = marker?.nextElementSibling;
+
     expect(footnote).toBeInTheDocument();
     expect(footnote?.classList.contains("active")).toBe(false);
     fireEvent.click(marker as Element);
@@ -219,8 +223,8 @@ describe("UseChapterHook", () => {
     const segmentContainer = container.querySelector(".cursor-pointer");
     fireEvent.click(segmentContainer as Element);
 
-    expect(screen.getByTestId("resources")).toBeInTheDocument();
-    expect(screen.getByText("Resources seg1")).toBeInTheDocument();
+    expect(screen.getAllByTestId("resources")).toHaveLength(2);
+    expect(screen.getAllByText("Resources seg1")).toHaveLength(2);
   });
 
   test("handleSegmentClick opens resources panel", () => {
