@@ -50,7 +50,6 @@ const CommunityPage = () => {
     const stored = localStorage.getItem("community-pagination");
     return stored ? JSON.parse(stored) : { currentPage: 1, limit: 5 };
   });
-
   useEffect(() => {
     localStorage.setItem("community-pagination", JSON.stringify(pagination));
   }, [pagination]);
@@ -84,13 +83,13 @@ const CommunityPage = () => {
       main={
         <div className="mx-auto flex w-full max-w-2xl flex-col  pt-10">
           <div className="flex items-baseline justify-between">
-            <h2 className="text-lg font-semibold text-[#333030] overalltext ">
+            <h2 className="text-lg font-semibold text-faded-grey overalltext ">
               {t("community.sheets.recently_published")}
             </h2>
             {sheetsData?.sheets?.length > 0 && (
               <Select value={sortOrder} onValueChange={handleSortChange}>
                 <SelectTrigger
-                  className={`${getLanguageClass("en-san")} cursor-pointer border border-[#18345D] bg-white px-3 text-base font-medium text-[#0b0b0b]`}
+                  className={`${getLanguageClass("en-san")} cursor-pointer border bg-white px-3 text-base font-medium text-faded-grey`}
                 >
                   <SelectValue />
                 </SelectTrigger>
@@ -109,11 +108,11 @@ const CommunityPage = () => {
           <div className="flex flex-col gap-5 md:gap-8">
             <div className="divide-y divide-gray-200">
               {sheetsIsLoading ? (
-                <p className="pt-12 text-center text-gray-600">
+                <p className="pt-12 text-center text-faded-grey">
                   Loading notes...
                 </p>
               ) : sheetsData?.sheets?.length === 0 ? (
-                <div className="py-4 text-center text-gray-600">
+                <div className="py-4 text-center text-faded-grey">
                   <p className="overalltext">{t("community_empty_story")}</p>
                 </div>
               ) : (
@@ -124,20 +123,20 @@ const CommunityPage = () => {
                         to={`/${encodeURIComponent(sheet.publisher.username)}/${sheet.title.replace(/\s+/g, "-").toLowerCase()}_${sheet.id}`}
                         className="no-underline"
                       >
-                        <div className="mb-1 w-fit text-gray-800">
+                        <div className="mb-1 w-fit">
                           <p
-                            className={`text-base font-semibold text-gray-800`}
+                            className={`text-base font-semibold text-gray-700`}
                           >
                             {sheet.title}
                           </p>
-                          <p className="text-sm text-justify">
+                          <p className="text-sm text-justify text-faded-grey">
                             {sheet.summary}
                           </p>
                         </div>
                       </Link>
                       <Link
                         to={`/user/${encodeURIComponent(sheet.publisher.username)}`}
-                        className="flex w-fit items-center text-gray-500"
+                        className="flex w-fit items-center"
                       >
                         {sheet.publisher.avatar_url ? (
                           <img
@@ -186,7 +185,7 @@ const CommunityPage = () => {
             {t("side_nav.join_conversation.descriptions")}
           </p>
           <Button
-            className="w-full bg-[#18345D] text-white hover:bg-[#102544]"
+            className="w-full bg-blue-button text-white cursor-pointer"
             onClick={() =>
               userIsLoggedIn
                 ? (sessionStorage.removeItem("sheets-content"),

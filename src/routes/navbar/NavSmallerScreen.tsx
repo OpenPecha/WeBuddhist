@@ -44,14 +44,14 @@ const NavSmallerScreen = ({
     <Sheet>
       <SheetTrigger asChild>
         <button className="flex md:hidden items-center justify-center rounded p-2 hover:bg-accent">
-          <SearchNavbarIcon className="text-[#676767]" />
+          <SearchNavbarIcon className="text-faded-grey" />
         </button>
       </SheetTrigger>
       <SheetContent
         side="top"
         className="p-0 w-full max-h-[85vh] overflow-y-auto"
       >
-        <div className="flex items-center h-[60px] bg-[#FAFAF9] px-4 py-3 border-b-2">
+        <div className="flex items-center h-[60px] bg-navbar px-4 py-3 border-b-2">
           <Link to="/" className="flex items-center">
             <img
               className="h-[30px]"
@@ -62,10 +62,10 @@ const NavSmallerScreen = ({
         </div>
         <div className="px-2">
           <form
-            className="flex items-center rounded-lg border border-[#e0e0e0] bg-[#EDEDEC]"
+            className="flex items-center rounded-lg border border-custom-border bg-search-background"
             onSubmit={onSearchSubmit}
           >
-            <FaSearch className="ml-1.5 text-[#5b5b5b]" />
+            <FaSearch className="ml-1.5 text-faded-grey" />
             <input
               type="search"
               placeholder={translate("common.placeholder.search")}
@@ -80,7 +80,7 @@ const NavSmallerScreen = ({
           {navItems.map((navItem) => (
             <SheetClose asChild key={navItem.key}>
               <Link
-                className="no-underline text-center text-[#676767] font-medium hover:underline transition-all"
+                className="no-underline text-center text-faded-grey font-medium hover:underline transition-all"
                 to={navItem.to}
               >
                 {navItem.label}
@@ -96,7 +96,7 @@ const NavSmallerScreen = ({
               <Button
                 variant="ghost"
                 onClick={onProfileNavigate}
-                className="w-full rounded text-[#676767]"
+                className="w-full rounded text-faded-grey"
               >
                 {translate("header.profileMenu.profile")}
               </Button>

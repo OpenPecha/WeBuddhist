@@ -28,7 +28,7 @@ const AuthCard = ({
   return (
     <Card
       className={cn(
-        "w-full max-w-md shadow-none border border-[#E7E5E4]",
+        "w-full max-w-md shadow-none border border-custom-border",
         className,
       )}
     >

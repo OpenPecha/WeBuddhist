@@ -3,6 +3,7 @@ import clsx from "clsx";
 
 import { Badge } from "@/components/ui/badge";
 import webuddhist_logo from "/img/webuddhist_logo.svg";
+import { Link } from "react-router-dom";
 
 type AuthTwoColumnLayoutProps = {
   children: React.ReactNode;
@@ -36,7 +37,7 @@ const AuthTwoColumnLayout: React.FC<AuthTwoColumnLayoutProps> = ({
   return (
     <div
       className={clsx(
-        "flex h-dvh w-full items-center justify-center bg-[#FAFAF9]",
+        "flex h-dvh w-full items-center justify-center bg-white",
         containerClassName,
       )}
     >
@@ -48,11 +49,13 @@ const AuthTwoColumnLayout: React.FC<AuthTwoColumnLayoutProps> = ({
           )}
         >
           <div className="flex items-start">
-            <img
-              src={webuddhist_logo}
-              alt="WeBuddhist"
-              className="h-fit w-40"
-            />
+            <Link to="/">
+              <img
+                src={webuddhist_logo}
+                alt="WeBuddhist"
+                className="h-fit w-40"
+              />
+            </Link>
           </div>
           <div className="flex w-full flex-col space-y-2 text-start">
             <div className="flex items-center space-x-2">
@@ -86,7 +89,7 @@ const AuthTwoColumnLayout: React.FC<AuthTwoColumnLayoutProps> = ({
         </aside>
         <main
           className={clsx(
-            "flex w-full flex-1 items-center justify-center bg-white px-6 py-10 md:bg-[#F6F6F6] md:px-10",
+            "flex w-full flex-1 items-center justify-center px-6 py-10 bg-navbar md:px-10",
             mainClassName,
           )}
         >

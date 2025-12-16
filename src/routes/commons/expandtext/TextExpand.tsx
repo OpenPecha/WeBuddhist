@@ -28,7 +28,7 @@ export default function TextExpand({
       />
       {children.length > maxLength && (
         <button
-          className="text-sm text-gray-600 transition hover:text-red-700 cursor-pointer"
+          className="text-sm text-faded-grey transition hover:text-red-700 cursor-pointer"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           {isExpanded ? t("panel.showless") : t("panel.showmore")}

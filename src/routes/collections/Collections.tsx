@@ -157,7 +157,7 @@ const Collections = (props: CollectionsProps) => {
             description="Explore Buddhist texts, collections, and community discussions. Create notes, track your studies, and share insights."
             canonical={canonicalUrl}
           />
-          <h2 className="text-lg text-start overalltext font-semibold text-[#656565]">
+          <h2 className="text-lg text-start overalltext font-semibold text-faded-grey">
             {t("home.browse_text")}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -169,7 +169,7 @@ const Collections = (props: CollectionsProps) => {
                     style={{ backgroundColor: getColorFromIndex(index) }}
                   />
                   {renderCollectionNames(collection, index)}
-                  <p className="content text-left text-[#666666] text-sm m-0 wrap-break-word">
+                  <p className="content text-left text-faded-grey text-sm m-0 wrap-break-word">
                     {collection.description}
                   </p>
                 </div>
@@ -191,10 +191,10 @@ const Collections = (props: CollectionsProps) => {
             },
           ].map(({ titleKey, bodyKey }, index) => (
             <div key={titleKey} className={index > 0 ? "mt-4" : ""}>
-              <h2 className=" overalltext text-start font-bold text-[#292929] border-b py-2">
+              <h2 className=" overalltext text-start font-bold text-faded-grey border-b py-2">
                 {t(titleKey)}
               </h2>
-              <p className="text-sm leading-loose text-start overalltext text-[#666666] my-2">
+              <p className="text-sm leading-loose text-start overalltext text-faded-grey my-2">
                 {t(bodyKey)}
               </p>
             </div>
@@ -202,7 +202,7 @@ const Collections = (props: CollectionsProps) => {
           <Button
             variant="outline"
             onClick={() => navigate("/note")}
-            className="w-full mt-4 overalltext text-[#666666] text-sm"
+            className="w-full mt-4 overalltext text-faded-grey text-sm"
           >
             {t("side_nav.community.join_conversation")}
           </Button>

@@ -79,7 +79,7 @@ const connectLinks = [
 const Footer = () => {
   const { t } = useTranslate();
   return (
-    <footer className="flex max-sm:space-y-8 max-sm:flex-col border-t border-[#F4F4F4] px-3 py-4 sm:p-6 md:py-12 lg:px-8">
+    <footer className="flex max-sm:space-y-8 max-sm:flex-col border-t border-custom-border px-3 py-4 sm:p-6 md:py-12 lg:px-8">
       <div className="flex-1 items-center justify-center">
         <div className="flex w-full flex-col text-start">
           <div className=" flex items-center">
@@ -114,7 +114,7 @@ const Footer = () => {
       <div className="flex-1 md:flex md:justify-around grid grid-cols-2 md:grid-cols-4 gap-4">
         {columns.map(({ title, links }) => (
           <div key={title} className="text-left">
-            <h3 className=" text-[#313131] uppercase overalltext font-semibold  mb-2 text-sm">
+            <h3 className=" text-faded-grey uppercase overalltext font-semibold  mb-2 text-sm">
               {t(title)}
             </h3>
             <ul className="list-none p-0 m-0 flex flex-col gap-2">
@@ -124,7 +124,7 @@ const Footer = () => {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`text-[#666666] ${getLanguageClass("en-san")} text-sm hover:text-black transition-colors`}
+                    className={`text-faded-grey ${getLanguageClass("en-san")} text-sm hover:text-black transition-colors`}
                   >
                     {labelKey}
                   </a>

@@ -119,7 +119,7 @@ const Navigation = () => {
 
   const renderAuthButtons = (variant: "desktop" | "mobile") => {
     if (isAuth0Loading || isAuthLoading) {
-      return <div className="text-sm text-[#676767]">Loading...</div>;
+      return <div className="text-sm text-faded-grey">Loading...</div>;
     }
     if (!isLoggedIn && !isAuthenticated) {
       return (
@@ -133,7 +133,7 @@ const Navigation = () => {
           <Button
             variant="outline"
             onClick={() => navigate("/login")}
-            className="rounded text-[#676767]"
+            className="rounded text-faded-grey"
             aria-label="Go to login"
           >
             {t("login.form.button.login_in")}
@@ -141,7 +141,7 @@ const Navigation = () => {
           <Button
             variant="ghost"
             onClick={() => navigate("/register")}
-            className="rounded text-[#676767]"
+            className="rounded text-faded-grey"
             aria-label="Go to sign up"
           >
             {t("common.sign_up")}
@@ -154,8 +154,8 @@ const Navigation = () => {
         variant="outline"
         className={
           variant === "desktop"
-            ? "rounded text-[#676767]"
-            : "w-full rounded text-[#676767]"
+            ? "rounded text-faded-grey"
+            : "w-full rounded text-faded-grey"
         }
         onClick={handleLogout}
       >
@@ -171,7 +171,7 @@ const Navigation = () => {
             className="flex items-center justify-center p-1.5 rounded hover:bg-accent transition-colors"
             aria-label="Change language"
           >
-            <FaGlobe className="text-[#676767]" />
+            <FaGlobe className="text-faded-grey" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-[120px]">
@@ -191,7 +191,7 @@ const Navigation = () => {
 
   return (
     <div
-      className={`${isTibetan && "text-sm"} overalltext bg-[#FAFAF9]  h-[60px]  flex justify-between items-center w-full px-4 md:px-7`}
+      className={`${isTibetan && "text-sm"} overalltext bg-navbar h-[60px]  flex justify-between items-center w-full px-4 md:px-7`}
       style={{
         borderBottom: `2px solid ${shouldHideColorBorder ? "#E7E5E4" : collectionColor || "#E7E5E4"}`,
       }}
@@ -208,7 +208,7 @@ const Navigation = () => {
           {navItems.map((navItem) => (
             <Link
               key={navItem.key}
-              className={`no-underline text-[#676767] font-medium hover:underline transition-all`}
+              className={`no-underline text-faded-grey font-medium text-base hover:underline transition-all`}
               to={navItem.to}
             >
               {navItem.label}
@@ -218,10 +218,10 @@ const Navigation = () => {
       </div>
       <div className="flex items-center space-x-2">
         <form
-          className="hidden md:flex items-center rounded-lg border border-[#e0e0e0] bg-[#EDEDEC]"
+          className="hidden md:flex items-center rounded-lg border border-custom-border bg-search-background"
           onSubmit={handleSearchSubmit}
         >
-          <FaSearch className="ml-1.5 text-[#5b5b5b]" />
+          <FaSearch className="ml-1.5 text-faded-grey" />
           <input
             type="search"
             placeholder={t("common.placeholder.search")}
@@ -236,7 +236,7 @@ const Navigation = () => {
             <Button
               variant="ghost"
               onClick={() => navigate("/profile")}
-              className="rounded text-[#676767]"
+              className="rounded text-faded-grey"
             >
               {t("header.profileMenu.profile")}
             </Button>
