@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import AuthCard from "../commons/auth/AuthCard";
 import axiosInstance from "../../config/axios-config.ts";
 import AuthTwoColumnLayout from "@/components/layout/AuthTwoColumnLayout";
+import { isEmail } from "@/utils/helperFunctions.tsx";
 
 const ForgotPassword = () => {
   const { t } = useTranslate();
@@ -44,8 +45,6 @@ const ForgotPassword = () => {
     },
   );
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -54,7 +53,7 @@ const ForgotPassword = () => {
       return;
     }
 
-    if (!emailRegex.test(email)) {
+    if (!isEmail(email)) {
       setErrors({ email: t("user.validation.invalid_email") });
       return;
     }

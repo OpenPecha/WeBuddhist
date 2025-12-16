@@ -176,3 +176,8 @@ export const getCurrentSectionFromScroll = (
   });
   return candidateBelow.id ?? candidateAbove.id;
 };
+
+export const isEmail = (email: string) => {
+  if (email.length > 254) return false;
+  return /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(email);
+};

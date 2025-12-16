@@ -17,6 +17,7 @@ import AuthCard from "../commons/auth/AuthCard";
 import axiosInstance from "../../config/axios-config.ts";
 import { useAuth } from "../../config/AuthContext.tsx";
 import AuthTwoColumnLayout from "@/components/layout/AuthTwoColumnLayout";
+import { isEmail } from "@/utils/helperFunctions.tsx";
 
 const UserRegistration = () => {
   const { t } = useTranslate();
@@ -82,14 +83,12 @@ const UserRegistration = () => {
     },
   );
 
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
   const validateForm = (): FormErrors => {
     const validationErrors: FormErrors = {};
 
     if (!email) {
       validationErrors.email = t("user.validation.required");
-    } else if (!emailPattern.test(email)) {
+    } else if (!isEmail(email)) {
       validationErrors.email = t("user.validation.invalid_email");
     }
 
