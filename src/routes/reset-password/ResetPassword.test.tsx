@@ -60,33 +60,54 @@ describe("ResetPassword Component", () => {
     );
   });
 
-  // it("shows validation errors when required fields are empty", async () => {
-  //   setup();
-  //   fireEvent.click(screen.getByRole("button", { name: "Reset Password" }));
-  //   expect(screen.getAllByText("Required")[0]).toBeInTheDocument();
-  // });
+  it("shows validation errors when required fields are empty", async () => {
+    setup();
+    const resetButtons = screen.getAllByText("common.reset_password");
+    fireEvent.click(resetButtons[resetButtons.length - 1]);
 
-  // it("validates password length", async () => {
-  //   setup();
-  //
-  //   fireEvent.change(screen.getByLabelText("New Password"), { target: { value: "short" } });
-  //   fireEvent.click(screen.getByRole("button", { name: "Reset Password" }));
-  //
-  //   await waitFor(() => {
-  //     expect(screen.getByText("Invalid password")).toBeInTheDocument();
-  //   });
-  // });
+    await waitFor(() => {
+      expect(screen.getAllByText("user.validation.required").length).toBe(2);
+    });
+  });
 
-  // it("validates password confirmation", async () => {
-  //   setup()
-  //   fireEvent.change(screen.getByLabelText("New Password"), { target: { value: "Password123" } });
-  //   fireEvent.change(screen.getByLabelText("Confirm Password"), { target: { value: "Different123" } });
-  //   fireEvent.click(screen.getByText("Reset Password"));
-  //
-  //   await waitFor(() => {
-  //     expect(screen.getByText("Passwords do not match")).toBeInTheDocument();
-  //   });
-  // });
+  it("validates password length", async () => {
+    setup();
+
+    fireEvent.change(screen.getByLabelText("common.new_password"), {
+      target: { value: "short" },
+    });
+    fireEvent.change(screen.getByLabelText("common.confirm_password"), {
+      target: { value: "short" },
+    });
+
+    const resetButtons = screen.getAllByText("common.reset_password");
+    fireEvent.click(resetButtons[resetButtons.length - 1]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("user.validation.invalid_password"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("validates password confirmation", async () => {
+    setup();
+    fireEvent.change(screen.getByLabelText("common.new_password"), {
+      target: { value: "Password123" },
+    });
+    fireEvent.change(screen.getByLabelText("common.confirm_password"), {
+      target: { value: "Different123" },
+    });
+
+    const resetButtons = screen.getAllByText("common.reset_password");
+    fireEvent.click(resetButtons[resetButtons.length - 1]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("user.validation.password_do_not_match"),
+      ).toBeInTheDocument();
+    });
+  });
 
   it("toggles password visibility", () => {
     setup();
