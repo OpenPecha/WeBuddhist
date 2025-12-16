@@ -185,7 +185,7 @@ const CommunityPage = () => {
             {t("side_nav.join_conversation.descriptions")}
           </p>
           <Button
-            className="w-full bg-blue-button text-white cursor-pointer"
+            className="w-full bg-linear-to-b from-blue-button-light to-blue-button text-white cursor-pointer"
             onClick={() =>
               userIsLoggedIn
                 ? (sessionStorage.removeItem("sheets-content"),

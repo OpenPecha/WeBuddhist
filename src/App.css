@@ -119,6 +119,7 @@ div::-webkit-scrollbar {
   --color-custom-border: var(--custom-border);
   --color-search-background: var(--search-background);
   --color-blue-button: var(--button-background);
+  --color-blue-button-light: var(--button-light-background);
 }
 
 :root {
@@ -159,6 +160,7 @@ div::-webkit-scrollbar {
   --custom-border: #e7e5e4;
   --search-background: #ededec;
   --button-background: #18345d;
+  --button-light-background: #0f479a;
 }
 
 @layer base {
