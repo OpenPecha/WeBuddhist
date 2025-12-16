@@ -94,8 +94,8 @@ describe("Commentaries Component", () => {
     expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
-  test("shows not found message when no items are present", () => {
-    setup({ items: [] });
+  test("shows not found message when items is null", () => {
+    setup({ items: null });
     expect(screen.getByText("global.not_found")).toBeInTheDocument();
   });
 });
