@@ -1,6 +1,6 @@
-# Webuddhist
+# WeBuddhist Study Platform
 
-This is the frontend application for the Webuddhist platform, designed to manage and interact with Buddhist texts in the pecha format.
+This is the frontend codebase for the Webuddhist study platform.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ This is the frontend application for the Webuddhist platform, designed to manage
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/OpenPecha/app-pecha-frontend.git
+   git clone https://github.com/OpenPecha/WeBuddhist.git
    ```
 
 2. Navigate to Webuddhist directory:
@@ -40,30 +40,32 @@ This is the frontend application for the Webuddhist platform, designed to manage
    ```bash
    npm run test
    ```
+3. Run the test coverage:
+   ```bash
+   npm run coverage
+   ```
 
 ## Available Scripts
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+- `npm run format` - Run prettier formatting
 - `npm run test` - Run tests
 - `npm run coverage` - Generate test coverage report
 
 ## Key Features
 
-- Modern React-based frontend
 - Internationalization support via tolgee
 - Authentication via Auth0
-- Responsive UI with React Bootstrap
+- Component based Approach vis Shadcn
 - State management with React Query
 
 ## Tech Stack
 
 - React 18
 - React Router DOM
-- React Bootstrap
-- Auth0 React
+- Shadcn
+- Auth0
 - tolgee
 - React Query
 - Vite
