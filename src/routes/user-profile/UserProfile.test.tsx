@@ -190,6 +190,50 @@ describe("UserProfile Component", () => {
     const avatarContainer = document.querySelector('[data-slot="avatar"]');
     expect(avatarContainer).toBeInTheDocument();
   });
+
+  test("adds email to social profiles when social_profiles exists but has no email entry", () => {
+    const userInfoWithSocialButNoEmail = {
+      ...mockUserInfo,
+      social_profiles: [
+        { account: "linkedin", url: "https://linkedin.com" },
+        { account: "x.com", url: "https://x.com" },
+      ],
+      email: "test@pecha.com",
+    };
+
+    useQuery.mockImplementation(() => ({
+      data: userInfoWithSocialButNoEmail,
+      isLoading: false,
+      refetch: vi.fn(),
+    }));
+
+    setup();
+
+    const emailLink = screen.getByLabelText("email");
+    expect(emailLink).toHaveAttribute("href", "mailto:test@pecha.com");
+  });
+
+  test("useQuery is called with correct queryFn that calls fetchUserInfo", () => {
+    let capturedQueryFn;
+
+    useQuery.mockImplementation((queryKey, queryFn) => {
+      capturedQueryFn = queryFn;
+      return {
+        data: mockUserInfo,
+        isLoading: false,
+        refetch: vi.fn(),
+      };
+    });
+
+    setup();
+
+    expect(capturedQueryFn).toBeDefined();
+
+    axiosInstance.get.mockResolvedValueOnce({ data: mockUserInfo });
+    capturedQueryFn();
+
+    expect(axiosInstance.get).toHaveBeenCalledWith("/api/v1/users/info");
+  });
 });
 
 describe("fetchUserInfo Function", () => {
