@@ -120,9 +120,11 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
     setViewMode,
     setLayoutMode,
   } = props;
+
   const [selectedSegmentId, setSelectedSegmentId] = useState<string | null>(
     null,
   );
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const { isResourcesPanelOpen, openResourcesPanel, closeResourcesPanel } =
     usePanelContext() as PanelContextValue;
   const contentsContainerRef = useRef<HTMLDivElement | null>(null);
@@ -145,6 +147,15 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
     fetchNextPage,
     fetchPreviousPage,
   } = infiniteQuery;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (!content?.sections) return;
@@ -202,7 +213,7 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
     if (currentSegmentId && currentSegmentId !== selectedSegmentId) {
       setSelectedSegmentId(currentSegmentId);
     }
-  }, [currentSegmentId]);
+  }, [currentSegmentId, selectedSegmentId]);
 
   useEffect(() => {
     const container = contentsContainerRef.current;
@@ -517,24 +528,23 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
   };
 
   const renderResources = () => {
-    if (isResourcesPanelOpen && selectedSegmentId) {
-      return (
-        <Resources
-          segmentId={selectedSegmentId}
-          addChapter={addChapter}
-          handleClose={closeResourcesPanel}
-          currentChapter={currentChapter}
-          setVersionId={setVersionId}
-          handleSegmentNavigate={handleSegmentNavigate}
-        />
-      );
-    }
-    return null;
+    if (!selectedSegmentId) return null;
+
+    return (
+      <Resources
+        segmentId={selectedSegmentId}
+        addChapter={addChapter}
+        handleClose={closeResourcesPanel}
+        currentChapter={currentChapter}
+        setVersionId={setVersionId}
+        handleSegmentNavigate={handleSegmentNavigate}
+      />
+    );
   };
 
-  const rendersmallscreens = () => {
+  const renderMobileLayout = () => {
     return (
-      <div className="flex flex-col w-full h-full overflow-hidden min-h-0 md:hidden">
+      <div className="flex flex-col w-full h-full overflow-hidden min-h-0">
         {isResourcesPanelOpen && selectedSegmentId ? (
           <ResizablePanelGroup direction="vertical">
             <ResizablePanel defaultSize={55} minSize={30}>
@@ -568,23 +578,28 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
     );
   };
 
+  const renderDesktopLayout = () => {
+    return (
+      <div className="flex flex-col w-full h-full overflow-hidden min-h-0">
+        {renderChapterHeader()}
+        <div
+          className="flex flex-1 min-h-0 w-full overflow-y-auto"
+          ref={contentsContainerRef}
+        >
+          {renderContents()}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col w-full min-h-full flex-1">
       <div className="flex w-full h-full min-h-0">
         {renderTableOfContents()}
-        {rendersmallscreens()}
 
-        <div className="hidden md:flex md:flex-col w-full h-full overflow-hidden min-h-0">
-          {renderChapterHeader()}
-          <div
-            className="flex flex-1 min-h-0 w-full overflow-y-auto"
-            ref={contentsContainerRef}
-          >
-            {renderContents()}
-          </div>
-        </div>
+        {isMobile ? renderMobileLayout() : renderDesktopLayout()}
 
-        <div className="hidden md:block">{renderResources()}</div>
+        {!isMobile && isResourcesPanelOpen && renderResources()}
       </div>
     </div>
   );
