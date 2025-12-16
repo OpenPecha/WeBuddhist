@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, act } from "@testing-library/react";
-import { vi } from "vitest";
+import { vi, describe, beforeEach, test, expect, afterEach } from "vitest";
 import Chapters from "./Chapters.js";
 
 vi.mock("./chapter/ContentsChapter", () => ({
@@ -131,13 +131,12 @@ describe("Chapters Component", () => {
     expect(screen.getAllByTestId("contents-chapter-mock").length).toBe(1);
   });
 
-  test("sessionStorage is updated on chapters/versionId change", () => {
+  test("sessionStorage is updated on chapters change", () => {
     const chapters = [{ textId: "t1", contentId: "c1", segmentId: "s1" }];
     setupSessionStorage({ chapters });
     mockSearchParams.mockReturnValue({ get: () => null });
     render(<Chapters />);
     expect(setItemSpy).toHaveBeenCalledWith("chapters", expect.any(String));
-    expect(setItemSpy).toHaveBeenCalledWith("versionId", expect.any(String));
   });
 
   test("cleanup removes sessionStorage items on unmount", () => {
@@ -147,7 +146,6 @@ describe("Chapters Component", () => {
     const { unmount } = render(<Chapters />);
     unmount();
     expect(removeItemSpy).toHaveBeenCalledWith("chapters");
-    expect(removeItemSpy).toHaveBeenCalledWith("versionId");
   });
 
   test("renders with initialChapters prop", () => {
@@ -195,9 +193,9 @@ describe("Chapters Component", () => {
       expect.objectContaining({ textId: "t1" }),
       0,
       expect.objectContaining({
-        versionId: expect.any(String),
         addChapter: expect.any(Function),
         removeChapter: expect.any(Function),
+        setVersionId: expect.any(Function),
       }),
     );
   });
