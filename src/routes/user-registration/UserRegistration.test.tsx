@@ -155,4 +155,30 @@ describe("UserRegistration Component", () => {
 
     expect(appleLoginButton).toBeInTheDocument();
   });
+
+  test("shows error when passwords do not match", async () => {
+    setup();
+    const user = userEvent.setup();
+
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const firstNameInput = screen.getByPlaceholderText(/first/i);
+    const lastNameInput = screen.getByPlaceholderText(/last/i);
+    const { passwordInput, confirmPasswordInput } =
+      getPasswordAndConfirmInputs();
+
+    await user.type(emailInput, "test@example.com");
+    await user.type(firstNameInput, "Test");
+    await user.type(lastNameInput, "User");
+    await user.type(passwordInput, "password123");
+    await user.type(confirmPasswordInput, "different123");
+
+    await user.click(screen.getByRole("button", { name: /sign up|sign_up/i }));
+
+    expect(
+      document.getElementById("confirm-password-error"),
+    ).toBeInTheDocument();
+    expect(document.getElementById("email-error")).not.toBeInTheDocument();
+    expect(document.getElementById("first-name-error")).not.toBeInTheDocument();
+    expect(document.getElementById("password-error")).not.toBeInTheDocument();
+  });
 });
