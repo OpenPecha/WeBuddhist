@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Sidebar } from "../components/Sidebar";
-import { ChatArea } from "../components/ChatArea";
-import { useChatStore } from "../store/chatStore";
+import { Sidebar } from "./components/Sidebar";
+import { ChatArea } from "./components/ChatArea";
+import { useChatStore } from "./store/chatStore";
 
 export default function Chat() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { threadId } = useParams();
   const navigate = useNavigate();
-  const { setActiveThread, threads, resetToNewChat } = useChatStore();
+  const { setActiveThread, threads, resetToNewChat } = useChatStore() as any;
 
   useEffect(() => {
     if (threadId === "new") {
       resetToNewChat();
     } else if (threadId) {
-      const threadExists = threads.some((t) => t.id === threadId);
+      const threadExists = threads.some((t: any) => t.id === threadId);
       if (threadExists) {
         setActiveThread(threadId);
       } else {
@@ -28,7 +28,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-80px)] w-full overallfont">
+    <div className="flex h-screen w-full">
       <Sidebar isOpen={isSidebarOpen} onToggle={handleToggleSidebar} />
       <div className="flex-1">
         <ChatArea

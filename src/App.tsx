@@ -43,7 +43,7 @@ const ForgotPassword = lazy(
 const SearchResultsPage = lazy(
   () => import("./routes/search/SearchResultsPage.tsx"),
 );
-const Chat = lazy(() => import("./routes/chat/base/Chat.tsx"));
+const Chat = lazy(() => import("./routes/chat/Chat.tsx"));
 
 type Auth0UserType = {
   getIdTokenClaims: () => Promise<any>;

@@ -2,10 +2,16 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BsThreeDots, BsTrash } from "react-icons/bs";
 import { NavbarIcon } from "../../../utils/Icon";
-import { useChatStore } from "../store/chatStore";
+import { useChatStore } from "../store/chatStore.ts";
 import { IoCreateOutline } from "react-icons/io5";
 
-export function Sidebar({ isOpen, onToggle }) {
+export function Sidebar({
+  isOpen,
+  onToggle,
+}: {
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
   const navigate = useNavigate();
   const {
     threads,
@@ -13,11 +19,11 @@ export function Sidebar({ isOpen, onToggle }) {
     setActiveThread,
     deleteThread,
     resetToNewChat,
-  } = useChatStore();
+  } = useChatStore() as any;
   const [openPopoverId, setOpenPopoverId] = useState(null);
   const popoverRef = useRef(null);
 
-  const handleThreadClick = (threadId) => {
+  const handleThreadClick = (threadId: string) => {
     setActiveThread(threadId);
     navigate(`/ai/${threadId}`);
   };
@@ -27,20 +33,29 @@ export function Sidebar({ isOpen, onToggle }) {
     navigate("/ai/new");
   };
 
-  const handleTogglePopover = (e, threadId) => {
+  const handleTogglePopover = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    threadId: string,
+  ) => {
     e.stopPropagation();
-    setOpenPopoverId(openPopoverId === threadId ? null : threadId);
+    setOpenPopoverId(openPopoverId === threadId ? null : (threadId as any));
   };
 
-  const handleDeleteClick = (e, threadId) => {
+  const handleDeleteClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    threadId: string,
+  ) => {
     e.stopPropagation();
     deleteThread(threadId);
     setOpenPopoverId(null);
   };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (popoverRef.current && !popoverRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popoverRef.current &&
+        !(popoverRef.current as any).contains(event.target)
+      ) {
         setOpenPopoverId(null);
       }
     };
@@ -82,7 +97,7 @@ export function Sidebar({ isOpen, onToggle }) {
           History
         </div>
         <div className="space-y-2">
-          {threads.map((thread) => (
+          {threads.map((thread: any) => (
             <div
               key={thread.id}
               className={`
