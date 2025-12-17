@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useMutation, useQuery } from "react-query";
+import { Link } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useTranslate } from "@tolgee/react";
 import { MdDeleteOutline } from "react-icons/md";
 import { FiEye, FiClock } from "react-icons/fi";
@@ -15,6 +15,17 @@ import PaginationComponent from "../../../commons/pagination/PaginationComponent
 import { deleteSheet } from "../../../sheets/view-sheet/SheetDetailPage.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog.tsx";
 
 type Sheet = {
   id: string;
@@ -65,12 +76,14 @@ type SheetListingProps = {
 };
 
 const SheetListing = ({ userInfo, isOwnProfile }: SheetListingProps) => {
-  const navigate = useNavigate();
   const { t } = useTranslate();
+  const queryClient = useQueryClient();
   const [pagination, setPagination] = useState<PaginationState>({
     currentPage: 1,
     limit: 10,
   });
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [sheetToDelete, setSheetToDelete] = useState<string | null>(null);
 
   const skip = useMemo(
     () => (pagination.currentPage - 1) * pagination.limit,
@@ -83,7 +96,11 @@ const SheetListing = ({ userInfo, isOwnProfile }: SheetListingProps) => {
 
   const { mutate: deleteSheetMutation, isLoading: isDeleting } = useMutation({
     mutationFn: (sheetId: string) => deleteSheet(sheetId),
-    onSuccess: () => navigate("/profile"),
+    onSuccess: () => {
+      setIsDeleteDialogOpen(false);
+      setSheetToDelete(null);
+      queryClient.invalidateQueries(["sheets-user-profile"]);
+    },
     onError: (error) => {
       console.error("Error deleting sheet:", error);
     },
@@ -120,6 +137,50 @@ const SheetListing = ({ userInfo, isOwnProfile }: SheetListingProps) => {
       </section>
     );
   }
+
+  const renderDeleteDialog = (sheet: Sheet) => (
+    <AlertDialog
+      open={isDeleteDialogOpen && sheetToDelete === sheet.id}
+      onOpenChange={setIsDeleteDialogOpen}
+    >
+      <AlertDialogTrigger asChild>
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={(e) => {
+            e.preventDefault();
+            setSheetToDelete(sheet.id);
+            setIsDeleteDialogOpen(true);
+          }}
+          disabled={isDeleting}
+        >
+          <MdDeleteOutline className="size-5" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t("sheet.delete_header")}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t("sheet.delete_warning_message")}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isDeleting}>
+            {t("sheet.delete_cancel")}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => deleteSheetMutation(sheetToDelete!)}
+            disabled={isDeleting}
+            className="bg-red-800 text-white hover:bg-red-800/80 font-bold"
+          >
+            {isDeleting
+              ? t("sheet.deleting.message")
+              : t("sheet.delete_button")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
 
   return (
     <div className="space-y-4">
@@ -166,19 +227,7 @@ const SheetListing = ({ userInfo, isOwnProfile }: SheetListingProps) => {
                   </div>
                 </div>
               </div>
-              {isOwnProfile && (
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    deleteSheetMutation(sheet.id);
-                  }}
-                  disabled={isDeleting}
-                >
-                  <MdDeleteOutline className="size-5" />
-                </Button>
-              )}
+              {isOwnProfile && renderDeleteDialog(sheet)}
             </div>
           </div>
         ))}
