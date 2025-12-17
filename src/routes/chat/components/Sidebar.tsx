@@ -58,19 +58,19 @@ export function ChatSidebar() {
         <SidebarTrigger />
       </SidebarHeader>
       <SidebarSeparator />
-      <SidebarGroup>
-        <SidebarGroupContent>
-          <Button
-            onClick={handleNewChat}
-            className="w-full cursor-pointer"
-            variant="outline"
-          >
-            <IoCreateOutline size={18} />
-            <span>New Chat</span>
-          </Button>
-        </SidebarGroupContent>
-      </SidebarGroup>
       <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <Button
+              onClick={handleNewChat}
+              className="w-full cursor-pointer"
+              variant="outline"
+            >
+              <IoCreateOutline size={18} />
+              <span>New Chat</span>
+            </Button>
+          </SidebarGroupContent>
+        </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>History</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -82,10 +82,11 @@ export function ChatSidebar() {
               ) : (
                 threads.map((thread: any) => (
                   <SidebarMenuItem key={thread.id}>
-                    <SidebarMenuButton
-                      onClick={() => handleThreadClick(thread.id)}
-                      isActive={activeThreadId === thread.id}
-                      className={`
+                    <div className="flex items-center justify-between">
+                      <SidebarMenuButton
+                        onClick={() => handleThreadClick(thread.id)}
+                        isActive={activeThreadId === thread.id}
+                        className={`
                         w-full justify-start
                         ${
                           activeThreadId === thread.id
@@ -93,24 +94,26 @@ export function ChatSidebar() {
                             : " text-faded-grey"
                         }
                       `}
-                    >
-                      <span className="truncate">{thread.title}</span>
-                    </SidebarMenuButton>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button>
-                          <MoreHorizontal size={14} />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent side="right" align="start">
-                        <DropdownMenuItem
-                          onClick={() => handleDeleteClick(thread.id)}
-                        >
-                          <BsTrash size={14} />
-                          <span>Delete</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                      >
+                        <span className="truncate">{thread.title}</span>
+                      </SidebarMenuButton>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="cursor-pointer" asChild>
+                          <button>
+                            <MoreHorizontal size={14} />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="bottom" align="end">
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteClick(thread.id)}
+                          >
+                            <BsTrash size={14} />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </SidebarMenuItem>
                 ))
               )}
