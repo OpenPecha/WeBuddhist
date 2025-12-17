@@ -1,5 +1,6 @@
 import { Send, Square } from "lucide-react";
 import Questions from "./questions/Questions";
+import { Button } from "@/components/ui/button";
 
 const InputField = ({
   input,
@@ -17,37 +18,36 @@ const InputField = ({
   handleQuestionClick: (question: string) => void;
 }) => {
   return (
-    <div className=" p-2 border-2 border-[#f1f1f1] mx-auto rounded-xl w-full md:w-2xl bg-[#F5F5F5]">
+    <div className=" pt-2 px-2 border-t-2 border-x-2 border-[#f1f1f1] mx-auto rounded-t-xl w-full md:w-2xl bg-[#F5F5F5]">
       <form
         onSubmit={handleSubmit}
-        className="flex border items-center justify-between border-[#F5F5F5] bg-white text-gray-900 p-4  rounded-2xl"
+        className="flex flex-col border items-center justify-between border-[#ffffff] bg-[#ffffff] text-gray-900 p-4  rounded-2xl"
       >
-        <input
-          type="text"
+        <textarea
           value={input}
+          rows={3}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask a question about Buddhist texts..."
-          className="  w-full  focus:outline-none"
+          className="  w-full  focus:outline-none resize-none"
           disabled={isLoading}
         />
-        <button
-          type={isLoading ? "button" : "submit"}
-          onClick={isLoading ? handleStop : undefined}
-          disabled={!input.trim() && !isLoading}
-          className={`p-2 rounded transition-colors ${
-            isLoading
-              ? "text-[#3f3f3f]"
-              : "text-[#292929] disabled:opacity-50 disabled:cursor-not-allowed"
-          }`}
-        >
-          {isLoading ? (
-            <Square size={20} fill="currentColor" />
-          ) : (
-            <Send size={20} />
-          )}
-        </button>
+        <div className="flex justify-end w-full">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={isLoading ? handleStop : undefined}
+            className="cursor-pointer text-faded-grey"
+            disabled={!input.trim() && !isLoading}
+          >
+            {isLoading ? (
+              <Square size={20} fill="currentColor" />
+            ) : (
+              <Send size={20} />
+            )}
+          </Button>
+        </div>
       </form>
-      <Questions onQuestionClick={handleQuestionClick} />
+      {/* <Questions onQuestionClick={handleQuestionClick} /> */}
     </div>
   );
 };

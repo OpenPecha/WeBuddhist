@@ -202,15 +202,16 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
 
   if (!activeThread?.messages?.length) {
     return (
-      <div className="flex-1 rounded-lg flex items-center h-full justify-center bg-white">
-        <div className="text-center h-full justify-center items-center flex flex-col gap-y-4 ">
+      <div className="flex-1 rounded-lg flex  items-end justify-end h-full bg-white">
+        <div className="text-center w-full h-full  justify-between items-center flex flex-col gap-y-4 ">
+          <div />
           <p
             style={{
               opacity: 0,
               animation: "fadeInUp 0.6s ease-out forwards",
               animationDelay: `0.1s`,
             }}
-            className="text-lg md:text-2xl"
+            className="text-lg font-medium text-[#363636] md:text-2xl"
           >
             Explore Buddhist Wisdom
           </p>
