@@ -28,7 +28,7 @@ export default function Chat() {
     <SidebarProvider>
       <div className="flex h-screen w-full">
         <ChatSidebar />
-        <div className="flex-1">
+        <div className="flex-1 bg-sidebar p-4">
           <ChatArea
             isSidebarOpen={isSidebarOpen}
             onOpenSidebar={() => setIsSidebarOpen(true)}

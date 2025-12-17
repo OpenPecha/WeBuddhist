@@ -12,6 +12,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "../../../config/AuthContext";
 import { useQuery } from "react-query";
 import axiosInstance from "../../../config/axios-config";
+import InputField from "./InputField";
 
 export const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
@@ -201,58 +202,27 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
 
   if (!activeThread?.messages?.length) {
     return (
-      <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400 relative">
-        {!isSidebarOpen && (
-          <button
-            onClick={onOpenSidebar}
-            className="absolute top-4 left-4 w-fit p-2 rounded-lg"
-            aria-label="Open sidebar"
-            onKeyDown={(e) => e.key === "Enter" && onOpenSidebar()}
-          >
-            <NavbarIcon />
-          </button>
-        )}
-        <div className="text-center h-full justify-center items-center flex flex-col gap-y-4 text-gray-400 ">
+      <div className="flex-1 rounded-lg flex items-center h-full justify-center bg-white">
+        <div className="text-center h-full justify-center items-center flex flex-col gap-y-4 ">
           <p
             style={{
               opacity: 0,
               animation: "fadeInUp 0.6s ease-out forwards",
               animationDelay: `0.1s`,
             }}
-            className="text-gray-400 text-lg md:text-2xl"
+            className="text-lg md:text-2xl"
           >
             Explore Buddhist Wisdom
           </p>
-          <div className="bg-linear-to-t   from-white via-white to-transparent mx-4 md:m-0 ">
-            <div className="border-2 border-[#f1f1f1] mx-auto rounded-2xl w-full md:w-2xl bg-[#F5F5F5]">
-              <form onSubmit={handleSubmit} className="relative">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask a question about Buddhist texts..."
-                  className="  w-full p-4  rounded-2xl border-2 border-[#F5F5F5] bg-white text-gray-900 focus:outline-none"
-                  disabled={isLoading}
-                />
-                <button
-                  type={isLoading ? "button" : "submit"}
-                  onClick={isLoading ? handleStop : undefined}
-                  disabled={!input.trim() && !isLoading}
-                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded transition-colors ${
-                    isLoading
-                      ? "text-[#18345D]"
-                      : "text-[#18345D] disabled:opacity-50 disabled:cursor-not-allowed"
-                  }`}
-                >
-                  {isLoading ? (
-                    <Square size={20} fill="currentColor" />
-                  ) : (
-                    <Send size={20} />
-                  )}
-                </button>
-              </form>
-              <Questions onQuestionClick={handleQuestionClick} />
-            </div>
+          <div className="bg-linear-to-t from-white via-white to-transparent">
+            <InputField
+              input={input}
+              setInput={setInput}
+              isLoading={isLoading}
+              handleSubmit={handleSubmit}
+              handleStop={handleStop}
+              handleQuestionClick={handleQuestionClick}
+            />
           </div>
         </div>
       </div>

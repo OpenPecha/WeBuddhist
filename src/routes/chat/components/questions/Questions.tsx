@@ -30,7 +30,7 @@ const Questions = ({ onQuestionClick }) => {
           key={question.id}
           onClick={() => handleQuestionClick(question.question)}
           onKeyDown={(e) => handleKeyDown(e, question.question)}
-          className="flex items-center border-y border-x border-[#c0c0c0] bg-white rounded border-dashed p-2 cursor-pointer"
+          className="flex items-center border-y border-x border-[#f0f0f0] bg-white rounded-2xl border-dashed p-2 cursor-pointer text-sm text-faded-grey"
         >
           <span>{question.question}</span>
         </button>

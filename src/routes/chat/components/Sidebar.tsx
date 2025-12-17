@@ -50,7 +50,7 @@ export function ChatSidebar() {
   };
 
   return (
-    <Sidebar>
+    <Sidebar className=" border-none">
       <SidebarHeader className="flex items-center justify-between">
         <Link to="/">
           <img src={logo} alt="logo" className="w-10 h-10" />
