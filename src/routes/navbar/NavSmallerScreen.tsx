@@ -43,14 +43,11 @@ const NavSmallerScreen = ({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button className="flex md:hidden items-center justify-center rounded p-2 hover:bg-accent">
+        <button className="flex md:hidden items-center justify-center p-2 hover:bg-accent">
           <SearchNavbarIcon className="text-faded-grey" />
         </button>
       </SheetTrigger>
-      <SheetContent
-        side="top"
-        className="p-0 w-full max-h-[85vh] overflow-y-auto"
-      >
+      <SheetContent side="top" className="p-0 w-full h-screen overflow-y-auto">
         <div className="flex items-center h-[60px] bg-navbar px-4 py-3 border-b-2">
           <Link to="/" className="flex items-center">
             <img
@@ -71,6 +68,7 @@ const NavSmallerScreen = ({
               placeholder={translate("common.placeholder.search")}
               value={searchTerm}
               onChange={handleInputChange}
+              autoFocus={false}
               className="w-full border-none bg-transparent outline-none px-1 py-1.5"
             />
           </form>
@@ -89,7 +87,7 @@ const NavSmallerScreen = ({
           ))}
         </div>
         <Separator />
-        <div className="flex flex-col pb-10">
+        <div className="flex flex-col px-4">
           {renderAuthButtons("mobile")}
           {(isAuthenticated || isLoggedIn) && (
             <SheetClose asChild>

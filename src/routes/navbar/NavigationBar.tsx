@@ -208,7 +208,7 @@ const Navigation = () => {
           {navItems.map((navItem) => (
             <Link
               key={navItem.key}
-              className={`no-underline text-faded-grey font-medium text-base hover:underline transition-all`}
+              className={`no-underline text-faded-grey font-medium ${isTibetan ? "text-sm" : "text-base"} hover:underline transition-all`}
               to={navItem.to}
             >
               {navItem.label}
