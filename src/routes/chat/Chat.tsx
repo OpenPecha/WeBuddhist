@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Sidebar } from "./components/Sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ChatArea } from "./components/ChatArea";
 import { useChatStore } from "./store/chatStore";
+import { ChatSidebar } from "./components/Sidebar";
 
 export default function Chat() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -23,19 +24,17 @@ export default function Chat() {
     }
   }, [threadId, threads, setActiveThread, resetToNewChat, navigate]);
 
-  const handleToggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
   return (
-    <div className="flex h-screen w-full">
-      <Sidebar isOpen={isSidebarOpen} onToggle={handleToggleSidebar} />
-      <div className="flex-1">
-        <ChatArea
-          isSidebarOpen={isSidebarOpen}
-          onOpenSidebar={() => setIsSidebarOpen(true)}
-        />
+    <SidebarProvider>
+      <div className="flex h-screen w-full">
+        <ChatSidebar />
+        <div className="flex-1">
+          <ChatArea
+            isSidebarOpen={isSidebarOpen}
+            onOpenSidebar={() => setIsSidebarOpen(true)}
+          />
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

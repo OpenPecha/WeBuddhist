@@ -147,14 +147,14 @@ function App() {
           <Route path="/register" element={<UserRegistration />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/ai" element={<Navigate to="/ai/new" replace />} />
+          <Route path="/ai/new" element={<Chat />} />
+          <Route path="/ai/:threadId" element={<Chat />} />
         </Route>
 
         <Route element={<NoFooterLayout />}>
           <Route path="/sheets/:id" element={<Sheets />} />
           <Route path="/chapter" element={<ChaptersV2 />} />
-          <Route path="/ai" element={<Navigate to="/ai/new" replace />} />
-          <Route path="/ai/new" element={<Chat />} />
-          <Route path="/ai/:threadId" element={<Chat />} />
         </Route>
 
         <Route element={<MainLayout />}>

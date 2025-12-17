@@ -1,17 +1,30 @@
-import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BsThreeDots, BsTrash } from "react-icons/bs";
-import { NavbarIcon } from "../../../utils/Icon";
-import { useChatStore } from "../store/chatStore.ts";
+import { BsTrash } from "react-icons/bs";
 import { IoCreateOutline } from "react-icons/io5";
+import { useChatStore } from "../store/chatStore.ts";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuAction,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button.tsx";
 
-export function Sidebar({
-  isOpen,
-  onToggle,
-}: {
-  isOpen: boolean;
-  onToggle: () => void;
-}) {
+export function ChatSidebar() {
   const navigate = useNavigate();
   const {
     threads,
@@ -20,8 +33,6 @@ export function Sidebar({
     deleteThread,
     resetToNewChat,
   } = useChatStore() as any;
-  const [openPopoverId, setOpenPopoverId] = useState(null);
-  const popoverRef = useRef(null);
 
   const handleThreadClick = (threadId: string) => {
     setActiveThread(threadId);
@@ -33,123 +44,73 @@ export function Sidebar({
     navigate("/ai/new");
   };
 
-  const handleTogglePopover = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    threadId: string,
-  ) => {
-    e.stopPropagation();
-    setOpenPopoverId(openPopoverId === threadId ? null : (threadId as any));
-  };
-
-  const handleDeleteClick = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    threadId: string,
-  ) => {
-    e.stopPropagation();
+  const handleDeleteClick = (threadId: string) => {
     deleteThread(threadId);
-    setOpenPopoverId(null);
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        popoverRef.current &&
-        !(popoverRef.current as any).contains(event.target)
-      ) {
-        setOpenPopoverId(null);
-      }
-    };
-
-    if (openPopoverId) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [openPopoverId]);
 
   return (
-    <div
-      className={`h-full bg-[#F5F5F5] flex flex-col rounded-r-2xl mt-3 transition-all duration-300 ease-in-out  ${
-        isOpen ? " w-72" : "w-0 overflow-hidden"
-      }`}
-    >
-      <div className=" p-2 flex items-center justify-between">
-        <div className="p-2 rounded-2xl">
-          <button
-            onClick={handleNewChat}
-            className="w-full flex justify-left items-center px-2 py-2 hover:bg-gray-50 transition-colors cursor-pointer gap-2 text-[#18345D] text-sm rounded"
-          >
-            <IoCreateOutline size={18} />
-            New Chat
-          </button>
-        </div>
-        <button
-          onClick={onToggle}
-          className=" w-fit text-[#2c4d7f] "
-          onKeyDown={(e) => e.key === "Enter" && onToggle()}
-        >
-          <NavbarIcon />
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-2 pb-2">
-        <div className="px-3 py-2 w-full text-left border-t border-dashed border-[#cccccc] text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          History
-        </div>
-        <div className="space-y-2">
-          {threads.map((thread: any) => (
-            <div
-              key={thread.id}
-              className={`
-              group flex items-center justify-between px-3 py-2 rounded-lg  cursor-pointer transition-colors
-              ${
-                activeThreadId === thread.id
-                  ? " text-[#18345D]"
-                  : "hover:bg-gray-50"
-              }
-            `}
-              onClick={() => handleThreadClick(thread.id)}
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <span
-                  className={`text-sm truncate ${activeThreadId === thread.id ? " border-l-2 border-[#78797c] pl-2" : "text-gray-400"}`}
-                >
-                  {thread.title}
-                </span>
-              </div>
-
-              <div className="relative">
-                <button
-                  onClick={(e) => handleTogglePopover(e, thread.id)}
-                  className="group-hover:opacity-100 p-1 rounded text-gray-400 hover:text-[#18345D] transition-all"
-                >
-                  <BsThreeDots size={14} />
-                </button>
-                {openPopoverId === thread.id && (
-                  <div
-                    ref={popoverRef}
-                    className="absolute text-sm right-0  w-40 bg-[#FFFFFF] rounded-lg shadow-sm border border-gray-200 py-1 z-50"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      onClick={(e) => handleDeleteClick(e, thread.id)}
-                      className="w-full flex items-center gap-2 px-2 py-1 transition-colors"
+    <Sidebar>
+      <SidebarHeader className="flex justify-between items-center">
+        <Button onClick={handleNewChat} variant="ghost" size="icon">
+          <IoCreateOutline size={18} />
+          <span>New Chat</span>
+        </Button>
+        <SidebarTrigger />
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel className="border-t border-dashed">
+            History
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {threads.length === 0 ? (
+                <div className="text-center text-gray-400 text-sm mt-10 px-4">
+                  No chats yet
+                </div>
+              ) : (
+                threads.map((thread: any) => (
+                  <SidebarMenuItem key={thread.id}>
+                    <SidebarMenuButton
+                      onClick={() => handleThreadClick(thread.id)}
+                      isActive={activeThreadId === thread.id}
+                      className={`
+                        w-full justify-start
+                        ${
+                          activeThreadId === thread.id
+                            ? "text-primary"
+                            : " text-faded-grey"
+                        }
+                      `}
                     >
-                      <BsTrash size={14} fill="red" />
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-        {threads.length === 0 && (
-          <div className="text-center text-gray-400 text-sm mt-10">
-            No chats yet
-          </div>
-        )}
-      </div>
-    </div>
+                      <span className="truncate">{thread.title}</span>
+                    </SidebarMenuButton>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button>
+                          <MoreHorizontal size={14} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        side="right"
+                        align="start"
+                        className="w-40"
+                      >
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteClick(thread.id)}
+                        >
+                          <BsTrash size={14} />
+                          <span>Delete</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </SidebarMenuItem>
+                ))
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
 }
