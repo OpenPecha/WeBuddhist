@@ -1,7 +1,8 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsTrash } from "react-icons/bs";
 import { IoCreateOutline } from "react-icons/io5";
 import { useChatStore } from "../store/chatStore.ts";
+import logo from "@/assets/icons/pecha_icon.png";
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +13,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuAction,
+  SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
@@ -50,22 +51,32 @@ export function ChatSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="flex justify-between items-center">
-        <Button onClick={handleNewChat} variant="ghost" size="icon">
-          <IoCreateOutline size={18} />
-          <span>New Chat</span>
-        </Button>
+      <SidebarHeader className="flex items-center justify-between">
+        <Link to="/">
+          <img src={logo} alt="logo" className="w-10 h-10" />
+        </Link>
         <SidebarTrigger />
       </SidebarHeader>
+      <SidebarSeparator />
+      <SidebarGroup>
+        <SidebarGroupContent>
+          <Button
+            onClick={handleNewChat}
+            className="w-full cursor-pointer"
+            variant="outline"
+          >
+            <IoCreateOutline size={18} />
+            <span>New Chat</span>
+          </Button>
+        </SidebarGroupContent>
+      </SidebarGroup>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="border-t border-dashed">
-            History
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>History</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {threads.length === 0 ? (
-                <div className="text-center text-gray-400 text-sm mt-10 px-4">
+                <div className="text-center text-gray-400 text-sm">
                   No chats yet
                 </div>
               ) : (
@@ -91,11 +102,7 @@ export function ChatSidebar() {
                           <MoreHorizontal size={14} />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        side="right"
-                        align="start"
-                        className="w-40"
-                      >
+                      <DropdownMenuContent side="right" align="start">
                         <DropdownMenuItem
                           onClick={() => handleDeleteClick(thread.id)}
                         >
