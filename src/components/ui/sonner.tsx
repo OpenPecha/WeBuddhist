@@ -1,10 +1,10 @@
 import {
-  CircleCheckIcon,
-  InfoIcon,
-  Loader2Icon,
-  OctagonXIcon,
-  TriangleAlertIcon,
-} from "lucide-react";
+  FaCircleCheck,
+  FaInfo,
+  FaAngleLeft,
+  FaAngleUp,
+  FaAngleDown,
+} from "react-icons/fa6";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
 const Toaster = ({ ...props }: ToasterProps) => {
@@ -13,11 +13,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme="light"
       className="toaster group"
       icons={{
-        success: <CircleCheckIcon className="size-4" />,
-        info: <InfoIcon className="size-4" />,
-        warning: <TriangleAlertIcon className="size-4" />,
-        error: <OctagonXIcon className="size-4" />,
-        loading: <Loader2Icon className="size-4 animate-spin" />,
+        success: <FaCircleCheck className="size-4" />,
+        info: <FaInfo className="size-4" />,
+        warning: <FaAngleLeft className="size-4" />,
+        error: <FaAngleUp className="size-4" />,
+        loading: <FaAngleDown className="size-4 animate-spin" />,
       }}
       style={
         {

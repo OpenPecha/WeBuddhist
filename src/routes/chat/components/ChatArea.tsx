@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Loader2, Square, Menu } from "lucide-react";
+import { FaSpinner } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router-dom";
-import { useChatStore } from "../store/chatStore";
-import { streamChat, saveChatToBackend } from "../api/chat";
+import { useChatStore } from "../store/chatStore.ts";
+import { streamChat, saveChatToBackend } from "../api/chat.ts";
+import { WiStars } from "react-icons/wi";
 import { MessageBubble } from "./MessageBubble";
 import { Queries } from "./Queries";
 import { WritingIndicator } from "./WritingIndicator";
@@ -12,13 +13,20 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "../../../config/AuthContext";
 import { useQuery } from "react-query";
 import axiosInstance from "../../../config/axios-config";
+import InputField from "./InputField";
 
 export const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
   return data;
 };
 
-export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
+export function ChatArea({
+  isSidebarOpen,
+  onOpenSidebar,
+}: {
+  isSidebarOpen: boolean;
+  onOpenSidebar: () => void;
+}) {
   const navigate = useNavigate();
   const { threadId } = useParams();
   const {
@@ -201,58 +209,34 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
 
   if (!activeThread?.messages?.length) {
     return (
-      <div className="flex-1 flex items-center h-full justify-center bg-white text-gray-400 relative">
-        {!isSidebarOpen && (
-          <button
-            onClick={onOpenSidebar}
-            className="absolute top-4 left-4 w-fit p-2 rounded-lg"
-            aria-label="Open sidebar"
-            onKeyDown={(e) => e.key === "Enter" && onOpenSidebar()}
-          >
-            <NavbarIcon />
-          </button>
-        )}
-        <div className="text-center h-full justify-center items-center flex flex-col gap-y-4 text-gray-400 ">
-          <p
-            style={{
-              opacity: 0,
-              animation: "fadeInUp 0.6s ease-out forwards",
-              animationDelay: `0.1s`,
-            }}
-            className="text-gray-400 text-lg md:text-2xl"
-          >
-            Explore Buddhist Wisdom
-          </p>
-          <div className="bg-linear-to-t   from-white via-white to-transparent mx-4 md:m-0 ">
-            <div className="border-2 border-[#f1f1f1] mx-auto rounded-2xl w-full md:w-2xl bg-[#F5F5F5]">
-              <form onSubmit={handleSubmit} className="relative">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask a question about Buddhist texts..."
-                  className="  w-full p-4  rounded-2xl border-2 border-[#F5F5F5] bg-white text-gray-900 focus:outline-none"
-                  disabled={isLoading}
-                />
-                <button
-                  type={isLoading ? "button" : "submit"}
-                  onClick={isLoading ? handleStop : undefined}
-                  disabled={!input.trim() && !isLoading}
-                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded transition-colors ${
-                    isLoading
-                      ? "text-[#18345D]"
-                      : "text-[#18345D] disabled:opacity-50 disabled:cursor-not-allowed"
-                  }`}
-                >
-                  {isLoading ? (
-                    <Square size={20} fill="currentColor" />
-                  ) : (
-                    <Send size={20} />
-                  )}
-                </button>
-              </form>
-              <Questions onQuestionClick={handleQuestionClick} />
-            </div>
+      <div className="flex-1 rounded-lg flex  items-end justify-end h-full bg-white">
+        <div className="text-center w-full h-full  justify-between items-center flex flex-col gap-y-4 ">
+          <div />
+          <div>
+            <p
+              style={{
+                opacity: 0,
+                animation: "fadeInUp 0.6s ease-out forwards",
+                animationDelay: `0.1s`,
+              }}
+              className="text-xl flex items-center justify-center gap-x-2 font-medium text-[#777777] md:text-2xl"
+            >
+              Explore Buddhist Wisdom{" "}
+              <span>
+                <WiStars size={40} />
+              </span>
+            </p>
+            <Questions onQuestionClick={handleQuestionClick} />
+          </div>
+
+          <div className="bg-linear-to-t from-white via-white to-transparent">
+            <InputField
+              input={input}
+              setInput={setInput}
+              isLoading={isLoading}
+              handleSubmit={handleSubmit}
+              handleStop={handleStop}
+            />
           </div>
         </div>
       </div>
@@ -260,7 +244,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
   }
 
   return (
-    <div className="flex-1 overflow-y-scroll flex flex-col h-full bg-white relative">
+    <div className=" overflow-y-scroll rounded-lg  relative flex flex-col h-full bg-white">
       {!isSidebarOpen && (
         <button
           onClick={onOpenSidebar}
@@ -313,7 +297,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
 
           {isThinking && (
             <div className="flex gap-2 text-gray-400 text-sm  animate-pulse">
-              <Loader2 className="animate-spin" size={16} />
+              <FaSpinner className="animate-spin" size={16} />
               Thinking...
             </div>
           )}
@@ -323,37 +307,13 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
           <div ref={messagesEndRef} />
         </div>
       </div>
-
-      <div className="bg-linear-to-t from-white via-white to-transparent">
-        <div className="p-2 md:max-w-3xl mx-auto">
-          <form onSubmit={handleSubmit} className="relative">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a question about Buddhist texts..."
-              className="w-full p-4  rounded-full border-2 border-gray-200 bg-white text-gray-900 focus:outline-none"
-              disabled={isLoading}
-            />
-            <button
-              type={isLoading ? "button" : "submit"}
-              onClick={isLoading ? handleStop : undefined}
-              disabled={!input.trim() && !isLoading}
-              className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded transition-colors ${
-                isLoading
-                  ? "text-[#9daabd]"
-                  : "text-[#18345D] disabled:opacity-50 disabled:cursor-not-allowed"
-              }`}
-            >
-              {isLoading ? (
-                <Square size={20} fill="currentColor" />
-              ) : (
-                <Send size={20} />
-              )}
-            </button>
-          </form>
-        </div>
-      </div>
+      <InputField
+        input={input}
+        setInput={setInput}
+        isLoading={isLoading}
+        handleSubmit={handleSubmit}
+        handleStop={handleStop}
+      />
     </div>
   );
 }

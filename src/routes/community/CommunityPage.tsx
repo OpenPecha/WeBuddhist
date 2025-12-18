@@ -124,9 +124,7 @@ const CommunityPage = () => {
                         className="no-underline"
                       >
                         <div className="mb-1 w-fit">
-                          <p
-                            className={`text-base font-semibold text-gray-700`}
-                          >
+                          <p className={`text-base font-medium`}>
                             {sheet.title}
                           </p>
                           <p className="text-sm text-justify text-faded-grey">

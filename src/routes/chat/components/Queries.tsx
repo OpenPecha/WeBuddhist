@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { FaSearch } from "react-icons/fa";
 
 export function Queries({ queries }) {
   if (!queries) return null;
@@ -23,7 +23,7 @@ export function Queries({ queries }) {
             }}
             className="flex items-center gap-2 p-1 bg-[#E5F3FE] border-blue-200 rounded text-[#00457D]"
           >
-            <Search size={14} className="shrink-0" />
+            <FaSearch size={14} className="shrink-0" />
             <span className="text-left">{query}</span>
           </div>
         ))}
