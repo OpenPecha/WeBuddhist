@@ -1,5 +1,4 @@
 import { Send, Square } from "lucide-react";
-import Questions from "./questions/Questions";
 import { Button } from "@/components/ui/button";
 
 const InputField = ({
@@ -8,27 +7,25 @@ const InputField = ({
   isLoading,
   handleSubmit,
   handleStop,
-  handleQuestionClick,
 }: {
   input: string;
   setInput: (value: string) => void;
   isLoading: boolean;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   handleStop: () => void;
-  handleQuestionClick: (question: string) => void;
 }) => {
   return (
-    <div className=" pt-2 px-2 border-t-2 border-x-2 border-[#f1f1f1] mx-auto rounded-t-xl w-full md:w-2xl bg-[#F5F5F5]">
+    <div className="  pt-2 px-2 border-t-2 border-x-2 border-[#f1f1f1] mx-auto rounded-t-xl w-screen md:w-2xl bg-[#F5F5F5]">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col border items-center justify-between border-[#ffffff] bg-[#ffffff] text-gray-900 p-4  rounded-2xl"
+        className="flex shadow flex-col border items-center justify-between border-[#ffffff] bg-[#ffffff] text-gray-900 p-4 w-full rounded-t-2xl  md:rounded-2xl"
       >
         <textarea
           value={input}
           rows={3}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask a question about Buddhist texts..."
-          className="  w-full  focus:outline-none resize-none"
+          className="  w-full focus:outline-none resize-none"
           disabled={isLoading}
         />
         <div className="flex justify-end w-full">
@@ -47,7 +44,6 @@ const InputField = ({
           </Button>
         </div>
       </form>
-      {/* <Questions onQuestionClick={handleQuestionClick} /> */}
     </div>
   );
 };

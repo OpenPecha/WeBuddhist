@@ -6,6 +6,7 @@ import logo from "@/assets/icons/pecha_icon.png";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -52,9 +53,15 @@ export function ChatSidebar() {
   return (
     <Sidebar className=" border-none">
       <SidebarHeader className="flex items-center justify-between">
-        <Link to="/">
-          <img src={logo} alt="logo" className="w-10 h-10" />
-        </Link>
+        <div>
+          <div className="flex items-center justify-center  w-full">
+            <Link to="/">
+              <img src={logo} alt="logo" className="w-10 h-10" />
+            </Link>
+            <p className="text-lg font-medium text-[#363636]">WeBuddhist </p>
+          </div>
+        </div>
+
         <SidebarTrigger />
       </SidebarHeader>
       <SidebarSeparator />
@@ -63,7 +70,7 @@ export function ChatSidebar() {
           <SidebarGroupContent>
             <Button
               onClick={handleNewChat}
-              className="w-full cursor-pointer"
+              className="w-full cursor-pointer text-faded-grey"
               variant="outline"
             >
               <IoCreateOutline size={18} />
@@ -73,7 +80,7 @@ export function ChatSidebar() {
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>History</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupContent className="max-h-4/5 overflow-y-auto">
             <SidebarMenu>
               {threads.length === 0 ? (
                 <div className="text-center text-gray-400 text-sm">

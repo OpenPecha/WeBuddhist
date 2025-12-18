@@ -3,6 +3,7 @@ import { Send, Loader2, Square, Menu } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useChatStore } from "../store/chatStore";
 import { streamChat, saveChatToBackend } from "../api/chat";
+import { WiStars } from "react-icons/wi";
 import { MessageBubble } from "./MessageBubble";
 import { Queries } from "./Queries";
 import { WritingIndicator } from "./WritingIndicator";
@@ -205,16 +206,23 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
       <div className="flex-1 rounded-lg flex  items-end justify-end h-full bg-white">
         <div className="text-center w-full h-full  justify-between items-center flex flex-col gap-y-4 ">
           <div />
-          <p
-            style={{
-              opacity: 0,
-              animation: "fadeInUp 0.6s ease-out forwards",
-              animationDelay: `0.1s`,
-            }}
-            className="text-lg font-medium text-[#363636] md:text-2xl"
-          >
-            Explore Buddhist Wisdom
-          </p>
+          <div>
+            <p
+              style={{
+                opacity: 0,
+                animation: "fadeInUp 0.6s ease-out forwards",
+                animationDelay: `0.1s`,
+              }}
+              className="text-xl flex items-center justify-center gap-x-2 font-medium text-[#777777] md:text-2xl"
+            >
+              Explore Buddhist Wisdom{" "}
+              <span>
+                <WiStars size={40} />
+              </span>
+            </p>
+            <Questions onQuestionClick={handleQuestionClick} />
+          </div>
+
           <div className="bg-linear-to-t from-white via-white to-transparent">
             <InputField
               input={input}
@@ -222,7 +230,6 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
               isLoading={isLoading}
               handleSubmit={handleSubmit}
               handleStop={handleStop}
-              handleQuestionClick={handleQuestionClick}
             />
           </div>
         </div>
