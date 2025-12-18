@@ -294,7 +294,7 @@ describe("SheetListing Component", () => {
     expect(deleteButtons.length).toBe(0);
   });
 
-  it("calls deleteSheetMutation when delete button is clicked", async () => {
+  it("calls deleteSheetMutation when delete is confirmed in dialog", async () => {
     const mockMutate = vi.fn();
     vi.spyOn(reactQuery, "useMutation").mockImplementation(
       () =>
@@ -311,6 +311,10 @@ describe("SheetListing Component", () => {
 
     if (deleteButtons.length > 0) {
       fireEvent.click(deleteButtons[0]);
+
+      const confirmButton = screen.getByText("sheet.delete_button");
+      fireEvent.click(confirmButton);
+
       expect(mockMutate).toHaveBeenCalledWith("1");
     }
   });
