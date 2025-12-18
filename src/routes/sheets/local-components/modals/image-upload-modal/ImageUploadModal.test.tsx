@@ -21,8 +21,9 @@ let mockGetInputProps;
 vi.mock("react-dropzone", () => ({
   useDropzone: ({ onDrop }) => {
     mockOnDrop = onDrop;
-    mockGetRootProps = vi.fn(() => ({
-      className: "upload-area",
+    mockGetRootProps = vi.fn((props) => ({
+      ...props,
+      className: props?.className || "upload-area",
       onClick: vi.fn(),
     }));
     mockGetInputProps = vi.fn(() => ({
@@ -60,6 +61,15 @@ vi.mock("../image-crop-modal/ImageCropModal", () => ({
   ),
 }));
 
+vi.mock("@/components/ui/dialog", () => ({
+  Dialog: ({ children, open }) => (open ? <div>{children}</div> : null),
+  DialogContent: ({ children, className }) => (
+    <div className={className}>{children}</div>
+  ),
+  DialogHeader: ({ children }) => <div>{children}</div>,
+  DialogTitle: ({ children }) => <h2>{children}</h2>,
+}));
+
 // Mock react-icons
 vi.mock("react-icons/io5", () => ({
   IoClose: () => <span data-testid="close-icon">×</span>,
@@ -86,7 +96,7 @@ vi.mock("react-icons/md", () => ({
 }));
 
 describe("ImageUploadModal", () => {
-  const onClose = vi.fn();
+  const onOpenChange = vi.fn();
   const onUpload = vi.fn();
   const mockFile = new File(["dummy"], "test.png", { type: "image/png" });
   const mockUrl = "http://test.com/image.jpg";
@@ -120,21 +130,38 @@ describe("ImageUploadModal", () => {
     delete global.URL.revokeObjectURL;
   });
 
-  test("renders modal and close button", () => {
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+  test("renders modal and title", () => {
+    render(
+      <ImageUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
     expect(screen.getByText("Upload Image")).toBeInTheDocument();
-    expect(screen.getByTestId("close-icon")).toBeInTheDocument();
   });
 
   test("shows upload area and drag text", () => {
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(
+      <ImageUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
     expect(
       screen.getByText(/Drag and drop an image here/i),
     ).toBeInTheDocument();
   });
 
   test("displays selected file information and upload button after file drop", async () => {
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(
+      <ImageUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
 
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -154,7 +181,13 @@ describe("ImageUploadModal", () => {
   });
 
   test("removes selected file when delete button clicked", async () => {
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(
+      <ImageUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
 
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -166,7 +199,7 @@ describe("ImageUploadModal", () => {
       ).toBeInTheDocument();
     });
 
-    const deleteButton = screen.getByTestId("delete-icon");
+    const deleteButton = screen.getByLabelText("Remove selected image");
     expect(deleteButton).toBeInTheDocument();
 
     fireEvent.click(deleteButton);
@@ -183,7 +216,13 @@ describe("ImageUploadModal", () => {
   });
 
   test("opens crop modal when crop button clicked", async () => {
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(
+      <ImageUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
 
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -195,7 +234,7 @@ describe("ImageUploadModal", () => {
       ).toBeInTheDocument();
     });
 
-    const cropButton = screen.getByTestId("crop-icon");
+    const cropButton = screen.getByLabelText("Crop image");
     expect(cropButton).toBeInTheDocument();
     fireEvent.click(cropButton);
 
@@ -205,7 +244,13 @@ describe("ImageUploadModal", () => {
   });
 
   test("updates image and shows cropped indicator after crop completion", async () => {
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(
+      <ImageUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
 
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -217,7 +262,7 @@ describe("ImageUploadModal", () => {
       ).toBeInTheDocument();
     });
 
-    const cropButton = screen.getByTestId("crop-icon");
+    const cropButton = screen.getByLabelText("Crop image");
     fireEvent.click(cropButton);
 
     await waitFor(() => {
@@ -239,7 +284,13 @@ describe("ImageUploadModal", () => {
   });
 
   test("handles empty file drop gracefully", async () => {
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(
+      <ImageUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
 
     if (mockOnDrop) {
       mockOnDrop([]);
@@ -254,7 +305,13 @@ describe("ImageUploadModal", () => {
   });
 
   test("returns to file selection when crop back button clicked", async () => {
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(
+      <ImageUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
 
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -266,7 +323,7 @@ describe("ImageUploadModal", () => {
       ).toBeInTheDocument();
     });
 
-    const cropButton = screen.getByTestId("crop-icon");
+    const cropButton = screen.getByLabelText("Crop image");
     fireEvent.click(cropButton);
 
     await waitFor(() => {
@@ -287,7 +344,13 @@ describe("ImageUploadModal", () => {
   });
 
   test("displays loading state when upload button clicked", async () => {
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(
+      <ImageUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
 
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -314,7 +377,8 @@ describe("ImageUploadModal", () => {
 
     render(
       <ImageUploadModal
-        onClose={onClose}
+        open={true}
+        onOpenChange={onOpenChange}
         onUpload={onUpload}
         isCameFromProfile={true}
       />,
@@ -326,7 +390,13 @@ describe("ImageUploadModal", () => {
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     mockUploadImageToS3.mockRejectedValue(new Error("Upload failed"));
 
-    render(<ImageUploadModal onClose={onClose} onUpload={onUpload} />);
+    render(
+      <ImageUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
 
     if (mockOnDrop) {
       mockOnDrop([mockFile]);
@@ -349,5 +419,16 @@ describe("ImageUploadModal", () => {
     });
 
     consoleSpy.mockRestore();
+  });
+
+  test("does not render content when modal is closed", () => {
+    render(
+      <ImageUploadModal
+        open={false}
+        onOpenChange={onOpenChange}
+        onUpload={onUpload}
+      />,
+    );
+    expect(screen.queryByText("Upload Image")).not.toBeInTheDocument();
   });
 });
