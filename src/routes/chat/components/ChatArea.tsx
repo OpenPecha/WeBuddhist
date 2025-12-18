@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Loader2, Square, Menu } from "lucide-react";
+import { FaSpinner } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router-dom";
-import { useChatStore } from "../store/chatStore";
-import { streamChat, saveChatToBackend } from "../api/chat";
+import { useChatStore } from "../store/chatStore.ts";
+import { streamChat, saveChatToBackend } from "../api/chat.ts";
 import { WiStars } from "react-icons/wi";
 import { MessageBubble } from "./MessageBubble";
 import { Queries } from "./Queries";
@@ -20,7 +20,13 @@ export const fetchUserInfo = async () => {
   return data;
 };
 
-export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
+export function ChatArea({
+  isSidebarOpen,
+  onOpenSidebar,
+}: {
+  isSidebarOpen: boolean;
+  onOpenSidebar: () => void;
+}) {
   const navigate = useNavigate();
   const { threadId } = useParams();
   const {
@@ -291,7 +297,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
 
           {isThinking && (
             <div className="flex gap-2 text-gray-400 text-sm  animate-pulse">
-              <Loader2 className="animate-spin" size={16} />
+              <FaSpinner className="animate-spin" size={16} />
               Thinking...
             </div>
           )}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronUp } from "lucide-react";
+import { FaChevronUp } from "react-icons/fa6";
 
 export function SearchResults({ results }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -45,7 +45,7 @@ export function SearchResults({ results }) {
           onClick={() => setIsExpanded(false)}
           className="mt-2 text-xs flex items-center gap-1 text-gray-500 hover:text-gray-700"
         >
-          <ChevronUp size={12} /> Show less
+          <FaChevronUp size={12} /> Show less
         </button>
       )}
     </div>

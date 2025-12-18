@@ -1,4 +1,4 @@
-import { Send, Square } from "lucide-react";
+import { FaPaperPlane, FaSquare } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 
 const InputField = ({
@@ -37,9 +37,9 @@ const InputField = ({
             disabled={!input.trim() && !isLoading}
           >
             {isLoading ? (
-              <Square size={20} fill="currentColor" />
+              <FaSquare size={20} fill="currentColor" />
             ) : (
-              <Send size={20} />
+              <FaPaperPlane size={20} />
             )}
           </Button>
         </div>

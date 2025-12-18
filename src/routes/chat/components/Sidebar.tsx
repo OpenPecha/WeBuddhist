@@ -22,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { FaEllipsis } from "react-icons/fa6";
 import { Button } from "@/components/ui/button.tsx";
 
 export function ChatSidebar() {
@@ -105,7 +105,7 @@ export function ChatSidebar() {
                       <DropdownMenu>
                         <DropdownMenuTrigger className="cursor-pointer" asChild>
                           <button>
-                            <MoreHorizontal size={14} />
+                            <FaEllipsis size={14} />
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent side="bottom" align="end">

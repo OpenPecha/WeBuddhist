@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
+import { FaChevronDown, FaChevronUp, FaCopy, FaCheck } from "react-icons/fa6";
 import webuddhistlogo from "../../../assets/icons/pecha_icon.png";
 import { useMutation } from "react-query";
 import axiosInstance from "../../../config/axios-config";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import { CopyIcon } from "@radix-ui/react-icons";
 
 export const fetchURL = async (id) => {
   const { data } = await axiosInstance.get(`/api/v1/search/chat/${id}`);
@@ -279,9 +280,9 @@ export function MessageBubble({ message, isStreaming = false }) {
                 className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors mb-2"
               >
                 {showSources ? (
-                  <ChevronUp size={14} />
+                  <FaChevronUp size={14} />
                 ) : (
-                  <ChevronDown size={14} />
+                  <FaChevronDown size={14} />
                 )}
                 {showSources ? "Hide" : "View"} {usedSources.length} Sources
               </button>
@@ -323,9 +324,9 @@ export function MessageBubble({ message, isStreaming = false }) {
                   className="flex items-center p-2 text-gray-500 hover:text-gray-700 transition-colors mt-2"
                 >
                   {isCopied ? (
-                    <Check size={14} className="text-green-800" />
+                    <FaCheck size={14} className="text-green-800" />
                   ) : (
-                    <Copy size={14} />
+                    <CopyIcon className="size-4 cursor-pointer" />
                   )}
                 </button>
               )}

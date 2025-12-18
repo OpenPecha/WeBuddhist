@@ -9,7 +9,13 @@ import {
   BsTwitter,
   BsYoutube,
 } from "react-icons/bs";
-import { MapPin, GraduationCap, Users, UserPlus, Pencil } from "lucide-react";
+import {
+  FaMapPin,
+  FaGraduationCap,
+  FaPencil,
+  FaUser,
+  FaUserPlus,
+} from "react-icons/fa6";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -146,7 +152,7 @@ const UserProfile = () => {
                   className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity hover:opacity-100"
                   aria-label="Change profile image"
                 >
-                  <Pencil className="h-6 w-6 text-white" />
+                  <FaPencil className="h-6 w-6 text-white" />
                 </button>
               )}
             </div>
@@ -170,7 +176,7 @@ const UserProfile = () => {
 
                 <div className="flex items-center">
                   <Badge variant="secondary" className="p-0">
-                    <Users
+                    <FaUser
                       className="h-4 w-4 text-muted-foreground"
                       aria-hidden="true"
                     />
@@ -182,7 +188,7 @@ const UserProfile = () => {
                     </span>
                   </Badge>
                   <Badge variant="secondary">
-                    <UserPlus
+                    <FaUserPlus
                       className="h-4 w-4 text-muted-foreground"
                       aria-hidden="true"
                     />
@@ -198,13 +204,13 @@ const UserProfile = () => {
                   <div className="flex flex-wrap items-center gap-4">
                     {userInfo?.location && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
+                        <FaMapPin className="h-4 w-4" />
                         <span className="capitalize">{userInfo.location}</span>
                       </div>
                     )}
                     {education && (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <GraduationCap className="h-4 w-4" />
+                        <FaGraduationCap className="h-4 w-4" />
                         <span className="capitalize">{education}</span>
                       </div>
                     )}
