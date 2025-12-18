@@ -128,7 +128,7 @@ const UserProfile = () => {
         }
         sidebar={
           <div>
-            <div className="relative mx-auto flex items-center justify-center md:block size-24">
+            <div className="relative mx-auto md:mx-0 size-24">
               <Avatar className="size-24">
                 <AvatarImage
                   src={userInfo?.avatar_url}
