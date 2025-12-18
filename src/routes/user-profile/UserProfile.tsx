@@ -65,10 +65,6 @@ const UserProfile = () => {
     }
   };
 
-  const handleCloseImageUploadModal = () => {
-    setIsImageUploadModalOpen(false);
-  };
-
   const handleEditProfile = () => {
     if (!isOwnProfile) return;
     navigate("/edit-profile", { state: { userInfo } });
@@ -268,13 +264,12 @@ const UserProfile = () => {
           </div>
         }
       />
-      {isImageUploadModalOpen && (
-        <ImageUploadModal
-          onClose={handleCloseImageUploadModal}
-          onUpload={handleImageUpload}
-          isCameFromProfile={true}
-        />
-      )}
+      <ImageUploadModal
+        open={isImageUploadModalOpen}
+        onOpenChange={setIsImageUploadModalOpen}
+        onUpload={handleImageUpload}
+        isCameFromProfile={true}
+      />
     </>
   );
 };

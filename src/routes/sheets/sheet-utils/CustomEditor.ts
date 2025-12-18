@@ -386,7 +386,10 @@ export const useCustomEditor = () => {
       root.render(
         createPortal(
           React.createElement(ImageUploadModal, {
-            onClose: handleClose,
+            open: true,
+            onOpenChange: (isOpen: boolean) => {
+              if (!isOpen) handleClose();
+            },
             onUpload: handleUpload,
           }),
           modalRoot,
