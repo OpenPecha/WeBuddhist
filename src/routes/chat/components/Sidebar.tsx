@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { BsTrash } from "react-icons/bs";
 import { IoCreateOutline } from "react-icons/io5";
 import { useChatStore } from "../store/chatStore.ts";
-import logo from "@/assets/icons/pecha_icon.png";
 import {
   Sidebar,
   SidebarContent,
@@ -52,16 +51,14 @@ export function ChatSidebar() {
 
   return (
     <Sidebar className=" border-none">
-      <SidebarHeader className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center justify-center  w-full">
-            <Link to="/">
-              <img src={logo} alt="logo" className="w-10 h-10" />
-            </Link>
-            <p className="text-lg font-medium text-[#363636]">WeBuddhist </p>
-          </div>
-        </div>
-
+      <SidebarHeader className="flex items-center py-3.5 pl-7 justify-between">
+        <Link to="/" className="flex items-center">
+          <img
+            className="h-[30px]"
+            src="/img/webuddhist_logo.svg"
+            alt="Webuddhist"
+          />
+        </Link>
         <SidebarTrigger />
       </SidebarHeader>
       <SidebarSeparator />
@@ -83,7 +80,7 @@ export function ChatSidebar() {
           <SidebarGroupContent className="max-h-4/5 overflow-y-auto">
             <SidebarMenu>
               {threads.length === 0 ? (
-                <div className="text-center text-gray-400 text-sm">
+                <div className="text-center text-faded-grey text-sm">
                   No chats yet
                 </div>
               ) : (

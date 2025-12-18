@@ -238,7 +238,7 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
   }
 
   return (
-    <div className="flex-1 overflow-y-scroll flex flex-col h-full bg-white relative">
+    <div className=" overflow-y-scroll rounded-lg  relative flex flex-col h-full bg-white">
       {!isSidebarOpen && (
         <button
           onClick={onOpenSidebar}
@@ -301,37 +301,13 @@ export function ChatArea({ isSidebarOpen, onOpenSidebar }) {
           <div ref={messagesEndRef} />
         </div>
       </div>
-
-      <div className="bg-linear-to-t from-white via-white to-transparent">
-        <div className="p-2 md:max-w-3xl mx-auto">
-          <form onSubmit={handleSubmit} className="relative">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a question about Buddhist texts..."
-              className="w-full p-4  rounded-full border-2 border-gray-200 bg-white text-gray-900 focus:outline-none"
-              disabled={isLoading}
-            />
-            <button
-              type={isLoading ? "button" : "submit"}
-              onClick={isLoading ? handleStop : undefined}
-              disabled={!input.trim() && !isLoading}
-              className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded transition-colors ${
-                isLoading
-                  ? "text-[#9daabd]"
-                  : "text-[#18345D] disabled:opacity-50 disabled:cursor-not-allowed"
-              }`}
-            >
-              {isLoading ? (
-                <Square size={20} fill="currentColor" />
-              ) : (
-                <Send size={20} />
-              )}
-            </button>
-          </form>
-        </div>
-      </div>
+      <InputField
+        input={input}
+        setInput={setInput}
+        isLoading={isLoading}
+        handleSubmit={handleSubmit}
+        handleStop={handleStop}
+      />
     </div>
   );
 }
