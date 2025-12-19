@@ -314,8 +314,8 @@ const SheetDetailPage = ({
     return (
       <div className="flex items-center justify-between border-y border-gray-300 py-3 text-gray-700">
         <div className="flex items-center gap-2 text-sm">
-          <FiEye className="cursor-pointer opacity-70 transition-opacity duration-200 hover:opacity-100" />
-          <p className="m-0">{sheetData.views || 0}</p>
+          {/* <FiEye className="cursor-pointer opacity-70 transition-opacity duration-200 hover:opacity-100" />
+          <p className="m-0">{sheetData.views || 0}</p> */}
         </div>
         <div className="flex items-center space-x-4">
           {sheetData.publisher.email === userInfo?.email && (
