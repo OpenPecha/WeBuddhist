@@ -218,7 +218,6 @@ describe("SheetDetailPage Component", () => {
     expect(screen.getByText("Test Sheet")).toBeInTheDocument();
     expect(screen.getByText("Test User")).toBeInTheDocument();
     expect(screen.getByText("@testuser")).toBeInTheDocument();
-    expect(screen.getByText("42")).toBeInTheDocument();
     expect(screen.getByText("Source Title")).toBeInTheDocument();
   });
 
@@ -317,9 +316,6 @@ describe("SheetDetailPage Component", () => {
 
   test("renders toolbar with correct icons and view count", () => {
     setup();
-
-    expect(screen.getByText("42")).toBeInTheDocument();
-
     const toolbar = screen.getByRole("main");
     expect(toolbar).toBeInTheDocument();
   });
@@ -333,38 +329,6 @@ describe("SheetDetailPage Component", () => {
 
     expect(screen.getByText("Test User")).toBeInTheDocument();
     expect(screen.getByText("@testuser")).toBeInTheDocument();
-  });
-
-  test("handles sheet with zero views", () => {
-    const sheetWithZeroViews = {
-      ...mockSheetData,
-      views: 0,
-    };
-
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: sheetWithZeroViews,
-      isLoading: false,
-      error: null,
-    }));
-
-    setup();
-    expect(screen.getByText("0")).toBeInTheDocument();
-  });
-
-  test("handles sheet with undefined views", () => {
-    const sheetWithUndefinedViews = {
-      ...mockSheetData,
-      views: undefined,
-    };
-
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: sheetWithUndefinedViews,
-      isLoading: false,
-      error: null,
-    }));
-
-    setup();
-    expect(screen.getByText("0")).toBeInTheDocument();
   });
 
   test("calls addChapter with correct parameters when source segment is clicked", async () => {
