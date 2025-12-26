@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ChatArea } from "./components/ChatArea";
 import { useChatStore } from "./store/chatStore";
 import { ChatSidebar } from "./components/Sidebar";
@@ -28,7 +28,7 @@ export default function Chat() {
     <SidebarProvider>
       <div className="flex h-screen w-full">
         <ChatSidebar />
-        <div className="flex-1 bg-sidebar md:py-4 md:pl-4">
+        <div className="flex-1 bg-sidebar">
           <ChatArea
             isSidebarOpen={isSidebarOpen}
             onOpenSidebar={() => setIsSidebarOpen(true)}

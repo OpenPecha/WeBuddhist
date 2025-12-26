@@ -251,7 +251,7 @@ export function MessageBubble({ message, isStreaming = false }) {
             ${isUser ? " text-black " : "bg-white text-gray-800"}
           `}
           >
-            <div className="mt-3">
+            <div className="mt-3 prose-sm prose-neutral prose-a:text-accent-foreground/50">
               {!isStreaming &&
                 (content.length === 0 || content[0] === "") &&
                 "I couldn't find an answer to this within my library of Buddhist texts. Please try rephrasing your question or asking about a different concept."}

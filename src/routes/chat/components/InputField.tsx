@@ -15,10 +15,10 @@ const InputField = ({
   handleStop: () => void;
 }) => {
   return (
-    <div className="  pt-2 px-2 border-t-2 border-x-2 border-[#f1f1f1] mx-auto rounded-t-xl w-screen md:max-w-3xl bg-[#F5F5F5]">
+    <div className="w-screen md:max-w-3xl">
       <form
         onSubmit={handleSubmit}
-        className="flex shadow flex-col border items-center justify-between border-[#ffffff] bg-[#ffffff] text-gray-900 p-4 w-full rounded-t-2xl  md:rounded-2xl"
+        className="flex  flex-col border items-center justify-between border-[#e4e3e3] bg-[#ffffff] text-gray-900 p-4 w-full rounded-t-2xl  md:rounded-2xl"
       >
         <textarea
           value={input}

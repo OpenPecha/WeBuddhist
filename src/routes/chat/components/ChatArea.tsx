@@ -209,9 +209,8 @@ export function ChatArea({
 
   if (!activeThread?.messages?.length) {
     return (
-      <div className="flex-1 rounded-lg flex  items-end justify-end h-full bg-white">
-        <div className="text-center w-full h-full  justify-between items-center flex flex-col gap-y-4 ">
-          <div />
+      <div className="flex-1 flex h-full bg-white">
+        <div className="text-center w-full h-full  justify-center items-center flex flex-col gap-y-4 ">
           <div>
             <p
               style={{
