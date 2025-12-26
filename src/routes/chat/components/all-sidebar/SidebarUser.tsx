@@ -33,14 +33,6 @@ export function SidebarUser({
   onProfileClick,
   onLogoutClick,
 }: SidebarUserProps) {
-  const initials =
-    name
-      ?.split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((n) => n[0]?.toUpperCase())
-      .join("") || "U";
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -52,9 +44,7 @@ export function SidebarUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={avatarUrl} alt={name} />
-                <AvatarFallback className="rounded-lg">
-                  {initials}
-                </AvatarFallback>
+                <AvatarFallback className="rounded-lg">P</AvatarFallback>
               </Avatar>
 
               <div className="ml-2 grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
@@ -65,8 +55,6 @@ export function SidebarUser({
                   </span>
                 ) : null}
               </div>
-
-              <FaEllipsis className="ml-auto size-4 group-data-[collapsible=icon]:ml-0" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 

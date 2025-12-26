@@ -26,6 +26,7 @@ import { FaEllipsis } from "react-icons/fa6";
 import { HistoryIcon } from "@/utils/Icon.tsx";
 import { SidebarUser } from "./all-sidebar/SidebarUser.tsx";
 import smallimage from "@/assets/icons/pecha_icon.png";
+import { CiLocationArrow1 } from "react-icons/ci";
 
 export function ChatSidebar() {
   const navigate = useNavigate();
@@ -59,22 +60,13 @@ export function ChatSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-right">
-      <SidebarHeader className="flex items-center py-4 justify-between group-data-[collapsible=icon]:flex-col">
+      <SidebarHeader className="flex items-center py-4 px-2 justify-between group-data-[collapsible=icon]:flex-col">
         <Link
           to="/"
           className="flex items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full"
           aria-label="Home"
         >
-          <img
-            className="h-[25px] group-data-[collapsible=icon]:hidden"
-            src="/img/webuddhist_logo.svg"
-            alt="Webuddhist"
-          />
-          <img
-            className="hidden group-data-[collapsible=icon]:block h-[30px]"
-            src={smallimage}
-            alt="Webuddhist"
-          />
+          <img className="h-[30px]" src={smallimage} alt="Webuddhist" />
         </Link>
         <SidebarTrigger className="group-data-[collapsible=icon]" />
       </SidebarHeader>
@@ -155,6 +147,18 @@ export function ChatSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <Link to="/">
+        <div className="text-center bg-background group/nav-button p-2 flex items-center border rounded-sm m-2 justify-center gap-2 text-faded-grey text-sm group-data-[collapsible=icon]:hidden">
+          <CiLocationArrow1
+            size={16}
+            className="cursor-pointer group-hover/nav-button:rotate-45 transition-transform duration-300"
+            onClick={() => navigate("/")}
+          />
+          Navigate back to homepage
+        </div>
+      </Link>
+      <SidebarSeparator />
+
       <SidebarFooter>
         <SidebarUser
           name={user.name}

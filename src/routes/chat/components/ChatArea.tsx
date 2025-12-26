@@ -8,7 +8,6 @@ import { MessageBubble } from "./MessageBubble";
 import { Queries } from "./Queries";
 import { WritingIndicator } from "./WritingIndicator";
 import { NavbarIcon } from "../../../utils/Icon";
-import Questions from "./questions/Questions";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "../../../config/AuthContext";
 import { useQuery } from "react-query";
@@ -209,35 +208,21 @@ export function ChatArea({
 
   if (!activeThread?.messages?.length) {
     return (
-      <div className="flex-1 flex h-full bg-white">
-        <div className="text-center w-full h-full  justify-center items-center flex flex-col gap-y-4 ">
-          <div>
-            <p
-              style={{
-                opacity: 0,
-                animation: "fadeInUp 0.6s ease-out forwards",
-                animationDelay: `0.1s`,
-              }}
-              className="text-xl flex items-center justify-center gap-x-2 font-medium text-[#777777] md:text-2xl"
-            >
-              Explore Buddhist Wisdom{" "}
-              <span>
-                <WiStars size={40} />
-              </span>
-            </p>
-            <Questions onQuestionClick={handleQuestionClick} />
-          </div>
-
-          <div className="bg-linear-to-t from-white via-white to-transparent">
-            <InputField
-              input={input}
-              setInput={setInput}
-              isLoading={isLoading}
-              handleSubmit={handleSubmit}
-              handleStop={handleStop}
-            />
-          </div>
-        </div>
+      <div className="text-center w-full h-full justify-center items-center flex flex-col bg-white">
+        <p className="text-xl flex items-center justify-center gap-x-2 p-4 font-medium text-faded-grey md:text-2xl">
+          Explore Buddhist Wisdom{" "}
+          <span>
+            {" "}
+            <WiStars size={40} />{" "}
+          </span>
+        </p>
+        <InputField
+          input={input}
+          setInput={setInput}
+          isLoading={isLoading}
+          handleSubmit={handleSubmit}
+          handleStop={handleStop}
+        />
       </div>
     );
   }
@@ -306,13 +291,15 @@ export function ChatArea({
           <div ref={messagesEndRef} />
         </div>
       </div>
-      <InputField
-        input={input}
-        setInput={setInput}
-        isLoading={isLoading}
-        handleSubmit={handleSubmit}
-        handleStop={handleStop}
-      />
+      <div className="w-full flex justify-center">
+        <InputField
+          input={input}
+          setInput={setInput}
+          isLoading={isLoading}
+          handleSubmit={handleSubmit}
+          handleStop={handleStop}
+        />
+      </div>
     </div>
   );
 }
