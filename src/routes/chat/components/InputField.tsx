@@ -19,11 +19,11 @@ const InputField = ({
   const formRef = useRef<HTMLFormElement>(null);
 
   return (
-    <div className="w-screen md:max-w-3xl">
+    <div className="w-screen md:max-w-3xl border p-2 rounded-4xl">
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="flex flex-col items-center justify-between border rounded-4xl shadow-xs bg-[#ffffff] text-gray-900 p-4 w-full"
+        className="flex flex-col items-center justify-between border rounded-3xl bg-secondary p-4 w-full"
       >
         <textarea
           value={input}

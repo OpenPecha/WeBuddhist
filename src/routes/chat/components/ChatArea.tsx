@@ -73,19 +73,8 @@ export function ChatArea({
       setIsThinking(false);
     }
   };
-
-  const handleQuestionClick = (questionText) => {
-    if (isLoading) return;
-
-    const newThreadId = createThread();
-    navigate(`/ai/${newThreadId}`);
-
-    submitQuestion(questionText, newThreadId);
-  };
-
   const submitQuestion = async (userMessageContent, threadId) => {
     addMessage(threadId, { role: "user", content: userMessageContent });
-
     addMessage(threadId, { role: "assistant", content: "" });
     setLoading(true);
     setIsThinking(true);
@@ -209,7 +198,7 @@ export function ChatArea({
   if (!activeThread?.messages?.length) {
     return (
       <div className="text-center w-full h-full justify-center items-center flex flex-col bg-white">
-        <p className="text-xl flex items-center justify-center gap-x-2 p-4 font-medium text-faded-grey md:text-2xl">
+        <p className="text-xl flex items-center justify-center gap-x-2 p-4  md:text-2xl">
           Explore Buddhist Wisdom{" "}
           <span>
             {" "}
