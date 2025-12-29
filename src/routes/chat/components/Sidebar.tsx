@@ -160,7 +160,7 @@ export function ChatSidebar() {
       <SidebarSeparator />
 
       <SidebarFooter>
-        <SidebarUser
+        {/* <SidebarUser
           name={user.name}
           email={user.email}
           avatarUrl={user.avatarUrl}
@@ -168,7 +168,7 @@ export function ChatSidebar() {
           onLogoutClick={() => {
             navigate("/login");
           }}
-        />
+        /> */}
       </SidebarFooter>
     </Sidebar>
   );
