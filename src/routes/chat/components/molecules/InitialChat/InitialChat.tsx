@@ -46,10 +46,7 @@ const InitialChat = () => {
 
     const userQuery = input;
     setInput("");
-
-    // Add user message
     addUserMessage(userQuery);
-    // Add empty assistant message
     addAssistantMessage();
 
     setLoading(true);
@@ -59,7 +56,6 @@ const InitialChat = () => {
     let currentSearchResults: any[] = [];
     let currentQueries: any = null;
 
-    // Create new AbortController
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
