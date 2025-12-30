@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { CiLocationArrow1 } from "react-icons/ci";
 import { useChat } from "../../../context/ChatContext";
-import { streamChatAPI } from "../ChatPage/ChatPage";
+import { streamChatAPI } from "../../../services/chatService";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "@/config/AuthContext";
 import { useQuery } from "react-query";

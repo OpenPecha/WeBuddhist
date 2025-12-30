@@ -3,9 +3,7 @@ import { ChatSidebar } from "./components/molecules/Sidebar-components/Sidebar";
 import ChatNavbar from "./components/molecules/Sidebar-components/ChatNavbar";
 import ChatFooter from "./components/molecules/Sidebar-components/ChatFooter";
 import InitialChat from "./components/molecules/InitialChat/InitialChat";
-import ChatPage, {
-  streamChatAPI,
-} from "./components/molecules/ChatPage/ChatPage";
+import ChatPage from "./components/molecules/ChatPage/ChatPage";
 import { ChatProvider, useChat } from "./context/ChatContext";
 import InputField from "./components/atom/InputField";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -13,6 +11,7 @@ import { useAuth } from "@/config/AuthContext";
 import { useQuery } from "react-query";
 import axiosInstance from "@/config/axios-config";
 import { useState, useRef } from "react";
+import { useChatMutation } from "./hooks/useChatMutation";
 
 const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
@@ -42,13 +41,15 @@ const ChatContent = () => {
     enabled: isLoggedIn,
   });
 
+  const chatMutation = useChatMutation();
+
   const getUserEmail = () => {
     return user?.email || userInfo?.email || "test@webuddhist";
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || chatMutation.isLoading) return;
 
     const userQuery = input;
     setInput("");
@@ -64,77 +65,85 @@ const ChatContent = () => {
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
-    await streamChatAPI(
+    chatMutation.mutate(
       {
         email: getUserEmail(),
         query: userQuery,
         application: "webuddist",
         device_type: "web",
         ...(threadId && { thread_id: threadId }),
+        callbacks: {
+          onToken: (token) => {
+            setThinking(false);
+            fullResponse += token;
+            updateLastMessage(
+              fullResponse,
+              currentSearchResults,
+              currentQueries,
+              false,
+            );
+          },
+          onSearchResults: (results) => {
+            setThinking(false);
+            currentSearchResults = [...results];
+            updateLastMessage(
+              fullResponse,
+              currentSearchResults,
+              currentQueries,
+              false,
+            );
+          },
+          onQueries: (queries) => {
+            setThinking(false);
+            currentQueries = queries;
+            updateLastMessage(
+              fullResponse,
+              currentSearchResults,
+              currentQueries,
+              false,
+            );
+          },
+          onThreadId: (id) => {
+            if (!threadId) {
+              setThreadId(id);
+            }
+          },
+          onComplete: () => {
+            updateLastMessage(
+              fullResponse,
+              currentSearchResults,
+              currentQueries,
+              true,
+            );
+            setLoading(false);
+            setThinking(false);
+            abortControllerRef.current = null;
+          },
+          onError: (error) => {
+            if (error.name === "AbortError") {
+              return;
+            }
+            console.error("Chat error:", error);
+            updateLastMessage(
+              fullResponse + "\n\n[Error: Failed to get response]",
+              currentSearchResults,
+              currentQueries,
+              true,
+            );
+            setLoading(false);
+            setThinking(false);
+            abortControllerRef.current = null;
+          },
+          signal: abortController.signal,
+        },
       },
       {
-        onToken: (token) => {
-          setThinking(false);
-          fullResponse += token;
-          updateLastMessage(
-            fullResponse,
-            currentSearchResults,
-            currentQueries,
-            false,
-          );
-        },
-        onSearchResults: (results) => {
-          setThinking(false);
-          currentSearchResults = [...results];
-          updateLastMessage(
-            fullResponse,
-            currentSearchResults,
-            currentQueries,
-            false,
-          );
-        },
-        onQueries: (queries) => {
-          setThinking(false);
-          currentQueries = queries;
-          updateLastMessage(
-            fullResponse,
-            currentSearchResults,
-            currentQueries,
-            false,
-          );
-        },
-        onThreadId: (id) => {
-          if (!threadId) {
-            setThreadId(id);
-          }
-        },
-        onComplete: () => {
-          updateLastMessage(
-            fullResponse,
-            currentSearchResults,
-            currentQueries,
-            true,
-          );
-          setLoading(false);
-          setThinking(false);
-          abortControllerRef.current = null;
-        },
         onError: (error) => {
-          if (error.name === "AbortError") {
-            return;
-          }
-          console.error("Chat error:", error);
-          updateLastMessage(
-            fullResponse + "\n\n[Error: Failed to get response]",
-            currentSearchResults,
-            currentQueries,
-            true,
-          );
+          console.error("Mutation error:", error);
           setLoading(false);
           setThinking(false);
           abortControllerRef.current = null;
         },
-        signal: abortController.signal,
       },
     );
   };
