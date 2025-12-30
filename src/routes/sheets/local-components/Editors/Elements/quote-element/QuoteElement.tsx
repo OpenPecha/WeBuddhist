@@ -1,0 +1,21 @@
+const QuoteElement = (props: any) => {
+  const { attributes, children, element } = props;
+
+  const quoteStyle = {
+    backgroundColor: "#f5f5f5",
+    borderLeft: "4px solid #ccc",
+    padding: "10px 15px",
+    margin: "10px 0",
+    fontStyle: "italic",
+    color: "#555",
+    textAlign: element.align || "left",
+    whiteSpace: "pre-wrap",
+  };
+  return (
+    <blockquote style={quoteStyle} {...attributes}>
+      {children}
+    </blockquote>
+  );
+};
+
+export default QuoteElement;

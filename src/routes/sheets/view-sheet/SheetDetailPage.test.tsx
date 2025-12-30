@@ -1,0 +1,1304 @@
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import * as reactQuery from "react-query";
+import "@testing-library/jest-dom";
+import {
+  mockAxios,
+  mockReactQuery,
+  mockTolgee,
+  mockUseAuth,
+} from "../../../test-utils/CommonMocks.ts";
+import { vi, beforeEach, afterEach, describe, test, expect } from "vitest";
+import { QueryClient, QueryClientProvider } from "react-query";
+import axiosInstance from "../../../config/axios-config.ts";
+import SheetDetailPageWithPanelContext, {
+  fetchSheetData,
+  deleteSheet,
+} from "./SheetDetailPage.tsx";
+import { BrowserRouter as Router, useParams } from "react-router-dom";
+import { TolgeeProvider } from "@tolgee/react";
+import * as Constants from "../sheet-utils/Constant.ts";
+
+mockAxios();
+mockUseAuth();
+mockReactQuery();
+
+axiosInstance.delete = vi.fn();
+
+vi.mock("../../resources-side-panel/Resources", () => ({
+  default: ({ segmentId, handleClose }) => (
+    <div data-testid="resources-panel">
+      <button onClick={handleClose}>Close</button>
+      <div>Resources for segment: {segmentId}</div>
+    </div>
+  ),
+}));
+
+vi.mock("../../chapterV2/utils/resources/Resources.jsx", () => ({
+  default: ({ segmentId, handleClose }) => (
+    <div data-testid="resources-panel">
+      <button onClick={handleClose}>Close</button>
+      <div>Resources for segment: {segmentId}</div>
+    </div>
+  ),
+}));
+
+vi.mock("react-youtube", () => ({
+  default: ({ videoId }) => (
+    <div data-testid="youtube-player" data-videoid={videoId}>
+      YouTube Player: {videoId}
+    </div>
+  ),
+}));
+
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useParams: vi.fn(),
+    useSearchParams: vi.fn(() => [new URLSearchParams(), vi.fn()]),
+    useNavigate: vi.fn(() => mockNavigate),
+  };
+});
+
+const mockNavigate = vi.fn();
+
+vi.mock(
+  "../local-components/Editors/Elements/pecha-element/PechaElement.jsx",
+  () => ({
+    fetchSegmentDetails: vi.fn(),
+  }),
+);
+
+import { fetchSegmentDetails } from "../local-components/Editors/Elements/pecha-element/PechaElement.js";
+const mockFetchSegmentDetails = vi.mocked(fetchSegmentDetails);
+
+describe("SheetDetailPage Component", () => {
+  const queryClient = new QueryClient();
+  const mockSheetData = {
+    sheet_title: "Test Sheet",
+    views: 42,
+    publisher: {
+      name: "Test User",
+      username: "testuser",
+      avatar_url: "https://example.com/avatar.jpg",
+    },
+    content: {
+      segments: [
+        {
+          segment_id: "segment1",
+          type: "source",
+          content: "Source content",
+          language: "bo",
+          text_title: "Source Title",
+        },
+        {
+          segment_id: "segment2",
+          type: "content",
+          content: "Text content",
+        },
+        {
+          segment_id: "segment3",
+          type: "image",
+          content: "https://example.com/image.jpg",
+        },
+      ],
+    },
+  };
+
+  const mockSheetDataWithUserInfo = {
+    ...mockSheetData,
+    publisher: {
+      ...mockSheetData.publisher,
+      email: "testuser@example.com",
+    },
+    is_published: false,
+  };
+
+  const mockUserInfoData = {
+    email: "testuser@example.com",
+  };
+
+  let extractSpotifyInfoSpy;
+  let mockSetSearchParams;
+
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    mockSetSearchParams = vi.fn();
+    useParams.mockReturnValue({
+      sheetSlugAndId: "test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3",
+    });
+
+    const mockUseSearchParams = vi.fn(() => [
+      new URLSearchParams(),
+      mockSetSearchParams,
+    ]);
+
+    vi.doMock("react-router-dom", async () => {
+      const actual = await vi.importActual("react-router-dom");
+      return {
+        ...actual,
+        useParams: vi.fn().mockReturnValue({
+          sheetSlugAndId: "test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3",
+        }),
+        useSearchParams: mockUseSearchParams,
+        useNavigate: vi.fn(() => mockNavigate),
+      };
+    });
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(
+      (queryKeyOrConfig, queryFn, options) => {
+        if (Array.isArray(queryKeyOrConfig)) {
+          if (queryKeyOrConfig[0] === "shortUrl") {
+            return {
+              data: { shortUrl: "https://short.url/test" },
+              isLoading: false,
+            };
+          }
+        } else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
+          if (queryKeyOrConfig.queryKey[0] === "userInfo") {
+            return { data: mockUserInfoData, isLoading: false, error: null };
+          }
+        }
+
+        return {
+          data: mockSheetDataWithUserInfo,
+          isLoading: false,
+          error: null,
+        };
+      },
+    );
+
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: vi.fn(),
+      isLoading: false,
+    }));
+
+    extractSpotifyInfoSpy = vi
+      .spyOn(Constants, "extractSpotifyInfo")
+      .mockImplementation(() => null);
+
+    mockFetchSegmentDetails.mockResolvedValue({
+      text: {
+        text_id: "mock-text-id-123",
+        title: "Mock Text Title",
+        language: "en",
+      },
+      content: "Mock segment content",
+    });
+  });
+
+  const mockAddChapter = vi.fn();
+  const mockCurrentChapter = { id: "test-chapter", textId: "test-text-id" };
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    mockAddChapter.mockClear();
+  });
+
+  const setup = (props = {}) => {
+    const defaultProps = {
+      addChapter: mockAddChapter,
+      currentChapter: mockCurrentChapter,
+      ...props,
+    };
+
+    return render(
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+            <SheetDetailPageWithPanelContext {...defaultProps} />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>,
+    );
+  };
+
+  test("renders sheet details correctly", () => {
+    setup();
+    expect(screen.getByText("Test Sheet")).toBeInTheDocument();
+    expect(screen.getByText("Test User")).toBeInTheDocument();
+    expect(screen.getByText("@testuser")).toBeInTheDocument();
+    expect(screen.getByText("Source Title")).toBeInTheDocument();
+  });
+
+  test("displays loading state when data is being fetched", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: null,
+      isLoading: true,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
+  });
+
+  test("displays not found message when sheet data is null", () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: null,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(
+      screen.getByText("text_category.message.notfound"),
+    ).toBeInTheDocument();
+  });
+
+  test("displays not found message when segments array is empty", () => {
+    const emptySheetData = {
+      ...mockSheetData,
+      content: {
+        segments: [],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: emptySheetData,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(
+      screen.getByText("text_category.message.notfound"),
+    ).toBeInTheDocument();
+  });
+
+  test("displays not found message when fetchSheetData fails", async () => {
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: null,
+      isLoading: false,
+      error: new Error("Failed to fetch sheet"),
+    }));
+    axiosInstance.get.mockRejectedValueOnce(new Error("Failed to fetch sheet"));
+
+    setup();
+    expect(
+      screen.getByText("text_category.message.notfound"),
+    ).toBeInTheDocument();
+  });
+
+  test("renders video segment correctly", () => {
+    const videoSheetData = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "video1",
+            type: "video",
+            content: "dQw4w9WgXcQ",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: videoSheetData,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    const youtubePlayer = screen.getByTestId("youtube-player");
+    expect(youtubePlayer).toBeInTheDocument();
+    expect(youtubePlayer).toHaveAttribute("data-videoid", "dQw4w9WgXcQ");
+    expect(screen.getByText("YouTube Player: dQw4w9WgXcQ")).toBeInTheDocument();
+  });
+
+  test("renders different segment types correctly", () => {
+    setup();
+
+    expect(screen.getByText("Source Title")).toBeInTheDocument();
+    expect(screen.getByText("Text content")).toBeInTheDocument();
+    expect(screen.getByAltText("Sheet content")).toBeInTheDocument();
+  });
+
+  test("renders toolbar with correct icons and view count", () => {
+    setup();
+    const toolbar = screen.getByRole("main");
+    expect(toolbar).toBeInTheDocument();
+  });
+
+  test("renders user info with avatar, name and username", () => {
+    setup();
+
+    const avatar = screen.getByAltText("user");
+    expect(avatar).toBeInTheDocument();
+    expect(avatar).toHaveAttribute("src", "https://example.com/avatar.jpg");
+
+    expect(screen.getByText("Test User")).toBeInTheDocument();
+    expect(screen.getByText("@testuser")).toBeInTheDocument();
+  });
+
+  test("calls addChapter with correct parameters when source segment is clicked", async () => {
+    setup();
+
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+
+    await waitFor(() => {
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: "mock-text-id-123",
+          segmentId: "segment1",
+        },
+        mockCurrentChapter,
+        true,
+      );
+    });
+  });
+
+  test("calls addChapter when provided as prop", async () => {
+    const mockAddChapterLocal = vi.fn();
+    setup({ addChapter: mockAddChapterLocal });
+
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+
+    await waitFor(() => {
+      expect(mockAddChapterLocal).toHaveBeenCalledWith(
+        {
+          textId: "mock-text-id-123",
+          segmentId: "segment1",
+        },
+        mockCurrentChapter,
+        true,
+      );
+    });
+  });
+
+  test("handles fetchSegmentDetails returning data without text property", async () => {
+    mockFetchSegmentDetails.mockResolvedValueOnce({
+      text_id: "fallback-text-id-456",
+      content: "Mock segment content",
+    });
+
+    setup();
+
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+
+    await waitFor(() => {
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: "fallback-text-id-456",
+          segmentId: "segment1",
+        },
+        mockCurrentChapter,
+        true,
+      );
+    });
+  });
+
+  test("handles fetchSegmentDetails returning data with both text.text_id and text_id undefined", async () => {
+    mockFetchSegmentDetails.mockResolvedValueOnce({
+      content: "Mock segment content",
+    });
+
+    setup();
+
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+
+    await waitFor(() => {
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment1");
+    });
+
+    expect(mockAddChapter).not.toHaveBeenCalled();
+  });
+
+  test("calls fetchSegmentDetails with correct segment_id", async () => {
+    setup();
+
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+
+    await waitFor(() => {
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment1");
+    });
+  });
+
+  test("source button click is async and waits for fetchSegmentDetails", async () => {
+    let resolvePromise;
+    const pendingPromise = new Promise((resolve) => {
+      resolvePromise = resolve;
+    });
+
+    mockFetchSegmentDetails.mockReturnValueOnce(pendingPromise);
+
+    setup();
+
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    fireEvent.click(sourceButton);
+
+    expect(mockAddChapter).not.toHaveBeenCalled();
+
+    resolvePromise({
+      text: {
+        text_id: "async-text-id",
+        title: "Async Text Title",
+        language: "en",
+      },
+    });
+
+    await waitFor(() => {
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        {
+          textId: "async-text-id",
+          segmentId: "segment1",
+        },
+        mockCurrentChapter,
+        true,
+      );
+    });
+  });
+
+  test("multiple source segment clicks call fetchSegmentDetails multiple times", async () => {
+    const sheetWithMultipleSources = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "source",
+            content: "Source content 1",
+            language: "bo",
+            text_title: "Source Title 1",
+          },
+          {
+            segment_id: "segment2",
+            type: "source",
+            content: "Source content 2",
+            language: "bo",
+            text_title: "Source Title 2",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation((config) => {
+      if (config.queryKey?.[0] === "sheetData") {
+        return {
+          data: sheetWithMultipleSources,
+          isLoading: false,
+        };
+      }
+      return {
+        data: mockUserInfoData,
+        isLoading: false,
+      };
+    });
+
+    setup();
+
+    const sourceSegmentButtons = screen.getAllByRole("button", {
+      name: /source title/i,
+    });
+    expect(sourceSegmentButtons).toHaveLength(2);
+
+    fireEvent.click(sourceSegmentButtons[0]);
+
+    await waitFor(() => {
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment1");
+    });
+
+    fireEvent.click(sourceSegmentButtons[1]);
+
+    await waitFor(() => {
+      expect(mockFetchSegmentDetails).toHaveBeenCalledWith("segment2");
+    });
+
+    expect(mockFetchSegmentDetails).toHaveBeenCalledTimes(2);
+  });
+
+  test("opens delete dialog when trash icon is clicked", () => {
+    setup();
+
+    const trashButton = screen.getByRole("button", { name: "" });
+    fireEvent.click(trashButton);
+
+    expect(screen.getByText("sheet.delete_header")).toBeInTheDocument();
+    expect(screen.getByText("sheet.delete_cancel")).toBeInTheDocument();
+    expect(screen.getByText("sheet.delete_button")).toBeInTheDocument();
+  });
+
+  test("closes delete dialog when cancel is clicked", () => {
+    setup();
+
+    const trashButton = screen.getByRole("button", { name: "" });
+    fireEvent.click(trashButton);
+
+    expect(screen.getByText("sheet.delete_header")).toBeInTheDocument();
+
+    const cancelButton = screen.getByText("sheet.delete_cancel");
+    fireEvent.click(cancelButton);
+  });
+
+  test("delete dialog remains closed initially", () => {
+    setup();
+
+    expect(screen.queryByText("sheet.delete_header")).not.toBeInTheDocument();
+  });
+
+  test("closes delete modal when cancel is clicked", () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: false,
+    }));
+
+    setup();
+
+    expect(screen.queryByTestId("delete-modal")).not.toBeInTheDocument();
+  });
+
+  test("calls deleteSheet mutation when delete is confirmed", async () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: false,
+    }));
+
+    setup();
+    expect(mockMutate).toBeDefined();
+  });
+
+  test("handles segment with no language (defaults to en)", () => {
+    const sheetWithNoLanguage = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "source",
+            content: "Source content",
+            text_title: "Source Title",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: sheetWithNoLanguage,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("Source Title")).toBeInTheDocument();
+  });
+
+  test("renders content segment with dangerouslySetInnerHTML", () => {
+    const sheetWithHtmlContent = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "content",
+            content: "<strong>Bold content</strong>",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: sheetWithHtmlContent,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("Bold content")).toBeInTheDocument();
+  });
+
+  test("renders source segment with dangerouslySetInnerHTML", () => {
+    const sheetWithHtmlSource = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "source",
+            content: "<em>Italic source</em>",
+            language: "bo",
+            text_title: "Source Title",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: sheetWithHtmlSource,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("Italic source")).toBeInTheDocument();
+  });
+
+  test("returns null for unknown segment type", () => {
+    const sheetWithUnknownSegment = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "unknown",
+            content: "Unknown content",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: sheetWithUnknownSegment,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+    expect(screen.getByText("Test Sheet")).toBeInTheDocument();
+  });
+
+  describe("handleDeleteSheet function tests", () => {
+    test("handleDeleteSheet is called with correct context", () => {
+      const mockMutate = vi.fn();
+      vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+        mutate: mockMutate,
+        isLoading: false,
+      }));
+
+      setup();
+
+      const trashButton = screen.getByRole("button", { name: "" });
+      fireEvent.click(trashButton);
+
+      fireEvent.click(screen.getByText("sheet.delete_button"));
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+    });
+
+    test("handleDeleteSheet works when mutation is in loading state", () => {
+      const mockMutate = vi.fn();
+      vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+        mutate: mockMutate,
+        isLoading: true,
+      }));
+
+      setup();
+
+      const trashButton = screen.getByRole("button", { name: "" });
+      fireEvent.click(trashButton);
+
+      expect(screen.getByText("sheet.deleting.message")).toBeInTheDocument();
+    });
+
+    test("handleDeleteSheet function is properly bound to confirm button", () => {
+      const mockMutate = vi.fn();
+      vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+        mutate: mockMutate,
+        isLoading: false,
+      }));
+
+      setup();
+
+      const trashButton = screen.getByRole("button", { name: "" });
+      fireEvent.click(trashButton);
+
+      const cancelButton = screen.getByText("sheet.delete_cancel");
+      fireEvent.click(cancelButton);
+      expect(mockMutate).not.toHaveBeenCalled();
+    });
+
+    test("handleDeleteSheet function doesn't interfere with other modal actions", () => {
+      const mockMutate = vi.fn();
+      vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+        mutate: mockMutate,
+        isLoading: false,
+      }));
+
+      setup();
+
+      const trashButton = screen.getByRole("button", { name: "" });
+      fireEvent.click(trashButton);
+
+      const cancelButton = screen.getByText("sheet.delete_cancel");
+      fireEvent.click(cancelButton);
+
+      expect(mockMutate).not.toHaveBeenCalled();
+    });
+
+    test("handleDeleteSheet maintains function reference integrity", () => {
+      const mockMutate = vi.fn();
+      vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+        mutate: mockMutate,
+        isLoading: false,
+      }));
+      const { rerender } = render(
+        <Router>
+          <QueryClientProvider client={new QueryClient()}>
+            <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+              <SheetDetailPageWithPanelContext />
+            </TolgeeProvider>
+          </QueryClientProvider>
+        </Router>,
+      );
+
+      const trashButton = screen.getByRole("button", { name: "" });
+      fireEvent.click(trashButton);
+      fireEvent.click(screen.getByText("sheet.delete_button"));
+
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  test("handleDeleteSheet error handling", () => {
+    const mockMutate = vi.fn();
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    let deleteOnErrorCallback;
+
+    vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
+      if (
+        config.mutationFn &&
+        config.mutationFn.toString().includes("deleteSheet")
+      ) {
+        deleteOnErrorCallback = config.onError;
+      }
+      return {
+        mutate: mockMutate,
+        isLoading: false,
+      };
+    });
+
+    setup();
+
+    const testError = new Error("Delete failed");
+    deleteOnErrorCallback(testError);
+
+    expect(consoleSpy).toHaveBeenCalledWith("Error deleting sheet:", testError);
+
+    consoleSpy.mockRestore();
+  });
+
+  describe("getAudioSrc function tests", () => {
+    test("renders audio segment with Spotify URL correctly", () => {
+      extractSpotifyInfoSpy.mockReturnValue({
+        type: "track",
+        id: "4iV5W9uYEdYUVa79Axb7Rh",
+      });
+
+      const audioSheetData = {
+        ...mockSheetData,
+        content: {
+          segments: [
+            {
+              segment_id: "audio1",
+              type: "audio",
+              content: "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh",
+            },
+          ],
+        },
+      };
+
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+        data: audioSheetData,
+        isLoading: false,
+      }));
+
+      setup();
+
+      const iframe = screen.getByTitle("audio-audio1");
+      expect(iframe).toBeInTheDocument();
+      expect(iframe.src).toBe(
+        "https://open.spotify.com/embed/track/4iV5W9uYEdYUVa79Axb7Rh?utm_source=generator",
+      );
+      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith(
+        "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh",
+      );
+    });
+
+    test("renders audio segment with SoundCloud URL correctly", () => {
+      extractSpotifyInfoSpy.mockReturnValue(null);
+
+      const audioSheetData = {
+        ...mockSheetData,
+        content: {
+          segments: [
+            {
+              segment_id: "audio2",
+              type: "audio",
+              content: "https://soundcloud.com/test/track",
+            },
+          ],
+        },
+      };
+
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+        data: audioSheetData,
+        isLoading: false,
+      }));
+
+      setup();
+
+      const iframe = screen.getByTitle("audio-audio2");
+      expect(iframe).toBeInTheDocument();
+      expect(iframe.src).toBe(
+        "https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Ftest%2Ftrack&color=%23ff5500",
+      );
+      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith(
+        "https://soundcloud.com/test/track",
+      );
+    });
+
+    test("handles audio segment with unsupported URL (returns null)", () => {
+      extractSpotifyInfoSpy.mockReturnValue(null);
+
+      const audioSheetData = {
+        ...mockSheetData,
+        content: {
+          segments: [
+            {
+              segment_id: "audio3",
+              type: "audio",
+              content: "https://example.com/unsupported-audio",
+            },
+          ],
+        },
+      };
+
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+        data: audioSheetData,
+        isLoading: false,
+      }));
+
+      setup();
+
+      expect(screen.queryByTitle("audio-audio3")).not.toBeInTheDocument();
+      expect(extractSpotifyInfoSpy).toHaveBeenCalledWith(
+        "https://example.com/unsupported-audio",
+      );
+    });
+
+    test("renders audio segment with Spotify album URL", () => {
+      extractSpotifyInfoSpy.mockReturnValue({
+        type: "album",
+        id: "1A2B3C4D5E6F7G8H9I0J",
+      });
+
+      const audioSheetData = {
+        ...mockSheetData,
+        content: {
+          segments: [
+            {
+              segment_id: "audio4",
+              type: "audio",
+              content: "https://open.spotify.com/album/1A2B3C4D5E6F7G8H9I0J",
+            },
+          ],
+        },
+      };
+
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+        data: audioSheetData,
+        isLoading: false,
+      }));
+
+      setup();
+
+      const iframe = screen.getByTitle("audio-audio4");
+      expect(iframe).toBeInTheDocument();
+      expect(iframe.src).toBe(
+        "https://open.spotify.com/embed/album/1A2B3C4D5E6F7G8H9I0J?utm_source=generator",
+      );
+    });
+
+    test("renders audio segment with Spotify playlist URL", () => {
+      extractSpotifyInfoSpy.mockReturnValue({
+        type: "playlist",
+        id: "37i9dQZF1DX0XUsuxWHRQd",
+      });
+
+      const audioSheetData = {
+        ...mockSheetData,
+        content: {
+          segments: [
+            {
+              segment_id: "audio5",
+              type: "audio",
+              content:
+                "https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd",
+            },
+          ],
+        },
+      };
+
+      vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+        data: audioSheetData,
+        isLoading: false,
+      }));
+
+      setup();
+
+      const iframe = screen.getByTitle("audio-audio5");
+      expect(iframe).toBeInTheDocument();
+      expect(iframe.src).toBe(
+        "https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator",
+      );
+    });
+  });
+
+  test("fetchSheetData calls the correct API endpoint", async () => {
+    axiosInstance.get.mockResolvedValueOnce({ data: mockSheetData });
+
+    const sheetId = "test-id";
+    await fetchSheetData(sheetId);
+
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      `/api/v1/sheets/${sheetId}`,
+      {
+        params: {
+          skip: 0,
+          limit: 10,
+        },
+      },
+    );
+  });
+
+  test("fetchSheetData handles API errors", async () => {
+    axiosInstance.get.mockRejectedValueOnce(new Error("API Error"));
+
+    const sheetId = "test-id";
+
+    await expect(fetchSheetData(sheetId)).rejects.toThrow("API Error");
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      `/api/v1/sheets/${sheetId}`,
+      {
+        params: {
+          skip: 0,
+          limit: 10,
+        },
+      },
+    );
+  });
+
+  test("deleteSheet calls the correct API endpoint", async () => {
+    axiosInstance.delete.mockClear();
+    axiosInstance.delete.mockImplementationOnce(() =>
+      Promise.resolve({ status: 200 }),
+    );
+
+    const sheetId = "test-id";
+    const result = await deleteSheet(sheetId);
+
+    expect(axiosInstance.delete).toHaveBeenCalledWith(
+      `/api/v1/sheets/${sheetId}`,
+    );
+    expect(result).toBe(true);
+  });
+
+  test("deleteSheet handles API errors", async () => {
+    axiosInstance.delete.mockClear();
+    axiosInstance.delete.mockRejectedValueOnce(new Error("Delete failed"));
+
+    const sheetId = "test-id";
+
+    await expect(deleteSheet(sheetId)).rejects.toThrow("Delete failed");
+    expect(axiosInstance.delete).toHaveBeenCalledWith(
+      `/api/v1/sheets/${sheetId}`,
+    );
+  });
+
+  test("deleteSheetMutation navigates to community page on success", async () => {
+    const navigateMock = vi.fn();
+    const closeModalMock = vi.fn();
+
+    const onSuccess = () => {
+      closeModalMock();
+      navigateMock("/community");
+    };
+
+    axiosInstance.delete.mockClear();
+    axiosInstance.delete.mockImplementationOnce(() =>
+      Promise.resolve({ status: 200 }),
+    );
+
+    await deleteSheet("626ddc35-a146-4bca-a3a3-b8221c501df3");
+    onSuccess();
+
+    expect(axiosInstance.delete).toHaveBeenCalledWith(
+      "/api/v1/sheets/626ddc35-a146-4bca-a3a3-b8221c501df3",
+    );
+    expect(closeModalMock).toHaveBeenCalled();
+    expect(navigateMock).toHaveBeenCalledWith("/community");
+  });
+
+  test("deleteSheetMutation handles error properly", async () => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    axiosInstance.delete.mockClear();
+    axiosInstance.delete.mockImplementationOnce(() =>
+      Promise.reject(new Error("Delete failed")),
+    );
+
+    const onError = (error) => {
+      console.error("Error deleting sheet:", error);
+    };
+
+    try {
+      await deleteSheet("626ddc35-a146-4bca-a3a3-b8221c501df3");
+    } catch (error) {
+      onError(error);
+    }
+
+    expect(axiosInstance.delete).toHaveBeenCalledWith(
+      "/api/v1/sheets/626ddc35-a146-4bca-a3a3-b8221c501df3",
+    );
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error deleting sheet:",
+      expect.any(Error),
+    );
+
+    consoleSpy.mockRestore();
+  });
+
+  test("print functionality is currently disabled", () => {
+    // Print icon is commented out in the component
+    // Verifying that FiPrinter is not rendered in the toolbar
+    setup();
+
+    // The component should render without the print functionality
+    expect(screen.getByText("Test Sheet")).toBeInTheDocument();
+  });
+
+  test("handles mutation loading state", () => {
+    const mockMutate = vi.fn();
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockMutate,
+      isLoading: true,
+    }));
+
+    setup();
+    expect(screen.getByText("Test Sheet")).toBeInTheDocument();
+  });
+
+  test("renders main container correctly", () => {
+    setup();
+
+    const mainContainer = screen.getByRole("main");
+    expect(mainContainer).toBeInTheDocument();
+  });
+
+  test("renders correctly with minimal props", () => {
+    const mockAddChapterLocal = vi.fn();
+    setup({ addChapter: mockAddChapterLocal, currentChapter: undefined });
+
+    const sourceButton = screen.getByRole("button", { name: /source title/i });
+    expect(sourceButton).toBeInTheDocument();
+
+    const mainContainer = screen.getByRole("main");
+    expect(mainContainer).toBeInTheDocument();
+  });
+
+  test("renders multiple segments of different types", () => {
+    const multiSegmentData = {
+      ...mockSheetData,
+      content: {
+        segments: [
+          {
+            segment_id: "segment1",
+            type: "source",
+            content: "Source content",
+            language: "bo",
+            text_title: "Source Title",
+          },
+          {
+            segment_id: "segment2",
+            type: "content",
+            content: "Text content",
+          },
+          {
+            segment_id: "segment3",
+            type: "image",
+            content: "https://example.com/image.jpg",
+          },
+          {
+            segment_id: "segment4",
+            type: "video",
+            content: "dQw4w9WgXcQ",
+          },
+        ],
+      },
+    };
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
+      data: multiSegmentData,
+      isLoading: false,
+      error: null,
+    }));
+
+    setup();
+
+    expect(screen.getByText("Source Title")).toBeInTheDocument();
+    expect(screen.getByText("Text content")).toBeInTheDocument();
+    expect(screen.getByAltText("Sheet content")).toBeInTheDocument();
+    expect(screen.getByTestId("youtube-player")).toBeInTheDocument();
+  });
+
+  test("renders visibility button for sheet owner and handles click", () => {
+    const mockUpdateMutation = vi.fn();
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(
+      (queryKeyOrConfig, queryFn, options) => {
+        if (Array.isArray(queryKeyOrConfig)) {
+          if (queryKeyOrConfig[0] === "shortUrl") {
+            return {
+              data: { shortUrl: "https://short.url/test" },
+              isLoading: false,
+            };
+          }
+        } else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
+          if (queryKeyOrConfig.queryKey[0] === "userInfo") {
+            return { data: mockUserInfoData, isLoading: false, error: null };
+          }
+        }
+
+        return {
+          data: mockSheetDataWithUserInfo,
+          isLoading: false,
+          error: null,
+        };
+      },
+    );
+
+    vi.spyOn(reactQuery, "useMutation").mockImplementation(() => ({
+      mutate: mockUpdateMutation,
+      isLoading: false,
+    }));
+
+    setup();
+
+    const visibilityButton = screen.getByText("Private");
+    expect(visibilityButton).toBeInTheDocument();
+
+    fireEvent.click(visibilityButton);
+    expect(mockUpdateMutation).toHaveBeenCalledWith(true);
+  });
+
+  test("handles updateSheetVisibility error", () => {
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    let visibilityOnErrorCallback;
+
+    vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
+      if (
+        config.mutationFn &&
+        config.mutationFn.toString().includes("updateSheetVisibility")
+      ) {
+        visibilityOnErrorCallback = config.onError;
+      }
+      return {
+        mutate: vi.fn(),
+        isLoading: false,
+      };
+    });
+
+    setup();
+
+    const testError = new Error("Visibility update failed");
+    visibilityOnErrorCallback(testError);
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error updating visibility:",
+      testError,
+    );
+    consoleSpy.mockRestore();
+  });
+
+  test("invalidates queries on successful visibility update", () => {
+    const mockQueryClient = { invalidateQueries: vi.fn() };
+    let visibilityOnSuccessCallback;
+
+    vi.spyOn(reactQuery, "useQueryClient").mockReturnValue(mockQueryClient);
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(
+      (queryKeyOrConfig, queryFn, options) => {
+        if (Array.isArray(queryKeyOrConfig)) {
+          if (queryKeyOrConfig[0] === "shortUrl") {
+            return {
+              data: { shortUrl: "https://short.url/test" },
+              isLoading: false,
+            };
+          }
+        } else if (queryKeyOrConfig && queryKeyOrConfig.queryKey) {
+          if (queryKeyOrConfig.queryKey[0] === "userInfo") {
+            return { data: mockUserInfoData, isLoading: false, error: null };
+          }
+        }
+
+        return {
+          data: mockSheetDataWithUserInfo,
+          isLoading: false,
+          error: null,
+        };
+      },
+    );
+
+    vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
+      if (
+        config.mutationFn &&
+        config.mutationFn.toString().includes("updateSheetVisibility")
+      ) {
+        visibilityOnSuccessCallback = config.onSuccess;
+      }
+      return {
+        mutate: vi.fn(),
+        isLoading: false,
+      };
+    });
+
+    setup();
+
+    visibilityOnSuccessCallback();
+
+    expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["sheetData", expect.any(String)],
+    });
+  });
+
+  test("edit icon click navigates to sheet edit page", () => {
+    setup();
+
+    const editIcon = document.querySelector("svg[width='20'][height='20']");
+    expect(editIcon).toBeInTheDocument();
+
+    fireEvent.click(editIcon);
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "/sheets/test-sheet-626ddc35-a146-4bca-a3a3-b8221c501df3",
+    );
+  });
+
+  test("deleteSheetMutation onSuccess closes dialog and navigates", () => {
+    let deleteOnSuccessCallback;
+
+    vi.spyOn(reactQuery, "useMutation").mockImplementation((config) => {
+      if (
+        config.mutationFn &&
+        config.mutationFn.toString().includes("deleteSheet")
+      ) {
+        deleteOnSuccessCallback = config.onSuccess;
+      }
+      return {
+        mutate: vi.fn(),
+        isLoading: false,
+      };
+    });
+
+    setup();
+
+    deleteOnSuccessCallback();
+
+    expect(mockNavigate).toHaveBeenCalledWith("/community");
+  });
+});

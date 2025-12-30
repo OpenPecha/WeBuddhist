@@ -1,0 +1,319 @@
+import { useState, useRef, useEffect } from "react";
+import { FaSpinner } from "react-icons/fa6";
+import { useNavigate, useParams } from "react-router-dom";
+import { useChatStore } from "../store/chatStore.ts";
+import { streamChat, saveChatToBackend } from "../api/chat.ts";
+import { WiStars } from "react-icons/wi";
+import { MessageBubble } from "./MessageBubble";
+import { Queries } from "./Queries";
+import { WritingIndicator } from "./WritingIndicator";
+import { NavbarIcon } from "../../../utils/Icon";
+import Questions from "./questions/Questions";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "../../../config/AuthContext";
+import { useQuery } from "react-query";
+import axiosInstance from "../../../config/axios-config";
+import InputField from "./InputField";
+
+export const fetchUserInfo = async () => {
+  const { data } = await axiosInstance.get("/api/v1/users/info");
+  return data;
+};
+
+export function ChatArea({
+  isSidebarOpen,
+  onOpenSidebar,
+}: {
+  isSidebarOpen: boolean;
+  onOpenSidebar: () => void;
+}) {
+  const navigate = useNavigate();
+  const { threadId } = useParams();
+  const {
+    threads,
+    activeThreadId,
+    addMessage,
+    updateLastMessage,
+    isLoading,
+    setLoading,
+    createThread,
+    resetToNewChat,
+  } = useChatStore();
+
+  const [input, setInput] = useState("");
+  const [isThinking, setIsThinking] = useState(false);
+  const messagesEndRef = useRef(null);
+  const abortControllerRef = useRef(null);
+
+  const { user } = useAuth0();
+  const { isLoggedIn } = useAuth();
+  const { data: userInfo } = useQuery("userInfo", fetchUserInfo, {
+    refetchOnWindowFocus: false,
+    enabled: isLoggedIn,
+  });
+
+  const activeThread = threads.find((t) => t.id === activeThreadId);
+
+  const getUserEmail = () => {
+    return user?.email || userInfo?.email || "test@webuddhist";
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [activeThread?.messages, isLoading, isThinking]);
+
+  const handleStop = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+      setLoading(false);
+      setIsThinking(false);
+    }
+  };
+
+  const handleQuestionClick = (questionText) => {
+    if (isLoading) return;
+
+    const newThreadId = createThread();
+    navigate(`/ai/${newThreadId}`);
+
+    submitQuestion(questionText, newThreadId);
+  };
+
+  const submitQuestion = async (userMessageContent, threadId) => {
+    addMessage(threadId, { role: "user", content: userMessageContent });
+
+    addMessage(threadId, { role: "assistant", content: "" });
+    setLoading(true);
+    setIsThinking(true);
+
+    const currentThread = threads.find((t) => t.id === threadId);
+    const messagesForApi = currentThread
+      ? [
+          ...currentThread.messages,
+          { role: "user", content: userMessageContent },
+        ]
+      : [{ role: "user", content: userMessageContent }];
+
+    const apiMessages = messagesForApi.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    let fullResponse = "";
+    let currentSearchResults = [];
+    let currentQueries = null;
+
+    // Create new AbortController
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
+    await streamChat(
+      apiMessages,
+      (chunk) => {
+        setIsThinking(false);
+        fullResponse += chunk;
+        updateLastMessage(
+          threadId,
+          fullResponse,
+          currentSearchResults,
+          currentQueries,
+          false,
+        );
+      },
+      (results) => {
+        setIsThinking(false);
+        currentSearchResults = [...currentSearchResults, ...results];
+        updateLastMessage(
+          threadId,
+          fullResponse,
+          currentSearchResults,
+          currentQueries,
+          false,
+        );
+      },
+      (queries) => {
+        setIsThinking(false);
+        currentQueries = queries;
+        updateLastMessage(
+          threadId,
+          fullResponse,
+          currentSearchResults,
+          currentQueries,
+          false,
+        );
+      },
+      async () => {
+        updateLastMessage(
+          threadId,
+          fullResponse,
+          currentSearchResults,
+          currentQueries,
+          true,
+        );
+        setLoading(false);
+        setIsThinking(false);
+        abortControllerRef.current = null;
+
+        try {
+          const userEmail = getUserEmail();
+          await saveChatToBackend(
+            userEmail,
+            userMessageContent,
+            fullResponse,
+            threadId,
+          );
+        } catch (error) {
+          console.error("Failed to save chat:", error);
+        }
+      },
+      (error) => {
+        if (error.name === "AbortError") {
+          return;
+        }
+        console.error("Chat error:", error);
+        updateLastMessage(
+          threadId,
+          fullResponse + "\n\n[Error: Failed to get response]",
+          currentSearchResults,
+          currentQueries,
+          true,
+        );
+        setLoading(false);
+        setIsThinking(false);
+        abortControllerRef.current = null;
+      },
+      abortController.signal,
+    );
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessageContent = input;
+    setInput("");
+
+    let threadId = activeThreadId;
+    if (!threadId) {
+      threadId = createThread();
+      navigate(`/ai/${threadId}`);
+    }
+
+    await submitQuestion(userMessageContent, threadId);
+  };
+
+  if (!activeThread?.messages?.length) {
+    return (
+      <div className="flex-1 rounded-lg flex  items-end justify-end h-full bg-white">
+        <div className="text-center w-full h-full  justify-between items-center flex flex-col gap-y-4 ">
+          <div />
+          <div>
+            <p
+              style={{
+                opacity: 0,
+                animation: "fadeInUp 0.6s ease-out forwards",
+                animationDelay: `0.1s`,
+              }}
+              className="text-xl flex items-center justify-center gap-x-2 font-medium text-[#777777] md:text-2xl"
+            >
+              Explore Buddhist Wisdom{" "}
+              <span>
+                <WiStars size={40} />
+              </span>
+            </p>
+            <Questions onQuestionClick={handleQuestionClick} />
+          </div>
+
+          <div className="bg-linear-to-t from-white via-white to-transparent">
+            <InputField
+              input={input}
+              setInput={setInput}
+              isLoading={isLoading}
+              handleSubmit={handleSubmit}
+              handleStop={handleStop}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className=" overflow-y-scroll rounded-lg  relative flex flex-col h-full bg-white">
+      {!isSidebarOpen && (
+        <button
+          onClick={onOpenSidebar}
+          className="md:absolute p-4 md:left-4 md:top-4  w-fit md:p-2"
+          aria-label="Open sidebar"
+          onKeyDown={(e) => e.key === "Enter" && onOpenSidebar()}
+        >
+          <NavbarIcon />
+        </button>
+      )}
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="max-w-3xl mx-auto">
+          {activeThread?.messages.map((message, index) => (
+            <div key={message.id} className="flex flex-col">
+              <div
+                style={{
+                  maxHeight:
+                    message.role === "assistant" &&
+                    message.queries &&
+                    isLoading &&
+                    !isThinking &&
+                    index === activeThread.messages.length - 1
+                      ? "500px"
+                      : "0",
+                  opacity:
+                    message.role === "assistant" &&
+                    message.queries &&
+                    isLoading &&
+                    !isThinking &&
+                    index === activeThread.messages.length - 1
+                      ? "1"
+                      : "0",
+                  overflow: "hidden",
+                  transition:
+                    "max-height 0.4s ease-in-out, opacity 0.3s ease-in-out",
+                }}
+              >
+                {message.role === "assistant" && message.queries && (
+                  <Queries queries={message.queries} />
+                )}
+              </div>
+              <MessageBubble
+                message={message}
+                isStreaming={
+                  isLoading && index === activeThread.messages.length - 1
+                }
+              />
+            </div>
+          ))}
+
+          {isThinking && (
+            <div className="flex gap-2 text-gray-400 text-sm  animate-pulse">
+              <FaSpinner className="animate-spin" size={16} />
+              Thinking...
+            </div>
+          )}
+
+          {isLoading && !isThinking && <WritingIndicator />}
+
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+      <InputField
+        input={input}
+        setInput={setInput}
+        isLoading={isLoading}
+        handleSubmit={handleSubmit}
+        handleStop={handleStop}
+      />
+    </div>
+  );
+}
