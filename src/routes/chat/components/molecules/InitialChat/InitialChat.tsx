@@ -1,39 +1,33 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { ChatSidebar } from "./components/molecules/Sidebar-components/Sidebar";
-import ChatNavbar from "./components/molecules/Sidebar-components/ChatNavbar";
-import ChatFooter from "./components/molecules/Sidebar-components/ChatFooter";
-import InitialChat from "./components/molecules/InitialChat/InitialChat";
-import ChatPage, {
-  streamChatAPI,
-} from "./components/molecules/ChatPage/ChatPage";
-import { ChatProvider, useChat } from "./context/ChatContext";
-import InputField from "./components/atom/InputField";
+import { WiStars } from "react-icons/wi";
+import { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { CiLocationArrow1 } from "react-icons/ci";
+import { useChat } from "../../../context/ChatContext";
+import { streamChatAPI } from "../ChatPage/ChatPage";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "@/config/AuthContext";
 import { useQuery } from "react-query";
 import axiosInstance from "@/config/axios-config";
-import { useState, useRef } from "react";
 
 const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
   return data;
 };
 
-const ChatContent = () => {
+const InitialChat = () => {
+  const [input, setInput] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const {
-    messages,
-    isLoading,
     addUserMessage,
     addAssistantMessage,
     updateLastMessage,
     setLoading,
     setThinking,
-    threadId,
     setThreadId,
+    isLoading,
   } = useChat();
-
-  const [input, setInput] = useState("");
-  const abortControllerRef = useRef<AbortController | null>(null);
 
   const { user } = useAuth0();
   const { isLoggedIn } = useAuth() as { isLoggedIn: boolean };
@@ -52,7 +46,10 @@ const ChatContent = () => {
 
     const userQuery = input;
     setInput("");
+
+    // Add user message
     addUserMessage(userQuery);
+    // Add empty assistant message
     addAssistantMessage();
 
     setLoading(true);
@@ -61,6 +58,8 @@ const ChatContent = () => {
     let fullResponse = "";
     let currentSearchResults: any[] = [];
     let currentQueries: any = null;
+
+    // Create new AbortController
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
@@ -70,7 +69,6 @@ const ChatContent = () => {
         query: userQuery,
         application: "webuddist",
         device_type: "web",
-        ...(threadId && { thread_id: threadId }),
       },
       {
         onToken: (token) => {
@@ -104,9 +102,7 @@ const ChatContent = () => {
           );
         },
         onThreadId: (id) => {
-          if (!threadId) {
-            setThreadId(id);
-          }
+          setThreadId(id);
         },
         onComplete: () => {
           updateLastMessage(
@@ -148,42 +144,67 @@ const ChatContent = () => {
     }
   };
 
-  if (messages.length === 0) {
-    return <InitialChat />;
-  }
-
   return (
-    <>
-      <ChatPage />
-      <div className="w-full flex justify-center pb-4 bg-white">
-        <InputField
-          input={input}
-          setInput={setInput}
-          isLoading={isLoading}
-          handleSubmit={handleSubmit}
-          handleStop={handleStop}
-        />
+    <div className="text-center w-full h-full justify-center items-center flex flex-col bg-white">
+      <p className="text-xl flex items-center justify-center gap-x-2 p-4  md:text-2xl">
+        Explore Buddhist Wisdom{" "}
+        <span>
+          {" "}
+          <WiStars size={40} />{" "}
+        </span>
+      </p>
+      <div className="w-screen md:max-w-3xl border p-2 rounded-4xl">
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="flex flex-col items-center justify-between border rounded-3xl bg-secondary p-4 w-full"
+        >
+          <textarea
+            value={input}
+            rows={3}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (
+                e.key === "Enter" &&
+                !e.shiftKey &&
+                !e.nativeEvent.isComposing
+              ) {
+                e.preventDefault();
+
+                if (isLoading) {
+                  handleStop();
+                  return;
+                }
+
+                if (input.trim()) {
+                  formRef.current?.requestSubmit();
+                }
+              }
+            }}
+            placeholder="Ask a question about Buddhist texts..."
+            className="w-full p-2 focus:outline-none resize-none"
+            disabled={isLoading}
+          />
+
+          <div className="flex justify-end w-full">
+            <Button
+              type={isLoading ? "button" : "submit"}
+              variant="outline"
+              size="icon"
+              onClick={isLoading ? handleStop : undefined}
+              className="cursor-pointer text-faded-grey group rounded-full hover:bg-background"
+              disabled={!input.trim() && !isLoading}
+            >
+              <CiLocationArrow1
+                size={20}
+                className="group-hover:rotate-45 text-faded-grey transition-transform duration-300"
+              />
+            </Button>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 
-export default function Chat() {
-  return (
-    <ChatProvider>
-      <SidebarProvider>
-        <div className="flex h-dvh w-full overflow-hidden">
-          <ChatSidebar />
-
-          <div className="flex min-w-0 flex-1 flex-col bg-sidebar">
-            <ChatNavbar className="shrink-0" />
-            <div className="min-h-0 flex-1 flex flex-col">
-              <ChatContent />
-            </div>
-            <ChatFooter />
-          </div>
-        </div>
-      </SidebarProvider>
-    </ChatProvider>
-  );
-}
+export default InitialChat;

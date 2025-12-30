@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { BsTrash } from "react-icons/bs";
 import { IoCreateOutline } from "react-icons/io5";
-import { useChatStore } from "../store/chatStore.ts";
 import {
   Sidebar,
   SidebarContent,
@@ -24,33 +23,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FaEllipsis } from "react-icons/fa6";
 import { HistoryIcon } from "@/utils/Icon.tsx";
-import { SidebarUser } from "./all-sidebar/SidebarUser.tsx";
+import { SidebarUser } from "./SidebarUser.tsx";
 import smallimage from "@/assets/icons/pecha_icon.png";
 import { CiLocationArrow1 } from "react-icons/ci";
 
 export function ChatSidebar() {
   const navigate = useNavigate();
-  const {
-    threads,
-    activeThreadId,
-    setActiveThread,
-    deleteThread,
-    resetToNewChat,
-  } = useChatStore() as any;
 
   const handleThreadClick = (threadId: string) => {
-    setActiveThread(threadId);
     navigate(`/ai/${threadId}`);
   };
 
   const handleNewChat = () => {
-    resetToNewChat();
     navigate("/ai/new");
   };
 
-  const handleDeleteClick = (threadId: string) => {
-    deleteThread(threadId);
-  };
+  const handleDeleteClick = (threadId: string) => {};
 
   const user = {
     name: "Your Name",
@@ -97,23 +85,21 @@ export function ChatSidebar() {
 
           <SidebarGroupContent className="max-h-4/5 overflow-y-auto w-full">
             <SidebarMenu>
-              {threads.length === 0 ? (
+              {["dummy"].length === 0 ? (
                 <div className="text-center text-faded-grey text-sm group-data-[collapsible=icon]:hidden">
                   No chats yet
                 </div>
               ) : (
-                threads.map((thread: any) => (
+                [].map((thread: any) => (
                   <SidebarMenuItem
                     key={thread.id}
                     className="group-data-[collapsible=icon]:hidden"
                   >
                     <SidebarMenuButton
                       onClick={() => handleThreadClick(thread.id)}
-                      isActive={activeThreadId === thread.id}
+                      isActive={false === thread.id}
                       className={`w-full justify-start ${
-                        activeThreadId === thread.id
-                          ? "text-primary"
-                          : "text-faded-grey"
+                        false === thread.id ? "text-primary" : "text-faded-grey"
                       }`}
                     >
                       <span className="truncate">{thread.title}</span>
@@ -160,7 +146,7 @@ export function ChatSidebar() {
       <SidebarSeparator />
 
       <SidebarFooter>
-        {/* <SidebarUser
+        <SidebarUser
           name={user.name}
           email={user.email}
           avatarUrl={user.avatarUrl}
@@ -168,7 +154,7 @@ export function ChatSidebar() {
           onLogoutClick={() => {
             navigate("/login");
           }}
-        /> */}
+        />
       </SidebarFooter>
     </Sidebar>
   );

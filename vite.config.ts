@@ -22,17 +22,11 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: true,
         },
-        "/chat": {
-          target: "https://buddhist-consensus.onrender.com",
+        "/chats": {
+          target: "https://at-chat-20299882697-4758f1e.onrender.com",
           changeOrigin: true,
-          secure: false,
-          rewrite: (path) => path.replace(/^\/chat/, ""),
-        },
-        "/webuddhist": {
-          target: "https://pecha-tool-sync-editor-1.onrender.com/webuddhist",
-          changeOrigin: true,
-          secure: false,
-          rewrite: (path) => path.replace(/^\/webuddhist/, ""),
+          secure: true,
+          rewrite: (path) => path,
         },
       },
     },

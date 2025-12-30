@@ -1,23 +1,96 @@
 import { useState, useEffect } from "react";
-import { FaChevronDown, FaChevronUp, FaCopy, FaCheck } from "react-icons/fa6";
-import webuddhistlogo from "../../../assets/icons/pecha_icon.png";
+import { FaChevronDown, FaChevronUp, FaCheck } from "react-icons/fa6";
 import { useMutation } from "react-query";
-import axiosInstance from "../../../config/axios-config";
+import axiosInstance from "../../../../config/axios-config";
+import webuddhistlogo from "@/assets/icons/pecha_icon.png";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { CopyIcon } from "@radix-ui/react-icons";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-export const fetchURL = async (id) => {
+export const fetchURL = async (id: string) => {
   const { data } = await axiosInstance.get(`/api/v1/search/chat/${id}`);
   return data;
 };
 
-export function MessageBubble({ message, isStreaming = false }) {
+interface CitationComponentProps {
+  readonly dataCitations: string;
+  readonly citationMap: Record<number, any>;
+  readonly onSourceClick: (sourceId: string) => void;
+}
+
+const CitationComponent = ({
+  dataCitations,
+  citationMap,
+  onSourceClick,
+}: CitationComponentProps) => {
+  const numbers = dataCitations
+    .split(",")
+    .map((n: string) => Number.parseInt(n.trim()))
+    .filter((n: number) => !Number.isNaN(n));
+
+  return (
+    <sup className="inline-flex gap-0.5 ml-0.5">
+      {numbers.map((number: number) => {
+        const sourceInfo = citationMap[number];
+
+        if (!sourceInfo) return null;
+
+        return (
+          <TooltipProvider key={number} delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="citation-number inline-flex items-center justify-center w-4 h-4 text-[#18345D] p-2 border border-blue-200 rounded-full cursor-pointer hover:bg-blue-50 transition-colors text-[10px] font-medium"
+                  aria-label={`Show source ${number}`}
+                >
+                  {number}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                className="max-w-xs bg-gray-50 border-gray-200"
+              >
+                <div className="flex flex-col gap-1">
+                  <span className="text-gray-400 text-xs">Source</span>
+                  <button
+                    type="button"
+                    className="text-gray-700 cursor-pointer hover:text-black transition-colors text-sm font-medium truncate text-left"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSourceClick(sourceInfo.id);
+                    }}
+                  >
+                    {sourceInfo.title}
+                  </button>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      })}
+    </sup>
+  );
+};
+
+interface MessageBubbleProps {
+  readonly message: any;
+  readonly isStreaming?: boolean;
+}
+
+export function MessageBubble({
+  message,
+  isStreaming = false,
+}: MessageBubbleProps) {
   const isUser = message.role === "user";
   const [showSources, setShowSources] = useState(false);
-  const [activePopover, setActivePopover] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
-  const [hoverTimeout, setHoverTimeout] = useState(null);
 
   const urlMutation = useMutation(fetchURL, {
     onSuccess: (data) => {
@@ -32,14 +105,9 @@ export function MessageBubble({ message, isStreaming = false }) {
 
   // Close drawer on Escape key
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") {
-        if (showSources) {
-          setShowSources(false);
-        }
-        if (activePopover !== null) {
-          setActivePopover(null);
-        }
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && showSources) {
+        setShowSources(false);
       }
     };
 
@@ -48,40 +116,14 @@ export function MessageBubble({ message, isStreaming = false }) {
       document.body.style.overflow = "hidden";
     }
 
-    if (activePopover !== null) {
-      document.addEventListener("keydown", handleEscape);
-    }
-
     return () => {
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
-  }, [showSources, activePopover]);
+  }, [showSources]);
 
-  const handleCitationMouseEnter = (uniqueId) => {
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-      setHoverTimeout(null);
-    }
-    setActivePopover(uniqueId);
-  };
-
-  const handleCitationMouseLeave = () => {
-    const timeout = setTimeout(() => {
-      setActivePopover(null);
-    }, 100);
-    setHoverTimeout(timeout);
-  };
-
-  const handleSourceClick = (sourceId) => {
+  const handleSourceClick = (sourceId: string) => {
     urlMutation.mutate(sourceId);
-  };
-
-  const handleSourceKeyDown = (event, sourceId) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      handleSourceClick(sourceId);
-    }
   };
 
   const processContent = () => {
@@ -89,23 +131,25 @@ export function MessageBubble({ message, isStreaming = false }) {
       isUser ||
       !message.searchResults ||
       message.searchResults.length === 0 ||
-      !message.isFinalized
+      !message.isComplete
     ) {
       return { content: message.content, usedSources: [], citationMap: {} };
     }
 
     let processedContent = message.content;
-    const usedSources = [];
-    const idToNumber = {};
-    const citationMap = {};
+    const usedSources: Array<{ number: number; source: any }> = [];
+    const idToNumber: Record<string, number> = {};
+    const citationMap: Record<number, any> = {};
     let citationCount = 0;
 
-    const getNumberForId = (id) => {
+    const getNumberForId = (id: string) => {
       const trimmedId = id.trim();
       if (!trimmedId) return null;
       if (idToNumber[trimmedId]) return idToNumber[trimmedId];
 
-      const source = message.searchResults?.find((s) => s.id === trimmedId);
+      const source = message.searchResults?.find(
+        (s: any) => s.id === trimmedId,
+      );
       if (source) {
         citationCount++;
         idToNumber[trimmedId] = citationCount;
@@ -120,27 +164,27 @@ export function MessageBubble({ message, isStreaming = false }) {
     const citationRegex = /\[([a-zA-Z0-9\-_,\s]{15,})\]/g;
     let citationIndex = 0;
 
-    processedContent = processedContent.replace(
+    processedContent = processedContent.replaceAll(
       citationRegex,
-      (match, idContent) => {
+      (_match: string, idContent: string) => {
         const ids = idContent
           .split(/[,\s]+/)
-          .filter((id) => id.trim().length > 0);
+          .filter((id: string) => id.trim().length > 0);
         const numbers = ids
-          .map((id) => getNumberForId(id))
-          .filter((n) => n !== null);
+          .map((id: string) => getNumberForId(id))
+          .filter((n: number | null) => n !== null);
 
         if (numbers.length > 0) {
           const currentIndex = citationIndex++;
           return `<cite data-citations="${numbers.join(",")}" data-cite-index="${currentIndex}">${numbers.join(",")}</cite>`;
         }
-        return match;
+        return _match;
       },
     );
 
     return {
       content: processedContent,
-      usedSources: usedSources.sort((a, b) => a.number - b.number),
+      usedSources: [...usedSources].sort((a, b) => a.number - b.number),
       citationMap,
     };
   };
@@ -150,7 +194,7 @@ export function MessageBubble({ message, isStreaming = false }) {
     try {
       // Remove citation IDs from content before copying
       const citationRegex = /\[([a-zA-Z0-9\-_,\s]{15,})\]/g;
-      const cleanContent = message.content.replace(citationRegex, "");
+      const cleanContent = message.content.replaceAll(citationRegex, "");
 
       // Build the copy text with sources if available
       let copyText = cleanContent.trim();
@@ -169,66 +213,6 @@ export function MessageBubble({ message, isStreaming = false }) {
     } catch (error) {
       console.error("Failed to copy message:", error);
     }
-  };
-
-  const CitationComponent = ({ dataCitations, dataCiteIndex }) => {
-    const numbers = dataCitations
-      .split(",")
-      .map((n) => parseInt(n.trim()))
-      .filter((n) => !isNaN(n));
-    const citeIndex = dataCiteIndex || 0;
-
-    return (
-      <sup className="inline-flex gap-0.5 ml-0.5 relative">
-        {numbers.map((number, idx) => {
-          const sourceInfo = citationMap[number];
-          const uniqueId = `citation-${citeIndex}-${number}-${idx}`;
-
-          return (
-            <span
-              key={idx}
-              className="relative inline-block group"
-              onMouseEnter={() => handleCitationMouseEnter(uniqueId)}
-              onMouseLeave={handleCitationMouseLeave}
-            >
-              <span
-                className="citation-number inline-flex items-center justify-center w-4 h-4 text-[#18345D] p-2 border border-blue-200 rounded-full cursor-pointer hover:bg-blue-50 transition-colors text-[10px] font-medium"
-                role="button"
-                aria-label={`Show source ${number}`}
-              >
-                {number}
-              </span>
-              {activePopover === uniqueId && sourceInfo && (
-                <div
-                  className="absolute left-1/2 transform -translate-x-1/2 z-50"
-                  style={{ top: "100%" }}
-                >
-                  <div className="px-3 py-2 mt-1 bg-gray-50 text-xs rounded-md whitespace-nowrap min-w-max max-w-xs border border-gray-200">
-                    <span className="text-gray-400 text-sm">Source</span>
-                    <div
-                      className="text-gray-700 cursor-pointer hover:text-black py-2 transition-colors max-w-[200px] truncate"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSourceClick(sourceInfo.id);
-                      }}
-                      role="button"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          handleSourceClick(sourceInfo.id);
-                        }
-                      }}
-                    >
-                      {sourceInfo.title}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </span>
-          );
-        })}
-      </sup>
-    );
   };
 
   return (
@@ -258,11 +242,14 @@ export function MessageBubble({ message, isStreaming = false }) {
               <ReactMarkdown
                 rehypePlugins={[rehypeRaw]}
                 components={{
-                  cite: ({ node, ...props }) => {
+                  cite: ({ node, ...props }: any) => {
+                    const dataCitations = props["data-citations"];
+                    if (!dataCitations) return null;
                     return (
                       <CitationComponent
-                        dataCitations={props["data-citations"]}
-                        dataCiteIndex={props["data-cite-index"]}
+                        dataCitations={dataCitations}
+                        citationMap={citationMap}
+                        onSourceClick={handleSourceClick}
                       />
                     );
                   },
@@ -276,6 +263,7 @@ export function MessageBubble({ message, isStreaming = false }) {
           {!isUser && usedSources && usedSources.length > 0 && (
             <div className=" w-full max-w-md">
               <button
+                type="button"
                 onClick={() => setShowSources(!showSources)}
                 className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors mb-2"
               >
@@ -290,17 +278,16 @@ export function MessageBubble({ message, isStreaming = false }) {
               {showSources && (
                 <div className="grid gap-2">
                   {usedSources.map(({ number, source }, index) => (
-                    <div
+                    <button
+                      type="button"
                       key={number}
-                      className="flex border-l border-[#abadb1] flex-col p-2 cursor-pointer hover:bg-gray-50 transition-colors"
+                      className="flex border-l border-[#abadb1] flex-col p-2 cursor-pointer hover:bg-gray-50 transition-colors text-left"
                       style={{
                         opacity: 0,
                         animation: "fadeInUp 0.6s ease-out forwards",
                         animationDelay: `${index * 0.1}s`,
                       }}
                       onClick={() => handleSourceClick(source.id)}
-                      onKeyDown={(e) => handleSourceKeyDown(e, source.id)}
-                      role="button"
                     >
                       <div className="flex items-center gap-2 mb-1">
                         <span className="shrink-0 w-4 h-4 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 font-bold text-[10px]">
@@ -313,13 +300,14 @@ export function MessageBubble({ message, isStreaming = false }) {
                       <div className="text-gray-500 line-clamp-2 pl-6 italic">
                         "{source.text}"
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
 
               {!isStreaming && (
                 <button
+                  type="button"
                   onClick={handleCopyMessage}
                   className="flex items-center p-2 text-gray-500 hover:text-gray-700 transition-colors mt-2"
                 >

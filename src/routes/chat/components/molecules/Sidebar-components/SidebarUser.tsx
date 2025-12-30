@@ -1,4 +1,3 @@
-import { FaEllipsis } from "react-icons/fa6";
 import { BsBoxArrowRight } from "react-icons/bs";
 import { FiUser } from "react-icons/fi";
 
