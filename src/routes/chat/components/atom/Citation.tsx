@@ -34,21 +34,22 @@ export const CitationComponent = ({
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  className="citation-number inline-flex items-center justify-center w-4 h-4 text-[#18345D] p-2 border border-blue-200 rounded-full cursor-pointer hover:bg-blue-50 transition-colors text-[10px] font-medium"
-                  aria-label={`Show source ${number}`}
+                  className="inline-flex items-center justify-center w-4 h-4 text-faded-grey p-2 border rounded-full cursor-pointer text-[10px]"
                 >
                   {number}
                 </button>
               </TooltipTrigger>
               <TooltipContent
-                side="top"
-                className="max-w-xs bg-gray-50 border-gray-200"
+                side="bottom"
+                sideOffset={5}
+                align="start"
+                className="max-w-xs"
               >
                 <div className="flex flex-col gap-1">
-                  <span className="text-gray-400 text-xs">Source</span>
+                  <span className="text-xs">Source</span>
                   <button
                     type="button"
-                    className="text-gray-700 cursor-pointer hover:text-black transition-colors text-sm font-medium truncate text-left"
+                    className="cursor-pointer text-sm truncate text-left"
                     onClick={(e) => {
                       e.stopPropagation();
                       onSourceClick(sourceInfo.id);
