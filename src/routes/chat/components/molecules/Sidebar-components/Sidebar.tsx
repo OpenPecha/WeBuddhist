@@ -1,4 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import { BsTrash } from "react-icons/bs";
 import { IoCreateOutline } from "react-icons/io5";
 import {
@@ -21,29 +23,173 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { FaEllipsis } from "react-icons/fa6";
 import { HistoryIcon } from "@/utils/Icon.tsx";
 import { SidebarUser } from "./SidebarUser.tsx";
 import smallimage from "@/assets/icons/pecha_icon.png";
 import { CiLocationArrow1 } from "react-icons/ci";
+import { useThreads } from "../../../hooks/useThreads";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/config/AuthContext";
+import { useQuery } from "react-query";
+import axiosInstance from "@/config/axios-config";
+import { useChat } from "../../../context/ChatContext";
+import { useTranslate } from "@tolgee/react";
+
+const fetchUserInfo = async () => {
+  const { data } = await axiosInstance.get("/api/v1/users/info");
+  return data;
+};
 
 export function ChatSidebar() {
   const navigate = useNavigate();
+  const { threadId, resetChat } = useChat();
+  const { t } = useTranslate();
+  const { user } = useAuth0();
+  const { isLoggedIn } = useAuth() as { isLoggedIn: boolean };
+  const { data: userInfo } = useQuery("userInfo", fetchUserInfo, {
+    refetchOnWindowFocus: false,
+    enabled: isLoggedIn,
+  });
 
-  const handleThreadClick = (threadId: string) => {
-    navigate(`/ai/${threadId}`);
+  const getUserEmail = () => {
+    return user?.email || userInfo?.email || undefined;
+  };
+
+  const {
+    threads,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    deleteThread,
+    isDeleting,
+  } = useThreads(getUserEmail());
+
+  const { ref: sentinelRef, inView: isBottomSentinelVisible } = useInView({
+    threshold: 0.1,
+    rootMargin: "50px",
+  });
+
+  const [threadToDelete, setThreadToDelete] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isBottomSentinelVisible && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [isBottomSentinelVisible, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const handleThreadClick = (clickedThreadId: string) => {
+    navigate(`/ai/${clickedThreadId}`);
   };
 
   const handleNewChat = () => {
+    resetChat();
     navigate("/ai/new");
   };
 
-  const handleDeleteClick = (threadId: string) => {};
+  const handleDeleteClick = (id: string) => {
+    setThreadToDelete(id);
+  };
 
-  const user = {
-    name: "Your Name",
-    email: "you@example.com",
-    avatarUrl: "", // optional
+  const confirmDelete = () => {
+    if (threadToDelete) {
+      deleteThread(threadToDelete);
+
+      if (threadToDelete === threadId) {
+        resetChat();
+        navigate("/ai/new");
+      }
+
+      setThreadToDelete(null);
+    }
+  };
+
+  const renderScrollSentinel = () => {
+    if (!hasNextPage || isFetchingNextPage) return null;
+    return (
+      <div
+        ref={sentinelRef}
+        className="h-5 w-full opacity-0 pointer-events-none"
+      />
+    );
+  };
+
+  const renderThreadList = () => {
+    if (isLoading) {
+      return (
+        <div className="text-center text-faded-grey text-sm p-2 group-data-[collapsible=icon]:hidden">
+          Loading...
+        </div>
+      );
+    }
+
+    if (threads.length === 0) {
+      return (
+        <div className="text-center text-faded-grey text-sm group-data-[collapsible=icon]:hidden">
+          No chats yet
+        </div>
+      );
+    }
+
+    return (
+      <>
+        {threads.map((thread) => (
+          <SidebarMenuItem
+            key={thread.id}
+            className="group-data-[collapsible=icon]:hidden"
+          >
+            <SidebarMenuButton
+              onClick={() => handleThreadClick(thread.id)}
+              isActive={threadId === thread.id}
+              className={`w-full justify-start ${
+                threadId === thread.id ? "text-primary" : "text-faded-grey"
+              }`}
+            >
+              <span className="truncate">{thread.title}</span>
+            </SidebarMenuButton>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className="cursor-pointer outline-none absolute top-1.5 right-1 opacity-0 group-hover/menu-item:opacity-100 focus:opacity-100 group-data-[collapsible=icon]:hidden"
+                asChild
+              >
+                <button
+                  aria-label="More options"
+                  className="flex aspect-square w-5 items-center justify-center rounded-md hover:bg-sidebar-accent"
+                >
+                  <FaEllipsis size={14} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="bottom" align="end">
+                <DropdownMenuItem onClick={() => handleDeleteClick(thread.id)}>
+                  <BsTrash size={14} />
+                  <span>Delete</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        ))}
+
+        {isFetchingNextPage && (
+          <div className="text-center text-faded-grey text-sm p-2">
+            Loading more...
+          </div>
+        )}
+
+        {renderScrollSentinel()}
+      </>
+    );
   };
 
   return (
@@ -84,55 +230,11 @@ export function ChatSidebar() {
           </SidebarGroupLabel>
 
           <SidebarGroupContent className="max-h-4/5 overflow-y-auto w-full">
-            <SidebarMenu>
-              {["dummy"].length === 0 ? (
-                <div className="text-center text-faded-grey text-sm group-data-[collapsible=icon]:hidden">
-                  No chats yet
-                </div>
-              ) : (
-                [].map((thread: any) => (
-                  <SidebarMenuItem
-                    key={thread.id}
-                    className="group-data-[collapsible=icon]:hidden"
-                  >
-                    <SidebarMenuButton
-                      onClick={() => handleThreadClick(thread.id)}
-                      isActive={false === thread.id}
-                      className={`w-full justify-start ${
-                        false === thread.id ? "text-primary" : "text-faded-grey"
-                      }`}
-                    >
-                      <span className="truncate">{thread.title}</span>
-                    </SidebarMenuButton>
-
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        className="cursor-pointer outline-none absolute top-1.5 right-1 opacity-0 group-hover/menu-item:opacity-100 focus:opacity-100 group-data-[collapsible=icon]:hidden"
-                        asChild
-                      >
-                        <button
-                          aria-label="More options"
-                          className="flex aspect-square w-5 items-center justify-center rounded-md hover:bg-sidebar-accent"
-                        >
-                          <FaEllipsis size={14} />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent side="bottom" align="end">
-                        <DropdownMenuItem
-                          onClick={() => handleDeleteClick(thread.id)}
-                        >
-                          <BsTrash size={14} />
-                          <span>Delete</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </SidebarMenuItem>
-                ))
-              )}
-            </SidebarMenu>
+            <SidebarMenu>{renderThreadList()}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <Link to="/">
         <div className="text-center bg-background group/nav-button p-2 flex items-center border rounded-sm m-2 justify-center gap-2 text-faded-grey text-sm group-data-[collapsible=icon]:hidden">
           <CiLocationArrow1
@@ -147,15 +249,41 @@ export function ChatSidebar() {
 
       <SidebarFooter>
         <SidebarUser
-          name={user.name}
-          email={user.email}
-          avatarUrl={user.avatarUrl}
+          name={user?.name || userInfo?.name || "Guest"}
+          email={user?.email || userInfo?.email}
+          avatarUrl={user?.picture || userInfo?.picture}
           onProfileClick={() => navigate("/profile")}
           onLogoutClick={() => {
             navigate("/login");
           }}
         />
       </SidebarFooter>
+
+      <AlertDialog
+        open={!!threadToDelete}
+        onOpenChange={(open) => !open && setThreadToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("chat.delete_header")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("chat.delete_warning_message")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="cursor-pointer bg-red-600 text-white hover:bg-red-700"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Sidebar>
   );
 }

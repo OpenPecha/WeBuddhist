@@ -28,6 +28,11 @@ export default defineConfig(({ mode }) => {
           secure: true,
           rewrite: (path) => path,
         },
+        "/threads": {
+          target: "https://at-chat-20299882697-4758f1e.onrender.com",
+          changeOrigin: true,
+          secure: true,
+        },
       },
     },
     test: {
