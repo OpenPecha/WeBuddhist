@@ -5,14 +5,7 @@ import { CiLocationArrow1 } from "react-icons/ci";
 import { useChat } from "../../../context/ChatContext";
 import { streamChatAPI } from "../../../services/chatService";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useAuth } from "@/config/AuthContext";
-import { useQuery } from "react-query";
-import axiosInstance from "@/config/axios-config";
-
-const fetchUserInfo = async () => {
-  const { data } = await axiosInstance.get("/api/v1/users/info");
-  return data;
-};
+import { useUserInfo } from "@/hooks/useUserInfo";
 
 const InitialChat = () => {
   const [input, setInput] = useState("");
@@ -30,11 +23,7 @@ const InitialChat = () => {
   } = useChat();
 
   const { user } = useAuth0();
-  const { isLoggedIn } = useAuth() as { isLoggedIn: boolean };
-  const { data: userInfo } = useQuery("userInfo", fetchUserInfo, {
-    refetchOnWindowFocus: false,
-    enabled: isLoggedIn,
-  });
+  const { data: userInfo } = useUserInfo();
 
   const getUserEmail = () => {
     return user?.email || userInfo?.email || "test@webuddhist";
@@ -46,10 +35,7 @@ const InitialChat = () => {
 
     const userQuery = input;
     setInput("");
-
-    // Add user message
     addUserMessage(userQuery);
-    // Add empty assistant message
     addAssistantMessage();
 
     setLoading(true);
@@ -59,7 +45,6 @@ const InitialChat = () => {
     let currentSearchResults: any[] = [];
     let currentQueries: any = null;
 
-    // Create new AbortController
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 

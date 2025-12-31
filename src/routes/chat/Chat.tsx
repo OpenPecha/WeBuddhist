@@ -7,16 +7,9 @@ import ChatPage from "./components/molecules/ChatPage/ChatPage";
 import { ChatProvider, useChat } from "./context/ChatContext";
 import InputField from "./components/atom/InputField";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useAuth } from "@/config/AuthContext";
-import { useQuery } from "react-query";
-import axiosInstance from "@/config/axios-config";
 import { useState, useRef } from "react";
 import { useChatMutation } from "./hooks/useChatMutation";
-
-const fetchUserInfo = async () => {
-  const { data } = await axiosInstance.get("/api/v1/users/info");
-  return data;
-};
+import { useUserInfo } from "@/hooks/useUserInfo";
 
 const ChatContent = () => {
   const {
@@ -35,11 +28,7 @@ const ChatContent = () => {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const { user } = useAuth0();
-  const { isLoggedIn } = useAuth() as { isLoggedIn: boolean };
-  const { data: userInfo } = useQuery("userInfo", fetchUserInfo, {
-    refetchOnWindowFocus: false,
-    enabled: isLoggedIn,
-  });
+  const { data: userInfo } = useUserInfo();
 
   const chatMutation = useChatMutation();
 
