@@ -40,12 +40,6 @@ export function ChatSidebar() {
 
   const handleDeleteClick = (threadId: string) => {};
 
-  const user = {
-    name: "Your Name",
-    email: "you@example.com",
-    avatarUrl: "", // optional
-  };
-
   return (
     <Sidebar collapsible="icon" className="border-right">
       <SidebarHeader className="flex items-center py-4 px-2 justify-between group-data-[collapsible=icon]:flex-col">
@@ -146,15 +140,7 @@ export function ChatSidebar() {
       <SidebarSeparator />
 
       <SidebarFooter>
-        <SidebarUser
-          name={user.name}
-          email={user.email}
-          avatarUrl={user.avatarUrl}
-          onProfileClick={() => navigate("/profile")}
-          onLogoutClick={() => {
-            navigate("/login");
-          }}
-        />
+        <SidebarUser />
       </SidebarFooter>
     </Sidebar>
   );
