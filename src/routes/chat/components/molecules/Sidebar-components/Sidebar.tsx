@@ -40,16 +40,28 @@ import smallimage from "@/assets/icons/pecha_icon.png";
 import { CiLocationArrow1 } from "react-icons/ci";
 import { useThreads } from "../../../hooks/useThreads";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/config/AuthContext";
+import { useQuery } from "react-query";
+import axiosInstance from "@/config/axios-config";
 import { useChat } from "../../../context/ChatContext";
-import { useUserInfo } from "@/hooks/useUserInfo";
 import { useTranslate } from "@tolgee/react";
+
+const fetchUserInfo = async () => {
+  const { data } = await axiosInstance.get("/api/v1/users/info");
+  return data;
+};
 
 export function ChatSidebar() {
   const navigate = useNavigate();
   const { threadId, resetChat } = useChat();
   const { t } = useTranslate();
   const { user } = useAuth0();
-  const { data: userInfo } = useUserInfo();
+  const { isLoggedIn } = useAuth() as { isLoggedIn: boolean };
+  const { data: userInfo } = useQuery("userInfo", fetchUserInfo, {
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    enabled: isLoggedIn,
+  });
 
   const getUserEmail = () => {
     return user?.email || userInfo?.email || undefined;

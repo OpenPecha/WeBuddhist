@@ -16,9 +16,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import axiosInstance from "@/config/axios-config";
+import { useQuery } from "react-query";
 import { useAuth } from "@/config/AuthContext";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useUserInfo } from "@/hooks/useUserInfo";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, LOGGED_IN_VIA, REFRESH_TOKEN } from "@/utils/constants";
 
@@ -28,13 +29,21 @@ type AuthContextValue = {
 type AuthUserType = {
   logout: () => void;
 };
+const fetchUserInfo = async () => {
+  const { data } = await axiosInstance.get("/api/v1/users/info");
+  return data;
+};
 
 export function SidebarUser() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth() as AuthContextValue;
   const { user, logout, isAuthenticated } = useAuth0();
   const { logout: pechaLogout } = useAuth() as AuthUserType;
-  const { data: userInfo } = useUserInfo();
+
+  const { data: userInfo } = useQuery("userInfo", fetchUserInfo, {
+    refetchOnWindowFocus: false,
+    enabled: isLoggedIn,
+  });
 
   const handleLogout = (e: any) => {
     e.preventDefault();
