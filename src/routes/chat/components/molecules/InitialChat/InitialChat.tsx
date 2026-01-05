@@ -6,7 +6,7 @@ import { useChat } from "../../../context/ChatContext";
 import { streamChatAPI } from "../../../services/chatService";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "@/config/AuthContext";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import axiosInstance from "@/config/axios-config";
 
 const fetchUserInfo = async () => {
@@ -18,6 +18,7 @@ const InitialChat = () => {
   const [input, setInput] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const queryClient = useQueryClient();
 
   const {
     addUserMessage,
@@ -99,6 +100,7 @@ const InitialChat = () => {
         },
         onThreadId: (id) => {
           setThreadId(id);
+          queryClient.invalidateQueries(["threads", getUserEmail()]);
         },
         onComplete: () => {
           updateLastMessage(

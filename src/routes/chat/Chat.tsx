@@ -8,7 +8,7 @@ import { ChatProvider, useChat } from "./context/ChatContext";
 import InputField from "./components/atom/InputField";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuth } from "@/config/AuthContext";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import axiosInstance from "@/config/axios-config";
 import { useState, useRef } from "react";
 import { useChatMutation } from "./hooks/useChatMutation";
@@ -33,7 +33,7 @@ const ChatContent = () => {
 
   const [input, setInput] = useState("");
   const abortControllerRef = useRef<AbortController | null>(null);
-
+  const queryClient = useQueryClient();
   const { user } = useAuth0();
   const { isLoggedIn } = useAuth() as { isLoggedIn: boolean };
   const { data: userInfo } = useQuery("userInfo", fetchUserInfo, {
@@ -107,6 +107,7 @@ const ChatContent = () => {
             if (!threadId) {
               setThreadId(id);
             }
+            queryClient.invalidateQueries(["threads", getUserEmail()]);
           },
           onComplete: () => {
             updateLastMessage(
