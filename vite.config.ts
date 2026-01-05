@@ -51,7 +51,6 @@ export default defineConfig(({ mode }) => {
           "src/App.tsx",
           "src/context/**",
           "src/utils/**",
-          "src/routes/chat/**",
           "dist/**",
           "src/layouts",
           "src/components/**",
