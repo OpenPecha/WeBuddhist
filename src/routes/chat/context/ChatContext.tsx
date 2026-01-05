@@ -46,7 +46,7 @@ interface ChatContextType extends ChatState {
   setInput: (input: string) => void;
   handleSubmit: (
     e: React.FormEvent<HTMLFormElement>,
-    options?: { email?: string },
+    options?: { email?: string; onSuccess?: (threadId: string) => void },
   ) => void;
   handleStop: () => void;
   setThreadId: (id: string | null) => void;
@@ -121,13 +121,14 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   const handleSubmit = useCallback(
     async (
       e: React.FormEvent<HTMLFormElement>,
-      options?: { email?: string },
+      options?: { email?: string; onSuccess?: (threadId: string) => void },
     ) => {
       e.preventDefault();
 
       if (!state.input.trim() || state.isLoading) return;
 
       const userQuery = state.input;
+      const isInitialChat = state.messages.length === 0;
 
       updateState({ input: "", isLoading: true, isThinking: true });
 
@@ -150,6 +151,7 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
       let fullResponse = "";
       let currentSearchResults: SearchResult[] = [];
       let currentQueries: Queries | null = null;
+      let newThreadId: string | null = null;
 
       const controller = new AbortController();
       abortControllerRef.current = controller;
@@ -195,6 +197,7 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
           },
           onThreadId: (id) => {
             if (!state.threadId) {
+              newThreadId = id;
               updateState({ threadId: id });
             }
           },
@@ -207,6 +210,10 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
             );
             updateState({ isLoading: false, isThinking: false });
             abortControllerRef.current = null;
+
+            if (isInitialChat && newThreadId && options?.onSuccess) {
+              options.onSuccess(newThreadId);
+            }
           },
           onError: (error) => {
             if (error.name === "AbortError") return;
@@ -229,6 +236,7 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
       state.input,
       state.isLoading,
       state.threadId,
+      state.messages.length,
       addMessage,
       updateLastMessage,
       updateState,

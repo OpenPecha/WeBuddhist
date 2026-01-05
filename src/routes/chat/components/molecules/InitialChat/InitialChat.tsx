@@ -1,5 +1,5 @@
 import { WiStars } from "react-icons/wi";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { CiLocationArrow1 } from "react-icons/ci";
 import { useChat } from "../../../context/ChatContext";
@@ -8,7 +8,6 @@ import { useAuth } from "@/config/AuthContext";
 import { useQuery, useQueryClient } from "react-query";
 import axiosInstance from "@/config/axios-config";
 import ChatPage from "../ChatPage/ChatPage";
-import { useNavigate } from "react-router-dom";
 
 const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
@@ -17,14 +16,12 @@ const fetchUserInfo = async () => {
 
 const InitialChat = () => {
   const formRef = useRef<HTMLFormElement>(null);
-  const navigate = useNavigate();
   const {
     messages,
     input,
     setInput,
     handleSubmit: chatHandleSubmit,
     handleStop,
-    threadId,
     isLoading,
   } = useChat();
 
@@ -41,16 +38,16 @@ const InitialChat = () => {
     return user?.email || userInfo?.email || "test@webuddhist";
   };
 
-  //think of a different way
-  useEffect(() => {
-    if (threadId && !isLoading && messages.length > 0) {
-      queryClient.invalidateQueries(["threads"]);
-      navigate(`/ai/${threadId}`, { replace: true });
-    }
-  }, [threadId, isLoading, messages.length, navigate, queryClient]);
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    chatHandleSubmit(e, { email: getUserEmail() });
+    const isInitialChat = messages.length === 0;
+    chatHandleSubmit(e, {
+      email: getUserEmail(),
+      onSuccess: (threadId) => {
+        if (isInitialChat && threadId) {
+          queryClient.invalidateQueries(["threads"]);
+        }
+      },
+    });
   };
 
   if (messages.length > 0) {
