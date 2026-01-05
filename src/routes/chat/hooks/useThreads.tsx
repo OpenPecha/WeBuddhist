@@ -5,7 +5,7 @@ const LIMIT = 10;
 
 export const useThreads = (
   email: string | undefined,
-  application: string = "webuddist",
+  application: string = "webuddhist",
 ) => {
   const queryClient = useQueryClient();
 
@@ -20,6 +20,7 @@ export const useThreads = (
       }),
     {
       enabled: !!email,
+      refetchOnWindowFocus: false,
       getNextPageParam: (lastPage, allPages) => {
         const totalFetched = allPages.length * LIMIT;
         return totalFetched < lastPage.total ? totalFetched : undefined;
@@ -45,5 +46,6 @@ export const useThreads = (
     fetchNextPage: threadsQuery.fetchNextPage,
     deleteThread: deleteMutation.mutate,
     isDeleting: deleteMutation.isLoading,
+    refetch: threadsQuery.refetch,
   };
 };

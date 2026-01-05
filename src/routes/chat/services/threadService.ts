@@ -27,6 +27,11 @@ export const getThreads = async (
   return data;
 };
 
+export const getThreadById = async (threadId: string) => {
+  const { data } = await axiosInstance.get(`/threads/${threadId}`);
+  return data;
+};
+
 export const deleteThread = async (threadId: string): Promise<void> => {
   await axiosInstance.delete(`/threads/${threadId}`);
 };

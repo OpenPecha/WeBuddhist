@@ -1,22 +1,30 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import type { ReactNode } from "react";
+import { streamChatAPI } from "../services/chatService";
 
-interface SearchResult {
+export interface SearchResult {
   id: string;
   title: string;
   text: string;
-  score: number;
-  distance: number;
+  score?: number;
+  distance?: number;
 }
 
-interface Queries {
+export interface Queries {
   tibetan_bm25?: string;
   english_bm25?: string;
   tibetan_semantic?: string;
   english_semantic?: string;
 }
 
-interface Message {
+export interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
@@ -25,53 +33,55 @@ interface Message {
   isComplete?: boolean;
 }
 
-interface ChatContextType {
+interface ChatState {
   messages: Message[];
+  input: string;
   isLoading: boolean;
   isThinking: boolean;
   threadId: string | null;
-  addUserMessage: (content: string) => void;
-  addAssistantMessage: () => void;
-  updateLastMessage: (
-    content: string,
-    searchResults?: SearchResult[],
-    queries?: Queries,
-    isComplete?: boolean,
+  isLoadingHistory: boolean;
+}
+
+interface ChatContextType extends ChatState {
+  setInput: (input: string) => void;
+  handleSubmit: (
+    e: React.FormEvent<HTMLFormElement>,
+    options?: { email?: string },
   ) => void;
-  setLoading: (loading: boolean) => void;
-  setThinking: (thinking: boolean) => void;
-  setThreadId: (id: string) => void;
+  handleStop: () => void;
+  setThreadId: (id: string | null) => void;
+  setMessagesFromHistory: (threadMessages: any[], threadId: string) => void;
+  setLoadingHistory: (loading: boolean) => void;
   resetChat: () => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-export const ChatProvider = ({ children }: { children: ReactNode }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isThinking, setIsThinking] = useState(false);
-  const [threadId, setThreadId] = useState<string | null>(null);
+interface ChatProviderProps {
+  children: ReactNode;
+}
 
-  const addUserMessage = useCallback((content: string) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content,
-      isComplete: true,
-    };
-    setMessages((prev) => [...prev, newMessage]);
+export const ChatProvider = ({ children }: ChatProviderProps) => {
+  const [state, setState] = useState<ChatState>({
+    messages: [],
+    input: "",
+    isLoading: false,
+    isThinking: false,
+    threadId: null,
+    isLoadingHistory: false,
+  });
+
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const updateState = useCallback((updates: Partial<ChatState>) => {
+    setState((prev) => ({ ...prev, ...updates }));
   }, []);
 
-  const addAssistantMessage = useCallback(() => {
-    const newMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: "assistant",
-      content: "",
-      searchResults: [],
-      queries: undefined,
-      isComplete: false,
-    };
-    setMessages((prev) => [...prev, newMessage]);
+  const addMessage = useCallback((message: Message) => {
+    setState((prev) => ({
+      ...prev,
+      messages: [...prev.messages, message],
+    }));
   }, []);
 
   const updateLastMessage = useCallback(
@@ -81,61 +91,229 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
       queries?: Queries,
       isComplete: boolean = false,
     ) => {
-      setMessages((prev) => {
-        const newMessages = [...prev];
-        const lastIndex = newMessages.length - 1;
-        if (lastIndex >= 0 && newMessages[lastIndex].role === "assistant") {
-          newMessages[lastIndex] = {
-            ...newMessages[lastIndex],
+      setState((prev) => {
+        const messages = [...prev.messages];
+        const lastIndex = messages.length - 1;
+
+        if (lastIndex >= 0 && messages[lastIndex].role === "assistant") {
+          messages[lastIndex] = {
+            ...messages[lastIndex],
             content,
             ...(searchResults && { searchResults }),
             ...(queries && { queries }),
             isComplete,
           };
         }
-        return newMessages;
+
+        return { ...prev, messages };
       });
     },
     [],
   );
 
-  const setLoading = useCallback((loading: boolean) => {
-    setIsLoading(loading);
-  }, []);
+  const setInput = useCallback(
+    (input: string) => {
+      updateState({ input });
+    },
+    [updateState],
+  );
 
-  const setThinking = useCallback((thinking: boolean) => {
-    setIsThinking(thinking);
-  }, []);
+  const handleSubmit = useCallback(
+    async (
+      e: React.FormEvent<HTMLFormElement>,
+      options?: { email?: string },
+    ) => {
+      e.preventDefault();
 
-  const setThreadIdCallback = useCallback((id: string) => {
-    setThreadId(id);
-  }, []);
+      if (!state.input.trim() || state.isLoading) return;
+
+      const userQuery = state.input;
+
+      updateState({ input: "", isLoading: true, isThinking: true });
+
+      addMessage({
+        id: Date.now().toString(),
+        role: "user",
+        content: userQuery,
+        isComplete: true,
+      });
+
+      addMessage({
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "",
+        searchResults: [],
+        queries: undefined,
+        isComplete: false,
+      });
+
+      let fullResponse = "";
+      let currentSearchResults: SearchResult[] = [];
+      let currentQueries: Queries | null = null;
+
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      await streamChatAPI(
+        {
+          email: options?.email || "test@webuddhist",
+          query: userQuery,
+          application: "webuddhist",
+          device_type: "web",
+          ...(state.threadId && { thread_id: state.threadId }),
+        },
+        {
+          onToken: (token) => {
+            updateState({ isThinking: false });
+            fullResponse += token;
+            updateLastMessage(
+              fullResponse,
+              currentSearchResults,
+              currentQueries || undefined,
+              false,
+            );
+          },
+          onSearchResults: (results) => {
+            updateState({ isThinking: false });
+            currentSearchResults = [...results];
+            updateLastMessage(
+              fullResponse,
+              currentSearchResults,
+              currentQueries || undefined,
+              false,
+            );
+          },
+          onQueries: (queries) => {
+            updateState({ isThinking: false });
+            currentQueries = queries;
+            updateLastMessage(
+              fullResponse,
+              currentSearchResults,
+              currentQueries,
+              false,
+            );
+          },
+          onThreadId: (id) => {
+            if (!state.threadId) {
+              updateState({ threadId: id });
+            }
+          },
+          onComplete: () => {
+            updateLastMessage(
+              fullResponse,
+              currentSearchResults,
+              currentQueries || undefined,
+              true,
+            );
+            updateState({ isLoading: false, isThinking: false });
+            abortControllerRef.current = null;
+          },
+          onError: (error) => {
+            if (error.name === "AbortError") return;
+
+            console.error("Chat error:", error);
+            updateLastMessage(
+              fullResponse + "\n\n[Error: Failed to get response]",
+              currentSearchResults,
+              currentQueries || undefined,
+              true,
+            );
+            updateState({ isLoading: false, isThinking: false });
+            abortControllerRef.current = null;
+          },
+          signal: controller.signal,
+        },
+      );
+    },
+    [
+      state.input,
+      state.isLoading,
+      state.threadId,
+      addMessage,
+      updateLastMessage,
+      updateState,
+    ],
+  );
+
+  const handleStop = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+      updateState({ isLoading: false, isThinking: false });
+    }
+  }, [updateState]);
+
+  const setThreadId = useCallback(
+    (id: string | null) => {
+      updateState({ threadId: id });
+    },
+    [updateState],
+  );
+
+  const setLoadingHistory = useCallback(
+    (loading: boolean) => {
+      updateState({ isLoadingHistory: loading });
+    },
+    [updateState],
+  );
+
+  const setMessagesFromHistory = useCallback(
+    (threadMessages: Message[], newThreadId: string) => {
+      const convertedMessages: Message[] = threadMessages.map((msg) => ({
+        id: msg.id,
+        role: msg.role,
+        content: msg.content,
+        searchResults: msg.searchResults ?? undefined,
+        isComplete: true,
+      }));
+
+      setState((prev) => ({
+        ...prev,
+        messages: convertedMessages,
+        threadId: newThreadId,
+        isLoadingHistory: false,
+      }));
+    },
+    [],
+  );
 
   const resetChat = useCallback(() => {
-    setMessages([]);
-    setThreadId(null);
-    setIsLoading(false);
-    setIsThinking(false);
+    setState({
+      messages: [],
+      input: "",
+      isLoading: false,
+      isThinking: false,
+      threadId: null,
+      isLoadingHistory: false,
+    });
+    abortControllerRef.current = null;
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      ...state,
+      setInput,
+      handleSubmit,
+      handleStop,
+      setThreadId,
+      setMessagesFromHistory,
+      setLoadingHistory,
+      resetChat,
+    }),
+    [
+      state,
+      setInput,
+      handleSubmit,
+      handleStop,
+      setThreadId,
+      setMessagesFromHistory,
+      setLoadingHistory,
+      resetChat,
+    ],
+  );
+
   return (
-    <ChatContext.Provider
-      value={{
-        messages,
-        isLoading,
-        isThinking,
-        threadId,
-        addUserMessage,
-        addAssistantMessage,
-        updateLastMessage,
-        setLoading,
-        setThinking,
-        setThreadId: setThreadIdCallback,
-        resetChat,
-      }}
-    >
-      {children}
-    </ChatContext.Provider>
+    <ChatContext.Provider value={contextValue}>{children}</ChatContext.Provider>
   );
 };
 
