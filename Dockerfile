@@ -20,9 +20,11 @@ WORKDIR /app
 
 RUN chown nginx:nginx /app && apk add --no-cache gettext
 
-ARG BACKEND="https://api.webuddhist.com"
-ENV VITE_BACKEND_BASE_URL=$BACKEND
+ARG BACKEND
+ARG CHAT_API
 
+ENV VITE_BACKEND_BASE_URL=$BACKEND
+ENV VITE_CHAT_API_URL=$CHAT_API
 ENV PORT=4173
 
 # Copy the React build files into Nginx's public directory
@@ -34,7 +36,7 @@ COPY nginx/security-headers.conf /etc/nginx/
 
 EXPOSE 4173
 
-CMD ["sh", "-c", "envsubst '${VITE_BACKEND_BASE_URL}' < /etc/nginx/conf.d/pecha.conf.template > /etc/nginx/conf.d/default.conf && cat /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "envsubst '${VITE_BACKEND_BASE_URL} ${VITE_CHAT_API_URL}' < /etc/nginx/conf.d/pecha.conf.template > /etc/nginx/conf.d/default.conf && cat /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
 
 # docker build -f Dockerfile -t pecha-ui-app .
-# docker run -e VITE_BACKEND_BASE_URL=http://host.docker.internal:8000 -p 4173:4173 --rm pecha-ui-app
+# docker run -e VITE_BACKEND_BASE_URL=<backend-url> -e VITE_CHAT_API_URL=<chat-api-url> -p 4173:4173 --rm pecha-ui-app
