@@ -69,7 +69,7 @@ const ChatContent = () => {
       {
         email: getUserEmail(),
         query: userQuery,
-        application: "webuddist",
+        application: "webuddhist",
         device_type: "web",
         ...(threadId && { thread_id: threadId }),
         callbacks: {

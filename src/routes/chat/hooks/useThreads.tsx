@@ -5,7 +5,7 @@ const LIMIT = 10;
 
 export const useThreads = (
   email: string | undefined,
-  application: string = "webuddist",
+  application: string = "webuddhist",
 ) => {
   const queryClient = useQueryClient();
 

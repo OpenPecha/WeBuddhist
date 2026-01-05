@@ -63,7 +63,7 @@ const InitialChat = () => {
       {
         email: getUserEmail(),
         query: userQuery,
-        application: "webuddist",
+        application: "webuddhist",
         device_type: "web",
       },
       {

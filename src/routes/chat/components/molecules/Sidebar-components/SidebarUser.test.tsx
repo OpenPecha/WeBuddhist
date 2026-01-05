@@ -71,7 +71,6 @@ vi.mock("@/components/ui/sidebar", () => ({
   }) => <button {...props}>{children}</button>,
 }));
 
-// Mock dropdown menu components
 vi.mock("@/components/ui/dropdown-menu", () => ({
   DropdownMenu: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="dropdown-menu">{children}</div>
@@ -134,7 +133,6 @@ vi.mock("@/components/ui/avatar", () => ({
   ),
 }));
 
-// Mock react-icons - use importOriginal to include all exports
 vi.mock("react-icons/bs", async (importOriginal) => {
   const actual = await importOriginal();
   return {
