@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
           secure: true,
         },
         "/chat": {
-          target: "https://buddhist-consensus.onrender.com",
+          target: env.VITE_CHAT_API_URL,
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(/^\/chat/, ""),
