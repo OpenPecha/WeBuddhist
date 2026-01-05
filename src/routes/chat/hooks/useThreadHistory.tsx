@@ -17,6 +17,7 @@ export const useThreadHistory = (
     enabled: !!threadId && threadId !== "new" && enabled,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    cacheTime: 0,
     retry: 1,
     onSuccess,
     onError: (error: any) => {
