@@ -107,7 +107,6 @@ const ChatContent = () => {
             if (!threadId) {
               setThreadId(id);
             }
-            queryClient.invalidateQueries(["threads", getUserEmail()]);
           },
           onComplete: () => {
             updateLastMessage(
@@ -119,6 +118,7 @@ const ChatContent = () => {
             setLoading(false);
             setThinking(false);
             abortControllerRef.current = null;
+            queryClient.invalidateQueries(["threads", getUserEmail()]);
           },
           onError: (error) => {
             if (error.name === "AbortError") {
