@@ -34,7 +34,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { FaEllipsis } from "react-icons/fa6";
-import { Skeleton } from "@/components/ui/skeleton";
 import { HistoryIcon } from "@/utils/Icon.tsx";
 import { SidebarUser } from "./SidebarUser.tsx";
 import smallimage from "@/assets/icons/pecha_icon.png";
@@ -158,7 +157,7 @@ export function ChatSidebar() {
                 threadId === thread.id ? "text-primary" : "text-faded-grey"
               }`}
             >
-              <span className="truncate pr-5">{thread.title}</span>
+              <span className="truncate">{thread.title}</span>
             </SidebarMenuButton>
 
             <DropdownMenu>
@@ -184,10 +183,8 @@ export function ChatSidebar() {
         ))}
 
         {isFetchingNextPage && (
-          <div className="space-y-2 p-2 group-data-[collapsible=icon]:hidden">
-            <Skeleton className="h-8 w-full rounded-md" />
-            <Skeleton className="h-8 w-full rounded-md" />
-            <Skeleton className="h-8 w-full rounded-md" />
+          <div className="text-center text-faded-grey text-sm p-2">
+            Loading more...
           </div>
         )}
 
@@ -228,11 +225,11 @@ export function ChatSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup className="flex-1 min-h-0 flex flex-col">
-          <SidebarGroupLabel className="text-sm flex items-center gap-2 shrink-0">
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-sm flex items-center gap-2">
             <HistoryIcon /> History
           </SidebarGroupLabel>
-          <SidebarGroupContent className="min-h-0 flex-1 overflow-y-auto w-full">
+          <SidebarGroupContent className="h-[500px] overflow-y-auto w-full">
             <SidebarMenu>{renderThreadList()}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
