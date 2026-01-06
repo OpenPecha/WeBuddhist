@@ -1,5 +1,10 @@
+import axiosInstance from "@/config/axios-config";
 import { useQuery } from "react-query";
-import { getThreadById } from "../services/threadService";
+
+export const getThreadById = async (threadId: string) => {
+  const { data } = await axiosInstance.get(`/threads/${threadId}`);
+  return data;
+};
 
 interface UseThreadHistoryOptions {
   enabled?: boolean;

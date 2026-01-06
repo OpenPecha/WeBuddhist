@@ -1,7 +1,19 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "react-query";
-import { getThreads, deleteThread } from "../services/threadService";
+import axiosInstance from "@/config/axios-config";
 
 const LIMIT = 10;
+
+export const getThreads = async (params: any) => {
+  const { email, application, skip = 0, limit = 10 } = params;
+  const { data } = await axiosInstance.get("/threads", {
+    params: { email, application, skip, limit },
+  });
+  return data;
+};
+
+export const deleteThread = async (threadId: string): Promise<void> => {
+  await axiosInstance.delete(`/threads/${threadId}`);
+};
 
 export const useThreads = (
   email: string | undefined,
