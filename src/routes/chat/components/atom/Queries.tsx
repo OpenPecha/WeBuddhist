@@ -1,5 +1,3 @@
-import { FaSearch } from "react-icons/fa";
-
 interface QueriesProps {
   queries: Record<string, any>;
   show?: boolean;
@@ -28,7 +26,7 @@ export const Queries = ({ queries, show }: QueriesProps) => {
               }}
               className="flex items-center gap-2 px-3 text-faded-grey text-sm"
             >
-              <FaSearch size={14} className="shrink-0" />
+              <div className="flex items-center border p-1 border-dashed border-red-300 bg-red-100 gap-2" />
               <span className="text-left">{String(v)}</span>
             </div>
           ))}
