@@ -229,8 +229,7 @@ export function ChatSidebar() {
           <SidebarGroupLabel className="text-sm flex items-center gap-2">
             <HistoryIcon /> History
           </SidebarGroupLabel>
-
-          <SidebarGroupContent className="max-h-4/5 overflow-y-auto w-full">
+          <SidebarGroupContent className="h-[500px] overflow-y-auto w-full">
             <SidebarMenu>{renderThreadList()}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

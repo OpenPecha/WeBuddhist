@@ -75,7 +75,7 @@ export const ChatInput = ({
         onSubmit={handleSubmit}
         className={
           isinitial
-            ? "flex flex-col items-center justify-between border rounded-3xl bg-white p-4 w-full shadow-xs"
+            ? "flex flex-col items-center justify-between border rounded-3xl w-xl md:w-xl lg:w-3xl p-4 shadow-xs"
             : "w-full max-w-3xl px-4"
         }
       >

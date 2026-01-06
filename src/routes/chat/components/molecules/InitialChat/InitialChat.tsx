@@ -74,7 +74,7 @@ const InitialChat = () => {
           <WiStars size={40} />{" "}
         </span>
       </p>
-      <div className="w-screen md:max-w-3xl rounded-4xl">
+      <div className=" w-screen rounded-4xl">
         <ChatInput
           input={input}
           setInput={setInput}
