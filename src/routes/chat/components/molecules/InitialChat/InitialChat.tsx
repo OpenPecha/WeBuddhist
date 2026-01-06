@@ -67,14 +67,14 @@ const InitialChat = () => {
 
   return (
     <div className="text-center w-full h-full justify-center items-center flex flex-col bg-white">
-      <p className="text-xl flex items-center justify-center gap-x-2 p-4  md:text-2xl">
+      <p className="text-xl flex items-center justify-center gap-x-2 p-0 md:p-4  md:text-2xl">
         Explore Buddhist Wisdom{" "}
         <span>
           {" "}
           <WiStars size={40} />{" "}
         </span>
       </p>
-      <div className=" w-screen rounded-4xl">
+      <div className=" w-screen p-4 md:p-0 rounded-4xl">
         <ChatInput
           input={input}
           setInput={setInput}
