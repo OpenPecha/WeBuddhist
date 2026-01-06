@@ -20,6 +20,7 @@ export const useThreads = (
       }),
     {
       enabled: !!email,
+      refetchOnWindowFocus: false,
       getNextPageParam: (lastPage, allPages) => {
         const totalFetched = allPages.length * LIMIT;
         return totalFetched < lastPage.total ? totalFetched : undefined;
