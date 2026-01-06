@@ -23,13 +23,13 @@ export default defineConfig(({ mode }) => {
           secure: true,
         },
         "/chats": {
-          target: "https://at-chat-20299882697-4758f1e.onrender.com",
+          target: env.VITE_CHAT_API_URL,
           changeOrigin: true,
           secure: true,
           rewrite: (path) => path,
         },
         "/threads": {
-          target: "https://at-chat-20299882697-4758f1e.onrender.com",
+          target: env.VITE_CHAT_API_URL,
           changeOrigin: true,
           secure: true,
         },
