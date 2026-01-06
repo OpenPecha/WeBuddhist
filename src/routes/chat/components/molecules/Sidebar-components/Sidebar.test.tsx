@@ -338,6 +338,12 @@ vi.mock("@/components/ui/alert-dialog", () => ({
   ),
 }));
 
+vi.mock("@/components/ui/skeleton", () => ({
+  Skeleton: ({ ...props }: { className?: string }) => (
+    <div data-testid="skeleton" {...props} />
+  ),
+}));
+
 vi.mock("./SidebarUser.tsx", () => ({
   SidebarUser: () => <div data-testid="sidebar-user">SidebarUser</div>,
 }));
@@ -613,7 +619,7 @@ describe("ChatSidebar Component", () => {
     }
   });
 
-  test("shows loading more indicator when fetching next page", () => {
+  test("shows skeleton loaders when fetching next page", () => {
     const mockThreads = [{ id: "thread-123", title: "Test Thread" }];
 
     mockUseThreads.mockReturnValue({
@@ -625,7 +631,8 @@ describe("ChatSidebar Component", () => {
 
     setup();
 
-    expect(screen.getByText("Loading more...")).toBeInTheDocument();
+    const skeletons = screen.getAllByTestId("skeleton");
+    expect(skeletons.length).toBe(3);
   });
 
   test("renders SidebarUser component in footer", () => {
