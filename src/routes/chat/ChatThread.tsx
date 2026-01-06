@@ -5,7 +5,6 @@ import { useQuery } from "react-query";
 import axiosInstance from "@/config/axios-config";
 import { useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useThreadHistory } from "./hooks/useThreadHistory";
 import ChatPage from "./components/molecules/ChatPage/ChatPage";
 import { Button } from "@/components/ui/button";
 import { CiLocationArrow1 } from "react-icons/ci";
@@ -14,7 +13,10 @@ const fetchUserInfo = async () => {
   const { data } = await axiosInstance.get("/api/v1/users/info");
   return data;
 };
-
+export const getThreadById = async (threadId: string) => {
+  const { data } = await axiosInstance.get(`/threads/${threadId}`);
+  return data;
+};
 const ChatThread = () => {
   const {
     input,
@@ -42,15 +44,24 @@ const ChatThread = () => {
     return user?.email || userInfo?.email || "test@webuddhist";
   };
 
-  const { isLoading: isLoadingThread } = useThreadHistory(urlThreadId, {
-    enabled: !!urlThreadId,
-    onSuccess: (data) => {
-      setMessagesFromHistory(data.messages, data.id);
+  const { isLoading: isLoadingThread } = useQuery(
+    ["thread", urlThreadId],
+    () => getThreadById(urlThreadId!),
+    {
+      enabled: !!urlThreadId && urlThreadId !== "new" && !!urlThreadId,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      cacheTime: 0,
+      onSuccess: (data) => {
+        setMessagesFromHistory(data.messages, data.id);
+      },
+      retry: 1,
+      onError: (error: any) => {
+        console.error("Failed to fetch thread history:", error);
+        navigate("/ai/new", { replace: true });
+      },
     },
-    onError: () => {
-      navigate("/ai/new", { replace: true });
-    },
-  });
+  );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     chatHandleSubmit(e, { email: getUserEmail() });
