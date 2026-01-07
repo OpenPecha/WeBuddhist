@@ -1,5 +1,6 @@
+import { ACCESS_TOKEN } from "../../../utils/constants";
+
 export interface ChatStreamProps {
-  email: string;
   query: string;
   application: string;
   device_type: string;
@@ -35,7 +36,7 @@ export const streamChatAPI = async (
   params: ChatStreamProps,
   callbacks: StreamCallbacks,
 ) => {
-  const { email, query, application, device_type, thread_id } = params;
+  const { query, application, device_type, thread_id } = params;
   const {
     onToken,
     onSearchResults,
@@ -47,13 +48,14 @@ export const streamChatAPI = async (
   } = callbacks;
 
   try {
+    const token = sessionStorage.getItem(ACCESS_TOKEN);
     const response = await fetch(`/chats`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: token ? `Bearer ${token}` : "Bearer None",
       },
       body: JSON.stringify({
-        email,
         query,
         application,
         device_type,

@@ -46,7 +46,7 @@ interface ChatContextType extends ChatState {
   setInput: (input: string) => void;
   handleSubmit: (
     e: React.FormEvent<HTMLFormElement>,
-    options?: { email?: string; onSuccess?: (threadId: string) => void },
+    options?: { onSuccess?: (threadId: string) => void },
   ) => void;
   handleStop: () => void;
   setThreadId: (id: string | null) => void;
@@ -121,7 +121,7 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   const handleSubmit = useCallback(
     async (
       e: React.FormEvent<HTMLFormElement>,
-      options?: { email?: string; onSuccess?: (threadId: string) => void },
+      options?: { onSuccess?: (threadId: string) => void },
     ) => {
       e.preventDefault();
 
@@ -158,7 +158,6 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
 
       await streamChatAPI(
         {
-          email: options?.email || "test@webuddhist",
           query: userQuery,
           application: "webuddhist",
           device_type: "web",
