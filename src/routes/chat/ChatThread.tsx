@@ -1,6 +1,4 @@
 import { useChat } from "./context/ChatContext";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useAuth } from "@/config/AuthContext";
 import { useQuery } from "react-query";
 import axiosInstance from "@/config/axios-config";
 import { useRef } from "react";
@@ -8,14 +6,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import ChatPage from "./components/molecules/ChatPage/ChatPage";
 import { ChatInput } from "./components/molecules/ChatInput/ChatInput";
 
-const fetchUserInfo = async () => {
-  const { data } = await axiosInstance.get("/api/v1/users/info");
-  return data;
-};
 export const getThreadById = async (threadId: string) => {
   const { data } = await axiosInstance.get(`/threads/${threadId}`);
   return data;
 };
+
 const ChatThread = () => {
   const {
     input,
@@ -31,17 +26,6 @@ const ChatThread = () => {
 
   const { threadId: urlThreadId } = useParams<{ threadId: string }>();
   const navigate = useNavigate();
-
-  const { user } = useAuth0();
-  const { isLoggedIn } = useAuth() as { isLoggedIn: boolean };
-  const { data: userInfo } = useQuery("userInfo", fetchUserInfo, {
-    refetchOnWindowFocus: false,
-    enabled: isLoggedIn,
-  });
-
-  const getUserEmail = () => {
-    return user?.email || userInfo?.email || "test@webuddhist";
-  };
 
   const { isLoading: isLoadingThread } = useQuery(
     ["thread", urlThreadId],
@@ -63,7 +47,7 @@ const ChatThread = () => {
   );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    chatHandleSubmit(e, { email: getUserEmail() });
+    chatHandleSubmit(e);
   };
 
   if (isLoadingHistory || isLoadingThread) {
