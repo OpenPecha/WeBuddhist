@@ -82,7 +82,7 @@ const Commentaries = ({
             className="text-left cursor-pointer hover:opacity-80 transition-opacity"
           >
             <div
-              className={` text-lg font-medium text-zinc-600 ${getLanguageClass(commentary.language)}`}
+              className={` text-lg font-bold text-zinc-600 ${getLanguageClass(commentary.language)}`}
             >
               {commentary.title}
             </div>
@@ -92,7 +92,7 @@ const Commentaries = ({
       return (
         <Link to={`/chapter?text_id=${commentary.id}`} className="text-left">
           <div
-            className={` text-lg font-medium text-zinc-600 ${getLanguageClass(commentary.language)}`}
+            className={` text-lg font-bold text-zinc-600 ${getLanguageClass(commentary.language)}`}
           >
             {commentary.title}
           </div>
@@ -105,7 +105,7 @@ const Commentaries = ({
         <div className="flex flex-1 flex-col gap-2">
           {renderTitle()}
 
-          <div className="space-y-1 text-sm text-gray-600">
+          <div className="space-y-1 text-sm text-zinc-500">
             {commentary.source_link && (
               <div className="flex gap-2">
                 <span className="font-medium">
