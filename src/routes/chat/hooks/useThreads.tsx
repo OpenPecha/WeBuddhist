@@ -4,9 +4,9 @@ import axiosInstance from "@/config/axios-config";
 const LIMIT = 10;
 
 export const getThreads = async (params: any) => {
-  const { email, application, skip = 0, limit = 10 } = params;
+  const { application, skip = 0, limit = 10 } = params;
   const { data } = await axiosInstance.get("/threads", {
-    params: { email, application, skip, limit },
+    params: { application, skip, limit },
   });
   return data;
 };
@@ -15,23 +15,18 @@ export const deleteThread = async (threadId: string): Promise<void> => {
   await axiosInstance.delete(`/threads/${threadId}`);
 };
 
-export const useThreads = (
-  email: string | undefined,
-  application: string = "webuddhist",
-) => {
+export const useThreads = (application: string = "webuddhist") => {
   const queryClient = useQueryClient();
 
   const threadsQuery = useInfiniteQuery(
-    ["threads", email],
+    ["threads"],
     ({ pageParam = 0 }) =>
       getThreads({
-        email: email!,
         application,
         skip: pageParam,
         limit: LIMIT,
       }),
     {
-      enabled: !!email,
       refetchOnWindowFocus: false,
       getNextPageParam: (lastPage, allPages) => {
         const totalFetched = allPages.length * LIMIT;
@@ -42,7 +37,7 @@ export const useThreads = (
 
   const deleteMutation = useMutation(deleteThread, {
     onSuccess: () => {
-      queryClient.invalidateQueries(["threads", email]);
+      queryClient.invalidateQueries(["threads"]);
     },
     onError: (error) => {
       console.error("Failed to delete thread:", error);

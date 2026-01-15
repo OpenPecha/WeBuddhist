@@ -1,17 +1,9 @@
 import { WiStars } from "react-icons/wi";
 import { useRef } from "react";
 import { useChat } from "../../../context/ChatContext";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useAuth } from "@/config/AuthContext";
-import { useQuery, useQueryClient } from "react-query";
-import axiosInstance from "@/config/axios-config";
+import { useQueryClient } from "react-query";
 import ChatPage from "../ChatPage/ChatPage";
 import { ChatInput } from "../ChatInput/ChatInput";
-
-const fetchUserInfo = async () => {
-  const { data } = await axiosInstance.get("/api/v1/users/info");
-  return data;
-};
 
 const InitialChat = () => {
   const formRef = useRef<HTMLFormElement>(null);
@@ -26,21 +18,9 @@ const InitialChat = () => {
 
   const queryClient = useQueryClient();
 
-  const { user } = useAuth0();
-  const { isLoggedIn } = useAuth() as { isLoggedIn: boolean };
-  const { data: userInfo } = useQuery("userInfo", fetchUserInfo, {
-    refetchOnWindowFocus: false,
-    enabled: isLoggedIn,
-  });
-
-  const getUserEmail = () => {
-    return user?.email || userInfo?.email || "test@webuddhist";
-  };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const isInitialChat = messages.length === 0;
     chatHandleSubmit(e, {
-      email: getUserEmail(),
       onSuccess: (threadId) => {
         if (isInitialChat && threadId) {
           queryClient.invalidateQueries(["threads"]);

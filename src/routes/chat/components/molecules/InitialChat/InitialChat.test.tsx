@@ -4,11 +4,7 @@ import "@testing-library/jest-dom/vitest";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import InitialChat from "./InitialChat";
 
-let auth0User: any = { email: "auth0@example.com" };
-let isLoggedIn = true;
-
 const mockInvalidateQueries = vi.fn();
-const mockUseQuery = vi.fn();
 
 const mockChatHandleSubmit = vi.fn();
 const mockHandleStop = vi.fn();
@@ -25,29 +21,10 @@ vi.mock("../../../context/ChatContext", () => ({
   useChat: () => mockUseChat(),
 }));
 
-vi.mock("@auth0/auth0-react", () => ({
-  useAuth0: () => ({
-    user: auth0User,
-  }),
-}));
-
-vi.mock("@/config/AuthContext", () => ({
-  useAuth: () => ({
-    isLoggedIn,
-  }),
-}));
-
-vi.mock("@/config/axios-config", () => ({
-  default: {
-    get: vi.fn(() => Promise.resolve({ data: {} })),
-  },
-}));
-
 vi.mock("react-query", async () => {
   const actual = await vi.importActual<any>("react-query");
   return {
     ...actual,
-    useQuery: (...args: any[]) => mockUseQuery(...args),
     useQueryClient: () => ({
       invalidateQueries: mockInvalidateQueries,
     }),
@@ -85,9 +62,6 @@ describe("InitialChat", () => {
     vi.clearAllMocks();
     lastChatInputProps = null;
 
-    auth0User = { email: "auth0@example.com" };
-    isLoggedIn = true;
-
     mockUseChat.mockReturnValue({
       messages: [],
       input: "",
@@ -95,14 +69,6 @@ describe("InitialChat", () => {
       handleSubmit: mockChatHandleSubmit,
       handleStop: mockHandleStop,
       isLoading: false,
-    });
-
-    mockUseQuery.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: false,
-      error: null,
-      refetch: vi.fn(),
     });
   });
 
@@ -145,7 +111,7 @@ describe("InitialChat", () => {
     ).not.toBeInTheDocument();
   });
 
-  test("on submit: uses Auth0 user email, calls chatHandleSubmit, and invalidates ['threads'] on initial chat success", () => {
+  test("on submit: calls chatHandleSubmit and invalidates ['threads'] on initial chat success", () => {
     render(<InitialChat />);
 
     expect(lastChatInputProps).toBeTruthy();
@@ -156,51 +122,10 @@ describe("InitialChat", () => {
     expect(mockChatHandleSubmit).toHaveBeenCalledTimes(1);
 
     const [, options] = mockChatHandleSubmit.mock.calls[0];
-    expect(options.email).toBe("auth0@example.com");
     expect(typeof options.onSuccess).toBe("function");
 
     options.onSuccess("thread-123");
     expect(mockInvalidateQueries).toHaveBeenCalledWith(["threads"]);
-  });
-
-  test("on submit: falls back to userInfo.email when Auth0 user email is missing", () => {
-    auth0User = null;
-
-    mockUseQuery.mockReturnValue({
-      data: { email: "apiuser@example.com" },
-      isLoading: false,
-      isError: false,
-      error: null,
-      refetch: vi.fn(),
-    });
-
-    render(<InitialChat />);
-
-    const e = makeFakeFormEvent();
-    lastChatInputProps.handleSubmit(e);
-
-    const [, options] = mockChatHandleSubmit.mock.calls[0];
-    expect(options.email).toBe("apiuser@example.com");
-  });
-
-  test("on submit: falls back to default email when neither Auth0 nor userInfo provides one", () => {
-    auth0User = null;
-
-    mockUseQuery.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: false,
-      error: null,
-      refetch: vi.fn(),
-    });
-
-    render(<InitialChat />);
-
-    const e = makeFakeFormEvent();
-    lastChatInputProps.handleSubmit(e);
-
-    const [, options] = mockChatHandleSubmit.mock.calls[0];
-    expect(options.email).toBe("test@webuddhist");
   });
 
   test("does NOT invalidate ['threads'] on success when it is NOT the initial chat (messages already exist)", () => {
@@ -222,19 +147,5 @@ describe("InitialChat", () => {
     options.onSuccess("thread-999");
 
     expect(mockInvalidateQueries).not.toHaveBeenCalled();
-  });
-
-  test("passes enabled=isLoggedIn into useQuery options", () => {
-    isLoggedIn = false;
-
-    render(<InitialChat />);
-
-    expect(mockUseQuery).toHaveBeenCalled();
-    const call = mockUseQuery.mock.calls.find((c) => c?.[0] === "userInfo");
-    expect(call).toBeTruthy();
-
-    const options = call?.[2];
-    expect(options?.enabled).toBe(false);
-    expect(options?.refetchOnWindowFocus).toBe(false);
   });
 });
