@@ -43,7 +43,12 @@ const ForgotPassword = lazy(
 const SearchResultsPage = lazy(
   () => import("./routes/search/SearchResultsPage.tsx"),
 );
-const Chat = lazy(() => import("./routes/chat/Chat.tsx"));
+const ChatLayout = lazy(() => import("./routes/chat/ChatLayout.tsx"));
+const ChatThread = lazy(() => import("./routes/chat/ChatThread.tsx"));
+const InitialChat = lazy(
+  () =>
+    import("./routes/chat/components/molecules/InitialChat/InitialChat.tsx"),
+);
 
 type Auth0UserType = {
   getIdTokenClaims: () => Promise<any>;
@@ -147,9 +152,13 @@ function App() {
           <Route path="/register" element={<UserRegistration />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/ai" element={<Navigate to="/ai/new" replace />} />
-          <Route path="/ai/new" element={<Chat />} />
-          <Route path="/ai/:threadId" element={<Chat />} />
+          <Route
+            path="/ai"
+            element={<AuthenticationGuard component={ChatLayout} />}
+          >
+            <Route path="new" element={<InitialChat />} />
+            <Route path=":threadId" element={<ChatThread />} />
+          </Route>
         </Route>
 
         <Route element={<NoFooterLayout />}>

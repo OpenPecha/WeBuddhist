@@ -35,6 +35,14 @@ vi.mock("../../../utils/highlightUtils.jsx", () => ({
 vi.mock("../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: () => "bo",
   mapLanguageCode: (code) => (code === "bo-IN" ? "bo" : "en"),
+  getSearchErrorMessage: (error, t) => {
+    const status = error?.response?.status;
+    if (status === 404) return "No results to display.";
+    if (status === 429) return "Too many requests. Please wait and try again.";
+    if (status === 503)
+      return "Service temporarily unavailable. Please try again.";
+    return "Something went wrong. Please try again.";
+  },
 }));
 
 vi.mock("../../../utils/constants.js", () => ({
@@ -149,8 +157,9 @@ describe("Sources Component", () => {
 
     renderWithProviders(<Sources query="test" />);
 
-    expect(screen.getByText(/Error loading content/)).toBeInTheDocument();
-    expect(screen.getByText(/Failed to fetch data/)).toBeInTheDocument();
+    expect(
+      screen.getByText("Something went wrong. Please try again."),
+    ).toBeInTheDocument();
   });
 
   test("displays message when no results are found", () => {

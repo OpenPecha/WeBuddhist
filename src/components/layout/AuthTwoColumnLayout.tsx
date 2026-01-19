@@ -27,7 +27,7 @@ const defaultFeatures = [
 const AuthTwoColumnLayout: React.FC<AuthTwoColumnLayoutProps> = ({
   children,
   title = "WeBuddhist Study Platform",
-  description = "The largest free library of Buddhist texts available to read online in Tibetan, English and Chinese including Sutras, Tantras, Abhidharma, Vinaya, commentaries and more.",
+  description = "Connects users to Buddhist scriptures in various languages. Search a verse to explore its origins, interpretations, and related texts. Engage with the community by sharing insights and learning from others through sheets and topics. ",
   badgeText = "Buddhism in your own words",
   features = defaultFeatures,
   containerClassName,

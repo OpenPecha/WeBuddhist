@@ -52,6 +52,26 @@ export const getEarlyReturn = ({
 
   return null;
 };
+
+export const getSearchErrorMessage = (error: any, t: any): string => {
+  const status = error?.response?.status;
+  const messages: Record<number, string> = {
+    404: t("search.zero_result", "No results to display."),
+    429: t(
+      "search.too_many_requests",
+      "Too many requests. Please wait and try again.",
+    ),
+    503: t(
+      "search.service_unavailable",
+      "Service temporarily unavailable. Please try again.",
+    ),
+  };
+  return (
+    messages[status] ||
+    t("search.generic_error", "Something went wrong. Please try again.")
+  );
+};
+
 export const mapLanguageCode = (languageCode: string): string => {
   const languageMap = {
     en: "en",

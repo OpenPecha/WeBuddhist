@@ -240,7 +240,7 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
     return () => {
       container.removeEventListener("click", handleDocumentClick);
     };
-  }, []);
+  }, [isResourcesPanelOpen]);
 
   useEffect(() => {
     const container = contentsContainerRef.current;
@@ -280,7 +280,7 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
       footnote.style.padding = "2px 5px";
       footnote.style.borderRadius = "3px";
     });
-  }, [content?.sections, layoutMode]);
+  }, [content?.sections, layoutMode, isResourcesPanelOpen]);
 
   useEffect(() => {
     if (scrollTrigger === lastScrollTriggerRef.current) return;

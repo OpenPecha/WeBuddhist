@@ -72,7 +72,7 @@ const CommonCard = ({
           className="text-left cursor-pointer hover:opacity-80 transition-opacity"
         >
           <div
-            className={` text-lg font-medium text-zinc-600 ${getLanguageClass(version.language)}`}
+            className={` text-lg font-bold text-zinc-600 ${getLanguageClass(version.language)}`}
           >
             {version.title}
           </div>
@@ -85,7 +85,7 @@ const CommonCard = ({
         className="text-left"
       >
         <div
-          className={` text-lg font-medium text-zinc-600 ${getLanguageClass(version.language)}`}
+          className={` text-lg font-bold text-zinc-600 ${getLanguageClass(version.language)}`}
         >
           {version.title}
         </div>
@@ -97,7 +97,7 @@ const CommonCard = ({
     <div className="w-full flex items-center bg-white py-1 border-t">
       <div className="flex flex-1 flex-col gap-2">
         {renderTitle()}
-        <div className="space-y-1 text-sm text-zinc-600">
+        <div className="space-y-1 text-sm text-zinc-500">
           {version.source_link && (
             <div className="flex gap-2">
               <span className="font-medium">Source: {version.source_link}</span>
