@@ -17,6 +17,7 @@ const SheetChapters = () => {
 
   const renderChapter = (
     chapter: any,
+    index: number,
     { versionId, addChapter, removeChapter, setVersionId }: any,
   ) => {
     if (chapter.type === "sheet") {

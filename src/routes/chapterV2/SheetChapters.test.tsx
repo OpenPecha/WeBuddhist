@@ -36,7 +36,7 @@ vi.mock("./Chapters", () => ({
           data-chapter-type={chapter.type}
         >
           {renderChapter &&
-            renderChapter(chapter, {
+            renderChapter(chapter, index, {
               versionId: "test-version",
               addChapter: vi.fn(),
               removeChapter: vi.fn(),
