@@ -8,6 +8,7 @@ import { highlightSearchMatch } from "../../../utils/highlightUtils.tsx";
 import {
   getLanguageClass,
   mapLanguageCode,
+  getSearchErrorMessage,
 } from "../../../utils/helperFunctions.tsx";
 import { LANGUAGE } from "../../../utils/constants.ts";
 
@@ -82,15 +83,12 @@ const Sources = (query: any) => {
     return <div className="overalltext">{t("common.loading")}</div>;
 
   if (error) {
-    if (error.response?.status === 404) {
-      return (
-        <div className="overalltext">
-          {t("search.zero_result", "No results to display.")}
-        </div>
-      );
-    }
     return (
-      <div className="overalltext">Error loading content: {error.message}</div>
+      <div className="flex flex-col items-center justify-center py-10 text-center">
+        <p className="text-base text-gray-600">
+          {getSearchErrorMessage(error, t)}
+        </p>
+      </div>
     );
   }
   if (!sourceData?.sources || sourceData.sources.length === 0) {
