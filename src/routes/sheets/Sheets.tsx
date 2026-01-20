@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import { fetchSheetData } from "./view-sheet/SheetDetailPage.tsx";
 import { useQuery } from "react-query";
 import { convertSegmentsToSlate } from "./sheet-utils/Constant.ts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const defaultValue = [
   {
@@ -20,7 +21,7 @@ const Sheets = () => {
   const { t } = useTranslate();
   const { id } = useParams();
   const shouldFetch = id !== "new";
-  const { data: sheetData } = useQuery({
+  const { data: sheetData, isLoading } = useQuery({
     queryKey: ["sheetData", id],
     queryFn: () => fetchSheetData(id ?? ""),
     enabled: shouldFetch,
@@ -50,8 +51,35 @@ const Sheets = () => {
     () =>
       (sheetData && convertSegmentsToSlate(sheetData?.content?.segments)) ||
       defaultValue,
-    [],
+    [sheetData],
   );
+
+  if (shouldFetch && isLoading) {
+    return (
+      <div className="h-screen p-5 w-1/2 mx-auto flex flex-col">
+        <div className="w-full mb-3">
+          <Skeleton className="h-10 w-1/2" />
+        </div>
+        <div className="flex items-center gap-3 mb-4">
+          <Skeleton className="w-10 h-10 rounded-full" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <div className="flex gap-2 mb-4">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="w-8 h-8" />
+          ))}
+        </div>
+        <div className="flex-1 space-y-3">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-4/6" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/6" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className=" h-screen p-5 w-1/2 mx-auto flex flex-col">
       <div className=" w-full mb-3">
