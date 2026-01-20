@@ -376,8 +376,6 @@ const SheetDetailPage = ({
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-
-              <SheetShare />
             </>
           )}
           <SheetShare />
