@@ -34,7 +34,13 @@ export const updateSheet = async (sheet_id: string, payload: any) => {
   );
   return data;
 };
-const Editor = ({ initialValue, children, title, onTitleError }: any) => {
+const Editor = ({
+  initialValue,
+  children,
+  title,
+  onTitleError,
+  isPublished,
+}: any) => {
   const [editor] = useState(() =>
     withHistory(withEmbeds(withReact(createEditor()))),
   );
@@ -69,7 +75,7 @@ const Editor = ({ initialValue, children, title, onTitleError }: any) => {
     async (content: any) => {
       try {
         setSaveStatus("saving");
-        const payload = createPayload(content, title);
+        const payload = createPayload(content, title, isPublished ?? false);
         if (!sheetId) {
           const response = await createSheet(payload);
           const newSheetId = response.sheet_id;
@@ -97,7 +103,7 @@ const Editor = ({ initialValue, children, title, onTitleError }: any) => {
         }
       }
     },
-    [sheetId, handleNavigation, title],
+    [sheetId, handleNavigation, title, isPublished],
   );
 
   useEffect(() => {

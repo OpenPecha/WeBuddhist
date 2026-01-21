@@ -101,6 +101,7 @@ const Sheets = () => {
         title={debouncedTitle || sheetData?.sheet_title}
         initialValue={initialValue}
         onTitleError={handleTitleError}
+        isPublished={sheetData?.is_published}
       >
         <Editor.Input />
       </Editor>
