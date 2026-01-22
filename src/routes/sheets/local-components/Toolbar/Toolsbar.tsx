@@ -45,7 +45,7 @@ const Toolsbar = (prop: any) => {
       await updateSheet(sheetId, payload);
       toast.success(t("Sheet published successfully!"));
       setTimeout(() => {
-        navigate("/community");
+        navigate("/note");
       }, 2000);
     } catch (error) {
       toast.error(t("Failed to publish sheet."));

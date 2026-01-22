@@ -168,7 +168,7 @@ const SheetDetailPage = ({
       mutationFn: () => deleteSheet(sheetId),
       onSuccess: () => {
         setIsDeleteDialogOpen(false);
-        navigate("/community");
+        navigate("/note");
       },
       onError: (error) => {
         console.error("Error deleting sheet:", error);

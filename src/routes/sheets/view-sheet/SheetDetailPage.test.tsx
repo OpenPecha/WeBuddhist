@@ -1299,6 +1299,6 @@ describe("SheetDetailPage Component", () => {
 
     deleteOnSuccessCallback();
 
-    expect(mockNavigate).toHaveBeenCalledWith("/community");
+    expect(mockNavigate).toHaveBeenCalledWith("/note");
   });
 });
