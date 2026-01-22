@@ -6,6 +6,8 @@ import { useTranslate } from "@tolgee/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { IoAlertCircleOutline } from "react-icons/io5";
+import { isSocialUrl } from "@/utils/helperFunctions.tsx";
 
 const EditUserProfile = () => {
   const location = useLocation();
@@ -56,6 +58,8 @@ const EditUserProfile = () => {
       { account: "youtube", url: getSocialProfileUrl("youtube") },
     ],
   });
+  type FormErrors = Partial<Record<string, string>>;
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -88,8 +92,27 @@ const EditUserProfile = () => {
     setFormData({ ...formData, social_profiles: updatedProfiles });
   };
 
+  const validateForm = (): FormErrors => {
+    const validationErrors: FormErrors = {};
+
+    formData.social_profiles.forEach((profile) => {
+      if (profile.account === "email") return;
+      if (!isSocialUrl(profile.account, profile.url)) {
+        validationErrors[profile.account] = t("user.validation.invalid_url");
+      }
+    });
+
+    return validationErrors;
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
     updateProfileMutation.mutateAsync(formData as any);
   };
 
@@ -267,7 +290,22 @@ const EditUserProfile = () => {
                       }
                       placeholder={t(`profile.enter-your-${profile.account}`)}
                       className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none transition focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      aria-invalid={Boolean(errors[profile.account])}
+                      aria-describedby={
+                        errors[profile.account]
+                          ? `${profile.account}-error`
+                          : undefined
+                      }
                     />
+                    {errors[profile.account] && (
+                      <div
+                        id={`${profile.account}-error`}
+                        className="flex items-center gap-2 text-sm text-destructive"
+                      >
+                        <IoAlertCircleOutline className="size-4" />
+                        <span>{errors[profile.account]}</span>
+                      </div>
+                    )}
                   </label>
                 ))}
               </div>

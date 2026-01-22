@@ -201,3 +201,18 @@ export const isEmail = (email: string) => {
   if (email.length > 254) return false;
   return /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(email);
 };
+
+export const isSocialUrl = (account: string, url: string): boolean => {
+  if (!url || url.trim() === "") return true;
+
+  const patterns: Record<string, RegExp> = {
+    linkedin: /^https?:\/\/(www\.)?linkedin\.com\/.+/i,
+    facebook: /^https?:\/\/(www\.)?facebook\.com\/.+/i,
+    "x.com": /^https?:\/\/(www\.)?(twitter\.com|x\.com)\/.+/i,
+    youtube: /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+/i,
+  };
+
+  const pattern = patterns[account];
+  if (!pattern) return true;
+  return pattern.test(url);
+};
