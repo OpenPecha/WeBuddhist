@@ -86,6 +86,9 @@ const EditUserProfile = () => {
   };
 
   const handleSocialProfileChange = (account: string, value: string) => {
+    if (errors[account]) {
+      setErrors((prev) => ({ ...prev, [account]: undefined }));
+    }
     const updatedProfiles = formData.social_profiles.map((profile) =>
       profile.account === account ? { ...profile, url: value } : profile,
     );
