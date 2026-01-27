@@ -40,6 +40,7 @@ const Resources = ({
   const showPanel = isResourcesPanelOpen;
   const [activeView, setActiveView] = useState("main");
   const { t } = useTranslate();
+  const storedLanguage = localStorage.getItem("language");
 
   const { data: sidePanelData } = useQuery(
     ["sidePanel", segmentId],
@@ -60,7 +61,7 @@ const Resources = ({
         type="button"
         variant="ghost"
         onClick={() => setActiveView("translation")}
-        className="w-full flex justify-start"
+        className="w-full flex justify-start gap-1.5"
       >
         <IoLanguage className="text-lg" />
         {`${t("connection_pannel.translations")} (${sidePanelData.segment_info.translations})`}
@@ -72,7 +73,7 @@ const Resources = ({
       <Button
         type="button"
         variant="ghost"
-        className="w-full flex justify-start"
+        className="w-full flex justify-start gap-1.5"
         onClick={() => setActiveView("commentary")}
       >
         <BiBookOpen className="text-lg" />
@@ -85,7 +86,7 @@ const Resources = ({
       <Button
         type="button"
         variant="ghost"
-        className="w-full flex justify-start"
+        className="w-full flex justify-start gap-1.5"
         onClick={() => setActiveView("root_text")}
       >
         <BiBookOpen className="text-lg" />
@@ -148,7 +149,7 @@ const Resources = ({
           type="button"
           variant="ghost"
           key={item.label}
-          className="w-full flex justify-start"
+          className="w-full flex justify-start gap-1.5"
           onClick={() => handleMenuItemClick(item)}
         >
           <item.icon className="text-lg" />
@@ -168,7 +169,9 @@ const Resources = ({
           onClick={() => setActiveView("search")}
           className="w-full flex justify-start"
         >
-          <BiSearch className="text-lg" />
+          <BiSearch
+            className={`text-lg ${storedLanguage === "bo-IN" ? "-translate-y-0.5" : ""}`}
+          />
           {t("connection_panel.search_in_this_text")}
         </Button>
         {renderTranslationsSection()}
@@ -246,7 +249,7 @@ const Resources = ({
   return (
     <>
       <div
-        className={`flex lg:w-[550px] md:w-[350px] flex-col text-left bg-navbar transition-all duration-300 overflow-y-auto ${showPanel ? "block" : "hidden"} w-full h-full border-custom-border`}
+        className={`flex lg:w-[550px] md:w-[350px] flex-col text-left bg-navbar transition-all duration-300 overflow-y-auto ${showPanel ? "block" : "hidden"} w-full h-full border-custom-border overalltext`}
       >
         {renderSidePanel()}
       </div>
