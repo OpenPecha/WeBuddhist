@@ -116,7 +116,7 @@ const IndividualTextSearch = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("connection_panel.search_in_this_text")}
-              className="w-full border-none bg-transparent text-base text-gray-900 placeholder:text-gray-400 focus:outline-none"
+              className={`w-full border-none bg-transparent text-base text-gray-900 placeholder:text-gray-400 focus:outline-none ${storedLanguage === "bo-IN" ? "leading-8" : ""}`}
               autoFocus
             />
           </div>

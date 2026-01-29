@@ -97,7 +97,15 @@ describe("Resources Side Panel", () => {
       }
       return { data: null, isLoading: false };
     });
-    vi.spyOn(Storage.prototype, "getItem").mockReturnValue("bo-IN");
+    Object.defineProperty(window, "localStorage", {
+      value: {
+        getItem: vi.fn(() => "bo-IN"),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      },
+      writable: true,
+    });
     // mockSearchParams.delete('segment_id')
   });
 

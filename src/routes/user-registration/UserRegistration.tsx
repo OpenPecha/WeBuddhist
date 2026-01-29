@@ -117,6 +117,12 @@ const UserRegistration = () => {
     return validationErrors;
   };
 
+  const clearFieldError = (field: keyof FormErrors) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const validationErrors = validateForm();
@@ -260,7 +266,10 @@ const UserRegistration = () => {
               className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
               placeholder={t("common.email")}
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                clearFieldError("email");
+              }}
               aria-invalid={Boolean(errors.email)}
               aria-describedby={errors.email ? "email-error" : undefined}
               required
@@ -287,7 +296,10 @@ const UserRegistration = () => {
                 className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                 placeholder={t("common.password")}
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                  clearFieldError("password");
+                }}
                 aria-invalid={Boolean(errors.password)}
                 aria-describedby={
                   errors.password ? "password-error" : undefined
@@ -336,7 +348,10 @@ const UserRegistration = () => {
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                   placeholder={t("common.confirm_password")}
                   value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  onChange={(event) => {
+                    setConfirmPassword(event.target.value);
+                    clearFieldError("confirmPassword");
+                  }}
                   aria-invalid={Boolean(errors.confirmPassword)}
                   aria-describedby={
                     errors.confirmPassword

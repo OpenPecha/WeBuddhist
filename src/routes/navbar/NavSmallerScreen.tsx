@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { SearchNavbarIcon } from "../../utils/Icon.tsx";
@@ -36,12 +36,20 @@ const NavSmallerScreen = ({
   onProfileNavigate,
   translate,
 }: NavSmallerScreenProps) => {
+  const [open, setOpen] = useState(false);
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onSearchTermChange(event.target.value);
   };
 
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    onSearchSubmit(event);
+    if (searchTerm.trim()) {
+      setOpen(false);
+    }
+  };
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button className="flex md:hidden items-center justify-center p-2 hover:bg-accent">
           <SearchNavbarIcon className="text-faded-grey" />
@@ -60,7 +68,7 @@ const NavSmallerScreen = ({
         <div className="px-2">
           <form
             className="flex items-center rounded-lg border border-custom-border bg-search-background"
-            onSubmit={onSearchSubmit}
+            onSubmit={handleSearchSubmit}
           >
             <FaSearch className="ml-1.5 text-faded-grey" />
             <input

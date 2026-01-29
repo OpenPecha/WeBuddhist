@@ -1016,7 +1016,7 @@ describe("SheetDetailPage Component", () => {
 
     const onSuccess = () => {
       closeModalMock();
-      navigateMock("/community");
+      navigateMock("/note");
     };
 
     axiosInstance.delete.mockClear();
@@ -1031,7 +1031,7 @@ describe("SheetDetailPage Component", () => {
       "/api/v1/sheets/626ddc35-a146-4bca-a3a3-b8221c501df3",
     );
     expect(closeModalMock).toHaveBeenCalled();
-    expect(navigateMock).toHaveBeenCalledWith("/community");
+    expect(navigateMock).toHaveBeenCalledWith("/note");
   });
 
   test("deleteSheetMutation handles error properly", async () => {
@@ -1299,6 +1299,6 @@ describe("SheetDetailPage Component", () => {
 
     deleteOnSuccessCallback();
 
-    expect(mockNavigate).toHaveBeenCalledWith("/community");
+    expect(mockNavigate).toHaveBeenCalledWith("/note");
   });
 });
