@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import Editor from "./local-components/Editors/EditorWrapper.tsx";
 import ProfileCard from "./local-components/UserProfileCard/ProfileCard.tsx";
 import { useTranslate } from "@tolgee/react";
@@ -20,7 +20,8 @@ const defaultValue = [
 const Sheets = () => {
   const { t } = useTranslate();
   const { id } = useParams();
-  const shouldFetch = id !== "new";
+  const wasNewRef = useRef(id === "new");
+  const shouldFetch = id !== "new" && !wasNewRef.current;
   const { data: sheetData, isLoading } = useQuery({
     queryKey: ["sheetData", id],
     queryFn: () => fetchSheetData(id ?? ""),
