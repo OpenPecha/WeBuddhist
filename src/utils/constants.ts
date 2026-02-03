@@ -13,6 +13,8 @@ export const USERBACK_ID = "A-JldUwSRlsuKf8Te85bql54w7U";
 //for app open banner
 export const APP_SCHEME_URL = "webuddhist://home";
 export const APP_PACKAGE_NAME = "org.pecha.app";
+export const APPLE_STORE_URL =
+  "https://apps.apple.com/in/app/webuddhist/id6745810914";
 export const PLAY_STORE_URL =
   "https://play.google.com/store/apps/details?id=org.pecha.app";
 export const DISMISS_KEY = "wb_banner_dismissed";

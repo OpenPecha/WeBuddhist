@@ -1,13 +1,16 @@
 import {
   APP_SCHEME_URL,
+  APPLE_STORE_URL,
   DISMISS_KEY,
   DISMISS_TIME_INTERVAL_MS,
   PLAY_STORE_URL,
 } from "@/utils/constants";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function AppOpenBanner() {
   const [visible, setVisible] = useState(false);
+  // Store timeout ID - setTimeout returns number in browser environments
+  const visibilityTimeoutRef = useRef(null);
 
   useEffect(() => {
     // Mobile only
@@ -24,6 +27,16 @@ export default function AppOpenBanner() {
     setVisible(true);
   }, []);
 
+  useEffect(() => {
+    // Cleanup timeout on unmount
+    const ref = visibilityTimeoutRef;
+    return () => {
+      if (ref.current) {
+        clearTimeout(ref.current);
+      }
+    };
+  }, []);
+
   if (!visible) return null;
 
   const handleDismiss = () => {
@@ -32,20 +45,39 @@ export default function AppOpenBanner() {
   };
 
   const handleOpenApp = () => {
-    const { pathname, search, hash } = window.location;
+    const { pathname, search, hash } = globalThis.location;
 
-    // 1. Try Universal / App Link (primary)
-    window.location.href = window.location.href;
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        // Page became hidden - OS switched to app
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange,
+        );
+        if (visibilityTimeoutRef.current) {
+          clearTimeout(visibilityTimeoutRef.current);
+        }
+      }
+    };
 
-    // 2. Scheme fallback (preserve path)
+    // Listen for visibility changes before attempting to open
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Attempt to open app via custom scheme (preserves current path)
+    // Universal Links would be handled by the OS if configured
     const schemeUrl =
       APP_SCHEME_URL + pathname.replace(/^\/+/, "") + search + hash;
+    globalThis.location.href = schemeUrl;
 
-    setTimeout(() => {
-      window.location.href = schemeUrl;
-    }, 1500);
+    // Clean up listener after timeout
+    // If page stays visible, app didn't open - user remains on web
+    const timeoutId = setTimeout(() => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }, 1000);
+    // @ts-ignore - setTimeout returns number in browser, but types may show Node.js Timeout
+    visibilityTimeoutRef.current = timeoutId;
   };
-
+  const isAndroid = /Android/i.test(navigator.userAgent);
   return (
     <div className="fixed bottom-0 inset-x-0 z-50 bg-white border-t shadow-md">
       <div className="flex items-center justify-between px-4 py-3 gap-3">
@@ -65,7 +97,7 @@ export default function AppOpenBanner() {
           </button>
 
           <a
-            href={PLAY_STORE_URL}
+            href={isAndroid ? PLAY_STORE_URL : APPLE_STORE_URL}
             className="px-3 py-1.5 text-sm rounded-md border border-gray-300"
           >
             Get App

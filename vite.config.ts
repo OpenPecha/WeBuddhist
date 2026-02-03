@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
     envDir: "./env",
     server: {
       host: true,
+      allowedHosts: env.VITE_NODE_ENV === "development",
       open: true,
       proxy: {
         "/api": {
