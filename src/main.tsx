@@ -19,6 +19,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { UserbackProvider } from "./context/UserBackProvider.tsx";
 import { CollectionColorProvider } from "./context/CollectionColorContext.tsx";
 import { Toaster } from "@/components/ui/sonner";
+import AppOpenBanner from "./components/layout/AppOpenBanner.tsx";
 const queryClient = new QueryClient();
 const defaultLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE || "en";
 
@@ -57,6 +58,7 @@ createRoot(document.getElementById("root") as HTMLElement).render(
                   <>
                     <App />
                     <Toaster />
+                    <AppOpenBanner />
                   </>
                 </CollectionColorProvider>
               </UserbackProvider>

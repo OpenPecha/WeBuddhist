@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "R523566J54.org.pecha.app",
+        "paths": ["*"]
+      }
+    ]
+  }
+}

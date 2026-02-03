@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "webuddhist",
+      "package_name": "org.pecha.app",
+      "sha256_cert_fingerprints": [
+        "19:98:C0:75:14:97:73:F7:35:49:CD:D4:BD:8B:63:FC:C8:60:6E:72"
+      ]
+    }
+  }
+]
