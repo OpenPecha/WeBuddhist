@@ -6,6 +6,11 @@
         "appID": "R523566J54.org.pecha.app",
         "paths": ["*"]
       }
+    ],
+    "webcredentials": {
+    "apps": [
+      "R523566J54.org.pecha.app"
     ]
+  }
   }
 }

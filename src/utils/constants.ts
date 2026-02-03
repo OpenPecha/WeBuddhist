@@ -11,7 +11,7 @@ export const siteName = "WeBuddhist";
 export const USERBACK_ID = "A-JldUwSRlsuKf8Te85bql54w7U";
 
 //for app open banner
-export const APP_SCHEME_URL = "webuddhist://home";
+export const APP_SCHEME_URL = "webuddhist://";
 export const APP_PACKAGE_NAME = "org.pecha.app";
 export const APPLE_STORE_URL =
   "https://apps.apple.com/in/app/webuddhist/id6745810914";
