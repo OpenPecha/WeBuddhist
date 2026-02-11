@@ -35,7 +35,6 @@ const UserLogin = () => {
   type FormErrors = Partial<LoginPayload> & { general?: string };
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
 
@@ -64,7 +63,7 @@ const UserLogin = () => {
     },
   );
 
-  const validateForm = (): FormErrors => {
+  const validateForm = (password: string): FormErrors => {
     const validationErrors: FormErrors = {};
 
     if (!email) {
@@ -84,7 +83,9 @@ const UserLogin = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const validationErrors = validateForm();
+    const formData = new FormData(event.currentTarget);
+    const password = formData.get("password") as string;
+    const validationErrors = validateForm(password);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -208,11 +209,10 @@ const UserLogin = () => {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
+                name="password"
                 autoComplete="current-password"
                 className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                 placeholder={t("common.password")}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
                 aria-invalid={Boolean(errors.password)}
                 aria-describedby={
                   errors.password ? "password-error" : undefined
