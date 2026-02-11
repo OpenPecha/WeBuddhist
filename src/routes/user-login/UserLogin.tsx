@@ -96,32 +96,23 @@ const UserLogin = () => {
     loginMutation.mutate({ email, password });
   };
 
-  const handleGoogleLogin = async () => {
+  const handleSocialLogin = async (connection: "google-oauth2" | "apple") => {
     try {
-      const redirectPath = "/collections";
       await loginWithRedirect({
         authorizationParams: {
-          connection: "google-oauth2",
-          prompt: "select_account",
+          connection,
+          ...(connection === "google-oauth2" && { prompt: "select_account" }),
         },
-        appState: { returnTo: redirectPath },
+        appState: { returnTo: "/collections" },
       });
     } catch (error: any) {
       const message =
-        error?.message || t("user.validation.login_failed_google");
-      setErrors((prev) => ({ ...prev, general: message }));
-    }
-  };
-
-  const handleAppleLogin = async () => {
-    try {
-      const redirectPath = "/collections";
-      await loginWithRedirect({
-        authorizationParams: { connection: "apple" },
-        appState: { returnTo: redirectPath },
-      });
-    } catch (error: any) {
-      const message = error?.message || t("user.validation.login_failed");
+        error?.message ||
+        t(
+          connection === "google-oauth2"
+            ? "user.validation.login_failed_google"
+            : "user.validation.login_failed",
+        );
       setErrors((prev) => ({ ...prev, general: message }));
     }
   };
@@ -156,7 +147,7 @@ const UserLogin = () => {
                 type="button"
                 variant="outline"
                 className="w-full gap-2"
-                onClick={handleGoogleLogin}
+                onClick={() => handleSocialLogin("google-oauth2")}
               >
                 <FcGoogle className="size-5" />
                 Google
@@ -165,7 +156,7 @@ const UserLogin = () => {
                 type="button"
                 variant="outline"
                 className="w-full gap-2"
-                onClick={handleAppleLogin}
+                onClick={() => handleSocialLogin("apple")}
               >
                 <FaApple className="size-5" />
                 Apple
