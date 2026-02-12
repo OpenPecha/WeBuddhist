@@ -63,22 +63,26 @@ const UserLogin = () => {
     },
   );
 
+  const getEmailError = (): string | undefined => {
+    if (!email) return t("user.validation.required");
+    if (!isEmail(email)) return t("user.validation.invalid_email");
+    return undefined;
+  };
+
+  const getPasswordError = (password: string): string | undefined => {
+    if (!password) return t("user.validation.required");
+    if (password.length < 8) return t("user.validation.invalid_password");
+    return undefined;
+  };
+
   const validateForm = (password: string): FormErrors => {
-    const validationErrors: FormErrors = {};
+    const emailError = getEmailError();
+    const passwordError = getPasswordError(password);
 
-    if (!email) {
-      validationErrors.email = t("user.validation.required");
-    } else if (!isEmail(email)) {
-      validationErrors.email = t("user.validation.invalid_email");
-    }
-
-    if (!password) {
-      validationErrors.password = t("user.validation.required");
-    } else if (password.length < 8) {
-      validationErrors.password = t("user.validation.invalid_password");
-    }
-
-    return validationErrors;
+    return {
+      ...(emailError && { email: emailError }),
+      ...(passwordError && { password: passwordError }),
+    };
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -117,6 +121,33 @@ const UserLogin = () => {
     }
   };
 
+  const renderFieldError = (
+    error: string | undefined,
+    id: string,
+    className: string,
+  ) =>
+    error ? (
+      <div id={id} className={className}>
+        <IoAlertCircleOutline className="size-4" />
+        <span>{error}</span>
+      </div>
+    ) : null;
+
+  const socialButtons = [
+    {
+      connection: "google-oauth2" as const,
+      icon: <FcGoogle className="size-5" />,
+      label: "Google",
+    },
+    {
+      connection: "apple" as const,
+      icon: <FaApple className="size-5" />,
+      label: "Apple",
+    },
+  ];
+
+  const passwordInputType = showPassword ? "text" : "password";
+
   return (
     <AuthTwoColumnLayout>
       <AuthCard
@@ -143,24 +174,18 @@ const UserLogin = () => {
         <form className="space-y-6" onSubmit={handleSubmit} noValidate>
           <div className="grid gap-3">
             <div className="grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full gap-2"
-                onClick={() => handleSocialLogin("google-oauth2")}
-              >
-                <FcGoogle className="size-5" />
-                Google
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full gap-2"
-                onClick={() => handleSocialLogin("apple")}
-              >
-                <FaApple className="size-5" />
-                Apple
-              </Button>
+              {socialButtons.map(({ connection, icon, label }) => (
+                <Button
+                  key={connection}
+                  type="button"
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => handleSocialLogin(connection)}
+                >
+                  {icon}
+                  {label}
+                </Button>
+              ))}
             </div>
             <Separator />
           </div>
@@ -182,14 +207,10 @@ const UserLogin = () => {
               aria-describedby={errors.email ? "email-error" : undefined}
               required
             />
-            {errors.email && (
-              <div
-                id="email-error"
-                className="flex items-center gap-2 text-sm text-destructive"
-              >
-                <IoAlertCircleOutline className="size-4" />
-                <span>{errors.email}</span>
-              </div>
+            {renderFieldError(
+              errors.email,
+              "email-error",
+              "flex items-center gap-2 text-sm text-destructive",
             )}
 
             <div className="flex items-center justify-between">
@@ -199,7 +220,7 @@ const UserLogin = () => {
             </div>
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"}
+                type={passwordInputType}
                 name="password"
                 autoComplete="current-password"
                 className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
@@ -229,14 +250,10 @@ const UserLogin = () => {
                 )}
               </Button>
             </div>
-            {errors.password && (
-              <div
-                id="password-error"
-                className="flex flex-wrap gap-x-2 text-sm text-destructive"
-              >
-                <IoAlertCircleOutline className="size-4" />
-                <span>{errors.password}</span>
-              </div>
+            {renderFieldError(
+              errors.password,
+              "password-error",
+              "flex flex-wrap gap-x-2 text-sm text-destructive",
             )}
           </div>
 
