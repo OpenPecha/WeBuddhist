@@ -38,7 +38,7 @@ export function MessageBubble({
   const urlMutation = useMutation(fetchURL, {
     onSuccess: (data) => {
       if (data?.text_id && data?.segment_id) {
-        const url = `/chapter?text_id=${data.text_id}&segment_id=${data.segment_id}&versionId=`;
+        const url = `/chapter?text_id=${data.text_id}&segment_id=${data.segment_id}`;
         window.open(url, "_blank", "noopener,noreferrer");
       }
     },
