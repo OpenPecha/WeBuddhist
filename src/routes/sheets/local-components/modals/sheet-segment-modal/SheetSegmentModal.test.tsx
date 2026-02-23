@@ -192,7 +192,7 @@ describe("SheetSegmentModal", () => {
       mockResponse,
     );
 
-    const result = await fetchSegments("test query", "en", 0, {
+    const result = await fetchSegments("test query", 0, {
       currentPage: 1,
       limit: 10,
     });
@@ -203,7 +203,6 @@ describe("SheetSegmentModal", () => {
         params: {
           query: "test query",
           search_type: "exact",
-          language: "en",
           limit: 10,
           skip: 0,
         },

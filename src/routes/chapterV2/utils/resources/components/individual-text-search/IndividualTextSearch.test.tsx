@@ -134,7 +134,6 @@ describe("fetchTextSearchResults", () => {
     const result = await fetchTextSearchResults(
       mockQuery,
       mockTextId,
-      mockLanguage,
       mockSkip,
       mockPagination,
     );
@@ -146,7 +145,6 @@ describe("fetchTextSearchResults", () => {
           query: mockQuery,
           search_type: "exact",
           text_id: mockTextId,
-          language: mockLanguage,
           limit: mockPagination.limit,
           skip: mockSkip,
         },
@@ -162,7 +160,7 @@ describe("fetchTextSearchResults", () => {
     );
 
     await expect(
-      fetchTextSearchResults("query", "textId", "en", 0, {
+      fetchTextSearchResults("query", "textId", 0, {
         limit: 10,
         currentPage: 1,
       }),
@@ -175,7 +173,7 @@ describe("fetchTextSearchResults", () => {
       mockResponse,
     );
 
-    const result = await fetchTextSearchResults("", "", "en", 0, {
+    const result = await fetchTextSearchResults("", "", 0, {
       limit: 10,
       currentPage: 1,
     });
@@ -187,7 +185,6 @@ describe("fetchTextSearchResults", () => {
           query: "",
           search_type: "exact",
           text_id: "",
-          language: "en",
           limit: 10,
           skip: 0,
         },
@@ -232,13 +229,10 @@ describe("fetchTextSearchResults", () => {
       mockResponse,
     );
 
-    const result = await fetchTextSearchResults(
-      mockQuery,
-      mockTextId,
-      mockLanguage,
-      0,
-      { limit: 10, currentPage: 1 },
-    );
+    const result = await fetchTextSearchResults(mockQuery, mockTextId, 0, {
+      limit: 10,
+      currentPage: 1,
+    });
 
     expect(result).toEqual(mockResponse.data);
     expect(result.query).toBe(mockQuery);
@@ -283,7 +277,6 @@ describe("fetchTextSearchResults", () => {
     const result = await fetchTextSearchResults(
       mockQuery,
       mockTextId,
-      mockLanguage,
       skip,
       pagination,
     );
@@ -295,7 +288,6 @@ describe("fetchTextSearchResults", () => {
           query: mockQuery,
           search_type: "exact",
           text_id: mockTextId,
-          language: mockLanguage,
           limit: pagination.limit,
           skip: skip,
         },

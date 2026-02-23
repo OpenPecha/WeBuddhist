@@ -9,7 +9,6 @@ import { highlightSearchMatch } from "../../../../../../utils/highlightUtils.tsx
 import {
   getLanguageClass,
   getEarlyReturn,
-  mapLanguageCode,
 } from "../../../../../../utils/helperFunctions.tsx";
 import { usePanelContext } from "../../../../../../context/PanelContext.tsx";
 import { useDebounce } from "use-debounce";
@@ -19,7 +18,6 @@ import ResourceHeader from "../common/ResourceHeader.tsx";
 export const fetchTextSearchResults = async (
   query: string,
   textId: string,
-  language: string,
   skip: number,
   pagination: { limit: number; currentPage: number },
 ) => {
@@ -28,7 +26,6 @@ export const fetchTextSearchResults = async (
       query,
       search_type: "exact",
       text_id: textId,
-      language,
       limit: pagination.limit,
       skip: skip,
     },
@@ -50,7 +47,6 @@ const IndividualTextSearch = ({
   const { t } = useTranslate();
   const { openResourcesPanel } = usePanelContext() as any;
   const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
 
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(
@@ -63,15 +59,9 @@ const IndividualTextSearch = ({
     isLoading,
     error,
   } = useQuery(
-    ["textSearch", debouncedSearchQuery, textId, language, skip, pagination],
+    ["textSearch", debouncedSearchQuery, textId, skip, pagination],
     () =>
-      fetchTextSearchResults(
-        debouncedSearchQuery,
-        textId,
-        language,
-        skip,
-        pagination,
-      ),
+      fetchTextSearchResults(debouncedSearchQuery, textId, skip, pagination),
     {
       refetchOnWindowFocus: false,
       retry: 1,
