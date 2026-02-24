@@ -5,12 +5,9 @@ import { useQuery } from "react-query";
 import axiosInstance from "@/config/axios-config.ts";
 import PaginationComponent from "../../../../commons/pagination/PaginationComponent.tsx";
 import SourceItem from "./SourceItem.tsx";
-import { mapLanguageCode } from "@/utils/helperFunctions.tsx";
-import { LANGUAGE } from "@/utils/constants.ts";
 
 export const fetchSegments = async (
   query: string,
-  language: string,
   skip: number,
   pagination: { currentPage: number; limit: number },
 ) => {
@@ -18,7 +15,6 @@ export const fetchSegments = async (
     params: {
       query,
       search_type: "exact",
-      language,
       limit: pagination.limit,
       skip: skip,
     },
@@ -40,11 +36,9 @@ const SheetSegmentModal = ({
     () => (pagination.currentPage - 1) * pagination.limit,
     [pagination],
   );
-  const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
   const { data: searchData, isLoading } = useQuery(
-    ["sheetSegmentSearch", debouncedSearchFilter, language, skip, pagination],
-    () => fetchSegments(debouncedSearchFilter, language, skip, pagination),
+    ["sheetSegmentSearch", debouncedSearchFilter, skip, pagination],
+    () => fetchSegments(debouncedSearchFilter, skip, pagination),
     {
       refetchOnWindowFocus: false,
       retry: 1,

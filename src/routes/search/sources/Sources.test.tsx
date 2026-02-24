@@ -3,14 +3,13 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 import "@testing-library/jest-dom";
 import Sources from "./Sources";
-import { mockTolgee, mockLocalStorage } from "../../../test-utils/CommonMocks";
+import { mockTolgee } from "../../../test-utils/CommonMocks";
 import { QueryClientProvider, QueryClient } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 import * as reactQuery from "react-query";
 import { MemoryRouter } from "react-router-dom";
 
 const mockNavigate = vi.fn();
-let localStorageMock;
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
@@ -34,7 +33,6 @@ vi.mock("../../../utils/highlightUtils.jsx", () => ({
 
 vi.mock("../../../utils/helperFunctions.jsx", () => ({
   getLanguageClass: () => "bo",
-  mapLanguageCode: (code) => (code === "bo-IN" ? "bo" : "en"),
   getSearchErrorMessage: (error, t) => {
     const status = error?.response?.status;
     if (status === 404) return "No results to display.";
@@ -43,10 +41,6 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
       return "Service temporarily unavailable. Please try again.";
     return "Something went wrong. Please try again.";
   },
-}));
-
-vi.mock("../../../utils/constants.js", () => ({
-  LANGUAGE: "LANGUAGE",
 }));
 
 vi.mock("@tolgee/react", async () => {
@@ -116,8 +110,6 @@ describe("Sources Component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mockNavigate.mockReset();
-    localStorageMock = mockLocalStorage();
-    localStorageMock.getItem.mockReturnValue("en");
   });
 
   test("renders sources when data is loaded successfully", () => {

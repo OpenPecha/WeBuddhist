@@ -7,10 +7,8 @@ import PaginationComponent from "../../commons/pagination/PaginationComponent.ts
 import { highlightSearchMatch } from "../../../utils/highlightUtils.tsx";
 import {
   getLanguageClass,
-  mapLanguageCode,
   getSearchErrorMessage,
 } from "../../../utils/helperFunctions.tsx";
-import { LANGUAGE } from "../../../utils/constants.ts";
 
 type SegmentMatch = {
   segment_id: string;
@@ -37,7 +35,6 @@ type SourceResponse = {
 
 export const fetchSources = async (
   query: string,
-  language: string,
   skip: number,
   pagination: { limit: number },
 ): Promise<SourceResponse> => {
@@ -45,7 +42,6 @@ export const fetchSources = async (
     params: {
       query,
       search_type: "exact",
-      language,
       limit: pagination.limit,
       skip: skip,
     },
@@ -57,8 +53,6 @@ const Sources = (query: any) => {
   const { t } = useTranslate();
   const stringq = query?.query;
   const navigate = useNavigate();
-  const storedLanguage = localStorage.getItem(LANGUAGE);
-  const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
 
   const [pagination, setPagination] = useState({ currentPage: 1, limit: 10 });
   const skip = useMemo(
@@ -70,8 +64,8 @@ const Sources = (query: any) => {
     isLoading,
     error,
   } = useQuery<SourceResponse, any>(
-    ["sources", stringq, language, skip, pagination],
-    () => fetchSources(stringq, language, skip, pagination),
+    ["sources", stringq, skip, pagination],
+    () => fetchSources(stringq, skip, pagination),
     {
       refetchOnWindowFocus: false,
       retry: 1,
