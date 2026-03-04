@@ -222,4 +222,21 @@ describe("Sheets Component", () => {
     const input = screen.getByPlaceholderText("sheet.title.placeholder");
     expect(input.value).toBe("");
   });
+
+  test("shows loading skeleton when fetching existing sheet", async () => {
+    const { useParams } = await import("react-router-dom");
+    (useParams as any).mockReturnValue({ id: "123" });
+
+    mockUseQuery.mockImplementation(() => ({
+      data: undefined,
+      isLoading: true,
+    }));
+
+    setup();
+
+    expect(
+      screen.queryByPlaceholderText("sheet.title.placeholder"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("editor")).not.toBeInTheDocument();
+  });
 });
