@@ -80,4 +80,20 @@ describe("Forgot Password Component", () => {
     expect(screen.getByText("user.validation.required")).toBeInTheDocument();
     expect(axiosInstance.post).not.toHaveBeenCalled();
   });
+
+  it("should clear email error when typing after validation error", () => {
+    setup();
+    const submitButton = screen.getByRole("button", {
+      name: "common.button.submit",
+    });
+    fireEvent.click(submitButton);
+    expect(screen.getByText("user.validation.required")).toBeInTheDocument();
+
+    const emailInput = screen.getByRole("textbox");
+    fireEvent.change(emailInput, { target: { value: "t" } });
+
+    expect(
+      screen.queryByText("user.validation.required"),
+    ).not.toBeInTheDocument();
+  });
 });
