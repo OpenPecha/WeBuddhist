@@ -97,7 +97,7 @@ const Footer = () => {
           </div>
           <div className="flex mt-4 w-full items-center space-x-4">
             {connectLinks.map(({ href, icon }) => (
-              <span className="p-2 bg-[#781818] rounded-full" key={href}>
+              <span className="p-2 bg-[#deac2c] rounded-full" key={href}>
                 <a
                   href={href}
                   target="_blank"
