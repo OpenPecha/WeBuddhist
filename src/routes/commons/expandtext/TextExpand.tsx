@@ -3,6 +3,11 @@ import { getLanguageClass } from "../../../utils/helperFunctions";
 import { useTranslate } from "@tolgee/react";
 const DEFAULT_MAX_LENGTH = 250;
 
+const transformLineBreaks = (content: string): string => {
+  if (!content) return content;
+  return content.replace(/⤵/g, "<br>");
+};
+
 export default function TextExpand({
   children,
   maxLength,
@@ -16,14 +21,15 @@ export default function TextExpand({
   const [isExpanded, setIsExpanded] = useState(false);
   if (typeof children !== "string") return null;
   if (children.length === 0) return null;
+  const transformedContent = transformLineBreaks(children);
   return (
     <>
       <div
         className={`text-base text-gray-500 ${getLanguageClass(language)}`}
         dangerouslySetInnerHTML={{
           __html: isExpanded
-            ? children
-            : `${children.substring(0, Number(maxLength) || DEFAULT_MAX_LENGTH)}`,
+            ? transformedContent
+            : `${transformedContent.substring(0, Number(maxLength) || DEFAULT_MAX_LENGTH)}`,
         }}
       />
       {children.length > maxLength && (
