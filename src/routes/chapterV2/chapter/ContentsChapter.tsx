@@ -31,6 +31,31 @@ const fetchContentDetails = async ({ pageParam = null, queryKey }: any) => {
   return data;
 };
 
+const transformLineBreaks = (content: string): string => {
+  if (!content) return content;
+  return content.replace(/⤵/g, "<br>");
+};
+
+const transformSectionsContent = (sections: any[]): any[] => {
+  if (!sections) return sections;
+  return sections.map((section) => ({
+    ...section,
+    segments: section.segments?.map((segment: any) => ({
+      ...segment,
+      content: transformLineBreaks(segment.content),
+      translation: segment.translation
+        ? {
+            ...segment.translation,
+            content: transformLineBreaks(segment.translation.content),
+          }
+        : segment.translation,
+    })),
+    sections: section.sections
+      ? transformSectionsContent(section.sections)
+      : section.sections,
+  }));
+};
+
 const ContentsChapter = ({
   textId,
   contentId,
@@ -113,10 +138,13 @@ const ContentsChapter = ({
           ? page.content.sections
           : mergeSections(mergedSections, page.content.sections);
     });
+
+    const transformedSections = transformSectionsContent(mergedSections);
+
     return {
       content: {
         ...infiniteQuery.data.pages[0].content,
-        sections: mergedSections,
+        sections: transformedSections,
       },
       text_detail,
     };
