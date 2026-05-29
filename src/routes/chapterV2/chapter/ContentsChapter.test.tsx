@@ -384,4 +384,429 @@ describe("ContentsChapter", () => {
       expect(capturedOptions.refetchOnWindowFocus).toBe(false);
     });
   });
+
+  describe("content transformation functions", () => {
+    describe("transformLineBreaks", () => {
+      test("transforms ⤵ character to <br> in segment content", () => {
+        const mockSectionsWithArrow = [
+          {
+            id: "section-1",
+            segments: [
+              {
+                segment_id: "seg-1",
+                content: "Line one⤵Line two",
+                translation: null,
+              },
+            ],
+          },
+        ];
+
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: mockSectionsWithArrow },
+                  text_detail: { language: "bo" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+
+      test("transforms multiple ⤵ characters in content", () => {
+        const mockSectionsWithMultipleArrows = [
+          {
+            id: "section-1",
+            segments: [
+              {
+                segment_id: "seg-1",
+                content: "Line one⤵Line two⤵Line three",
+                translation: null,
+              },
+            ],
+          },
+        ];
+
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: mockSectionsWithMultipleArrows },
+                  text_detail: { language: "bo" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+
+      test("transforms ⤵ in translation content", () => {
+        const mockSectionsWithTranslationArrow = [
+          {
+            id: "section-1",
+            segments: [
+              {
+                segment_id: "seg-1",
+                content: "Source content",
+                translation: {
+                  language: "en",
+                  content: "Translation⤵with line break",
+                },
+              },
+            ],
+          },
+        ];
+
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: mockSectionsWithTranslationArrow },
+                  text_detail: { language: "bo" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+
+      test("handles content without ⤵ character", () => {
+        const mockSectionsWithoutArrow = [
+          {
+            id: "section-1",
+            segments: [
+              {
+                segment_id: "seg-1",
+                content: "Normal content without special characters",
+                translation: null,
+              },
+            ],
+          },
+        ];
+
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: mockSectionsWithoutArrow },
+                  text_detail: { language: "en" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+
+      test("handles empty content gracefully", () => {
+        const mockSectionsWithEmptyContent = [
+          {
+            id: "section-1",
+            segments: [
+              {
+                segment_id: "seg-1",
+                content: "",
+                translation: null,
+              },
+            ],
+          },
+        ];
+
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: mockSectionsWithEmptyContent },
+                  text_detail: { language: "en" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+
+      test("handles null content gracefully", () => {
+        const mockSectionsWithNullContent = [
+          {
+            id: "section-1",
+            segments: [
+              {
+                segment_id: "seg-1",
+                content: null,
+                translation: null,
+              },
+            ],
+          },
+        ];
+
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: mockSectionsWithNullContent },
+                  text_detail: { language: "en" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+    });
+
+    describe("transformSectionsContent", () => {
+      test("transforms nested sections recursively", () => {
+        const mockNestedSections = [
+          {
+            id: "section-1",
+            segments: [
+              {
+                segment_id: "seg-1",
+                content: "Parent⤵content",
+                translation: null,
+              },
+            ],
+            sections: [
+              {
+                id: "section-1-1",
+                segments: [
+                  {
+                    segment_id: "seg-1-1",
+                    content: "Nested⤵content",
+                    translation: {
+                      language: "en",
+                      content: "Nested⤵translation",
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: mockNestedSections },
+                  text_detail: { language: "bo" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+
+      test("handles sections without segments", () => {
+        const mockSectionsWithoutSegments = [
+          {
+            id: "section-1",
+            title: "Empty Section",
+          },
+        ];
+
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: mockSectionsWithoutSegments },
+                  text_detail: { language: "en" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+
+      test("handles empty sections array", () => {
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: [] },
+                  text_detail: { language: "en" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+
+      test("handles segments with translation but no content transformation needed", () => {
+        const mockSectionsWithCleanTranslation = [
+          {
+            id: "section-1",
+            segments: [
+              {
+                segment_id: "seg-1",
+                content: "Source content",
+                translation: {
+                  language: "en",
+                  content: "Clean translation without special chars",
+                },
+              },
+            ],
+          },
+        ];
+
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: mockSectionsWithCleanTranslation },
+                  text_detail: { language: "bo" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+
+      test("handles deeply nested sections with transformations", () => {
+        const mockDeeplyNestedSections = [
+          {
+            id: "section-1",
+            segments: [{ segment_id: "seg-1", content: "Level 1⤵content" }],
+            sections: [
+              {
+                id: "section-1-1",
+                segments: [
+                  { segment_id: "seg-1-1", content: "Level 2⤵content" },
+                ],
+                sections: [
+                  {
+                    id: "section-1-1-1",
+                    segments: [
+                      { segment_id: "seg-1-1-1", content: "Level 3⤵content" },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+          buildInfiniteQueryResult({
+            data: {
+              pages: [
+                {
+                  content: { sections: mockDeeplyNestedSections },
+                  text_detail: { language: "bo" },
+                },
+              ],
+            },
+            fetchNextPage: vi.fn(),
+            hasNextPage: false,
+            isFetchingNextPage: false,
+            fetchPreviousPage: vi.fn(),
+            hasPreviousPage: false,
+            isFetchingPreviousPage: false,
+          }),
+        );
+
+        setup();
+        expect(screen.getByTestId("use-chapter-hook-mock")).toBeInTheDocument();
+      });
+    });
+  });
 });

@@ -47,4 +47,90 @@ describe("TextExpand", () => {
     fireEvent.click(screen.getByText("panel.showless"));
     expect(screen.getByText("panel.showmore")).toBeInTheDocument();
   });
+
+  describe("line break transformation", () => {
+    it("transforms ⤵ character to <br> tag in content", () => {
+      const { container } = setup({
+        children: "Line one⤵Line two",
+        maxLength: 100,
+        language: "en",
+      });
+      const contentDiv = container.querySelector("div");
+      expect(contentDiv?.innerHTML).toContain("<br>");
+      expect(contentDiv?.innerHTML).not.toContain("⤵");
+    });
+
+    it("transforms multiple ⤵ characters to <br> tags", () => {
+      const { container } = setup({
+        children: "Line one⤵Line two⤵Line three",
+        maxLength: 100,
+        language: "en",
+      });
+      const contentDiv = container.querySelector("div");
+      const brCount = (contentDiv?.innerHTML.match(/<br>/g) || []).length;
+      expect(brCount).toBe(2);
+      expect(contentDiv?.innerHTML).not.toContain("⤵");
+    });
+
+    it("handles content without ⤵ character correctly", () => {
+      const { container } = setup({
+        children: "Normal text without special characters",
+        maxLength: 100,
+        language: "en",
+      });
+      const contentDiv = container.querySelector("div");
+      expect(contentDiv?.innerHTML).toBe(
+        "Normal text without special characters",
+      );
+    });
+
+    it("transforms ⤵ in truncated content when collapsed", () => {
+      const { container } = setup({
+        children: "Start⤵Middle text that is very long and will be truncated",
+        maxLength: 20,
+        language: "en",
+      });
+      const contentDiv = container.querySelector("div");
+      expect(contentDiv?.innerHTML).toContain("<br>");
+      expect(contentDiv?.innerHTML).not.toContain("⤵");
+    });
+
+    it("transforms ⤵ in full content when expanded", () => {
+      const longTextWithArrow =
+        "Start⤵Middle⤵End of a very long text that exceeds max length";
+      setup({
+        children: longTextWithArrow,
+        maxLength: 20,
+        language: "en",
+      });
+
+      const button = screen.getByText("panel.showmore");
+      fireEvent.click(button);
+
+      const contentDiv = document.querySelector("div.text-base");
+      expect(contentDiv?.innerHTML).toContain("<br>");
+      expect(contentDiv?.innerHTML).not.toContain("⤵");
+      const brCount = (contentDiv?.innerHTML.match(/<br>/g) || []).length;
+      expect(brCount).toBe(2);
+    });
+
+    it("handles empty string with transformation", () => {
+      const { container } = setup({
+        children: "",
+        maxLength: 50,
+        language: "en",
+      });
+      expect(container.firstChild).toBeNull();
+    });
+
+    it("handles content with only ⤵ character", () => {
+      const { container } = setup({
+        children: "⤵",
+        maxLength: 50,
+        language: "en",
+      });
+      const contentDiv = container.querySelector("div");
+      expect(contentDiv?.innerHTML).toBe("<br>");
+    });
+  });
 });
