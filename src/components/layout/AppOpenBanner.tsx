@@ -3,16 +3,22 @@ import {
   DISMISS_KEY,
   DISMISS_TIME_INTERVAL_MS,
   PLAY_STORE_URL,
+  APP_STORE_URL,
 } from "@/utils/constants";
 import { useEffect, useState } from "react";
 
 export default function AppOpenBanner() {
   const [visible, setVisible] = useState(false);
+  const [isAppleDevice, setIsAppleDevice] = useState(false);
 
   useEffect(() => {
     // Mobile only
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (!isMobile) return;
+
+    // Detect Apple devices
+    const isApple = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    setIsAppleDevice(isApple);
 
     const dismissedAt = localStorage.getItem(DISMISS_KEY);
 
@@ -57,16 +63,9 @@ export default function AppOpenBanner() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={handleOpenApp}
-            className="px-3 py-1.5 text-sm rounded-md bg-amber-600 text-white hover:bg-amber-700"
-          >
-            Open
-          </button>
-
           <a
-            href={PLAY_STORE_URL}
-            className="px-3 py-1.5 text-sm rounded-md border border-gray-300"
+            href={isAppleDevice ? APP_STORE_URL : PLAY_STORE_URL}
+            className="px-3 py-1.5 text-sm rounded-md bg-amber-600 text-white hover:bg-amber-700"
           >
             Get App
           </a>
