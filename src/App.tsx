@@ -1,6 +1,6 @@
 import "./App.css";
-import { Route, Routes, useNavigate, Navigate } from "react-router-dom";
-import { useMutation } from "react-query";
+import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
+import { useMutation, useQueryClient } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.tsx";
 import { useEffect, useState, Suspense, lazy } from "react";
 import axiosInstance from "./config/axios-config.ts";
@@ -20,6 +20,8 @@ import SheetChapters from "./routes/chapterV2/SheetChapters.tsx";
 import { MainLayout } from "./layouts/MainLayout";
 import { AuthLayout } from "./layouts/AuthLayout";
 import { NoFooterLayout } from "./layouts/NoFooterLayout";
+import { useTolgee } from "@tolgee/react";
+import { changeLanguage } from "./routes/navbar/NavigationBar.tsx";
 
 const tokenRefreshIntervalMs =
   Number(import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC) || 0;
@@ -70,6 +72,10 @@ function App() {
   > | null>(null);
   const { getIdTokenClaims, isAuthenticated, logout }: Auth0UserType =
     useAuth0() as Auth0UserType;
+  const [searchParams] = useSearchParams();
+  const tolgee = useTolgee(["language"]);
+  const queryClient = useQueryClient();
+  const [hasInitializedLanguage, setHasInitializedLanguage] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -144,6 +150,19 @@ function App() {
 
     setFontVariables(localStorage.getItem(LANGUAGE) || "en");
   }, []);
+
+  // Handle language parameter on first load
+  useEffect(() => {
+    const langParam = searchParams.get("lang");
+    if (langParam && !hasInitializedLanguage) {
+      // Validate the language parameter against supported languages
+      const supportedLanguages = ["en", "bo-IN", "zh-Hans-CN"];
+      if (supportedLanguages.includes(langParam)) {
+        changeLanguage(langParam, queryClient, tolgee);
+        setHasInitializedLanguage(true);
+      }
+    }
+  }, [searchParams, hasInitializedLanguage, queryClient, tolgee]);
 
   return (
     <Suspense>
