@@ -172,6 +172,12 @@ div::-webkit-scrollbar {
   }
 }
 
+@layer utilities {
+  .h-dvh-nav {
+    height: calc(100dvh - 60px);
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;

@@ -49,6 +49,7 @@ const InitialChat = lazy(
   () =>
     import("./routes/chat/components/molecules/InitialChat/InitialChat.tsx"),
 );
+const Planviewer = lazy(() => import("./routes/planviewer/Planviewer.tsx"));
 
 type Auth0UserType = {
   getIdTokenClaims: () => Promise<any>;
@@ -162,12 +163,12 @@ function App() {
         </Route>
 
         <Route element={<NoFooterLayout />}>
+          <Route path="/" element={<Planviewer />} />
           <Route path="/sheets/:id" element={<Sheets />} />
           <Route path="/chapter" element={<ChaptersV2 />} />
         </Route>
 
         <Route element={<MainLayout />}>
-          <Route path="/" element={<Collections />} />
           <Route path="/collections" element={<Collections />} />
           <Route
             path="/profile"
