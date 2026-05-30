@@ -82,6 +82,8 @@ const Navigation = () => {
 
   const routesWithoutColorBorder = [
     "/",
+    "/plans",
+    "/series",
     "/collections",
     "/login",
     "/register",

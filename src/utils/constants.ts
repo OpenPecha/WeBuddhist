@@ -15,6 +15,10 @@ export const APP_SCHEME_URL = "webuddhist://home";
 export const APP_PACKAGE_NAME = "org.pecha.app";
 export const PLAY_STORE_URL =
   "https://play.google.com/store/apps/details?id=org.pecha.app";
+export const APP_STORE_URL =
+  "https://apps.apple.com/app/webuddhist/id6745810914";
+/** Encoded in the planner download QR (Play Store deep link). */
+export const APP_DOWNLOAD_QR_URL = PLAY_STORE_URL;
 export const DISMISS_KEY = "wb_banner_dismissed";
 export const DISMISS_TIME_INTERVAL_MS = 24 * 60 * 60 * 1000; // 1 day
 

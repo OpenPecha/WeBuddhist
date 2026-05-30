@@ -49,6 +49,9 @@ const InitialChat = lazy(
   () =>
     import("./routes/chat/components/molecules/InitialChat/InitialChat.tsx"),
 );
+const Home = lazy(() => import("./routes/home/Home.tsx"));
+const PlansPage = lazy(() => import("./routes/home/PlansPage.tsx"));
+const SeriesPage = lazy(() => import("./routes/home/SeriesPage.tsx"));
 
 type Auth0UserType = {
   getIdTokenClaims: () => Promise<any>;
@@ -84,7 +87,7 @@ function App() {
             isAuthenticated &&
               (await logout({
                 logoutParams: {
-                  returnTo: window.location.origin + "/collections",
+                  returnTo: window.location.origin + "/",
                 },
               }));
           } else {
@@ -167,7 +170,10 @@ function App() {
         </Route>
 
         <Route element={<MainLayout />}>
-          <Route path="/" element={<Collections />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/plans" element={<PlansPage />} />
+          <Route path="/series" element={<SeriesPage />} />
+          <Route path="/planner" element={<Navigate to="/" replace />} />
           <Route path="/collections" element={<Collections />} />
           <Route
             path="/profile"
@@ -186,7 +192,7 @@ function App() {
             path="/:username/:sheetSlugAndId"
             element={<SheetChapters />}
           />
-          <Route path="*" element={<Collections />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </Suspense>
