@@ -138,16 +138,20 @@ global.ClipboardEvent = class extends Event {
   }
 } as any;
 
+const mockHandleBackspaceAtListStart = vi.fn().mockReturnValue(false);
+
 vi.mock("../../../sheet-utils/CustomEditor", () => ({
   default: {
     handlePaste: vi.fn(),
     toggleCodeBlock: vi.fn(),
     toggleMark: vi.fn(),
+    handleBackspaceAtListStart: vi.fn(),
   },
   useCustomEditor: vi.fn(() => ({
     handlePaste: mockHandlePaste,
     toggleCodeBlock: mockToggleCodeBlock,
     toggleMark: mockToggleMark,
+    handleBackspaceAtListStart: mockHandleBackspaceAtListStart,
   })),
 }));
 
@@ -157,6 +161,12 @@ const simulateKeyDown = (editor: Editor, event: KeyboardEvent) => {
     event.preventDefault();
     editor.insertText("\n");
     return;
+  }
+
+  if (event.key === "Backspace") {
+    if (mockHandleBackspaceAtListStart(editor, event)) {
+      return;
+    }
   }
 
   if (!(event.metaKey || event.ctrlKey)) {
@@ -501,6 +511,60 @@ describe("EditorInput", () => {
       expect((editor as any).undo).not.toHaveBeenCalled();
       expect((editor as any).redo).not.toHaveBeenCalled();
       expect(editor.insertText).not.toHaveBeenCalled();
+    });
+
+    it("handles backspace at list start when backspace is pressed", () => {
+      mockHandleBackspaceAtListStart.mockReturnValueOnce(true);
+      renderWithSlate();
+
+      const mockEvent = {
+        key: "Backspace",
+        ctrlKey: false,
+        metaKey: false,
+        preventDefault: vi.fn(),
+      };
+
+      simulateKeyDown(editor as any, mockEvent as any);
+
+      expect(mockHandleBackspaceAtListStart).toHaveBeenCalledWith(
+        editor,
+        mockEvent,
+      );
+    });
+
+    it("continues with normal backspace when not at list start", () => {
+      mockHandleBackspaceAtListStart.mockReturnValueOnce(false);
+      renderWithSlate();
+
+      const mockEvent = {
+        key: "Backspace",
+        ctrlKey: false,
+        metaKey: false,
+        preventDefault: vi.fn(),
+      };
+
+      simulateKeyDown(editor as any, mockEvent as any);
+
+      expect(mockHandleBackspaceAtListStart).toHaveBeenCalledWith(
+        editor,
+        mockEvent,
+      );
+    });
+
+    it("works with meta key instead of ctrl key for shortcuts", () => {
+      renderWithSlate();
+
+      const mockEvent = {
+        key: "b",
+        ctrlKey: false,
+        metaKey: true,
+        preventDefault: vi.fn(),
+      };
+
+      simulateKeyDown(editor as any, mockEvent as any);
+
+      expect(mockToggleMark).toHaveBeenCalledWith(editor, "bold");
+      expect(mockEvent.preventDefault).toHaveBeenCalled();
     });
   });
 
