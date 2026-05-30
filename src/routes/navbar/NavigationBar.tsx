@@ -78,8 +78,6 @@ const Navigation = () => {
   const [params, setParams] = useSearchParams();
   const navItems = [
     { to: "/collections", label: t("header.text"), key: "collections" },
-    { to: "/note", label: t("header.community"), key: "community" },
-    { to: "/ai/new", label: t("header.ai_mode"), key: "ai_mode" },
   ];
 
   const currentLanguage = tolgee.getLanguage();
@@ -206,7 +204,16 @@ const Navigation = () => {
       }}
     >
       <div className="flex items-center gap-x-4">
-        <Link to="/" className="flex items-center">
+        <Link
+          to="/"
+          className="flex items-center"
+          onClick={(e) => {
+            if (location.pathname === "/") {
+              e.preventDefault();
+              window.location.reload();
+            }
+          }}
+        >
           <img
             className="h-[30px]"
             src="/img/webuddhist_logo.svg"
