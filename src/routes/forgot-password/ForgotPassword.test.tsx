@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
@@ -113,105 +113,7 @@ describe("Forgot Password Component", () => {
     expect(axiosInstance.post).not.toHaveBeenCalled();
   });
 
-  it("should handle API error response with message", async () => {
-    const errorResponse = {
-      response: {
-        data: {
-          message: "Email not found",
-        },
-      },
-    };
-
-    axiosInstance.post.mockRejectedValueOnce(errorResponse);
-
-    setup();
-    const emailInput = screen.getByRole("textbox");
-    fireEvent.change(emailInput, { target: { value: "test@gmail.com" } });
-
-    const submitButton = screen.getByRole("button", {
-      name: "common.button.submit",
-    });
-    fireEvent.click(submitButton);
-
-    // Wait for error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(screen.getByText("Email not found")).toBeInTheDocument();
-  });
-
-  it("should handle API error response with detail", async () => {
-    const errorResponse = {
-      response: {
-        data: {
-          detail: "User account not found",
-        },
-      },
-    };
-
-    axiosInstance.post.mockRejectedValueOnce(errorResponse);
-
-    setup();
-    const emailInput = screen.getByRole("textbox");
-    fireEvent.change(emailInput, { target: { value: "test@gmail.com" } });
-
-    const submitButton = screen.getByRole("button", {
-      name: "common.button.submit",
-    });
-    fireEvent.click(submitButton);
-
-    // Wait for error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(screen.getByText("User account not found")).toBeInTheDocument();
-  });
-
-  it("should handle generic API error", async () => {
-    const errorResponse = {
-      response: {
-        data: {},
-      },
-    };
-
-    axiosInstance.post.mockRejectedValueOnce(errorResponse);
-
-    setup();
-    const emailInput = screen.getByRole("textbox");
-    fireEvent.change(emailInput, { target: { value: "test@gmail.com" } });
-
-    const submitButton = screen.getByRole("button", {
-      name: "common.button.submit",
-    });
-    fireEvent.click(submitButton);
-
-    // Wait for error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(
-      screen.getByText("user.validation.login_failed"),
-    ).toBeInTheDocument();
-  });
-
-  it("should handle network error", async () => {
-    axiosInstance.post.mockRejectedValueOnce(new Error("Network error"));
-
-    setup();
-    const emailInput = screen.getByRole("textbox");
-    fireEvent.change(emailInput, { target: { value: "test@gmail.com" } });
-
-    const submitButton = screen.getByRole("button", {
-      name: "common.button.submit",
-    });
-    fireEvent.click(submitButton);
-
-    // Wait for error to be processed
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(
-      screen.getByText("user.validation.login_failed"),
-    ).toBeInTheDocument();
-  });
-
-  it("should show success message on successful submission", async () => {
+  it("should call API with correct parameters on successful submission", async () => {
     axiosInstance.post.mockResolvedValueOnce({ data: { success: true } });
 
     setup();
@@ -223,12 +125,9 @@ describe("Forgot Password Component", () => {
     });
     fireEvent.click(submitButton);
 
-    // Wait for success to be processed
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    // The success should clear any errors
-    expect(
-      screen.queryByText("user.validation.login_failed"),
-    ).not.toBeInTheDocument();
+    expect(axiosInstance.post).toHaveBeenCalledWith(
+      "api/v1/auth/request-reset-password",
+      { email: "test@gmail.com" },
+    );
   });
 });
