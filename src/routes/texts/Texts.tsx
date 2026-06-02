@@ -220,11 +220,12 @@ const Texts = (props: any) => {
   };
 
   const handleTextTitleClick = (e: React.MouseEvent) => {
-    if (addChapter && tableOfContents?.contents[0]?.id) {
+    if (addChapter) {
       e.preventDefault();
+      const contentId = tableOfContents?.contents[0]?.id;
       const chapterData = {
         textId: textId,
-        contentId: tableOfContents.contents[0].id,
+        ...(contentId && { contentId }),
       };
       addChapter(chapterData, currentChapter);
     }

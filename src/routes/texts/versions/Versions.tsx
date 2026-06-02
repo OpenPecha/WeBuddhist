@@ -59,15 +59,13 @@ const CommonCard = ({
         <button
           type="button"
           onClick={() => {
-            if (contentId) {
-              addChapter(
-                {
-                  textId: version.id,
-                  contentId: contentId,
-                },
-                currentChapter,
-              );
-            }
+            addChapter(
+              {
+                textId: version.id,
+                ...(contentId && { contentId }),
+              },
+              currentChapter,
+            );
           }}
           className="text-left cursor-pointer hover:opacity-80 transition-opacity"
         >
