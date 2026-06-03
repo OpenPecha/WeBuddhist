@@ -250,7 +250,7 @@ describe("ContentsChapter", () => {
   });
 
   describe("getNextPageParam logic", () => {
-    test("returns null when current_segment_position equals total_segments", () => {
+    test("returns undefined when currentOffset >= total_segments", () => {
       let capturedGetNextPageParam: any;
 
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
@@ -263,16 +263,18 @@ describe("ContentsChapter", () => {
       setup();
 
       const lastPage = {
-        current_segment_position: 10,
-        total_segments: 10,
+        total_segments: 20,
         content: { sections: [{ id: 1 }] },
       };
+      // allPages with 1 page, size is 20 (default), so currentOffset = 1 * 20 = 20
+      // 20 >= 20, so should return undefined
+      const allPages = [lastPage];
 
-      const result = capturedGetNextPageParam(lastPage);
-      expect(result).toBeNull();
+      const result = capturedGetNextPageParam(lastPage, allPages);
+      expect(result).toBeUndefined();
     });
 
-    test("handles undefined lastPage gracefully", () => {
+    test("returns next offset when more pages available", () => {
       let capturedGetNextPageParam: any;
 
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
@@ -284,31 +286,31 @@ describe("ContentsChapter", () => {
 
       setup();
 
-      const result = capturedGetNextPageParam(undefined);
-      expect(result).toBeNull();
-    });
-  });
+      const lastPage = {
+        total_segments: 50,
+        content: { sections: [{ id: 1 }] },
+      };
+      // allPages with 1 page, size is 20 (default), so currentOffset = 1 * 20 = 20
+      // 20 < 50, so should return 20 (next offset)
+      const allPages = [lastPage];
 
-  describe("getPreviousPageParam logic", () => {
-    test("returns null when current_segment_position equals 1", () => {
-      let capturedGetPreviousPageParam: any;
+      const result = capturedGetNextPageParam(lastPage, allPages);
+      expect(result).toBe(20);
+    });
+
+    test("is undefined when isFromSheet is true", () => {
+      let capturedGetNextPageParam: any;
 
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
         (_key: any, _fetchFn: any, options: any) => {
-          capturedGetPreviousPageParam = options.getPreviousPageParam;
+          capturedGetNextPageParam = options.getNextPageParam;
           return buildInfiniteQueryResult();
         },
       );
 
-      setup();
+      setup({ isFromSheet: true });
 
-      const firstPage = {
-        current_segment_position: 1,
-        content: { sections: [{ id: 1 }] },
-      };
-
-      const result = capturedGetPreviousPageParam(firstPage);
-      expect(result).toBeNull();
+      expect(capturedGetNextPageParam).toBeUndefined();
     });
   });
 
