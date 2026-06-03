@@ -19,7 +19,7 @@ mockAxios();
 mockUseAuth();
 mockReactQuery();
 
-const axiosPostMock = axiosInstance.post as unknown as Mock;
+const axiosGetMock = axiosInstance.get as unknown as Mock;
 
 vi.mock("@tolgee/react", async () => {
   const actual = await vi.importActual("@tolgee/react");
@@ -58,6 +58,7 @@ vi.mock("../../../context/PanelContext.jsx", () => ({
 
 vi.mock("../../../config/axios-config.js", () => ({
   default: {
+    get: vi.fn(),
     post: vi.fn(),
   },
 }));
@@ -165,17 +166,10 @@ describe("ContentsChapter", () => {
   describe("fetchContentDetails function", () => {
     test("calls axios with correct parameters when all props are provided", async () => {
       const mockData = { content: { sections: [] } };
-      axiosPostMock.mockResolvedValue({ data: mockData });
+      axiosGetMock.mockResolvedValue({ data: mockData });
 
-      const queryKey = [
-        "content",
-        "text-1",
-        "content-1",
-        "version-1",
-        20,
-        "segment-1",
-      ];
-      const pageParam = { segmentId: "test-segment", direction: "next" };
+      const queryKey = ["content", "text-1", 20];
+      const pageParam = 10;
 
       let capturedFetchFunction: any;
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
@@ -190,21 +184,17 @@ describe("ContentsChapter", () => {
         await capturedFetchFunction({ pageParam, queryKey });
       }
 
-      expect(axiosInstance.post).toHaveBeenCalledWith(
+      expect(axiosInstance.get).toHaveBeenCalledWith(
         "/api/v1/texts/text-1/details",
         {
-          content_id: "content-1",
-          segment_id: "test-segment",
-          version_id: "version-1",
-          direction: "next",
-          size: 20,
+          params: { offset: 10, limit: 20 },
         },
       );
     });
 
-    test("calls axios with default direction when pageParam is null", async () => {
+    test("calls axios with default offset when pageParam is undefined", async () => {
       const mockData = { content: { sections: [] } };
-      axiosPostMock.mockResolvedValue({ data: mockData });
+      axiosGetMock.mockResolvedValue({ data: mockData });
 
       let capturedFetchFunction: any;
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
@@ -216,34 +206,23 @@ describe("ContentsChapter", () => {
 
       setup();
 
-      const queryKey = [
-        "content",
-        "text-1",
-        "content-1",
-        "version-1",
-        20,
-        "segment-1",
-      ];
+      const queryKey = ["content", "text-1", 20];
 
       if (capturedFetchFunction) {
-        await capturedFetchFunction({ pageParam: null, queryKey });
+        await capturedFetchFunction({ pageParam: undefined, queryKey });
       }
 
-      expect(axiosInstance.post).toHaveBeenCalledWith(
+      expect(axiosInstance.get).toHaveBeenCalledWith(
         "/api/v1/texts/text-1/details",
         {
-          content_id: "content-1",
-          segment_id: "segment-1",
-          version_id: "version-1",
-          direction: "next",
-          size: 20,
+          params: { offset: 0, limit: 20 },
         },
       );
     });
 
-    test("calls axios without optional parameters when they are null/undefined", async () => {
+    test("calls axios with zero offset when pageParam is 0", async () => {
       const mockData = { content: { sections: [] } };
-      axiosPostMock.mockResolvedValue({ data: mockData });
+      axiosGetMock.mockResolvedValue({ data: mockData });
 
       let capturedFetchFunction: any;
       vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
@@ -253,23 +232,18 @@ describe("ContentsChapter", () => {
         },
       );
 
-      setup({
-        contentId: null,
-        segmentId: null,
-        versionId: null,
-      });
+      setup();
 
-      const queryKey = ["content", "text-1", null, null, 20, null];
+      const queryKey = ["content", "text-1", 20];
 
       if (capturedFetchFunction) {
-        await capturedFetchFunction({ pageParam: null, queryKey });
+        await capturedFetchFunction({ pageParam: 0, queryKey });
       }
 
-      expect(axiosInstance.post).toHaveBeenCalledWith(
+      expect(axiosInstance.get).toHaveBeenCalledWith(
         "/api/v1/texts/text-1/details",
         {
-          direction: "next",
-          size: 20,
+          params: { offset: 0, limit: 20 },
         },
       );
     });
