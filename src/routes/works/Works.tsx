@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo, useEffect } from "react";
 import axiosInstance from "../../config/axios-config.ts";
 import { LANGUAGE, siteName } from "../../utils/constants.ts";
 import { useTranslate } from "@tolgee/react";
-import { useQuery } from "react-query";
+import { useInfiniteQuery } from "react-query";
 import { useParams, Link } from "react-router-dom";
 import {
   getEarlyReturn,
@@ -10,11 +10,20 @@ import {
   mapLanguageCode,
 } from "../../utils/helperFunctions.tsx";
 import Seo from "../commons/seo/Seo.tsx";
-import PaginationComponent from "../commons/pagination/PaginationComponent.tsx";
 import Breadcrumbs from "../commons/breadcrumbs/Breadcrumbs.tsx";
 import TwoColumnLayout from "../../components/layout/TwoColumnLayout";
+import { useInView } from "react-intersection-observer";
 
-const fetchWorks = async (bookId: string, limit = 10, skip = 0) => {
+const LIMIT = 12;
+
+const fetchWorks = async ({
+  pageParam = 0,
+  queryKey,
+}: {
+  pageParam?: number;
+  queryKey: readonly unknown[];
+}) => {
+  const [, bookId] = queryKey as [string, string];
   const storedLanguage = localStorage.getItem(LANGUAGE);
   const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
 
@@ -22,8 +31,8 @@ const fetchWorks = async (bookId: string, limit = 10, skip = 0) => {
     params: {
       language,
       collection_id: bookId,
-      limit,
-      skip,
+      limit: LIMIT,
+      skip: pageParam,
     },
   });
   return data;
@@ -47,31 +56,53 @@ const Works = (props?: WorksProps) => {
   const { t } = useTranslate();
   const id = collection_id || paramId || "";
 
-  const [pagination, setPagination] = useState<{
-    currentPage: number;
-    limit: number;
-  }>({ currentPage: 1, limit: 12 });
-  const skip = useMemo(
-    () => (pagination.currentPage - 1) * pagination.limit,
-    [pagination],
-  );
+  const { ref: sentinelRef, inView: isBottomSentinelVisible } = useInView({
+    threshold: 0.1,
+    rootMargin: "50px",
+  });
 
   const {
-    data: worksData,
+    data,
     isLoading: worksDataIsLoading,
     error: worksDataIsError,
-  } = useQuery(
-    ["works", id, skip, pagination.limit],
-    () => fetchWorks(id, pagination.limit, skip),
-    { refetchOnWindowFocus: false },
-  );
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(["works", id], fetchWorks, {
+    getNextPageParam: (lastPage) => {
+      if (!lastPage?.has_more) return undefined;
+      return (lastPage?.skip || 0) + LIMIT;
+    },
+    enabled: !!id,
+    refetchOnWindowFocus: false,
+  });
 
-  const texts: TextItem[] = (worksData?.texts as TextItem[]) || [];
+  useEffect(() => {
+    if (isBottomSentinelVisible && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [isBottomSentinelVisible, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const { texts, collectionData } = useMemo(() => {
+    if (!data?.pages || data.pages.length === 0) {
+      return { texts: [], collectionData: null };
+    }
+    const allTexts: TextItem[] = [];
+    data.pages.forEach((page) => {
+      if (page?.texts) {
+        allTexts.push(...(page.texts as TextItem[]));
+      }
+    });
+    return {
+      texts: allTexts,
+      collectionData: data.pages[0]?.collection || null,
+    };
+  }, [data?.pages]);
 
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
-  const pageTitle = worksData?.collection?.title
-    ? `${worksData.collection.title} | ${siteName}`
+  const pageTitle = collectionData?.title
+    ? `${collectionData.title} | ${siteName}`
     : `Works | ${siteName}`;
   const earlyReturn = getEarlyReturn({
     isLoading: worksDataIsLoading,
@@ -80,19 +111,11 @@ const Works = (props?: WorksProps) => {
   });
   if (earlyReturn) return earlyReturn;
 
-  const totalPages = Math.ceil((worksData?.total || 0) / pagination.limit);
-  const handlePageChange = (pageNumber: number) => {
-    setPagination((prev: { currentPage: number; limit: number }) => ({
-      ...prev,
-      currentPage: pageNumber,
-    }));
-  };
-
   const rootTexts = texts;
 
   const breadcrumbItems = [
     { label: t("header.text"), path: "/" },
-    { label: worksData?.collection?.title || "" },
+    { label: collectionData?.title || "" },
   ];
 
   const handleTextClick = (text: TextItem) => {
@@ -109,9 +132,25 @@ const Works = (props?: WorksProps) => {
   const getParentCollectionState = () => ({
     parentCollection: {
       id: id,
-      title: worksData?.collection?.title,
+      title: collectionData?.title,
     },
   });
+
+  const renderLoadingIndicator = () => (
+    <div className="flex justify-center w-full py-4">
+      <p className="text-gray-500">{t("common.loading")}</p>
+    </div>
+  );
+
+  const renderScrollSentinel = () => {
+    if (!hasNextPage || isFetchingNextPage) return null;
+    return (
+      <div
+        ref={sentinelRef}
+        className="h-5 w-full opacity-0 pointer-events-none"
+      />
+    );
+  };
 
   const renderRootTexts = () => {
     return (
@@ -119,7 +158,7 @@ const Works = (props?: WorksProps) => {
         {rootTexts.length !== 0 && (
           <>
             <h1 className="text-xl font-semibold overalltext text-gray-700">
-              {worksData?.collection?.title}
+              {collectionData?.title}
             </h1>
             <div
               className={`grid grid-cols-1 gap-6 pr-0 ${!isCompactView && "sm:grid-cols-2 lg:grid-cols-2"} md:gap-8`}
@@ -161,12 +200,8 @@ const Works = (props?: WorksProps) => {
     return (
       <div className="space-y-4 p-4">
         {renderRootTexts()}
-        <PaginationComponent
-          pagination={pagination}
-          totalPages={totalPages}
-          handlePageChange={handlePageChange}
-          setPagination={setPagination}
-        />
+        {isFetchingNextPage && renderLoadingIndicator()}
+        {renderScrollSentinel()}
       </div>
     );
   }
@@ -183,12 +218,8 @@ const Works = (props?: WorksProps) => {
             />
             <Breadcrumbs items={breadcrumbItems} />
             {renderRootTexts()}
-            <PaginationComponent
-              pagination={pagination}
-              totalPages={totalPages}
-              handlePageChange={handlePageChange}
-              setPagination={setPagination}
-            />
+            {isFetchingNextPage && renderLoadingIndicator()}
+            {renderScrollSentinel()}
           </div>
         </div>
       }
