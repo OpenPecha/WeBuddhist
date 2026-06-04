@@ -235,6 +235,7 @@ const Resources = ({
         return (
           <RootTextView
             segmentId={segmentId}
+            textId={sidePanelData?.segment_info?.text_id}
             setIsRootTextView={setActiveView}
             addChapter={addChapter}
             currentChapter={currentChapter}

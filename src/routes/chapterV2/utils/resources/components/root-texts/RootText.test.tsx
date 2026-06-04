@@ -124,6 +124,7 @@ describe("RootTextView", () => {
   const setup = (props: Record<string, unknown> = {}) => {
     const defaultProps = {
       segmentId: "mock-segment-id",
+      textId: "mock-text-id",
       setIsRootTextView: mockSetIsRootTextView,
       addChapter: mockAddChapter,
       sectionindex: 0,
@@ -151,6 +152,22 @@ describe("RootTextView", () => {
 
   test("fetchRootTextData makes correct API call", async () => {
     const segmentId = "mock-segment-id";
+    const textId = "mock-text-id";
+    (axiosInstance.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      data: mockRootTextData,
+    });
+
+    const result = await fetchRootTextData(segmentId, textId);
+
+    expect(axiosInstance.get).toHaveBeenCalledWith(
+      `/api/v1/segments/${segmentId}/root_text`,
+      { params: { text_id: textId } },
+    );
+    expect(result).toEqual(mockRootTextData);
+  });
+
+  test("fetchRootTextData works without text_id parameter", async () => {
+    const segmentId = "mock-segment-id";
     (axiosInstance.get as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       data: mockRootTextData,
     });
@@ -159,6 +176,7 @@ describe("RootTextView", () => {
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
       `/api/v1/segments/${segmentId}/root_text`,
+      { params: { text_id: undefined } },
     );
     expect(result).toEqual(mockRootTextData);
   });
