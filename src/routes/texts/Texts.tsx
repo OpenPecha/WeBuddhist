@@ -247,10 +247,7 @@ const Texts = (props: any) => {
             </h1>
           </button>
         ) : (
-          <Link
-            to={`/chapter?text_id=${textId}&content_id=${tableOfContents?.contents[0]?.id}&versionId=&contentIndex=${0}`}
-            className="text-left"
-          >
+          <Link to={`/chapter?text_id=${textId}`} className="text-left">
             <h1
               className={`text-gray-800 ${getLanguageClass(versions?.text?.language)}`}
             >
@@ -274,10 +271,7 @@ const Texts = (props: any) => {
               canonical={canonicalUrl}
             />
             <Breadcrumbs items={breadcrumbItems} />
-            <Link
-              to={`/chapter?text_id=${textId}&content_id=${tableOfContents?.contents[0]?.id}&versionId=&contentIndex=${0}`}
-              className="text-left"
-            >
+            <Link to={`/chapter?text_id=${textId}`} className="text-left">
               <p
                 className={`text-gray-800 text-lg ${getLanguageClass(versions?.text?.language)}`}
               >

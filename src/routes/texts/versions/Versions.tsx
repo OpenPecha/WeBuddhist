@@ -78,10 +78,7 @@ const CommonCard = ({
       );
     }
     return (
-      <Link
-        to={`/chapter?text_id=${version.id}&content_id=${contentId}`}
-        className="text-left"
-      >
+      <Link to={`/chapter?text_id=${version.id}`} className="text-left">
         <div
           className={` text-lg font-bold text-zinc-600 ${getLanguageClass(version.language)}`}
         >
