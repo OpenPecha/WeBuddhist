@@ -7,6 +7,7 @@ import {
   FaLinkedinIn,
   FaYoutube,
 } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 type LinkItem = {
   href: string;
@@ -79,60 +80,75 @@ const connectLinks = [
 const Footer = () => {
   const { t } = useTranslate();
   return (
-    <footer className="flex max-sm:space-y-8 max-sm:flex-col border-t border-custom-border px-3 py-4 sm:p-6 md:py-12 lg:px-8">
-      <div className="flex-1 items-center justify-center">
-        <div className="flex w-full flex-col text-start">
-          <div className=" flex items-center">
-            <img
-              src="/img/webuddhist_logo.svg"
-              alt="logo"
-              width={150}
-              height={150}
-            />
-          </div>
-          <div className="flex w-full max-w-xl">
-            <p className="text-sm md:text-base text-muted-foreground">
-              Buddhism in your own words
-            </p>
-          </div>
-          <div className="flex mt-4 w-full items-center space-x-4">
-            {connectLinks.map(({ href, icon }) => (
-              <span className="p-2 bg-[#deac2c] rounded-full" key={href}>
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white"
-                >
-                  {icon}
-                </a>
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="flex-1 md:flex md:justify-around grid grid-cols-2 md:grid-cols-4 gap-4">
-        {columns.map(({ title, links }) => (
-          <div key={title} className="text-left">
-            <h3 className=" text-faded-grey uppercase overalltext font-semibold  mb-2 text-sm">
-              {t(title)}
-            </h3>
-            <ul className="list-none p-0 m-0 flex flex-col gap-2">
-              {links.map(({ href, labelKey }) => (
-                <li key={labelKey}>
+    <footer className="border-t border-custom-border">
+      <div className="flex max-sm:space-y-8 max-sm:flex-col px-3 py-4 sm:p-6 md:py-12 lg:px-8">
+        <div className="flex-1 items-center justify-center">
+          <div className="flex w-full flex-col text-start">
+            <div className=" flex items-center">
+              <img
+                src="/img/webuddhist_logo.svg"
+                alt="logo"
+                width={150}
+                height={150}
+              />
+            </div>
+            <div className="flex w-full max-w-xl">
+              <p className="text-sm md:text-base text-muted-foreground">
+                Buddhism in your own words
+              </p>
+            </div>
+            <div className="flex mt-4 w-full items-center space-x-4">
+              {connectLinks.map(({ href, icon }) => (
+                <span className="p-2 bg-[#deac2c] rounded-full" key={href}>
                   <a
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`text-faded-grey ${getLanguageClass("en-san")} text-sm hover:text-black transition-colors`}
+                    className="text-white"
                   >
-                    {labelKey}
+                    {icon}
                   </a>
-                </li>
+                </span>
               ))}
-            </ul>
+            </div>
           </div>
-        ))}
+        </div>
+        <div className="flex-1 md:flex md:justify-around grid grid-cols-2 md:grid-cols-4 gap-4">
+          {columns.map(({ title, links }) => (
+            <div key={title} className="text-left">
+              <h3 className=" text-faded-grey uppercase overalltext font-semibold  mb-2 text-sm">
+                {t(title)}
+              </h3>
+              <ul className="list-none p-0 m-0 flex flex-col gap-2">
+                {links.map(({ href, labelKey }) => (
+                  <li key={labelKey}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`text-faded-grey ${getLanguageClass("en-san")} text-sm hover:text-black transition-colors`}
+                    >
+                      {labelKey}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="border-t border-custom-border px-3 py-3 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground">
+          &copy; {new Date().getFullYear()} WeBuddhist · OpenPecha Trust. All
+          rights reserved.
+        </p>
+        <Link
+          to="/privacy-policy"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+          aria-label="Privacy Policy"
+        >
+          Privacy Policy
+        </Link>
       </div>
     </footer>
   );

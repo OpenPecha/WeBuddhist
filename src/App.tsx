@@ -49,6 +49,9 @@ const InitialChat = lazy(
   () =>
     import("./routes/chat/components/molecules/InitialChat/InitialChat.tsx"),
 );
+const PrivacyPolicy = lazy(
+  () => import("./routes/privacy-policy/PrivacyPolicy.tsx"),
+);
 
 type Auth0UserType = {
   getIdTokenClaims: () => Promise<any>;
@@ -182,6 +185,7 @@ function App() {
           <Route path="/texts/:id" element={<Texts />} />
           <Route path="/works/:id" element={<Works />} />
           <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route
             path="/:username/:sheetSlugAndId"
             element={<SheetChapters />}
