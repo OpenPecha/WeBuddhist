@@ -202,6 +202,7 @@ function App() {
           <Route path="/texts/:id" element={<Texts />} />
           <Route path="/works/:id" element={<Works />} />
           <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route
             path="/:username/:sheetSlugAndId"
             element={<SheetChapters />}
