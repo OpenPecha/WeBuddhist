@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
@@ -95,5 +95,39 @@ describe("Forgot Password Component", () => {
     expect(
       screen.queryByText("user.validation.required"),
     ).not.toBeInTheDocument();
+  });
+
+  it("should show error for invalid email format", async () => {
+    setup();
+    const emailInput = screen.getByRole("textbox");
+    fireEvent.change(emailInput, { target: { value: "invalid-email" } });
+
+    const submitButton = screen.getByRole("button", {
+      name: "common.button.submit",
+    });
+    fireEvent.click(submitButton);
+
+    expect(
+      screen.getByText("user.validation.invalid_email"),
+    ).toBeInTheDocument();
+    expect(axiosInstance.post).not.toHaveBeenCalled();
+  });
+
+  it("should call API with correct parameters on successful submission", async () => {
+    axiosInstance.post.mockResolvedValueOnce({ data: { success: true } });
+
+    setup();
+    const emailInput = screen.getByRole("textbox");
+    fireEvent.change(emailInput, { target: { value: "test@gmail.com" } });
+
+    const submitButton = screen.getByRole("button", {
+      name: "common.button.submit",
+    });
+    fireEvent.click(submitButton);
+
+    expect(axiosInstance.post).toHaveBeenCalledWith(
+      "api/v1/auth/request-reset-password",
+      { email: "test@gmail.com" },
+    );
   });
 });

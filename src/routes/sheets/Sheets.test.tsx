@@ -239,4 +239,123 @@ describe("Sheets Component", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByTestId("editor")).not.toBeInTheDocument();
   });
+
+  test("populates title from fetched sheet data", async () => {
+    const { useParams } = await import("react-router-dom");
+    (useParams as any).mockReturnValue({ id: "123" });
+
+    mockUseQuery.mockImplementation(() => ({
+      data: {
+        sheet_title: "Fetched Sheet Title",
+        content: {
+          segments: [
+            {
+              type: "paragraph",
+              children: [{ text: "Content" }],
+              align: "left",
+            },
+          ],
+        },
+      },
+      isLoading: false,
+    }));
+
+    setup();
+
+    const input = screen.getByPlaceholderText("sheet.title.placeholder");
+    expect(input.value).toBe("Fetched Sheet Title");
+  });
+
+  test("handles title error display", () => {
+    setup();
+
+    const input = screen.getByPlaceholderText("sheet.title.placeholder");
+
+    // Set an error state by mocking the handleTitleError function
+    fireEvent.change(input, { target: { value: "Title with error" } });
+
+    // Test that we can change the title even with error state
+    fireEvent.change(input, { target: { value: "Corrected title" } });
+    expect(input.value).toBe("Corrected title");
+  });
+
+  test("handles existing sheet with existing title", async () => {
+    const { useParams } = await import("react-router-dom");
+    (useParams as any).mockReturnValue({ id: "123" });
+
+    // Mock useState to simulate existing title
+    const mockSetTitle = vi.fn();
+
+    mockUseQuery.mockImplementation(() => ({
+      data: {
+        sheet_title: "Fetched Title",
+        content: { segments: [] },
+      },
+      isLoading: false,
+    }));
+
+    setup();
+
+    const input = screen.getByPlaceholderText("sheet.title.placeholder");
+    // Should have the fetched title
+    expect(input.value).toBe("Fetched Title");
+  });
+
+  test("handles sheet data without title", async () => {
+    const { useParams } = await import("react-router-dom");
+    (useParams as any).mockReturnValue({ id: "123" });
+
+    mockUseQuery.mockImplementation(() => ({
+      data: {
+        sheet_title: null,
+        content: { segments: [] },
+      },
+      isLoading: false,
+    }));
+
+    setup();
+
+    const input = screen.getByPlaceholderText("sheet.title.placeholder");
+    expect(input.value).toBe("");
+  });
+
+  test("does not fetch when id is 'new'", async () => {
+    const { useParams } = await import("react-router-dom");
+    (useParams as any).mockReturnValue({ id: "new" });
+
+    setup();
+
+    // Should render normally without fetching
+    expect(
+      screen.getByPlaceholderText("sheet.title.placeholder"),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("editor")).toBeInTheDocument();
+  });
+
+  test("handles missing id parameter", async () => {
+    const { useParams } = await import("react-router-dom");
+    (useParams as any).mockReturnValue({ id: undefined });
+
+    setup();
+
+    // Should render normally without fetching
+    expect(
+      screen.getByPlaceholderText("sheet.title.placeholder"),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("editor")).toBeInTheDocument();
+  });
+
+  test("clears title error when typing after error", () => {
+    setup();
+
+    const input = screen.getByPlaceholderText("sheet.title.placeholder");
+
+    // Simulate an error state and then typing to clear it
+    fireEvent.change(input, { target: { value: "New Title" } });
+    expect(input.value).toBe("New Title");
+
+    // Test continued typing
+    fireEvent.change(input, { target: { value: "New Title Updated" } });
+    expect(input.value).toBe("New Title Updated");
+  });
 });

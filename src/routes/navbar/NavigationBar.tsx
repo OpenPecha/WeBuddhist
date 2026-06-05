@@ -1,4 +1,9 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import { FaGlobe, FaSearch } from "react-icons/fa";
 import { useAuth } from "../../config/AuthContext.tsx";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -70,11 +75,9 @@ const Navigation = () => {
   const queryClient = useQueryClient();
   const { collectionColor } = useCollectionColor();
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [params, setParams] = useSearchParams();
   const navItems = [
     { to: "/collections", label: t("header.text"), key: "collections" },
-    { to: "/note", label: t("header.community"), key: "community" },
-    { to: "/ai/new", label: t("header.ai_mode"), key: "ai_mode" },
   ];
 
   const currentLanguage = tolgee.getLanguage();
@@ -115,6 +118,10 @@ const Navigation = () => {
 
   const handleLangSelect = (lng: string) => {
     changeLanguage(lng, queryClient, tolgee);
+    setParams((prev) => {
+      prev.set("lang", lng);
+      return prev;
+    });
   };
 
   const renderAuthButtons = (variant: "desktop" | "mobile") => {
@@ -197,7 +204,16 @@ const Navigation = () => {
       }}
     >
       <div className="flex items-center gap-x-4">
-        <Link to="/" className="flex items-center">
+        <Link
+          to="/"
+          className="flex items-center"
+          onClick={(e) => {
+            if (location.pathname === "/") {
+              e.preventDefault();
+              window.location.reload();
+            }
+          }}
+        >
           <img
             className="h-[30px]"
             src="/img/webuddhist_logo.svg"

@@ -133,4 +133,53 @@ describe("TextExpand", () => {
       expect(contentDiv?.innerHTML).toBe("<br>");
     });
   });
+
+  it("returns null for non-string children", () => {
+    const { container } = render(
+      <TextExpand children={123 as any} maxLength={50} language="en" />,
+    );
+    expect(container.firstChild).toBeNull();
+  });
+
+  it("uses default maxLength when maxLength is not provided", () => {
+    const longText = "A".repeat(300); // Longer than DEFAULT_MAX_LENGTH (250)
+    setup({
+      children: longText,
+      maxLength: 0, // Should use DEFAULT_MAX_LENGTH
+      language: "en",
+    });
+    expect(screen.getByText("panel.showmore")).toBeInTheDocument();
+  });
+
+  it("applies correct language class", () => {
+    const { container } = setup({
+      children: "Test content",
+      maxLength: 50,
+      language: "bo",
+    });
+    const contentDiv = container.querySelector("div");
+    expect(contentDiv).toHaveClass("bo-text");
+  });
+
+  it("handles transformation with null content gracefully", () => {
+    // Test the transformLineBreaks function edge case
+    const { container } = setup({
+      children: "",
+      maxLength: 50,
+      language: "en",
+    });
+    expect(container.firstChild).toBeNull();
+  });
+
+  it("shows exact maxLength characters when truncated", () => {
+    const text = "12345678901234567890"; // 20 characters
+    const { container } = setup({
+      children: text,
+      maxLength: 10,
+      language: "en",
+    });
+    const contentDiv = container.querySelector("div");
+    expect(contentDiv?.innerHTML).toBe("1234567890");
+    expect(screen.getByText("panel.showmore")).toBeInTheDocument();
+  });
 });
