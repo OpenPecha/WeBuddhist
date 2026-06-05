@@ -52,6 +52,9 @@ const InitialChat = lazy(
     import("./routes/chat/components/molecules/InitialChat/InitialChat.tsx"),
 );
 const Planviewer = lazy(() => import("./routes/planviewer/Planviewer.tsx"));
+const PrivacyPolicy = lazy(
+  () => import("./routes/privacy-policy/PrivacyPolicy.tsx"),
+);
 
 type Auth0UserType = {
   getIdTokenClaims: () => Promise<any>;
