@@ -94,7 +94,7 @@ function App() {
             isAuthenticated &&
               (await logout({
                 logoutParams: {
-                  returnTo: window.location.origin + "/collections",
+                  returnTo: window.location.origin + "/",
                 },
               }));
           } else {

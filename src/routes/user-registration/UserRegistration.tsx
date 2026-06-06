@@ -53,7 +53,7 @@ const UserRegistration = () => {
 
   useEffect(() => {
     if (isLoggedIn || isAuthenticated) {
-      navigate("/collections");
+      navigate("/");
     }
   }, [isLoggedIn, isAuthenticated, navigate]);
 
@@ -69,7 +69,7 @@ const UserRegistration = () => {
       onSuccess: (data) => {
         const { access_token, refresh_token } = data.auth;
         login(access_token, refresh_token);
-        navigate("/collections");
+        navigate("/");
       },
       onError: (error: any) => {
         const message =
@@ -147,7 +147,7 @@ const UserRegistration = () => {
 
   const handleSocialLogin = async (connection: "google-oauth2" | "apple") => {
     try {
-      const redirectPath = "/collections";
+      const redirectPath = "/";
       const authParams: any = {
         appState: { returnTo: redirectPath },
         authorizationParams: { connection },

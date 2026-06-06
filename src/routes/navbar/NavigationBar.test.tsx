@@ -75,8 +75,8 @@ describe("NavigationBar Component", () => {
   };
   test("renders navigation links", () => {
     setup();
+    expect(screen.getByText("Plans")).toBeInTheDocument();
     expect(screen.getByText("Texts")).toBeInTheDocument();
-    // Note: Community link was removed from navigation, only Texts (Collections) link remains
   });
 
   test("renders search input", () => {
