@@ -77,7 +77,7 @@ const Navigation = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [params, setParams] = useSearchParams();
   const navItems = [
-    { to: "/", label: "plans", key: "plan" },
+    { to: "/", label: t("header.plans"), key: "plans" },
     { to: "/collections", label: t("header.text"), key: "collections" },
   ];
 
