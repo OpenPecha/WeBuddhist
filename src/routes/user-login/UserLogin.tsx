@@ -51,7 +51,7 @@ const UserLogin = () => {
         const accessToken = data.auth.access_token;
         const refreshToken = data.auth.refresh_token;
         login(accessToken, refreshToken);
-        navigate("/collections");
+        navigate("/");
       },
       onError: (error: any) => {
         const errorMsg =
@@ -107,7 +107,7 @@ const UserLogin = () => {
           connection,
           ...(connection === "google-oauth2" && { prompt: "select_account" }),
         },
-        appState: { returnTo: "/collections" },
+        appState: { returnTo: "/" },
       });
     } catch (error: any) {
       const message =
