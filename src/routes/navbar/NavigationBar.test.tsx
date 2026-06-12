@@ -75,7 +75,7 @@ describe("NavigationBar Component", () => {
   };
   test("renders navigation links", () => {
     setup();
-    expect(screen.getByText("Plans")).toBeInTheDocument();
+    expect(screen.getByText("header.plans")).toBeInTheDocument();
     expect(screen.getByText("Texts")).toBeInTheDocument();
   });
 
