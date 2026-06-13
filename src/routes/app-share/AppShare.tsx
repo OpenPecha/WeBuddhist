@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { APP_STORE_URL, PLAY_STORE_URL, siteName } from "../../utils/constants";
+import { FaApple, FaAndroid } from "react-icons/fa";
 
 type MobileDeviceType = "android" | "apple" | null;
 
@@ -8,10 +9,8 @@ const getMobileDeviceType = (): MobileDeviceType => {
     return null;
 
   const userAgent = window.navigator.userAgent.toLowerCase();
-
   if (/iphone|ipad|ipod/.test(userAgent)) return "apple";
   if (/android/.test(userAgent)) return "android";
-
   return null;
 };
 
@@ -25,55 +24,52 @@ const AppShare = () => {
 
   useEffect(() => {
     const deviceType = getMobileDeviceType();
-
     if (deviceType) {
       window.location.replace(STORE_URLS[deviceType]);
       return;
     }
-
     setShowDownloadLinks(true);
   }, []);
 
   if (!showDownloadLinks) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <p className="text-sm text-gray-500">Redirecting to the app store…</p>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-amber-50 to-gray-200 px-4">
+        <div className="flex flex-col items-center">
+          <span className="mb-4 text-3xl animate-bounce text-amber-600">
+            <FaApple aria-label="Apple logo" className="inline mr-2" />
+            <FaAndroid aria-label="Android logo" className="inline ml-2" />
+          </span>
+          <p className="text-base font-medium text-gray-700">
+            Redirecting to the app store…
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-        <h1 className="text-center text-2xl font-semibold text-gray-900">
-          Get {siteName}
-        </h1>
-        <p className="mt-2 text-center text-sm text-gray-500">
-          Download the app for daily reading, practice, and community on your
-          device.
-        </p>
+    <div className="mt-9 flex gap-4 flex-col">
+      <a
+        href={APP_STORE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Download ${siteName} on the App Store`}
+        className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg bg-black px-5 py-5 text-base font-bold text-white transition hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
+      >
+        <FaApple className="text-4xl" aria-hidden="true" />
+        <span className="text-center text-sm">App Store</span>
+      </a>
 
-        <div className="mt-8 flex flex-col gap-3">
-          <a
-            href={APP_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Download ${siteName} on the App Store`}
-            className="flex items-center justify-center rounded-md bg-amber-600 px-4 py-3 text-sm font-medium text-white hover:bg-amber-700"
-          >
-            Download on the App Store
-          </a>
-          <a
-            href={PLAY_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Download ${siteName} on Google Play`}
-            className="flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-900 hover:bg-gray-50"
-          >
-            Get it on Google Play
-          </a>
-        </div>
-      </div>
+      <a
+        href={PLAY_STORE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Download ${siteName} on Google Play`}
+        className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-5 text-base font-bold text-gray-900 shadow-sm transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-400"
+      >
+        <FaAndroid className="text-4xl text-green-500" aria-hidden="true" />
+        <span className="text-center text-sm">Google Play</span>
+      </a>
     </div>
   );
 };
