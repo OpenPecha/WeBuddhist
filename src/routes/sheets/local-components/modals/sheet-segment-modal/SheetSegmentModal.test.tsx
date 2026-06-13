@@ -198,7 +198,7 @@ describe("SheetSegmentModal", () => {
     });
 
     expect(axiosInstance.get).toHaveBeenCalledWith(
-      "/api/v1/search/multilingual",
+      "/api/v/search/multilingual",
       {
         params: {
           query: "test query",
