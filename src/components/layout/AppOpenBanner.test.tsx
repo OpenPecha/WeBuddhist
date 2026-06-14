@@ -134,7 +134,7 @@ describe("AppOpenBanner Component", () => {
       expect(screen.getByText("Open in WebBuddhist App")).toBeInTheDocument();
     });
 
-    const dismissButton = screen.getByLabelText("Dismiss");
+    const dismissButton = screen.getByRole("button", { name: "Close" });
     fireEvent.click(dismissButton);
 
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
@@ -197,8 +197,8 @@ describe("AppOpenBanner Component", () => {
     render(<AppOpenBanner />);
 
     await waitFor(() => {
-      const dismissButton = screen.getByLabelText("Dismiss");
-      expect(dismissButton).toHaveAttribute("aria-label", "Dismiss");
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
     });
   });
 });
