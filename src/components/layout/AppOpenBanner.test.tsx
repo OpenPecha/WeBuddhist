@@ -3,14 +3,12 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import "@testing-library/jest-dom";
 import AppOpenBanner from "./AppOpenBanner";
 import {
-  APP_SCHEME_URL,
   DISMISS_KEY,
   DISMISS_TIME_INTERVAL_MS,
   PLAY_STORE_URL,
   APP_STORE_URL,
 } from "../../utils/constants";
 
-// Mock localStorage
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -22,30 +20,21 @@ Object.defineProperty(window, "localStorage", {
   writable: true,
 });
 
-// Mock navigator.userAgent
 const mockUserAgent = (userAgent: string) => {
   Object.defineProperty(navigator, "userAgent", {
     value: userAgent,
     writable: true,
+    configurable: true,
   });
 };
 
-// Mock window.location
-const mockLocation = (pathname = "/", search = "", hash = "") => {
-  delete (window as any).location;
-  (window as any).location = {
-    pathname,
-    search,
-    hash,
-    href: `https://webuddhist.com${pathname}${search}${hash}`,
-  };
-};
+const getDownloadLink = () =>
+  screen.getByRole("link", { name: "Open mobile app store link" });
 
 describe("AppOpenBanner Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
-    mockLocation();
   });
 
   test("does not render on desktop devices", () => {
@@ -55,9 +44,7 @@ describe("AppOpenBanner Component", () => {
 
     render(<AppOpenBanner />);
 
-    expect(
-      screen.queryByText("Open in WebBuddhist App"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Get our Mobile App")).not.toBeInTheDocument();
   });
 
   test("renders on Android devices", async () => {
@@ -68,14 +55,15 @@ describe("AppOpenBanner Component", () => {
     render(<AppOpenBanner />);
 
     await waitFor(() => {
-      expect(screen.getByText("Open in WebBuddhist App")).toBeInTheDocument();
+      expect(screen.getByText("Get our Mobile App")).toBeInTheDocument();
       expect(
-        screen.getByText("Faster reading, offline access"),
+        screen.getByText(/The mind is everything. What you think you become./),
       ).toBeInTheDocument();
-      expect(screen.getByText("Get App")).toHaveAttribute(
-        "href",
-        PLAY_STORE_URL,
+      expect(screen.getByAltText("App Open Banner")).toHaveAttribute(
+        "src",
+        "/img/QR-download.jpeg",
       );
+      expect(getDownloadLink()).toHaveAttribute("href", PLAY_STORE_URL);
     });
   });
 
@@ -87,16 +75,13 @@ describe("AppOpenBanner Component", () => {
     render(<AppOpenBanner />);
 
     await waitFor(() => {
-      expect(screen.getByText("Open in WebBuddhist App")).toBeInTheDocument();
-      expect(screen.getByText("Get App")).toHaveAttribute(
-        "href",
-        APP_STORE_URL,
-      );
+      expect(screen.getByText("Get our Mobile App")).toBeInTheDocument();
+      expect(getDownloadLink()).toHaveAttribute("href", APP_STORE_URL);
     });
   });
 
   test("does not render if recently dismissed", () => {
-    const recentDismissTime = Date.now() - DISMISS_TIME_INTERVAL_MS / 2; // 12 hours ago
+    const recentDismissTime = Date.now() - DISMISS_TIME_INTERVAL_MS / 2;
     mockUserAgent(
       "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
     );
@@ -104,13 +89,11 @@ describe("AppOpenBanner Component", () => {
 
     render(<AppOpenBanner />);
 
-    expect(
-      screen.queryByText("Open in WebBuddhist App"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Get our Mobile App")).not.toBeInTheDocument();
   });
 
   test("renders if dismiss time has expired", async () => {
-    const oldDismissTime = Date.now() - (DISMISS_TIME_INTERVAL_MS + 1000); // More than 24 hours ago
+    const oldDismissTime = Date.now() - (DISMISS_TIME_INTERVAL_MS + 1000);
     mockUserAgent(
       "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
     );
@@ -119,7 +102,7 @@ describe("AppOpenBanner Component", () => {
     render(<AppOpenBanner />);
 
     await waitFor(() => {
-      expect(screen.getByText("Open in WebBuddhist App")).toBeInTheDocument();
+      expect(screen.getByText("Get our Mobile App")).toBeInTheDocument();
     });
   });
 
@@ -131,47 +114,16 @@ describe("AppOpenBanner Component", () => {
     render(<AppOpenBanner />);
 
     await waitFor(() => {
-      expect(screen.getByText("Open in WebBuddhist App")).toBeInTheDocument();
+      expect(screen.getByText("Get our Mobile App")).toBeInTheDocument();
     });
 
-    const dismissButton = screen.getByRole("button", { name: "Close" });
-    fireEvent.click(dismissButton);
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
 
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
       DISMISS_KEY,
       expect.any(String),
     );
-    expect(
-      screen.queryByText("Open in WebBuddhist App"),
-    ).not.toBeInTheDocument();
-  });
-
-  test("handles app opening with current URL", async () => {
-    mockLocation("/texts/123", "?lang=en", "#section1");
-    mockUserAgent(
-      "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
-    );
-
-    // Mock window.location.href setter
-    let currentHref = "https://webuddhist.com/texts/123?lang=en#section1";
-    Object.defineProperty(window.location, "href", {
-      get: () => currentHref,
-      set: (value) => {
-        currentHref = value;
-      },
-    });
-
-    render(<AppOpenBanner />);
-
-    await waitFor(() => {
-      expect(screen.getByText("Open in WebBuddhist App")).toBeInTheDocument();
-    });
-
-    // Note: We can't easily test the setTimeout behavior in this test environment,
-    // but we can verify the banner renders and the function exists
-    expect(
-      screen.getByText("Faster reading, offline access"),
-    ).toBeInTheDocument();
+    expect(screen.queryByText("Get our Mobile App")).not.toBeInTheDocument();
   });
 
   test("detects iPad as Apple device", async () => {
@@ -182,11 +134,46 @@ describe("AppOpenBanner Component", () => {
     render(<AppOpenBanner />);
 
     await waitFor(() => {
-      expect(screen.getByText("Get App")).toHaveAttribute(
-        "href",
-        APP_STORE_URL,
-      );
+      expect(getDownloadLink()).toHaveAttribute("href", APP_STORE_URL);
     });
+  });
+
+  test("opens store link when Enter is pressed on download link", async () => {
+    mockUserAgent(
+      "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
+    );
+
+    render(<AppOpenBanner />);
+
+    await waitFor(() => {
+      expect(getDownloadLink()).toBeInTheDocument();
+    });
+
+    const downloadLink = getDownloadLink();
+    const clickSpy = vi.spyOn(downloadLink, "click");
+
+    fireEvent.keyDown(downloadLink, { key: "Enter" });
+
+    expect(clickSpy).toHaveBeenCalled();
+  });
+
+  test("opens store link when Space is pressed on download link", async () => {
+    mockUserAgent(
+      "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
+    );
+
+    render(<AppOpenBanner />);
+
+    await waitFor(() => {
+      expect(getDownloadLink()).toBeInTheDocument();
+    });
+
+    const downloadLink = getDownloadLink();
+    const clickSpy = vi.spyOn(downloadLink, "click");
+
+    fireEvent.keyDown(downloadLink, { key: " " });
+
+    expect(clickSpy).toHaveBeenCalled();
   });
 
   test("has correct accessibility attributes", async () => {
@@ -199,6 +186,7 @@ describe("AppOpenBanner Component", () => {
     await waitFor(() => {
       expect(screen.getByRole("dialog")).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
+      expect(screen.getByLabelText("inspirational quote")).toBeInTheDocument();
     });
   });
 });
