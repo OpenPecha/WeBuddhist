@@ -55,6 +55,7 @@ const Planviewer = lazy(() => import("./routes/planviewer/Planviewer.tsx"));
 const PrivacyPolicy = lazy(
   () => import("./routes/privacy-policy/PrivacyPolicy.tsx"),
 );
+const AppShare = lazy(() => import("./routes/app-share/AppShare.tsx"));
 
 type Auth0UserType = {
   getIdTokenClaims: () => Promise<any>;
@@ -171,6 +172,7 @@ function App() {
     <Suspense>
       <Routes>
         <Route element={<AuthLayout />}>
+          <Route path="/app/share" element={<AppShare />} />
           <Route path="/login" element={<UserLogin />} />
           <Route path="/register" element={<UserRegistration />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

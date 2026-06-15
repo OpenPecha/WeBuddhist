@@ -18,7 +18,7 @@ export const PLAY_STORE_URL =
 export const APP_STORE_URL =
   "https://apps.apple.com/in/app/webuddhist/id6745810914";
 export const DISMISS_KEY = "wb_banner_dismissed";
-export const DISMISS_TIME_INTERVAL_MS = 24 * 60 * 60 * 1000; // 1 day
+export const DISMISS_TIME_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 
 export const MENU_ITEMS = [
   {
