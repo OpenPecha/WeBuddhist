@@ -79,6 +79,7 @@ const Navigation = () => {
   const navItems = [
     { to: "/", label: t("header.plans"), key: "plans" },
     { to: "/collections", label: t("header.text"), key: "collections" },
+    { to: "/about-us", label: t("about.tag"), key: "about" },
   ];
 
   const currentLanguage = tolgee.getLanguage();

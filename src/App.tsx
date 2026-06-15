@@ -27,6 +27,7 @@ const tokenRefreshIntervalMs =
   Number(import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC) || 0;
 const Collections = lazy(() => import("./routes/collections/Collections.tsx"));
 const UserLogin = lazy(() => import("./routes/user-login/UserLogin.tsx"));
+const About = lazy(() => import("./routes/about/About.tsx"));
 const UserRegistration = lazy(
   () => import("./routes/user-registration/UserRegistration.tsx"),
 );
@@ -207,6 +208,7 @@ function App() {
           <Route path="/texts/:id" element={<Texts />} />
           <Route path="/works/:id" element={<Works />} />
           <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/about-us" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route
             path="/:username/:sheetSlugAndId"
