@@ -8,5 +8,15 @@
         "19:98:C0:75:14:97:73:F7:35:49:CD:D4:BD:8B:63:FC:C8:60:6E:72"
       ]
     }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.pecha.app",
+      "sha256_cert_fingerprints": [
+        "C2:63:20:70:AB:2B:CB:A0:72:72:88:12:6F:81:31:DA:0D:8F:46:5A:71:10:09:21:14:0E:38:8A:8E:4F:E0:26"
+      ]
+    }
   }
 ]
