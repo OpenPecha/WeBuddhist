@@ -1,6 +1,5 @@
 import type { ComponentType } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import {
   IoBookOutline,
   IoChatbubblesOutline,
@@ -13,9 +12,7 @@ import {
   IoShieldCheckmarkOutline,
 } from "react-icons/io5";
 import aboutContent from "./about.md?raw";
-import webuddhistLogo from "/img/webuddhist_logo.svg";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const SECTION_HEADING = /^(Why|How|What) —|^The Team$/;
@@ -58,57 +55,109 @@ type AboutSection = {
   blocks: ContentBlock[];
 };
 
+const TEAM_ITEM_PATTERN = /^(.+?)\s+(makes|make|supports|serves|keeps)\s/i;
+
+const hasParagraphBlock = (blocks: ContentBlock[]) =>
+  blocks.some((block) => block.type === "paragraphs");
+
+const collectMatchingItems = (
+  content: string[],
+  startIndex: number,
+  pattern: RegExp,
+): { items: string[]; nextIndex: number } => {
+  const items: string[] = [];
+  let index = startIndex;
+
+  while (index < content.length && pattern.test(content[index])) {
+    items.push(content[index]);
+    index++;
+  }
+
+  return { items, nextIndex: index };
+};
+
+const isPlainParagraphLine = (
+  content: string[],
+  index: number,
+  isTeam: boolean,
+  blocks: ContentBlock[],
+) => {
+  const line = content[index];
+  return (
+    !NUMBERED_LIST.test(line) &&
+    !PILLAR_LIST.test(line) &&
+    !(isTeam && hasParagraphBlock(blocks))
+  );
+};
+
+const collectParagraphBlock = (
+  content: string[],
+  startIndex: number,
+  isTeam: boolean,
+  blocks: ContentBlock[],
+): { block: ContentBlock; nextIndex: number } => {
+  const items: string[] = [];
+  let index = startIndex;
+
+  while (
+    index < content.length &&
+    isPlainParagraphLine(content, index, isTeam, blocks)
+  ) {
+    items.push(content[index]);
+    index++;
+  }
+
+  return { block: { type: "paragraphs", items }, nextIndex: index };
+};
+
 const buildSectionBlocks = (
   content: string[],
   isTeam: boolean,
 ): ContentBlock[] => {
   const blocks: ContentBlock[] = [];
-  let i = 0;
+  let index = 0;
 
-  while (i < content.length) {
-    const block = content[i];
+  while (index < content.length) {
+    const line = content[index];
 
-    if (NUMBERED_LIST.test(block)) {
-      const items: string[] = [];
-      while (i < content.length && NUMBERED_LIST.test(content[i])) {
-        items.push(content[i].replace(/^\d+\.\s*/, ""));
-        i++;
-      }
-      blocks.push({ type: "numbered", items });
+    if (NUMBERED_LIST.test(line)) {
+      const { items, nextIndex } = collectMatchingItems(
+        content,
+        index,
+        NUMBERED_LIST,
+      );
+      blocks.push({
+        type: "numbered",
+        items: items.map((item) => item.replace(/^\d+\.\s*/, "")),
+      });
+      index = nextIndex;
       continue;
     }
 
-    if (PILLAR_LIST.test(block)) {
-      const items: string[] = [];
-      while (i < content.length && PILLAR_LIST.test(content[i])) {
-        items.push(content[i]);
-        i++;
-      }
+    if (PILLAR_LIST.test(line)) {
+      const { items, nextIndex } = collectMatchingItems(
+        content,
+        index,
+        PILLAR_LIST,
+      );
       blocks.push({ type: "pillars", items });
+      index = nextIndex;
       continue;
     }
 
-    if (isTeam && blocks.some((b) => b.type === "paragraphs")) {
-      const items: string[] = [];
-      while (i < content.length) {
-        items.push(content[i]);
-        i++;
-      }
-      blocks.push({ type: "team", items });
-      continue;
+    if (isTeam && hasParagraphBlock(blocks)) {
+      blocks.push({ type: "team", items: content.slice(index) });
+      break;
     }
 
-    const items: string[] = [];
-    while (
-      i < content.length &&
-      !NUMBERED_LIST.test(content[i]) &&
-      !PILLAR_LIST.test(content[i]) &&
-      !(isTeam && blocks.some((b) => b.type === "paragraphs"))
-    ) {
-      items.push(content[i]);
-      i++;
-    }
-    blocks.push({ type: "paragraphs", items });
+    const { block, nextIndex } = collectParagraphBlock(
+      content,
+      index,
+      isTeam,
+      blocks,
+    );
+    blocks.push(block);
+    index = nextIndex;
   }
 
   return blocks;
@@ -250,9 +299,9 @@ const PillarCard = ({ text }: { text: string }) => {
 };
 
 const parseTeamItem = (text: string) => {
-  const match = text.match(/^(.+?)\s+(makes|make|supports|serves|keeps)\s/i);
+  const match = TEAM_ITEM_PATTERN.exec(text);
   if (!match) return { role: "", description: text };
-  const [, role] = match;
+  const role = match[1];
   return { role, description: text.slice(role.length).trim() };
 };
 
