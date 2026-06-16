@@ -1,3 +1,19 @@
+## Tagline
+
+**We are Buddhist. We learn, practice and connect. Daily.**
+
+## Mission
+
+**We help Buddhists do less harm, more good, and know their own mind better by learning, practicing and connecting, daily.**
+
+**We build Buddhist tech, content and networks.**
+
+## Vision
+
+**A world where all beings are free from suffering and find lasting happiness.**
+
+**do less harm, more good, and know their own mind better to ultimately find lasting happiness.**
+
 Welcome to WeBuddhist!
 We are Buddhists. We learn, practice, and connect — daily.
 Why — Our Purpose

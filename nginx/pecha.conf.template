@@ -3,8 +3,18 @@ server {
   server_name localhost;
   proxy_http_version 1.1;
 
+  # Avoid leaking internal port 4173 in redirects when behind a reverse proxy
+  absolute_redirect off;
+  port_in_redirect off;
+
   root /usr/share/nginx/html;
   index index.html;
+
+  # App deep link landing page — serve without trailing-slash redirect
+  location = /open {
+    try_files /open/index.html =404;
+    include /etc/nginx/security-headers.conf;
+  }
 
   location / {
     try_files $uri $uri/ /index.html;
