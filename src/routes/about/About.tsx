@@ -84,13 +84,13 @@ const isPlainParagraphLine = (
   content: string[],
   index: number,
   isTeam: boolean,
-  blocks: ContentBlock[],
+  collectedParagraphCount: number,
 ) => {
   const line = content[index];
   return (
     !NUMBERED_LIST.test(line) &&
     !PILLAR_LIST.test(line) &&
-    !(isTeam && hasParagraphBlock(blocks))
+    !(isTeam && collectedParagraphCount > 0)
   );
 };
 
@@ -98,14 +98,13 @@ const collectParagraphBlock = (
   content: string[],
   startIndex: number,
   isTeam: boolean,
-  blocks: ContentBlock[],
 ): { block: ContentBlock; nextIndex: number } => {
   const items: string[] = [];
   let index = startIndex;
 
   while (
     index < content.length &&
-    isPlainParagraphLine(content, index, isTeam, blocks)
+    isPlainParagraphLine(content, index, isTeam, items.length)
   ) {
     items.push(content[index]);
     index++;
@@ -154,12 +153,7 @@ const buildSectionBlocks = (
       break;
     }
 
-    const { block, nextIndex } = collectParagraphBlock(
-      content,
-      index,
-      isTeam,
-      blocks,
-    );
+    const { block, nextIndex } = collectParagraphBlock(content, index, isTeam);
     blocks.push(block);
     index = nextIndex;
   }
