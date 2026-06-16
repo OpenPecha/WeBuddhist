@@ -143,4 +143,20 @@ describe("About", () => {
       screen.getByText(/Six teams carry on our mission/),
     ).toBeInTheDocument();
   });
+
+  test("renders the sponsors section with logos", () => {
+    setup();
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Sponsors" }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByAltText("OpenPecha Trust")).toBeInTheDocument();
+    expect(screen.getByAltText("Dharmaduta")).toBeInTheDocument();
+
+    const sponsorsSection = screen
+      .getByRole("heading", { name: "Sponsors" })
+      .closest("section");
+    expect(sponsorsSection).toHaveAttribute("aria-labelledby", "sponsors");
+  });
 });

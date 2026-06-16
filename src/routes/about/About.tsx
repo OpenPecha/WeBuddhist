@@ -308,6 +308,25 @@ const sectionSlug = (heading: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
+type Sponsor = {
+  name: string;
+  logo: string;
+  href?: string;
+};
+
+const SPONSORS: Sponsor[] = [
+  {
+    name: "OpenPecha",
+    logo: "https://openpecha.org/lovable-uploads/d40b99df-a81c-4b68-8c6c-84301d427a2b.png",
+    href: "https://openpecha.org",
+  },
+  {
+    name: "Dharmaduta",
+    logo: "https://dharmaduta.in/logo.png",
+    href: "https://dharmaduta.in",
+  },
+];
+
 const { title, tagline, mission, vision, sections } =
   parseAboutContent(aboutContent);
 
@@ -449,6 +468,61 @@ const TeamCard = ({ text }: { text: string }) => {
   );
 };
 
+const SponsorLogo = ({ sponsor }: { sponsor: Sponsor }) => {
+  const image = (
+    <img
+      src={sponsor.logo}
+      alt={sponsor.name}
+      className="max-h-10 w-auto max-w-[160px] object-contain opacity-80 transition-opacity hover:opacity-100 sm:max-h-12 sm:max-w-[180px]"
+    />
+  );
+
+  if (!sponsor.href) {
+    return (
+      <div className="flex h-16 items-center justify-center px-4 sm:h-20">
+        {image}
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={sponsor.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Visit ${sponsor.name}`}
+      className="flex h-16 items-center justify-center px-4 sm:h-20 gap-2"
+    >
+      {image}{" "}
+      <span className="text-xl  text-gray-700 font-bold ">{sponsor.name}</span>
+    </a>
+  );
+};
+
+const SponsorsSection = () => {
+  if (SPONSORS.length === 0) return null;
+
+  return (
+    <section
+      aria-labelledby="sponsors"
+      className="border-t border-custom-border py-12 sm:py-14"
+    >
+      <h2
+        id="sponsors"
+        className="en-serif-text text-2xl sm:text-3xl font-medium text-foreground"
+      >
+        Sponsors
+      </h2>
+
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-14">
+        {SPONSORS.map((sponsor) => (
+          <SponsorLogo key={sponsor.name} sponsor={sponsor} />
+        ))}
+      </div>
+    </section>
+  );
+};
+
 const About = () => {
   return (
     <>
@@ -582,6 +656,8 @@ const About = () => {
               </section>
             );
           })}
+
+          <SponsorsSection />
         </div>
       </div>
     </>
