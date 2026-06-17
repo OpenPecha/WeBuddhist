@@ -58,7 +58,7 @@ createRoot(document.getElementById("root") as HTMLElement).render(
                   <>
                     <App />
                     <Toaster />
-                    <AppOpenBanner />
+                    {window?.location?.pathname === "/" && <AppOpenBanner />}
                   </>
                 </CollectionColorProvider>
               </UserbackProvider>
