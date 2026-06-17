@@ -151,7 +151,7 @@ describe("About", () => {
       screen.getByRole("heading", { level: 2, name: "Sponsors" }),
     ).toBeInTheDocument();
 
-    expect(screen.getByAltText("OpenPecha Trust")).toBeInTheDocument();
+    expect(screen.getByAltText("OpenPecha")).toBeInTheDocument();
     expect(screen.getByAltText("Dharmaduta")).toBeInTheDocument();
 
     const sponsorsSection = screen
