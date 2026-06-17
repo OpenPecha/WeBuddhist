@@ -5,6 +5,14 @@
       {
         "appID": "R523566J54.org.pecha.app",
         "paths": ["/open"]
+      },
+      {
+        "appID": "R523566J54.org.pecha.app.dev",
+        "paths": ["/open"]
+      },
+      {
+        "appID": "R523566J54.org.pecha.app.staging",
+        "paths": ["/open"]
       }
     ]
   }
