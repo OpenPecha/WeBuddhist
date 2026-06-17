@@ -10,6 +10,13 @@ server {
   root /usr/share/nginx/html;
   index index.html;
 
+  # Apple Universal Links association file (must be served as application/json)
+  location = /.well-known/apple-app-site-association {
+    default_type application/json;
+    try_files $uri =404;
+    include /etc/nginx/security-headers.conf;
+  }
+
   # App deep link landing page — serve without trailing-slash redirect
   location = /open {
     try_files /open/index.html =404;
