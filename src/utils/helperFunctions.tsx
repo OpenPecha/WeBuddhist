@@ -85,11 +85,24 @@ export const mapLanguageCode = (languageCode: string): string => {
   );
 };
 export const getLanguageClass = (language: string): string => {
+  if (language === "en-san") return "en-text";
+
+  const upper = language.trim().toUpperCase();
+  const normalized =
+    upper === "BO" || upper === "EN" || upper === "ZH"
+      ? upper.toLowerCase()
+      : mapLanguageCode(language);
+
   switch (language) {
+    case "sa":
+    case "bhu":
+    case "tib":
+      return "bo-text";
+  }
+
+  switch (normalized) {
     case "bo":
       return "bo-text";
-    case "en-san":
-      return "en-text";
     case "en":
       return "en-serif-text";
     case "sa":

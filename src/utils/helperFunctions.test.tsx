@@ -29,6 +29,8 @@ describe("mapLanguageCode", () => {
 describe("getLanguageClass", () => {
   test("returns correct CSS classes for different languages", () => {
     expect(getLanguageClass("bo")).toBe("bo-text");
+    expect(getLanguageClass("bo-IN")).toBe("bo-text");
+    expect(getLanguageClass("BO")).toBe("bo-text");
     expect(getLanguageClass("en")).toBe("en-serif-text");
     expect(getLanguageClass("en-san")).toBe("en-text");
     expect(getLanguageClass("sa")).toBe("bo-text");
