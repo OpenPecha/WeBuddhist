@@ -49,20 +49,6 @@ const SeriesCard = ({
             <span className="text-4xl font-serif">☸</span>
           </div>
         )}
-        {enrollment && (
-          <div className="absolute bottom-3 left-3 right-3">
-            <div className="rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-amber-900 backdrop-blur-sm">
-              {Math.round(enrollment.progress_percentage)}%{" "}
-              {t("plans.progress_complete", "complete")}
-            </div>
-            <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/50">
-              <div
-                className="h-full rounded-full bg-amber-600 transition-all"
-                style={{ width: `${enrollment.progress_percentage}%` }}
-              />
-            </div>
-          </div>
-        )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <h2
