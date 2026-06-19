@@ -6,12 +6,8 @@ import { IoArrowBack } from "react-icons/io5";
 import {
   fetchPlanDaily,
   fetchPlanDayCompletionStatus,
-  fetchUserSeriesProgress,
 } from "../api/plansApi.ts";
-import {
-  resolveImageUrl,
-  type PlanLanguageCode,
-} from "../utils/seriesUtils.ts";
+import { resolveImageUrl } from "../utils/seriesUtils.ts";
 import { buildDayStrip } from "../utils/dayStripUtils.ts";
 import {
   getEarlyReturn,
@@ -28,9 +24,7 @@ import {
 import { APP_STORE_URL, PLAY_STORE_URL } from "../../../utils/constants.ts";
 
 type DailyPlanViewProps = {
-  seriesId: string;
   planId: string;
-  language: PlanLanguageCode;
   apiLanguage: string;
   selectedDate?: string | null;
   isAuthenticated: boolean;
@@ -39,7 +33,6 @@ type DailyPlanViewProps = {
 };
 
 const DailyPlanView = ({
-  seriesId,
   planId,
   apiLanguage,
   selectedDate,
@@ -59,15 +52,6 @@ const DailyPlanView = ({
     () => fetchPlanDaily(planId, apiLanguage, selectedDate ?? undefined),
     {
       enabled: Boolean(planId),
-      refetchOnWindowFocus: false,
-    },
-  );
-
-  useQuery(
-    ["user-series-progress", seriesId, apiLanguage],
-    () => fetchUserSeriesProgress(seriesId, apiLanguage),
-    {
-      enabled: isAuthenticated,
       refetchOnWindowFocus: false,
     },
   );

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { useTranslate } from "@tolgee/react";
 import { useSearchParams } from "react-router-dom";
-import { fetchSeriesDetail, fetchUserSeriesProgress } from "../api/plansApi.ts";
+import { fetchSeriesDetail } from "../api/plansApi.ts";
 import { resolveTodaysPlanId } from "../utils/planStatusUtils.ts";
 import type { PlanLanguageCode } from "../utils/seriesUtils.ts";
 import { getEarlyReturn } from "../../../utils/helperFunctions.tsx";
@@ -12,7 +12,6 @@ type SeriesPlanRedirectProps = {
   language: PlanLanguageCode;
   apiLanguage: string;
   urlLanguage: string;
-  isAuthenticated: boolean;
   onBack: () => void;
 };
 
@@ -21,7 +20,6 @@ const SeriesPlanRedirect = ({
   language,
   apiLanguage,
   urlLanguage,
-  isAuthenticated,
   onBack,
 }: SeriesPlanRedirectProps) => {
   const { t } = useTranslate();
@@ -37,23 +35,10 @@ const SeriesPlanRedirect = ({
     { refetchOnWindowFocus: false },
   );
 
-  const { data: userProgress, isLoading: isProgressLoading } = useQuery(
-    ["user-series-progress", seriesId, apiLanguage],
-    () => fetchUserSeriesProgress(seriesId, apiLanguage),
-    {
-      enabled: isAuthenticated,
-      refetchOnWindowFocus: false,
-    },
-  );
-
   useEffect(() => {
-    if (!series || (isAuthenticated && isProgressLoading)) return;
+    if (!series) return;
 
-    const planId = resolveTodaysPlanId(
-      series.plans,
-      language,
-      userProgress?.current_plan_id,
-    );
+    const planId = resolveTodaysPlanId(series.plans, language);
     if (!planId) return;
 
     const params: Record<string, string> = {
@@ -62,19 +47,10 @@ const SeriesPlanRedirect = ({
     };
     if (urlLanguage !== "en") params.lang = urlLanguage;
     setSearchParams(params, { replace: true });
-  }, [
-    series,
-    language,
-    userProgress?.current_plan_id,
-    isAuthenticated,
-    isProgressLoading,
-    seriesId,
-    urlLanguage,
-    setSearchParams,
-  ]);
+  }, [series, language, seriesId, urlLanguage, setSearchParams]);
 
   const earlyReturn = getEarlyReturn({
-    isLoading: isSeriesLoading || (isAuthenticated && isProgressLoading),
+    isLoading: isSeriesLoading,
     error: seriesError,
     t,
   });
@@ -82,11 +58,7 @@ const SeriesPlanRedirect = ({
 
   if (!series) return null;
 
-  const planId = resolveTodaysPlanId(
-    series.plans,
-    language,
-    userProgress?.current_plan_id,
-  );
+  const planId = resolveTodaysPlanId(series.plans, language);
 
   if (!planId) {
     return (

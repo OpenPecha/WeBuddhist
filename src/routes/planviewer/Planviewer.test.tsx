@@ -17,7 +17,6 @@ const fetchSeriesDetailMock = vi.fn();
 const fetchPlanDailyMock = vi.fn();
 const fetchPlanDayCompletionStatusMock = vi.fn();
 const fetchUserSeriesEnrollmentsMock = vi.fn();
-const fetchUserSeriesProgressMock = vi.fn();
 const enrollInSeriesMock = vi.fn();
 
 vi.mock("@tolgee/react", () => ({
@@ -61,8 +60,6 @@ vi.mock("./api/plansApi.ts", () => ({
     fetchPlanDayCompletionStatusMock(...args),
   fetchUserSeriesEnrollments: (...args: unknown[]) =>
     fetchUserSeriesEnrollmentsMock(...args),
-  fetchUserSeriesProgress: (...args: unknown[]) =>
-    fetchUserSeriesProgressMock(...args),
   enrollInSeries: (...args: unknown[]) => enrollInSeriesMock(...args),
 }));
 
@@ -218,7 +215,6 @@ describe("Planviewer", () => {
       ],
     });
     fetchUserSeriesEnrollmentsMock.mockResolvedValue({ enrollments: [] });
-    fetchUserSeriesProgressMock.mockResolvedValue(null);
     enrollInSeriesMock.mockResolvedValue(undefined);
 
     vi.spyOn(reactQuery, "useQuery").mockImplementation(
@@ -253,9 +249,6 @@ describe("Planviewer", () => {
         }
         if (key === "user-series-enrollments") {
           return { data: { enrollments: [] }, isLoading: false, error: null };
-        }
-        if (key === "user-series-progress") {
-          return { data: null, isLoading: false, error: null };
         }
         return { data: undefined, isLoading: false, error: null };
       },

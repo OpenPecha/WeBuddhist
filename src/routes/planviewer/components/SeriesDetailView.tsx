@@ -6,7 +6,7 @@ import { IoArrowBack } from "react-icons/io5";
 import {
   enrollInSeries,
   fetchSeriesDetail,
-  fetchUserSeriesProgress,
+  fetchUserSeriesEnrollments,
 } from "../api/plansApi.ts";
 import SeriesPlanRow from "./SeriesPlanRow.tsx";
 import {
@@ -54,18 +54,25 @@ const SeriesDetailView = ({
     { refetchOnWindowFocus: false },
   );
 
-  const { data: userProgress, isLoading: isProgressLoading } = useQuery(
-    ["user-series-progress", seriesId, apiLanguage],
-    () => fetchUserSeriesProgress(seriesId, apiLanguage),
+  const { data: enrollmentsData, isLoading: isEnrollmentsLoading } = useQuery(
+    ["user-series-enrollments", apiLanguage],
+    () => fetchUserSeriesEnrollments(apiLanguage),
     {
       enabled: isAuthenticated,
       refetchOnWindowFocus: false,
     },
   );
 
+  const enrollment = useMemo(
+    () =>
+      enrollmentsData?.enrollments.find(
+        (entry) => entry.series_id === seriesId,
+      ),
+    [enrollmentsData, seriesId],
+  );
+
   const enrollMutation = useMutation(() => enrollInSeries(seriesId), {
     onSuccess: () => {
-      queryClient.invalidateQueries(["user-series-progress", seriesId]);
       queryClient.invalidateQueries(["user-series-enrollments"]);
     },
   });
@@ -87,7 +94,7 @@ const SeriesDetailView = ({
   const navTitle = getSeriesNavTitle(series.metadata, language);
   const cardTitle = getSeriesCardTitle(series.metadata, language);
   const imageUrl = resolveImageUrl(series.image);
-  const isEnrolled = Boolean(userProgress);
+  const isEnrolled = Boolean(enrollment);
   const planCount = visiblePlans.length;
   const totalDays =
     series.total_days || visiblePlans.reduce((s, p) => s + p.total_days, 0);
@@ -99,7 +106,7 @@ const SeriesDetailView = ({
       return;
     }
     if (isEnrolled) {
-      const currentId = userProgress?.current_plan_id ?? visiblePlans[0]?.id;
+      const currentId = enrollment?.current_plan_id ?? visiblePlans[0]?.id;
       if (currentId) onSelectPlan(currentId);
       return;
     }
@@ -177,7 +184,7 @@ const SeriesDetailView = ({
                   plan,
                   visiblePlans,
                   today,
-                  userProgress?.current_plan_id,
+                  enrollment?.current_plan_id,
                 )}
                 contentFontClass={contentFontClass}
                 onSelect={onSelectPlan}
@@ -186,7 +193,7 @@ const SeriesDetailView = ({
           )}
         </div>
 
-        {isAuthenticated && !isProgressLoading && !userProgress && (
+        {isAuthenticated && !isEnrollmentsLoading && !enrollment && (
           <p className="mt-6 text-center text-xs text-stone-500">
             {t(
               "plans.enroll_to_unlock",

@@ -6,7 +6,6 @@ import type {
   SeriesListResponse,
   UserPlanDayCompletionStatusResponse,
   UserSeriesEnrollmentsResponse,
-  UserSeriesProgressResponse,
   VerseOfDayPublicResponse,
 } from "../types.ts";
 
@@ -57,24 +56,6 @@ export async function fetchUserSeriesEnrollments(
     { params: { language, limit: 50 } },
   );
   return data;
-}
-
-export async function fetchUserSeriesProgress(
-  seriesId: string,
-  language: string,
-): Promise<UserSeriesProgressResponse | null> {
-  try {
-    const { data } = await axiosInstance.get<UserSeriesProgressResponse>(
-      `/api/v1/users/me/series/${seriesId}`,
-      { params: { language } },
-    );
-    return data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      return null;
-    }
-    throw error;
-  }
 }
 
 export async function enrollInSeries(seriesId: string): Promise<void> {

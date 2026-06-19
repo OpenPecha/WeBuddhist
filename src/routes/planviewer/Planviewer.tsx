@@ -64,9 +64,7 @@ const Planviewer = () => {
     if (selectedSeriesId && selectedPlanId) {
       return (
         <DailyPlanView
-          seriesId={selectedSeriesId}
           planId={selectedPlanId}
-          language={planLanguage}
           apiLanguage={tolgeeApiLanguage}
           selectedDate={selectedDate}
           isAuthenticated={isAuthenticatedReady}
@@ -83,7 +81,6 @@ const Planviewer = () => {
           language={planLanguage}
           apiLanguage={tolgeeApiLanguage}
           urlLanguage={apiLanguage}
-          isAuthenticated={isAuthenticatedReady}
           onBack={handleBackToList}
         />
       );
