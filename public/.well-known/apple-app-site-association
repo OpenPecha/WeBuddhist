@@ -3,17 +3,20 @@
     "apps": [],
     "details": [
       {
-        "appID": "R523566J54.org.pecha.app",
-        "paths": ["/open"]
-      },
-      {
-        "appID": "R523566J54.org.pecha.app.dev",
-        "paths": ["/open"]
-      },
-      {
-        "appID": "R523566J54.org.pecha.app.staging",
-        "paths": ["/open"]
+        "appIDs": [
+          "R523566J54.org.pecha.app",
+          "R523566J54.org.pecha.app.dev",
+          "R523566J54.org.pecha.app.staging"
+        ],
+        "components": [
+          {
+            "/": "/open"
+          },
+          {
+            "/": "/open/*"
+          }
+        ]
       }
     ]
   }
-}
+} 
