@@ -1,6 +1,7 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import AppOpenBanner from "./AppOpenBanner";
 import {
   DISMISS_KEY,
@@ -31,10 +32,31 @@ const mockUserAgent = (userAgent: string) => {
 const getDownloadLink = () =>
   screen.getByRole("link", { name: "Open mobile app store link" });
 
+const renderBanner = (initialEntry = "/") =>
+  render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <AppOpenBanner />
+    </MemoryRouter>,
+  );
+
 describe("AppOpenBanner Component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorageMock.getItem.mockReturnValue(null);
+  });
+
+  test("does not render when redirected=true query param is present", () => {
+    mockUserAgent(
+      "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
+    );
+
+    renderBanner("/?redirected=true");
+
+    expect(screen.queryByText("Get our Mobile App")).not.toBeInTheDocument();
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      DISMISS_KEY,
+      expect.any(String),
+    );
   });
 
   test("does not render on desktop devices", () => {
@@ -42,7 +64,7 @@ describe("AppOpenBanner Component", () => {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     );
 
-    render(<AppOpenBanner />);
+    renderBanner();
 
     expect(screen.queryByText("Get our Mobile App")).not.toBeInTheDocument();
   });
@@ -52,7 +74,7 @@ describe("AppOpenBanner Component", () => {
       "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
     );
 
-    render(<AppOpenBanner />);
+    renderBanner();
 
     await waitFor(() => {
       expect(screen.getByText("Get our Mobile App")).toBeInTheDocument();
@@ -72,7 +94,7 @@ describe("AppOpenBanner Component", () => {
       "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15",
     );
 
-    render(<AppOpenBanner />);
+    renderBanner();
 
     await waitFor(() => {
       expect(screen.getByText("Get our Mobile App")).toBeInTheDocument();
@@ -87,7 +109,7 @@ describe("AppOpenBanner Component", () => {
     );
     localStorageMock.getItem.mockReturnValue(recentDismissTime.toString());
 
-    render(<AppOpenBanner />);
+    renderBanner();
 
     expect(screen.queryByText("Get our Mobile App")).not.toBeInTheDocument();
   });
@@ -99,7 +121,7 @@ describe("AppOpenBanner Component", () => {
     );
     localStorageMock.getItem.mockReturnValue(oldDismissTime.toString());
 
-    render(<AppOpenBanner />);
+    renderBanner();
 
     await waitFor(() => {
       expect(screen.getByText("Get our Mobile App")).toBeInTheDocument();
@@ -111,7 +133,7 @@ describe("AppOpenBanner Component", () => {
       "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
     );
 
-    render(<AppOpenBanner />);
+    renderBanner();
 
     await waitFor(() => {
       expect(screen.getByText("Get our Mobile App")).toBeInTheDocument();
@@ -131,7 +153,7 @@ describe("AppOpenBanner Component", () => {
       "Mozilla/5.0 (iPad; CPU OS 15_0 like Mac OS X) AppleWebKit/605.1.15",
     );
 
-    render(<AppOpenBanner />);
+    renderBanner();
 
     await waitFor(() => {
       expect(getDownloadLink()).toHaveAttribute("href", APP_STORE_URL);
@@ -143,7 +165,7 @@ describe("AppOpenBanner Component", () => {
       "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
     );
 
-    render(<AppOpenBanner />);
+    renderBanner();
 
     await waitFor(() => {
       expect(getDownloadLink()).toBeInTheDocument();
@@ -162,7 +184,7 @@ describe("AppOpenBanner Component", () => {
       "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
     );
 
-    render(<AppOpenBanner />);
+    renderBanner();
 
     await waitFor(() => {
       expect(getDownloadLink()).toBeInTheDocument();
@@ -181,7 +203,7 @@ describe("AppOpenBanner Component", () => {
       "Mozilla/5.0 (Android 12; Mobile; rv:68.0) Gecko/68.0 Firefox/68.0",
     );
 
-    render(<AppOpenBanner />);
+    renderBanner();
 
     await waitFor(() => {
       expect(screen.getByRole("dialog")).toBeInTheDocument();

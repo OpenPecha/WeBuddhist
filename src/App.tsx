@@ -56,6 +56,9 @@ const Planviewer = lazy(() => import("./routes/planviewer/Planviewer.tsx"));
 const PrivacyPolicy = lazy(
   () => import("./routes/privacy-policy/PrivacyPolicy.tsx"),
 );
+const TermsOfService = lazy(
+  () => import("./routes/terms-of-service/TermsOfService.tsx"),
+);
 const AppShare = lazy(() => import("./routes/app-share/AppShare.tsx"));
 
 type Auth0UserType = {
@@ -174,6 +177,8 @@ function App() {
       <Routes>
         <Route element={<AuthLayout />}>
           <Route path="/app/share" element={<AppShare />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/login" element={<UserLogin />} />
           <Route path="/register" element={<UserRegistration />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -209,7 +214,6 @@ function App() {
           <Route path="/works/:id" element={<Works />} />
           <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/about-us" element={<About />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route
             path="/:username/:sheetSlugAndId"
             element={<SheetChapters />}

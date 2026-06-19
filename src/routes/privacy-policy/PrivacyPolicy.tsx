@@ -525,14 +525,6 @@ const PrivacyPolicy = () => {
         />
       </Helmet>
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <nav className="mb-6" aria-label="Breadcrumb">
-          <Link
-            to="/"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            ← Back to home
-          </Link>
-        </nav>
         <style>{privacyStyles}</style>
         <article
           className="privacy-policy-content"
