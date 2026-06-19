@@ -12,14 +12,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export default function AppOpenBanner() {
   const [visible, setVisible] = useState(false);
   const [isAppleDevice, setIsAppleDevice] = useState(false);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (!isMobile) return;
+
+    if (searchParams.get("redirected") === "true") {
+      localStorage.setItem(DISMISS_KEY, Date.now().toString());
+      return;
+    }
 
     const isApple = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     setIsAppleDevice(isApple);
@@ -32,7 +39,7 @@ export default function AppOpenBanner() {
     }
 
     setVisible(true);
-  }, []);
+  }, [searchParams]);
 
   const handleDismiss = () => {
     localStorage.setItem(DISMISS_KEY, Date.now().toString());
