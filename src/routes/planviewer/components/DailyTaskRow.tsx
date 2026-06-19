@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { IoChevronForward, IoPause, IoPlay } from "react-icons/io5";
 import type { SubTaskDTO, TaskDTO } from "../types.ts";
+import { useDailyAudioPlay } from "../context/DailyAudioContext.tsx";
 import { getTaskIcon } from "../utils/dayStripUtils.ts";
 import SubtaskAudioPlay from "./SubtaskAudioPlay.tsx";
 
@@ -33,7 +34,9 @@ function SubTaskBody({
 
   return (
     <div className="mt-3 space-y-2">
-      {audioUrl && !hideAudioButton && <SubtaskAudioPlay audioUrl={audioUrl} />}
+      {audioUrl && !hideAudioButton && (
+        <SubtaskAudioPlay audioId={subtask.id} audioUrl={audioUrl} />
+      )}
 
       {hasImage && (
         <img
@@ -58,49 +61,65 @@ function SubTaskBody({
   );
 }
 
+function TaskRowPlayButton({
+  audioId,
+  audioUrl,
+  onBeforePlay,
+}: {
+  audioId: string;
+  audioUrl: string;
+  onBeforePlay: () => void;
+}) {
+  const { audioRef, playing, handlePlayClick, onPlay, onPause, onEnded } =
+    useDailyAudioPlay(audioId, audioUrl);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onBeforePlay();
+          handlePlayClick();
+        }}
+        className="mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-stone-900 text-white outline outline-1 outline-white transition hover:bg-stone-800"
+        aria-label={playing ? "Pause audio" : "Play audio and expand section"}
+      >
+        {playing ? (
+          <IoPause className="text-base" aria-hidden="true" />
+        ) : (
+          <IoPlay className="ml-0.5 text-base" aria-hidden="true" />
+        )}
+      </button>
+      <audio
+        ref={audioRef}
+        src={audioUrl}
+        preload="metadata"
+        onPlay={onPlay}
+        onPause={onPause}
+        onEnded={onEnded}
+      >
+        <track kind="captions" />
+      </audio>
+    </>
+  );
+}
+
 const DailyTaskRow = ({
   task,
   index,
   contentFontClass = "",
 }: DailyTaskRowProps) => {
   const [expanded, setExpanded] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const [pendingPlay, setPendingPlay] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   const sortedSubtasks = [...task.subtasks].sort(
     (a, b) => (a.display_order ?? 0) - (b.display_order ?? 0),
   );
   const firstAudioSubtask = getFirstAudioSubtask(sortedSubtasks);
   const firstAudioUrl = firstAudioSubtask?.audio_url?.trim();
-  const hasAudio = Boolean(firstAudioUrl);
+  const hasAudio = Boolean(firstAudioUrl && firstAudioSubtask);
   const icon = getTaskIcon(index, task.title);
   const title = task.title?.trim() || `Section ${index + 1}`;
-
-  useEffect(() => {
-    if (!expanded || !pendingPlay || !audioRef.current) return;
-    void audioRef.current.play();
-    setPendingPlay(false);
-  }, [expanded, pendingPlay]);
-
-  const handlePlayClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    if (!firstAudioUrl) return;
-
-    if (!expanded) {
-      setPendingPlay(true);
-      setExpanded(true);
-      return;
-    }
-
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (playing) {
-      audio.pause();
-    } else {
-      void audio.play();
-    }
-  };
 
   return (
     <div>
@@ -133,41 +152,14 @@ const DailyTaskRow = ({
           )}
         </button>
 
-        {hasAudio && firstAudioUrl && (
-          <>
-            <button
-              type="button"
-              onClick={handlePlayClick}
-              className={`
-                cursor-pointer
-                mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full 
-                outline outline-1 outline-white 
-                bg-black text-white 
-                transition hover:bg-stone-900
-                dark:bg-white dark:text-black dark:outline-black dark:hover:bg-stone-200
-              `}
-              aria-label={
-                playing ? "Pause audio" : "Play audio and expand section"
-              }
-            >
-              {playing ? (
-                <IoPause className="text-base " aria-hidden="true" />
-              ) : (
-                <IoPlay className="ml-0.5 text-base" aria-hidden="true" />
-              )}
-            </button>
-
-            <audio
-              ref={audioRef}
-              src={firstAudioUrl}
-              preload="metadata"
-              onPlay={() => setPlaying(true)}
-              onPause={() => setPlaying(false)}
-              onEnded={() => setPlaying(false)}
-            >
-              <track kind="captions" />
-            </audio>
-          </>
+        {hasAudio && firstAudioSubtask && firstAudioUrl && (
+          <TaskRowPlayButton
+            audioId={firstAudioSubtask.id}
+            audioUrl={firstAudioUrl}
+            onBeforePlay={() => {
+              if (!expanded) setExpanded(true);
+            }}
+          />
         )}
       </div>
 

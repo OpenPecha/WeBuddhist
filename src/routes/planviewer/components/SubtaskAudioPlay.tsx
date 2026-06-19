@@ -1,49 +1,46 @@
-import { useRef, useState } from "react";
 import { IoPause, IoPlay } from "react-icons/io5";
+import { useDailyAudioPlay } from "../context/DailyAudioContext.tsx";
 
 type SubtaskAudioPlayProps = {
+  audioId: string;
   audioUrl: string;
   label?: string;
+  compact?: boolean;
 };
 
 const SubtaskAudioPlay = ({
+  audioId,
   audioUrl,
   label = "Play audio",
+  compact = false,
 }: SubtaskAudioPlayProps) => {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [playing, setPlaying] = useState(false);
+  const { audioRef, playing, handlePlayClick, onPlay, onPause, onEnded } =
+    useDailyAudioPlay(audioId, audioUrl);
 
-  const togglePlayback = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (playing) {
-      audio.pause();
-      return;
-    }
-    void audio.play();
-  };
+  const sizeClass = compact ? "h-6 w-6" : "h-10 w-10";
+  const iconClass = compact ? "text-base" : "text-lg";
 
   return (
-    <div className="mt-3 flex items-center gap-3">
+    <div className={compact ? undefined : "mt-3 flex items-center gap-3"}>
       <button
         type="button"
-        onClick={togglePlayback}
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-900 text-white transition hover:bg-stone-800"
+        onClick={handlePlayClick}
+        className={`flex ${sizeClass} shrink-0 items-center justify-center rounded-full bg-stone-900 text-white transition hover:bg-stone-800`}
         aria-label={playing ? "Pause audio" : label}
       >
         {playing ? (
-          <IoPause className="text-lg" aria-hidden="true" />
+          <IoPause className={iconClass} aria-hidden="true" />
         ) : (
-          <IoPlay className="ml-0.5 text-lg" aria-hidden="true" />
+          <IoPlay className={`ml-0.5 ${iconClass}`} aria-hidden="true" />
         )}
       </button>
       <audio
         ref={audioRef}
         src={audioUrl}
         preload="metadata"
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => setPlaying(false)}
+        onPlay={onPlay}
+        onPause={onPause}
+        onEnded={onEnded}
       >
         <track kind="captions" />
       </audio>
