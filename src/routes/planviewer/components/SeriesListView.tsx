@@ -83,14 +83,7 @@ const SeriesListView = ({
           <h1 className="text-2xl font-semibold text-gray-900">
             {t("plans.practice_routines", "Practice Routines")}
           </h1>
-          <p className="text-sm text-gray-600">
-            {t(
-              "plans.practice_routines_subtitle",
-              "Structured daily plans to support your Buddhist study and practice.",
-            )}
-          </p>
         </header>
-
         {seriesList.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-amber-200 bg-amber-50/50 px-6 py-12 text-center">
             <p className="text-gray-600">

@@ -50,7 +50,7 @@ const VerseOfDayCard = ({ apiLanguage }: VerseOfDayCardProps) => {
 
   return (
     <section
-      className="relative flex flex-col sm:flex-row items-stretch gap-4 overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-100/70 via-white to-amber-50/50 p-0 sm:p-6 shadow-[0_4px_16px_0_rgba(219,168,64,0.09)] cursor-pointer transition hover:shadow-lg"
+      className="relative flex flex-col sm:flex-row items-stretch gap-4 overflow-hidden rounded-2xl p-0 ursor-pointer transition "
       aria-label={t("plans.verse_of_day", "Verse of the day")}
       title={t("plans.copy_to_clipboard", "Copy verse to clipboard")}
       onClick={handleCopy}
@@ -78,21 +78,6 @@ const VerseOfDayCard = ({ apiLanguage }: VerseOfDayCardProps) => {
       >
         <div>
           <p className="mb-4 sm:mb-5 text-[0.83rem] font-bold uppercase tracking-widest text-amber-700 drop-shadow">
-            <span className="inline-flex items-center gap-1">
-              <svg
-                width="18"
-                height="18"
-                fill="none"
-                viewBox="0 0 24 24"
-                className="inline-block text-amber-400"
-              >
-                <path
-                  d="M12 2l2.09 6.26L20 9.27l-5.18 3.77L16.18 20 12 16.27 7.82 20l1.36-6.96L4 9.27l5.91-.99z"
-                  fill="currentColor"
-                />
-              </svg>
-              {t("plans.verse_of_day", "Verse of the day")}
-            </span>
             {copied && (
               <span className="ml-2 text-amber-700 font-normal text-xs bg-amber-100 px-2 py-1 rounded transition">
                 {t("plans.copied", "Copied!")}
@@ -100,11 +85,11 @@ const VerseOfDayCard = ({ apiLanguage }: VerseOfDayCardProps) => {
             )}
           </p>
           <blockquote
-            className={`relative text-lg sm:text-xl leading-relaxed text-gray-800 pl-3 border-l-4 border-amber-300/40 ${getLanguageClass(apiLanguage)} ${
+            className={`relative text-lg sm:text-xl leading-relaxed text-gray-800 pl-3 ${getLanguageClass(apiLanguage)} ${
               isTibetan ? "" : "font-serif italic"
             }`}
           >
-            {verseText}
+            " {verseText} "
           </blockquote>
         </div>
       </div>
