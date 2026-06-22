@@ -84,7 +84,8 @@ export const mapLanguageCode = (languageCode: string): string => {
     languageMap[languageCode as keyof typeof languageMap] || languageMap.en
   );
 };
-export const getLanguageClass = (language: string): string => {
+export const getLanguageClass = (language?: string | null): string => {
+  if (!language) return "en-serif-text";
   if (language === "en-san") return "en-text";
 
   const upper = language.trim().toUpperCase();

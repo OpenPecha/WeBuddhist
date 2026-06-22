@@ -258,9 +258,11 @@ describe("Planviewer", () => {
   test("renders verse of the day and public series", async () => {
     renderPlanviewer();
 
-    expect(await screen.findByText("Verse of the day")).toBeInTheDocument();
     expect(
-      await screen.findByText("All conditioned things are impermanent."),
+      await screen.findByLabelText("Verse of the day"),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(/All conditioned things are impermanent\./),
     ).toBeInTheDocument();
     expect(
       await screen.findByText("200-Day Road to the ITCC 2026"),
