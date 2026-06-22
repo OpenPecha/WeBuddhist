@@ -34,7 +34,13 @@ export const updateSheet = async (sheet_id: string, payload: any) => {
   );
   return data;
 };
-const Editor = ({ initialValue, children, title, onTitleError }: any) => {
+const Editor = ({
+  initialValue,
+  children,
+  title,
+  onTitleError,
+  isPublished,
+}: any) => {
   const [editor] = useState(() =>
     withHistory(withEmbeds(withReact(createEditor()))),
   );
@@ -45,6 +51,8 @@ const Editor = ({ initialValue, children, title, onTitleError }: any) => {
   const [sheetId, setSheetId] = useState(id === "new" ? null : id);
   const hasCreatedSheet = useRef(false);
   const [saveStatus, setSaveStatus] = useState("idle");
+  const lastIsPublishedRef = useRef(isPublished);
+  lastIsPublishedRef.current = isPublished;
 
   const handleNavigation = useCallback(
     (newSheetId: string) => {
@@ -69,7 +77,11 @@ const Editor = ({ initialValue, children, title, onTitleError }: any) => {
     async (content: any) => {
       try {
         setSaveStatus("saving");
-        const payload = createPayload(content, title);
+        const payload = createPayload(
+          content,
+          title,
+          lastIsPublishedRef.current ?? false,
+        );
         if (!sheetId) {
           const response = await createSheet(payload);
           const newSheetId = response.sheet_id;

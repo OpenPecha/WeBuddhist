@@ -358,7 +358,7 @@ const UseChapterHook: React.FC<UseChapterHookProps> = (props) => {
   };
 
   const renderLoadingIndicator = (message: string) => (
-    <div className="loading-indicator">
+    <div className="loading-indicator flex justify-center w-full">
       <p>{message}</p>
     </div>
   );

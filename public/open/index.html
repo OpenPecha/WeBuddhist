@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WeBuddhist – Digital Buddhist Library</title>
+    <meta
+      name="description"
+      content="Explore the world's Buddhist teachings, texts, and manuscripts in one digital library. Study dharma, meditation, and spiritual practice with WeBuddhist."
+    />
+
+    <!-- Open Graph / Facebook / WhatsApp / Telegram -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://webuddhist.com/" />
+    <meta property="og:title" content="WeBuddhist – Digital Buddhist Library" />
+    <meta
+      property="og:description"
+      content="Explore the world's Buddhist teachings, texts, and manuscripts in one digital library. Study dharma, meditation, and spiritual practice with WeBuddhist."
+    />
+    <meta property="og:image" content="https://webuddhist.com/img/icon.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:site_name" content="WeBuddhist" />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="https://webuddhist.com/" />
+    <meta
+      name="twitter:title"
+      content="WeBuddhist – Digital Buddhist Library"
+    />
+    <meta
+      name="twitter:description"
+      content="Explore the world's Buddhist teachings, texts, and manuscripts in one digital library. Study dharma, meditation, and spiritual practice with WeBuddhist."
+    />
+    <meta name="twitter:image" content="https://webuddhist.com/img/icon.png" />
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        background: #faf8f5;
+        color: #333;
+        text-align: center;
+        padding: 24px;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+      }
+      p {
+        color: #666;
+        margin-bottom: 24px;
+      }
+      .buttons {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      a.btn {
+        display: inline-block;
+        padding: 12px 24px;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+      a.ios {
+        background: #000;
+        color: #fff;
+      }
+      a.android {
+        background: #34a853;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Opening WeBuddhist…</h1>
+    <p>
+      If the app doesn't open automatically,<br />
+      download it for your device below.
+    </p>
+    <div class="buttons">
+      <a
+        class="btn ios"
+        href="https://apps.apple.com/app/webuddhist/id6745810914"
+      >
+        Download on the App Store
+      </a>
+      <a
+        class="btn android"
+        href="https://play.google.com/store/apps/details?id=org.pecha.app"
+      >
+        Get it on Google Play
+      </a>
+    </div>
+
+    <script>
+      (function () {
+        var ua = navigator.userAgent || "";
+        var isIOS = /iPhone|iPad|iPod/i.test(ua);
+        var isAndroid = /Android/i.test(ua);
+
+        var iosStore = "https://apps.apple.com/app/webuddhist/id6745810914";
+        var androidStore =
+          "https://play.google.com/store/apps/details?id=org.pecha.app";
+
+        // On iOS, Universal Links should have already opened the app.
+        // This JS only fires when the app is NOT installed — send straight to store.
+        if (isIOS) {
+          window.location.replace(iosStore);
+        } else if (isAndroid) {
+          // App Link should have opened the app. If we're here, it didn't.
+          window.location.replace(androidStore);
+        }
+        // Desktop: show the buttons above — no redirect.
+      })();
+    </script>
+  </body>
+</html>

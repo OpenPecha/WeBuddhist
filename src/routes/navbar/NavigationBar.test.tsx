@@ -75,9 +75,8 @@ describe("NavigationBar Component", () => {
   };
   test("renders navigation links", () => {
     setup();
+    expect(screen.getByText("header.plans")).toBeInTheDocument();
     expect(screen.getByText("Texts")).toBeInTheDocument();
-    // expect(screen.getByText("Topics")).toBeInTheDocument();
-    expect(screen.getByText("Community")).toBeInTheDocument();
   });
 
   test("renders search input", () => {

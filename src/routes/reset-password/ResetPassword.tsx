@@ -28,11 +28,6 @@ const ResetPassword = () => {
 
   type FormErrors = Partial<FormData> & { general?: string; success?: string };
 
-  const [formData, setFormData] = useState<FormData>({
-    newPassword: "",
-    confirmPassword: "",
-  });
-
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState({
     newPassword: false,
@@ -49,7 +44,6 @@ const ResetPassword = () => {
     },
     {
       onSuccess: () => {
-        setFormData({ newPassword: "", confirmPassword: "" });
         setErrors({
           success: t("reset_password.success") || "Password reset successfully",
         });
@@ -65,29 +59,27 @@ const ResetPassword = () => {
     },
   );
 
-  const validateForm = (): FormErrors => {
+  const validateForm = (
+    newPassword: string,
+    confirmPassword: string,
+  ): FormErrors => {
     const validationErrors: FormErrors = {};
 
-    if (!formData.newPassword) {
+    if (!newPassword) {
       validationErrors.newPassword = t("user.validation.required");
-    } else if (formData.newPassword.length < 8) {
+    } else if (newPassword.length < 8) {
       validationErrors.newPassword = t("user.validation.invalid_password");
     }
 
-    if (!formData.confirmPassword) {
+    if (!confirmPassword) {
       validationErrors.confirmPassword = t("user.validation.required");
-    } else if (formData.newPassword !== formData.confirmPassword) {
+    } else if (newPassword !== confirmPassword) {
       validationErrors.confirmPassword = t(
         "user.validation.password_do_not_match",
       );
     }
 
     return validationErrors;
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const togglePasswordVisibility = (field: keyof FormData) => {
@@ -99,7 +91,10 @@ const ResetPassword = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const validationErrors = validateForm();
+    const formData = new FormData(event.currentTarget);
+    const newPassword = formData.get("newPassword") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+    const validationErrors = validateForm(newPassword, confirmPassword);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -110,7 +105,7 @@ const ResetPassword = () => {
     if (resetPasswordToken) {
       sessionStorage.setItem(RESET_PASSWORD_TOKEN, resetPasswordToken);
     }
-    resetPasswordMutation.mutate({ password: formData.newPassword });
+    resetPasswordMutation.mutate({ password: newPassword });
   };
 
   return (
@@ -134,8 +129,6 @@ const ResetPassword = () => {
                   type={showPassword.newPassword ? "text" : "password"}
                   autoComplete="new-password"
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base shadow-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
-                  value={formData.newPassword}
-                  onChange={handleInputChange}
                   aria-invalid={Boolean(errors.newPassword)}
                   aria-describedby={
                     errors.newPassword ? "new-password-error" : undefined
@@ -185,8 +178,6 @@ const ResetPassword = () => {
                   type={showPassword.confirmPassword ? "text" : "password"}
                   autoComplete="new-password"
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base shadow-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
                   aria-invalid={Boolean(errors.confirmPassword)}
                   aria-describedby={
                     errors.confirmPassword

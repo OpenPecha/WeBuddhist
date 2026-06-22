@@ -5,7 +5,7 @@ import {
   mapLanguageCode,
 } from "../../utils/helperFunctions.tsx";
 import Seo from "../commons/seo/Seo.tsx";
-import { siteName } from "../../utils/constants.ts";
+import { LANGUAGE, siteName } from "../../utils/constants.ts";
 import axiosInstance from "../../config/axios-config.ts";
 import { useTranslate } from "@tolgee/react";
 import { useParams, useLocation, Link } from "react-router-dom";
@@ -126,6 +126,30 @@ const Texts = (props: any) => {
     { refetchOnWindowFocus: false, enabled: !!textId, retry: false },
   );
 
+  const parentCollectionId = location.state?.parentCollection?.id || null;
+
+  const { data: parentCollectionData } = useQuery(
+    ["works", parentCollectionId, 0, 12],
+    async () => {
+      const storedLanguage = localStorage.getItem(LANGUAGE);
+      const language = storedLanguage ? mapLanguageCode(storedLanguage) : "en";
+      const { data } = await axiosInstance.get("/api/v1/texts", {
+        params: {
+          language,
+          collection_id: parentCollectionId,
+          limit: 12,
+          skip: 0,
+        },
+      });
+      return data;
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: !!parentCollectionId,
+      staleTime: 1000 * 60 * 5,
+    },
+  );
+
   const siteBaseUrl = window.location.origin;
   const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
   const dynamicTitle = versions?.text?.title
@@ -134,23 +158,29 @@ const Texts = (props: any) => {
   const description =
     "Read Buddhist texts with translations and related resources.";
 
-  const parentCollection = location.state?.parentCollection || null;
-
   const breadcrumbItems: BreadcrumbItemType[] = useMemo(() => {
     const items: BreadcrumbItemType[] = [
       { label: t("header.text"), path: "/" },
     ];
-    if (parentCollection?.title) {
+
+    const collectionTitle = parentCollectionData?.collection?.title;
+    if (parentCollectionId && collectionTitle) {
       items.push({
-        label: parentCollection.title,
-        path: `/works/${parentCollection.id}`,
+        label: collectionTitle,
+        path: `/works/${parentCollectionId}`,
       });
     }
+
     if (versions?.text?.title) {
       items.push({ label: versions.text.title });
     }
     return items;
-  }, [parentCollection, versions?.text?.title, t]);
+  }, [
+    parentCollectionId,
+    parentCollectionData?.collection?.title,
+    versions?.text?.title,
+    t,
+  ]);
 
   const renderTabs = () => {
     return (

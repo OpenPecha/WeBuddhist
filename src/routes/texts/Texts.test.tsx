@@ -157,4 +157,95 @@ describe("Texts Component", () => {
     expect(result).toEqual({ versions: [] });
     sessionStorage.removeItem("textLanguage");
   });
+
+  test("renders parent collection breadcrumb when data is available", () => {
+    (reactQuery.useQuery as Mock).mockImplementation((queryKey: any) => {
+      const key = Array.isArray(queryKey) ? queryKey[0] : queryKey;
+      if (key === "table-of-contents") {
+        return {
+          data: tableOfContentsData,
+          isLoading: false,
+          error: undefined,
+        };
+      }
+      if (key === "versions") {
+        return { data: versionsData, isLoading: false, error: undefined };
+      }
+      if (key === "commentaries") {
+        return { data: commentariesData, isLoading: false, error: undefined };
+      }
+      if (key === "works") {
+        return {
+          data: { collection: { title: "Test Collection" } },
+          isLoading: false,
+          error: undefined,
+        };
+      }
+      return { data: undefined, isLoading: false, error: undefined };
+    });
+
+    setup();
+
+    expect(screen.getByText("Test Collection")).toBeInTheDocument();
+  });
+
+  test("renders parent collection breadcrumb when data is available", () => {
+    (reactQuery.useQuery as Mock).mockImplementation((queryKey: any) => {
+      const key = Array.isArray(queryKey) ? queryKey[0] : queryKey;
+      if (key === "table-of-contents") {
+        return {
+          data: tableOfContentsData,
+          isLoading: false,
+          error: undefined,
+        };
+      }
+      if (key === "versions") {
+        return { data: versionsData, isLoading: false, error: undefined };
+      }
+      if (key === "commentaries") {
+        return { data: commentariesData, isLoading: false, error: undefined };
+      }
+      if (key === "works") {
+        return {
+          data: { collection: { title: "Test Collection" } },
+          isLoading: false,
+          error: undefined,
+        };
+      }
+      return { data: undefined, isLoading: false, error: undefined };
+    });
+
+    setup();
+
+    expect(screen.getByText("Test Collection")).toBeInTheDocument();
+  });
+
+  test("renders compact view and handles title click with addChapter", async () => {
+    const user = userEvent.setup();
+    const mockAddChapter = vi.fn();
+
+    const queryClient = new QueryClient();
+    render(
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+            <Texts
+              isCompactView={true}
+              collection_id="123"
+              addChapter={mockAddChapter}
+              currentChapter="ch1"
+            />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>,
+    );
+
+    const titleButton = screen.getByRole("button");
+    await user.click(titleButton);
+
+    expect(mockAddChapter).toHaveBeenCalledWith(
+      { textId: "123", contentId: "content-1" },
+      "ch1",
+    );
+  });
 });

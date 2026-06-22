@@ -154,12 +154,13 @@ const SheetDetailPage = ({
     queryFn: getUserInfo,
     enabled: !!sessionStorage.getItem("accessToken"),
   });
-  const { data: sheetData, isLoading } = useQuery<SheetData>({
-    queryKey: ["sheetData", sheetSlugAndId],
-    queryFn: () => fetchSheetData(sheetSlugAndId?.split("_").pop() as string),
-    enabled: !!sheetSlugAndId,
-  });
   const sheetId = sheetSlugAndId?.split("_").pop() || "";
+
+  const { data: sheetData, isLoading } = useQuery<SheetData>({
+    queryKey: ["sheetData", sheetId],
+    queryFn: () => fetchSheetData(sheetId),
+    enabled: !!sheetId,
+  });
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const { mutate: deleteSheetMutation, isLoading: isDeleting } =
@@ -167,7 +168,7 @@ const SheetDetailPage = ({
       mutationFn: () => deleteSheet(sheetId),
       onSuccess: () => {
         setIsDeleteDialogOpen(false);
-        navigate("/community");
+        navigate("/note");
       },
       onError: (error) => {
         console.error("Error deleting sheet:", error);
@@ -375,8 +376,6 @@ const SheetDetailPage = ({
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-
-              <SheetShare />
             </>
           )}
           <SheetShare />

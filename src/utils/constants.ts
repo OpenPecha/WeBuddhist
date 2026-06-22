@@ -10,6 +10,16 @@ export const LAYOUT_MODE = "layoutMode";
 export const siteName = "WeBuddhist";
 export const USERBACK_ID = "A-JldUwSRlsuKf8Te85bql54w7U";
 
+//for app open banner
+export const APP_SCHEME_URL = "webuddhist://home";
+export const APP_PACKAGE_NAME = "org.pecha.app";
+export const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=org.pecha.app";
+export const APP_STORE_URL =
+  "https://apps.apple.com/in/app/webuddhist/id6745810914";
+export const DISMISS_KEY = "wb_banner_dismissed";
+export const DISMISS_TIME_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
+
 export const MENU_ITEMS = [
   {
     icon: BsFileDiff,

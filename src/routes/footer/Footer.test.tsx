@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const translateMock = vi.fn((key: string) => `translated-${key}`);
@@ -35,7 +36,12 @@ const expectedSocialLinks: { href: string }[] = [
 ];
 
 describe("Footer", () => {
-  const setup = () => render(<Footer />);
+  const setup = () =>
+    render(
+      <MemoryRouter>
+        <Footer />
+      </MemoryRouter>,
+    );
 
   beforeEach(() => {
     translateMock.mockClear();
@@ -81,8 +87,9 @@ describe("Footer", () => {
   test("renders correct total number of links", () => {
     setup();
     const links = screen.getAllByRole("link");
+    // +1 for the Privacy Policy internal link
     expect(links).toHaveLength(
-      expectedColumnLinks.length + expectedSocialLinks.length,
+      expectedColumnLinks.length + expectedSocialLinks.length + 1,
     );
   });
 

@@ -47,15 +47,13 @@ const UserRegistration = () => {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (isLoggedIn || isAuthenticated) {
-      navigate("/collections");
+      navigate("/");
     }
   }, [isLoggedIn, isAuthenticated, navigate]);
 
@@ -71,7 +69,7 @@ const UserRegistration = () => {
       onSuccess: (data) => {
         const { access_token, refresh_token } = data.auth;
         login(access_token, refresh_token);
-        navigate("/collections");
+        navigate("/");
       },
       onError: (error: any) => {
         const message =
@@ -83,7 +81,10 @@ const UserRegistration = () => {
     },
   );
 
-  const validateForm = (): FormErrors => {
+  const validateForm = (
+    password: string,
+    confirmPassword: string,
+  ): FormErrors => {
     const validationErrors: FormErrors = {};
 
     if (!email) {
@@ -117,9 +118,18 @@ const UserRegistration = () => {
     return validationErrors;
   };
 
+  const clearFieldError = (field: keyof FormErrors) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const validationErrors = validateForm();
+    const formData = new FormData(event.currentTarget);
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+    const validationErrors = validateForm(password, confirmPassword);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -137,7 +147,7 @@ const UserRegistration = () => {
 
   const handleSocialLogin = async (connection: "google-oauth2" | "apple") => {
     try {
-      const redirectPath = "/collections";
+      const redirectPath = "/";
       const authParams: any = {
         appState: { returnTo: redirectPath },
         authorizationParams: { connection },
@@ -260,7 +270,10 @@ const UserRegistration = () => {
               className="w-full rounded-lg border border-input bg-background px-3 py-2 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
               placeholder={t("common.email")}
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                clearFieldError("email");
+              }}
               aria-invalid={Boolean(errors.email)}
               aria-describedby={errors.email ? "email-error" : undefined}
               required
@@ -283,11 +296,11 @@ const UserRegistration = () => {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
+                name="password"
                 autoComplete="new-password"
                 className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                 placeholder={t("common.password")}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={() => clearFieldError("password")}
                 aria-invalid={Boolean(errors.password)}
                 aria-describedby={
                   errors.password ? "password-error" : undefined
@@ -332,11 +345,11 @@ const UserRegistration = () => {
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
                   autoComplete="new-password"
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-12 text-base outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 aria-invalid:border-destructive aria-invalid:ring-destructive/30"
                   placeholder={t("common.confirm_password")}
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  onChange={() => clearFieldError("confirmPassword")}
                   aria-invalid={Boolean(errors.confirmPassword)}
                   aria-describedby={
                     errors.confirmPassword

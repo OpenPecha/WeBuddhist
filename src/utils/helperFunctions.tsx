@@ -84,12 +84,26 @@ export const mapLanguageCode = (languageCode: string): string => {
     languageMap[languageCode as keyof typeof languageMap] || languageMap.en
   );
 };
-export const getLanguageClass = (language: string): string => {
+export const getLanguageClass = (language?: string | null): string => {
+  if (!language) return "en-serif-text";
+  if (language === "en-san") return "en-text";
+
+  const upper = language.trim().toUpperCase();
+  const normalized =
+    upper === "BO" || upper === "EN" || upper === "ZH"
+      ? upper.toLowerCase()
+      : mapLanguageCode(language);
+
   switch (language) {
+    case "sa":
+    case "bhu":
+    case "tib":
+      return "bo-text";
+  }
+
+  switch (normalized) {
     case "bo":
       return "bo-text";
-    case "en-san":
-      return "en-text";
     case "en":
       return "en-serif-text";
     case "sa":
@@ -200,4 +214,19 @@ export const getCurrentSectionFromScroll = (
 export const isEmail = (email: string) => {
   if (email.length > 254) return false;
   return /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(email);
+};
+
+export const isSocialUrl = (account: string, url: string): boolean => {
+  if (!url || url.trim() === "") return true;
+
+  const patterns: Record<string, RegExp> = {
+    linkedin: /^https?:\/\/(www\.)?linkedin\.com\/.+/i,
+    facebook: /^https?:\/\/(www\.)?facebook\.com\/.+/i,
+    "x.com": /^https?:\/\/(www\.)?(twitter\.com|x\.com)\/.+/i,
+    youtube: /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+/i,
+  };
+
+  const pattern = patterns[account];
+  if (!pattern) return true;
+  return pattern.test(url);
 };

@@ -1,6 +1,6 @@
 import "./App.css";
-import { Route, Routes, useNavigate, Navigate } from "react-router-dom";
-import { useMutation } from "react-query";
+import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
+import { useMutation, useQueryClient } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.tsx";
 import { useEffect, useState, Suspense, lazy } from "react";
 import axiosInstance from "./config/axios-config.ts";
@@ -20,11 +20,14 @@ import SheetChapters from "./routes/chapterV2/SheetChapters.tsx";
 import { MainLayout } from "./layouts/MainLayout";
 import { AuthLayout } from "./layouts/AuthLayout";
 import { NoFooterLayout } from "./layouts/NoFooterLayout";
+import { useTolgee } from "@tolgee/react";
+import { changeLanguage } from "./routes/navbar/NavigationBar.tsx";
 
 const tokenRefreshIntervalMs =
   Number(import.meta.env.VITE_TOKEN_EXPIRY_TIME_SEC) || 0;
 const Collections = lazy(() => import("./routes/collections/Collections.tsx"));
 const UserLogin = lazy(() => import("./routes/user-login/UserLogin.tsx"));
+const About = lazy(() => import("./routes/about/About.tsx"));
 const UserRegistration = lazy(
   () => import("./routes/user-registration/UserRegistration.tsx"),
 );
@@ -49,6 +52,14 @@ const InitialChat = lazy(
   () =>
     import("./routes/chat/components/molecules/InitialChat/InitialChat.tsx"),
 );
+const Planviewer = lazy(() => import("./routes/planviewer/Planviewer.tsx"));
+const PrivacyPolicy = lazy(
+  () => import("./routes/privacy-policy/PrivacyPolicy.tsx"),
+);
+const TermsOfService = lazy(
+  () => import("./routes/terms-of-service/TermsOfService.tsx"),
+);
+const AppShare = lazy(() => import("./routes/app-share/AppShare.tsx"));
 
 type Auth0UserType = {
   getIdTokenClaims: () => Promise<any>;
@@ -69,6 +80,10 @@ function App() {
   > | null>(null);
   const { getIdTokenClaims, isAuthenticated, logout }: Auth0UserType =
     useAuth0() as Auth0UserType;
+  const [searchParams] = useSearchParams();
+  const tolgee = useTolgee(["language"]);
+  const queryClient = useQueryClient();
+  const [hasInitializedLanguage, setHasInitializedLanguage] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -84,7 +99,7 @@ function App() {
             isAuthenticated &&
               (await logout({
                 logoutParams: {
-                  returnTo: window.location.origin + "/collections",
+                  returnTo: window.location.origin + "/",
                 },
               }));
           } else {
@@ -144,10 +159,26 @@ function App() {
     setFontVariables(localStorage.getItem(LANGUAGE) || "en");
   }, []);
 
+  // Handle language parameter on first load
+  useEffect(() => {
+    const langParam = searchParams.get("lang");
+    if (langParam && !hasInitializedLanguage) {
+      // Validate the language parameter against supported languages
+      const supportedLanguages = ["en", "bo-IN", "zh-Hans-CN"];
+      if (supportedLanguages.includes(langParam)) {
+        changeLanguage(langParam, queryClient, tolgee);
+        setHasInitializedLanguage(true);
+      }
+    }
+  }, [searchParams, hasInitializedLanguage, queryClient, tolgee]);
+
   return (
     <Suspense>
       <Routes>
         <Route element={<AuthLayout />}>
+          <Route path="/app/share" element={<AppShare />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/login" element={<UserLogin />} />
           <Route path="/register" element={<UserRegistration />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -162,12 +193,12 @@ function App() {
         </Route>
 
         <Route element={<NoFooterLayout />}>
+          <Route path="/" element={<Planviewer />} />
           <Route path="/sheets/:id" element={<Sheets />} />
           <Route path="/chapter" element={<ChaptersV2 />} />
         </Route>
 
         <Route element={<MainLayout />}>
-          <Route path="/" element={<Collections />} />
           <Route path="/collections" element={<Collections />} />
           <Route
             path="/profile"
@@ -182,6 +213,7 @@ function App() {
           <Route path="/texts/:id" element={<Texts />} />
           <Route path="/works/:id" element={<Works />} />
           <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/about-us" element={<About />} />
           <Route
             path="/:username/:sheetSlugAndId"
             element={<SheetChapters />}

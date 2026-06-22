@@ -178,7 +178,12 @@ describe("CommunityPage Component", () => {
     expect(result).toEqual(mockSheetsData);
   });
 
-  test("handles Make a Sheet button interaction", () => {
+  test("handles Make a Sheet button interaction when logged in", () => {
+    // Mock user as logged in
+    vi.mock("../../config/AuthContext.tsx", () => ({
+      useAuth: () => ({ isLoggedIn: true }),
+    }));
+
     setup();
     const makeSheetButton = screen.getByText(
       "side_nav.join_conversation.button.make_sheet",
@@ -186,5 +191,74 @@ describe("CommunityPage Component", () => {
     expect(makeSheetButton).toBeInTheDocument();
     expect(makeSheetButton).not.toBeDisabled();
     fireEvent.click(makeSheetButton);
+  });
+
+  test("handles sort order change", () => {
+    setup();
+    const sortSelect = screen.getByRole("combobox");
+    expect(sortSelect).toBeInTheDocument();
+
+    fireEvent.click(sortSelect);
+    // The select should be interactive
+  });
+
+  test("shows sort dropdown when sheets are available", () => {
+    setup();
+    // Should show sort dropdown because we have sheets data
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
+
+  test("hides sort dropdown when no sheets available", () => {
+    useQuery.mockImplementation(() => ({
+      data: { sheets: [] },
+      isLoading: false,
+    }));
+
+    setup();
+    // Should not show sort dropdown because no sheets
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  });
+
+  test("handles pagination correctly", () => {
+    // Mock localStorage to return pagination data
+    vi.spyOn(window.localStorage, "getItem").mockReturnValue(
+      JSON.stringify({ currentPage: 2, limit: 10 }),
+    );
+
+    setup();
+    // Should render pagination component since we have sheets
+    expect(screen.getByText("Test Sheet Title")).toBeInTheDocument();
+  });
+
+  test("handles empty community story message", () => {
+    useQuery.mockImplementation(() => ({
+      data: { sheets: [] },
+      isLoading: false,
+    }));
+
+    setup();
+    expect(screen.getByText("community_empty_story")).toBeInTheDocument();
+  });
+
+  test("fetches sheet with fallback language when no stored language", async () => {
+    vi.spyOn(window.localStorage, "getItem").mockReturnValue(null);
+    axiosInstance.get.mockResolvedValueOnce({ data: mockSheetsData });
+
+    const result = await fetchsheet(10, 0, "desc");
+
+    expect(axiosInstance.get).toHaveBeenCalledWith("api/v1/sheets", {
+      params: {
+        language: "en",
+        limit: 10,
+        skip: 0,
+        sort_by: "published_date",
+        sort_order: "desc",
+      },
+      headers: {
+        Authorization: "Bearer None",
+      },
+    });
+
+    expect(result).toEqual(mockSheetsData);
   });
 });
