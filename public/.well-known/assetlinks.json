@@ -2,10 +2,10 @@
   {
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
-      "namespace": "webuddhist",
+      "namespace": "android_app",
       "package_name": "org.pecha.app",
       "sha256_cert_fingerprints": [
-        "19:98:C0:75:14:97:73:F7:35:49:CD:D4:BD:8B:63:FC:C8:60:6E:72"
+        "C2:63:20:70:AB:2B:CB:A0:72:72:88:12:6F:81:31:DA:0D:8F:46:5A:71:10:09:21:14:0E:38:8A:8E:4F:E0:26"
       ]
     }
   },
@@ -13,9 +13,9 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "org.pecha.app",
+      "package_name": "org.pecha.app.dev",
       "sha256_cert_fingerprints": [
-        "C2:63:20:70:AB:2B:CB:A0:72:72:88:12:6F:81:31:DA:0D:8F:46:5A:71:10:09:21:14:0E:38:8A:8E:4F:E0:26"
+        "83:AE:D8:A1:8E:B9:32:12:99:A4:FE:1E:43:A5:F9:80:A1:AE:80:1F:60:76:6E:3F:7C:45:FE:1E:DA:9E:EF:A7"
       ]
     }
   }
