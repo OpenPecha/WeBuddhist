@@ -45,6 +45,11 @@ describe("getLanguageClass", () => {
     expect(getLanguageClass("")).toBe("en-serif-text");
     expect(getLanguageClass("fr")).toBe("en-serif-text");
   });
+
+  test("defaults to 'en-serif-text' for missing language", () => {
+    expect(getLanguageClass()).toBe("en-serif-text");
+    expect(getLanguageClass(null)).toBe("en-serif-text");
+  });
 });
 
 describe("isEmail", () => {
