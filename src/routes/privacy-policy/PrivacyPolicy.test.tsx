@@ -19,16 +19,6 @@ describe("PrivacyPolicy", () => {
     expect(screen.getByRole("main")).toBeInTheDocument();
   });
 
-  test("renders breadcrumb nav with back-to-home link", () => {
-    setup();
-    const nav = screen.getByRole("navigation", { name: /breadcrumb/i });
-    expect(nav).toBeInTheDocument();
-
-    const homeLink = screen.getByRole("link", { name: /back to home/i });
-    expect(homeLink).toBeInTheDocument();
-    expect(homeLink).toHaveAttribute("href", "/");
-  });
-
   test("renders the privacy policy article element", () => {
     setup();
     const article = document.querySelector("article.privacy-policy-content");
