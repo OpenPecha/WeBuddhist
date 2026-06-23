@@ -59,6 +59,9 @@ const PrivacyPolicy = lazy(
 const TermsOfService = lazy(
   () => import("./routes/terms-of-service/TermsOfService.tsx"),
 );
+const DeleteAccount = lazy(
+  () => import("./routes/delete-account/DeleteAccount.tsx"),
+);
 const AppShare = lazy(() => import("./routes/app-share/AppShare.tsx"));
 
 type Auth0UserType = {
@@ -259,6 +262,7 @@ function App() {
           <Route path="/app/share" element={<AppShare />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="/login" element={<UserLogin />} />
           <Route path="/register" element={<UserRegistration />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
