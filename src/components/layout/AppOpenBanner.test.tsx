@@ -83,7 +83,7 @@ describe("AppOpenBanner Component", () => {
       ).toBeInTheDocument();
       expect(screen.getByAltText("App Open Banner")).toHaveAttribute(
         "src",
-        "/img/QR-download.jpeg",
+        "/img/QR-download.png",
       );
       expect(getDownloadLink()).toHaveAttribute("href", PLAY_STORE_URL);
     });

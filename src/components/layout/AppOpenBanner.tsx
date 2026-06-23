@@ -65,7 +65,7 @@ export default function AppOpenBanner() {
           </DialogDescription>
         </DialogHeader>
         <img
-          src="/img/QR-download.jpeg"
+          src="/img/QR-download.png"
           alt="App Open Banner"
           className="w-full h-auto rounded-3xl"
           width={100}
