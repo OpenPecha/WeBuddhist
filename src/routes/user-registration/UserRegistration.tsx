@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useTranslate } from "@tolgee/react";
 import { FaApple } from "react-icons/fa";
@@ -27,6 +27,14 @@ const UserRegistration = () => {
     isLoggedIn: boolean;
   };
   const { loginWithRedirect, isAuthenticated } = useAuth0();
+  const { data: auth0Provider } = useQuery(
+    ["auth0Provider"],
+    async () => {
+      const { data } = await axiosInstance.get("/api/v1/props");
+      return data as { audience?: string };
+    },
+    { staleTime: Infinity, refetchOnWindowFocus: false, retry: false },
+  );
 
   type RegistrationPayload = {
     email: string;
@@ -148,9 +156,21 @@ const UserRegistration = () => {
   const handleSocialLogin = async (connection: "google-oauth2" | "apple") => {
     try {
       const redirectPath = "/";
-      const authParams: any = {
+      const authParams: {
+        appState: { returnTo: string };
+        authorizationParams: {
+          connection: "google-oauth2" | "apple";
+          audience?: string;
+          scope: string;
+          prompt?: string;
+        };
+      } = {
         appState: { returnTo: redirectPath },
-        authorizationParams: { connection },
+        authorizationParams: {
+          connection,
+          audience: auth0Provider?.audience,
+          scope: "openid profile email",
+        },
       };
 
       if (connection === "google-oauth2") {

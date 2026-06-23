@@ -1,6 +1,6 @@
 import "./App.css";
 import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.tsx";
 import { useEffect, useState, Suspense, lazy } from "react";
 import axiosInstance from "./config/axios-config.ts";
@@ -62,56 +62,136 @@ const TermsOfService = lazy(
 const AppShare = lazy(() => import("./routes/app-share/AppShare.tsx"));
 
 type Auth0UserType = {
-  getIdTokenClaims: () => Promise<any>;
+  getAccessTokenSilently: (options?: {
+    authorizationParams?: { audience?: string };
+    cacheMode?: "on" | "off" | "cache-only";
+  }) => Promise<string>;
+  getIdTokenClaims: () => Promise<
+    | ({ __raw?: string; exp?: number; email?: string } & Record<
+        string,
+        unknown
+      >)
+    | undefined
+  >;
   isAuthenticated: boolean;
   logout: (options?: { logoutParams?: { returnTo: string } }) => Promise<void>;
 };
+
+function parseJwtHeader(token: string): { kid?: string } | null {
+  try {
+    const encoded = token.split(".")[0]?.replace(/-/g, "+").replace(/_/g, "/");
+    if (!encoded) return null;
+    return JSON.parse(atob(encoded)) as { kid?: string };
+  } catch {
+    return null;
+  }
+}
 
 type AuthUserType = {
   login: (token: string) => void;
   isLoggedIn: boolean;
   logout: () => void;
+  setIsTokenReady: (ready: boolean) => void;
 };
 function App() {
   const navigate = useNavigate();
-  const { login, isLoggedIn, logout: pechaLogout } = useAuth() as AuthUserType;
+  const {
+    login,
+    isLoggedIn,
+    logout: pechaLogout,
+    setIsTokenReady,
+  } = useAuth() as AuthUserType;
   const [intervalId, setIntervalId] = useState<ReturnType<
     typeof setInterval
   > | null>(null);
-  const { getIdTokenClaims, isAuthenticated, logout }: Auth0UserType =
+  const { getAccessTokenSilently, getIdTokenClaims, isAuthenticated, logout } =
     useAuth0() as Auth0UserType;
+  const { data: auth0Provider } = useQuery(
+    ["auth0Provider"],
+    async () => {
+      const { data } = await axiosInstance.get("/api/v1/props");
+      return data as { audience?: string };
+    },
+    {
+      staleTime: Infinity,
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  );
   const [searchParams] = useSearchParams();
   const tolgee = useTolgee(["language"]);
   const queryClient = useQueryClient();
   const [hasInitializedLanguage, setHasInitializedLanguage] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      const getToken = async () => {
-        try {
-          const claims = await getIdTokenClaims();
-          const idToken = claims.__raw;
-          if (Date.now() >= claims.exp * 1000) {
-            localStorage.removeItem(LOGGED_IN_VIA);
-            sessionStorage.removeItem(ACCESS_TOKEN);
-            localStorage.removeItem(REFRESH_TOKEN);
-            isLoggedIn && pechaLogout();
-            isAuthenticated &&
-              (await logout({
-                logoutParams: {
-                  returnTo: window.location.origin + "/",
-                },
-              }));
-          } else {
-            sessionStorage.setItem(ACCESS_TOKEN, idToken);
-          }
-        } catch (error) {
-          console.error("Error fetching token:", error);
-        }
-      };
-      getToken().then();
+    if (!isAuthenticated || !auth0Provider?.audience) {
+      setIsTokenReady(false);
+      return;
     }
-  }, [isAuthenticated]);
+
+    let cancelled = false;
+
+    const syncAccessToken = async () => {
+      try {
+        let token: string | undefined;
+
+        try {
+          const accessToken = await getAccessTokenSilently({
+            authorizationParams: {
+              audience: auth0Provider?.audience,
+            },
+            cacheMode: "off",
+          });
+          const header = parseJwtHeader(accessToken);
+          if (header?.kid) {
+            token = accessToken;
+          }
+        } catch {
+          token = undefined;
+        }
+
+        if (!token) {
+          const claims = await getIdTokenClaims();
+          const idToken = claims?.__raw;
+          if (!idToken || Date.now() >= (claims?.exp ?? 0) * 1000) {
+            throw new Error("No valid Auth0 token available");
+          }
+          token = idToken;
+        }
+
+        if (!cancelled) {
+          sessionStorage.setItem(ACCESS_TOKEN, token);
+          setIsTokenReady(true);
+        }
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+        setIsTokenReady(false);
+        console.error("Error fetching access token:", error);
+        localStorage.removeItem(LOGGED_IN_VIA);
+        sessionStorage.removeItem(ACCESS_TOKEN);
+        localStorage.removeItem(REFRESH_TOKEN);
+        isLoggedIn && pechaLogout();
+        await logout({
+          logoutParams: {
+            returnTo: window.location.origin + "/",
+          },
+        });
+      }
+    };
+
+    syncAccessToken();
+    const interval = setInterval(
+      syncAccessToken,
+      tokenRefreshIntervalMs || 60_000,
+    );
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [isAuthenticated, auth0Provider?.audience]);
 
   const loginMutation = useMutation(
     async (refreshToken: string) => {

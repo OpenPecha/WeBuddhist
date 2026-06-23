@@ -13,9 +13,10 @@ import { apiLanguageParam, tolgeeToPlanLanguage } from "./utils/seriesUtils.ts";
 const Planviewer = () => {
   const tolgee = useTolgee(["language"]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const { isLoggedIn, isAuthLoading } = useAuth() as {
+  const { isLoggedIn, isAuthLoading, isTokenReady } = useAuth() as {
     isLoggedIn: boolean;
     isAuthLoading: boolean;
+    isTokenReady: boolean;
   };
   const { isAuthenticated, isLoading: isAuth0Loading } = useAuth0();
 
@@ -29,7 +30,10 @@ const Planviewer = () => {
   const selectedPlanId = searchParams.get("plan");
   const selectedDate = searchParams.get("date");
   const isAuthenticatedReady =
-    !isAuthLoading && !isAuth0Loading && (isLoggedIn || isAuthenticated);
+    !isAuthLoading &&
+    !isAuth0Loading &&
+    isTokenReady &&
+    (isLoggedIn || isAuthenticated);
 
   const handleSelectSeries = useCallback(
     (seriesId: string) => {

@@ -14,6 +14,7 @@ export const PechaAuthProvider = ({
 }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isTokenReady, setIsTokenReady] = useState(false);
 
   useEffect(() => {
     const accessToken = sessionStorage.getItem(ACCESS_TOKEN);
@@ -21,8 +22,10 @@ export const PechaAuthProvider = ({
     const loggedInVia = localStorage.getItem(LOGGED_IN_VIA);
     if (accessToken && (refreshToken || loggedInVia === "pecha")) {
       setIsLoggedIn(true);
+      setIsTokenReady(true);
     } else {
       setIsLoggedIn(false);
+      setIsTokenReady(false);
     }
     setIsAuthLoading(false);
   }, []);
@@ -34,16 +37,25 @@ export const PechaAuthProvider = ({
     }
     localStorage.setItem(LOGGED_IN_VIA, "pecha");
     setIsLoggedIn(true);
+    setIsTokenReady(true);
   };
 
   const logout = () => {
     sessionStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     setIsLoggedIn(false);
+    setIsTokenReady(false);
   };
   const contextValue = useMemo(
-    () => ({ isLoggedIn, login, logout, isAuthLoading }),
-    [isLoggedIn, isAuthLoading],
+    () => ({
+      isLoggedIn,
+      login,
+      logout,
+      isAuthLoading,
+      isTokenReady,
+      setIsTokenReady,
+    }),
+    [isLoggedIn, isAuthLoading, isTokenReady],
   );
 
   return (

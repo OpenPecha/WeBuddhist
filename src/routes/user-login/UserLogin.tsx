@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import {
   IoAlertCircleOutline,
@@ -23,6 +23,14 @@ const UserLogin = () => {
   const { t } = useTranslate();
   const navigate = useNavigate();
   const { loginWithRedirect } = useAuth0();
+  const { data: auth0Provider } = useQuery(
+    ["auth0Provider"],
+    async () => {
+      const { data } = await axiosInstance.get("/api/v1/props");
+      return data as { audience?: string };
+    },
+    { staleTime: Infinity, refetchOnWindowFocus: false, retry: false },
+  );
   const { login } = useAuth() as {
     login: (accessToken: string, refreshToken: string) => void;
   };
@@ -105,6 +113,8 @@ const UserLogin = () => {
       await loginWithRedirect({
         authorizationParams: {
           connection,
+          audience: auth0Provider?.audience,
+          scope: "openid profile email",
           ...(connection === "google-oauth2" && { prompt: "select_account" }),
         },
         appState: { returnTo: "/" },
