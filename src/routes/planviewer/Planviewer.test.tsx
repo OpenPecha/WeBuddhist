@@ -290,17 +290,26 @@ describe("Planviewer", () => {
     ).toBeInTheDocument();
   });
 
-  test("navigates from series card to today's plan", async () => {
+  test("navigates from series card Start button to today's plan", async () => {
     renderPlanviewer();
     const user = userEvent.setup();
 
     await screen.findByText("200-Day Road to the ITCC 2026");
-    await user.click(
-      screen.getByRole("button", { name: "200-Day Road to the ITCC 2026" }),
-    );
+    await user.click(screen.getByRole("button", { name: /^Start$/i }));
 
     expect(await screen.findByText("Morning reading")).toBeInTheDocument();
     expect(screen.queryByText("Enroll")).not.toBeInTheDocument();
+  });
+
+  test("navigates from series card to chapter list", async () => {
+    renderPlanviewer();
+    const user = userEvent.setup();
+
+    await screen.findByText("200-Day Road to the ITCC 2026");
+    await user.click(screen.getByRole("button", { name: /View chapters/i }));
+
+    expect(await screen.findByText("ITCC: Days 1-6")).toBeInTheDocument();
+    expect(await screen.findByText("Enroll")).toBeInTheDocument();
   });
 
   test("maps tolgee language codes for backend requests", async () => {

@@ -6,6 +6,7 @@ import { useAuth } from "../../config/AuthContext.tsx";
 import { LANGUAGE } from "../../utils/constants.ts";
 import { mapLanguageCode } from "../../utils/helperFunctions.tsx";
 import SeriesListView from "./components/SeriesListView.tsx";
+import SeriesDetailView from "./components/SeriesDetailView.tsx";
 import SeriesPlanRedirect from "./components/SeriesPlanRedirect.tsx";
 import DailyPlanView from "./components/DailyPlanView.tsx";
 import { apiLanguageParam, tolgeeToPlanLanguage } from "./utils/seriesUtils.ts";
@@ -29,6 +30,7 @@ const Planviewer = () => {
   const selectedSeriesId = searchParams.get("series");
   const selectedPlanId = searchParams.get("plan");
   const selectedDate = searchParams.get("date");
+  const seriesView = searchParams.get("view");
   const isAuthenticatedReady =
     !isAuthLoading &&
     !isAuth0Loading &&
@@ -42,13 +44,40 @@ const Planviewer = () => {
     [apiLanguage, setSearchParams],
   );
 
+  const handleViewSeriesPlans = useCallback(
+    (seriesId: string) => {
+      setSearchParams({ series: seriesId, view: "list", lang: apiLanguage });
+    },
+    [apiLanguage, setSearchParams],
+  );
+
+  const handleSelectPlan = useCallback(
+    (planId: string) => {
+      if (!selectedSeriesId) return;
+      setSearchParams({
+        series: selectedSeriesId,
+        plan: planId,
+        lang: apiLanguage,
+      });
+    },
+    [apiLanguage, selectedSeriesId, setSearchParams],
+  );
+
   const handleBackToList = useCallback(() => {
     setSearchParams(apiLanguage !== "en" ? { lang: apiLanguage } : {});
   }, [apiLanguage, setSearchParams]);
 
   const handleBackToSeries = useCallback(() => {
+    if (selectedSeriesId) {
+      setSearchParams({
+        series: selectedSeriesId,
+        view: "list",
+        lang: apiLanguage,
+      });
+      return;
+    }
     setSearchParams(apiLanguage !== "en" ? { lang: apiLanguage } : {});
-  }, [apiLanguage, setSearchParams]);
+  }, [apiLanguage, selectedSeriesId, setSearchParams]);
 
   const handleDateChange = useCallback(
     (date: string | null) => {
@@ -78,6 +107,19 @@ const Planviewer = () => {
       );
     }
 
+    if (selectedSeriesId && seriesView === "list") {
+      return (
+        <SeriesDetailView
+          seriesId={selectedSeriesId}
+          language={planLanguage}
+          apiLanguage={tolgeeApiLanguage}
+          isAuthenticated={isAuthenticatedReady}
+          onBack={handleBackToList}
+          onSelectPlan={handleSelectPlan}
+        />
+      );
+    }
+
     if (selectedSeriesId) {
       return (
         <SeriesPlanRedirect
@@ -96,19 +138,24 @@ const Planviewer = () => {
         language={planLanguage}
         isAuthenticated={isAuthenticatedReady}
         onSelectSeries={handleSelectSeries}
+        onViewSeriesPlans={handleViewSeriesPlans}
       />
     );
   }, [
     selectedSeriesId,
     selectedPlanId,
     selectedDate,
+    seriesView,
     planLanguage,
     tolgeeApiLanguage,
+    apiLanguage,
     isAuthenticatedReady,
     handleBackToList,
     handleBackToSeries,
     handleDateChange,
     handleSelectSeries,
+    handleViewSeriesPlans,
+    handleSelectPlan,
   ]);
 
   return <div className="min-h-[calc(100dvh-4rem)] w-full">{content}</div>;

@@ -1,22 +1,30 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter as Router } from "react-router-dom";
-import { expect, test, describe } from "vitest";
+import { expect, test, describe, beforeEach, type Mock } from "vitest";
 import "@testing-library/jest-dom";
 
 import UserRegistration from "./UserRegistration.js";
 import {
   mockAxios,
+  mockReactQuery,
   mockTolgee,
   mockUseAuth,
 } from "../../test-utils/CommonMocks.js";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { TolgeeProvider } from "@tolgee/react";
 
 mockAxios();
 mockUseAuth();
+mockReactQuery();
 
 describe("UserRegistration Component", () => {
+  beforeEach(() => {
+    (useQuery as unknown as Mock).mockImplementation(() => ({
+      data: undefined,
+    }));
+  });
+
   const setup = () => {
     const queryClient = new QueryClient({
       defaultOptions: {
