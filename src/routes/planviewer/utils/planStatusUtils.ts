@@ -17,6 +17,22 @@ function addDays(date: Date, days: number): Date {
   return next;
 }
 
+function toIsoDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+export function resolvePlanInitialDate(
+  plan: SeriesPlanDTO,
+  today: Date = new Date(),
+): string | null {
+  if (!plan.start_date) return null;
+  const start = toDateOnly(plan.start_date);
+  const end = addDays(start, Math.max(plan.total_days, 1) - 1);
+  if (today >= start && today <= end) return toIsoDate(today);
+  return toIsoDate(start);
+}
+
 export function formatPlanDateRange(
   startDate: string | null | undefined,
   totalDays: number,
