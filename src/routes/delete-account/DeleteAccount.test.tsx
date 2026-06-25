@@ -22,10 +22,7 @@ describe("DeleteAccount", () => {
   test("renders page title and account deletion steps", () => {
     setup();
     expect(
-      screen.getByRole("heading", {
-        level: 1,
-        name: /delete your account/i,
-      }),
+      screen.getByRole("heading", { name: /delete your account/i, level: 1 }),
     ).toBeInTheDocument();
     expect(screen.getByText(/open the webuddhist app/i)).toBeInTheDocument();
     expect(screen.getByText(/go to profile/i)).toBeInTheDocument();
