@@ -142,13 +142,22 @@ const Footer = () => {
           &copy; {new Date().getFullYear()} WeBuddhist · OpenPecha Trust. All
           rights reserved.
         </p>
-        <Link
-          to="/privacy-policy"
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
-          aria-label="Privacy Policy"
-        >
-          Privacy Policy
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            to="/privacy-policy"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+            aria-label="Privacy Policy"
+          >
+            Privacy Policy
+          </Link>
+          <Link
+            to="/terms-of-service"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+            aria-label="Terms of Service"
+          >
+            Terms of Service
+          </Link>
+        </div>
       </div>
     </footer>
   );
