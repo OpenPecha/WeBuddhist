@@ -52,13 +52,15 @@ const Planviewer = () => {
   );
 
   const handleSelectPlan = useCallback(
-    (planId: string) => {
+    (planId: string, date?: string) => {
       if (!selectedSeriesId) return;
-      setSearchParams({
+      const params: Record<string, string> = {
         series: selectedSeriesId,
         plan: planId,
         lang: apiLanguage,
-      });
+      };
+      if (date) params.date = date;
+      setSearchParams(params);
     },
     [apiLanguage, selectedSeriesId, setSearchParams],
   );
