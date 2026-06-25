@@ -1,11 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter as Router } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import UserLogin from "./UserLogin.tsx";
 import "@testing-library/jest-dom";
-import { vi, test, expect, describe } from "vitest";
+import { vi, test, expect, describe, beforeEach, type Mock } from "vitest";
 import {
   mockAxios,
+  mockReactQuery,
   mockTolgee,
   mockUseAuth,
 } from "../../test-utils/CommonMocks.ts";
@@ -14,9 +15,16 @@ import axiosInstance from "../../config/axios-config.ts";
 
 mockUseAuth();
 mockAxios();
+mockReactQuery();
 
 describe("UserLogin Component", () => {
   const queryClient = new QueryClient();
+
+  beforeEach(() => {
+    (useQuery as unknown as Mock).mockImplementation(() => ({
+      data: undefined,
+    }));
+  });
   const setup = () => {
     render(
       <Router>
