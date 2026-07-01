@@ -1,0 +1,254 @@
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+import {
+  VIEW_MODES,
+  LAYOUT_MODES,
+} from "@/routes/chapterV2/utils/header/view-selector/ViewSelector.tsx";
+import { LAYOUT_MODE, siteName } from "@/utils/constants.ts";
+import axiosInstance from "@/config/axios-config.ts";
+import { useInfiniteQuery } from "react-query";
+import { PanelProvider } from "@/context/PanelContext.tsx";
+import {
+  getEarlyReturn,
+  mergeSections,
+  getLanguageClass,
+} from "@/utils/helperFunctions.tsx";
+import { useTranslate } from "@tolgee/react";
+import Seo from "@/routes/commons/seo/Seo.tsx";
+import ChapterHeader from "@/routes/chapterV2/utils/header/ChapterHeader.tsx";
+
+const fetchContentDetails = async ({ pageParam = 0, queryKey }: any) => {
+  const [_, textId, limit] = queryKey;
+  const offset = pageParam;
+  const { data } = await axiosInstance.get(`/api/v1/texts/${textId}/details`, {
+    params: { offset, limit },
+  });
+  return data;
+};
+
+const transformLineBreaks = (content: string): string => {
+  if (!content) return content;
+  return content.replace(/⤵/g, "<br>");
+};
+
+const transformSectionsContent = (sections: any[]): any[] => {
+  if (!sections) return sections;
+  return sections.map((section) => ({
+    ...section,
+    segments: section.segments?.map((segment: any) => ({
+      ...segment,
+      content: transformLineBreaks(segment.content),
+      translation: segment.translation
+        ? {
+            ...segment.translation,
+            content: transformLineBreaks(segment.translation.content),
+          }
+        : segment.translation,
+    })),
+    sections: section.sections
+      ? transformSectionsContent(section.sections)
+      : section.sections,
+  }));
+};
+
+type Segment = {
+  segment_id: string;
+  segment_number?: number;
+  content: string;
+  translation?: { language: string; content: string } | null;
+};
+
+type Section = {
+  id?: string;
+  title?: string;
+  segments?: Segment[];
+  sections?: Section[];
+};
+
+const OpenReader = () => {
+  const { textId } = useParams<{ textId: string }>();
+  const [searchParams] = useSearchParams();
+  const sharedSegmentId = searchParams.get("segment");
+  const lang = searchParams.get("lang") || "en";
+
+  const [viewMode] = useState(VIEW_MODES.SOURCE);
+  const [layoutMode] = useState(LAYOUT_MODES.SEGMENTED);
+  const size = 20;
+  const { t } = useTranslate();
+
+  const infiniteQuery = useInfiniteQuery(
+    ["content", textId, size],
+    fetchContentDetails,
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        const currentOffset = allPages.length * size;
+        if (currentOffset >= lastPage?.total_segments) return undefined;
+        return currentOffset;
+      },
+      enabled: !!textId,
+      refetchOnWindowFocus: false,
+    },
+  );
+
+  const allContent = useMemo(() => {
+    if (!infiniteQuery?.data?.pages || infiniteQuery.data.pages.length === 0)
+      return null;
+    let mergedSections: any[] = [];
+    let text_detail = infiniteQuery.data.pages[0]?.text_detail;
+
+    infiniteQuery.data.pages.forEach((page, index) => {
+      mergedSections =
+        index === 0
+          ? page.content.sections
+          : mergeSections(mergedSections, page.content.sections);
+    });
+
+    const transformedSections = transformSectionsContent(mergedSections);
+
+    return {
+      content: {
+        ...infiniteQuery.data.pages[0].content,
+        sections: transformedSections,
+      },
+      text_detail,
+    };
+  }, [infiniteQuery.data?.pages]);
+
+  const siteBaseUrl = window.location.origin;
+  const canonicalUrl = `${siteBaseUrl}${window.location.pathname}`;
+  const pageTitle = allContent?.text_detail?.title
+    ? `${allContent.text_detail.title} | ${siteName}`
+    : `Chapter | ${siteName}`;
+
+  const earlyReturn = getEarlyReturn({
+    isLoading: infiniteQuery.isLoading,
+    error: infiniteQuery.error,
+    t,
+  });
+  if (earlyReturn) return earlyReturn;
+
+  const language = allContent?.text_detail?.language || "bo";
+  const languageClass = getLanguageClass(language);
+
+  const renderSegment = (segment: Segment, isShared: boolean) => {
+    return (
+      <div
+        key={segment.segment_id}
+        className={`flex items-baseline mt-2.5 w-[700px] max-w-full gap-4 ${
+          !isShared ? "blur-sm select-none pointer-events-none" : ""
+        }`}
+      >
+        <p className="md:mr-4 text-xs text-orange-500">
+          {segment.segment_number}
+        </p>
+        <div className="flex flex-col items-start text-lg w-full text-justify">
+          {(viewMode === VIEW_MODES.SOURCE ||
+            viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+            <p
+              className={languageClass}
+              dangerouslySetInnerHTML={{ __html: segment.content }}
+            />
+          )}
+          {segment.translation &&
+            (viewMode === VIEW_MODES.TRANSLATIONS ||
+              viewMode === VIEW_MODES.SOURCE_AND_TRANSLATIONS) && (
+              <p
+                className={getLanguageClass(
+                  segment.translation.language || "en",
+                )}
+                dangerouslySetInnerHTML={{
+                  __html: segment.translation.content,
+                }}
+              />
+            )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderSection = (section: Section) => {
+    if (!section) return null;
+
+    return (
+      <div
+        className="flex flex-col items-center w-full"
+        key={section.id || section.title || "root"}
+      >
+        {section.title && (
+          <h2 className="w-fit border-b-2 border-zinc-500 p-2 text-lg">
+            {section.title}
+          </h2>
+        )}
+        <div className="flex flex-col w-full px-2.5 items-center mx-auto">
+          {section.segments?.map((segment) => {
+            const isShared = segment.segment_id === sharedSegmentId;
+            return renderSegment(segment, isShared);
+          })}
+          {section.sections?.map((nestedSection) =>
+            renderSection(nestedSection),
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const hasSharedSegment = sharedSegmentId && allContent?.content?.sections;
+
+  return (
+    <div className="flex flex-col min-h-screen bg-white">
+      <Seo
+        title={pageTitle}
+        description="Read chapter content with source and translations."
+        canonical={canonicalUrl}
+      />
+
+      {/* Header */}
+      <div className="border-b border-gray-200 px-4 py-3">
+        <div className="flex items-center gap-3">
+          <img src="/img/icon.png" alt="WeBuddhist" className="w-8 h-8" />
+          <span className="font-semibold text-lg">WeBuddhist</span>
+        </div>
+      </div>
+
+      {/* Title bar */}
+      <div className="border-b border-gray-200 px-4 py-3 text-center">
+        <h1 className="text-lg font-medium">
+          {allContent?.text_detail?.title || "Loading..."}
+        </h1>
+      </div>
+
+      {/* Content with blur overlay */}
+      <div className="relative flex-1">
+        <PanelProvider>
+          <div className="flex flex-col w-full p-4">
+            {allContent?.content?.sections?.map((section: Section) =>
+              renderSection(section),
+            )}
+          </div>
+        </PanelProvider>
+
+        {/* Overlay for non-shared segments */}
+        {hasSharedSegment && (
+          <div className="absolute inset-0 pointer-events-none">
+            <div
+              className="absolute left-0 right-0 bottom-0 h-2/3 pointer-events-auto"
+              style={{
+                background:
+                  "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 30%)",
+              }}
+            >
+              <div className="flex flex-col items-center justify-center h-full pt-24">
+                <p className="text-xl font-semibold text-gray-800 mb-2">
+                  Please install our Webuddhist app
+                </p>
+                <p className="text-gray-600">to continue reading this text</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default OpenReader;
