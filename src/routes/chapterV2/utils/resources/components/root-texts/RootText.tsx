@@ -9,15 +9,20 @@ import TextExpand from "../../../../../commons/expandtext/TextExpand.tsx";
 import ResourceHeader from "../common/ResourceHeader.tsx";
 import { Button } from "@/components/ui/button.tsx";
 
-export const fetchRootTextData = async (segment_id: string) => {
+export const fetchRootTextData = async (
+  segment_id: string,
+  text_id?: string,
+) => {
   const { data } = await axiosInstance.get(
     `/api/v1/segments/${segment_id}/root_text`,
+    { params: { text_id } },
   );
   return data;
 };
 
 const RootTextView = ({
   segmentId,
+  textId,
   setIsRootTextView,
   addChapter,
   currentChapter,
@@ -26,8 +31,8 @@ const RootTextView = ({
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext() as any;
   const { data: rootTextData } = useQuery(
-    ["rootTexts", segmentId],
-    () => fetchRootTextData(segmentId),
+    ["rootTexts", segmentId, textId],
+    () => fetchRootTextData(segmentId, textId),
     {
       refetchOnWindowFocus: false,
     },

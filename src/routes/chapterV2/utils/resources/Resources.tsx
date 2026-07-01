@@ -64,7 +64,7 @@ const Resources = ({
         className="w-full flex justify-start gap-1.5"
       >
         <IoLanguage className="text-lg" />
-        {`${t("connection_pannel.translations")} (${sidePanelData.segment_info.translations})`}
+        {t("connection_pannel.translations")}
       </Button>
     );
 
@@ -77,7 +77,7 @@ const Resources = ({
         onClick={() => setActiveView("commentary")}
       >
         <BiBookOpen className="text-lg" />
-        {`${t("text.commentary")} (${sidePanelData.segment_info.related_text.commentaries})`}
+        {t("text.commentary")}
       </Button>
     );
 
@@ -235,6 +235,7 @@ const Resources = ({
         return (
           <RootTextView
             segmentId={segmentId}
+            textId={sidePanelData?.segment_info?.text_id}
             setIsRootTextView={setActiveView}
             addChapter={addChapter}
             currentChapter={currentChapter}

@@ -34,6 +34,10 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
+vi.mock("react-intersection-observer", () => ({
+  useInView: () => ({ ref: vi.fn(), inView: false }),
+}));
+
 describe("Works Component", () => {
   const queryClient = new QueryClient();
   const mockTextCategoryData = {
@@ -65,15 +69,28 @@ describe("Works Component", () => {
 
   let localStorageMock;
 
+  const buildInfiniteQueryResult = (override = {}) =>
+    ({
+      data: {
+        pages: [mockTextCategoryData],
+        pageParams: [0],
+      },
+      isLoading: false,
+      error: null,
+      hasNextPage: false,
+      isFetchingNextPage: false,
+      fetchNextPage: vi.fn(),
+      ...override,
+    }) as unknown as ReturnType<typeof reactQuery.useInfiniteQuery>;
+
   beforeEach(() => {
     vi.restoreAllMocks();
     useParams.mockReturnValue({ id: "works-id" });
     localStorageMock = mockLocalStorage();
     localStorageMock.getItem.mockReturnValue("en");
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: mockTextCategoryData,
-      isLoading: false,
-    }));
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult(),
+    );
   });
 
   afterEach(() => {
@@ -100,21 +117,22 @@ describe("Works Component", () => {
   });
 
   test("displays loading state when data is being fetched", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: null,
-      isLoading: true,
-    }));
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({ data: null, isLoading: true }),
+    );
 
     setup();
     expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
   test("displays error message when there is an error", () => {
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: null,
-      isLoading: false,
-      error: new Error("Failed to fetch text category"),
-    }));
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({
+        data: null,
+        isLoading: false,
+        error: new Error("Failed to fetch text category"),
+      }),
+    );
 
     setup();
     expect(screen.getByText("global.not_found")).toBeInTheDocument();
@@ -151,10 +169,11 @@ describe("Works Component", () => {
       ],
     };
 
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: updatedMockData,
-      isLoading: false,
-    }));
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({
+        data: { pages: [updatedMockData], pageParams: [0] },
+      }),
+    );
 
     setup();
     const links = screen.getAllByTestId("router-link");
@@ -167,91 +186,73 @@ describe("Works Component", () => {
   test("uses default category ID when none provided", () => {
     useParams.mockReturnValue({});
 
-    const querySpy = vi.fn();
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(
-      (_queryKey, queryFn) => {
-        querySpy(queryFn.toString());
-        return {
-          data: mockTextCategoryData,
-          isLoading: false,
-        };
-      },
-    );
+    const infiniteQuerySpy = vi.spyOn(reactQuery, "useInfiniteQuery");
+    infiniteQuerySpy.mockReturnValue(buildInfiniteQueryResult());
 
     setup();
 
-    expect(querySpy).toHaveBeenCalled();
+    expect(infiniteQuerySpy).toHaveBeenCalled();
   });
 
   test("uses correct language from localStorage", () => {
     localStorageMock.getItem.mockReturnValue("bo");
 
-    const axiosSpy = vi.spyOn(axiosInstance, "get");
-    axiosSpy.mockResolvedValueOnce({ data: mockTextCategoryData });
+    const infiniteQuerySpy = vi.spyOn(reactQuery, "useInfiniteQuery");
+    infiniteQuerySpy.mockReturnValue(buildInfiniteQueryResult());
 
     setup();
 
-    expect(reactQuery.useQuery).toHaveBeenCalled();
-    const queryKey = reactQuery.useQuery.mock.calls[0][0];
-    expect(queryKey).toEqual(["works", "works-id", 0, 12]);
+    expect(infiniteQuerySpy).toHaveBeenCalled();
+    const queryKey = infiniteQuerySpy.mock.calls[0][0];
+    expect(queryKey).toEqual(["works", "works-id"]);
   });
 
-  test("uses pagination parameters correctly", () => {
-    const querySpy = vi.spyOn(reactQuery, "useQuery");
+  test("uses infinite query parameters correctly", () => {
+    const infiniteQuerySpy = vi.spyOn(reactQuery, "useInfiniteQuery");
+    infiniteQuerySpy.mockReturnValue(buildInfiniteQueryResult());
 
     setup();
 
-    expect(querySpy).toHaveBeenCalled();
-    const options = querySpy.mock.calls[0][2];
+    expect(infiniteQuerySpy).toHaveBeenCalled();
+    const options = infiniteQuerySpy.mock.calls[0][2];
     expect(options.refetchOnWindowFocus).toBe(false);
+    expect(options.enabled).toBe(true);
   });
 
   test("handles API call errors by showing error message", () => {
     const errorMessage = "Network Error";
 
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
-    const mockError = {
-      response: { status: 500, data: { message: errorMessage } },
-    };
-
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => {
-      console.error("API call error:", mockError.response || mockError);
-
-      return {
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({
         data: null,
         isLoading: false,
         error: new Error(errorMessage),
-      };
-    });
+      }),
+    );
 
     setup();
 
     expect(screen.getByText("global.not_found")).toBeInTheDocument();
-
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "API call error:",
-      mockError.response,
-    );
-
-    consoleSpy.mockRestore();
   });
 
-  test("uses correct language from localStorage with mapping", () => {
+  test("uses correct language from localStorage with mapping", async () => {
     localStorageMock.getItem.mockReturnValue("en");
     const axiosSpy = vi.spyOn(axiosInstance, "get").mockResolvedValueOnce({
       data: mockTextCategoryData,
     });
 
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((_, queryFn) => {
-      queryFn();
-      return {
-        data: mockTextCategoryData,
-        isLoading: false,
-      };
-    });
+    let capturedFetchFn: any;
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+      (_key: any, fetchFn: any) => {
+        capturedFetchFn = fetchFn;
+        return buildInfiniteQueryResult();
+      },
+    );
 
     setup();
+
+    // Call the fetch function to test the API call
+    await capturedFetchFn({ pageParam: 0, queryKey: ["works", "works-id"] });
 
     expect(axiosSpy).toHaveBeenCalledWith(
       "/api/v1/texts",
@@ -268,21 +269,23 @@ describe("Works Component", () => {
     vi.clearAllMocks();
   });
 
-  test("defaults to 'en' language when localStorage is empty", () => {
+  test("defaults to 'en' language when localStorage is empty", async () => {
     localStorageMock.getItem.mockReturnValue(null);
     const axiosSpy = vi.spyOn(axiosInstance, "get").mockResolvedValueOnce({
       data: mockTextCategoryData,
     });
 
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((_, queryFn) => {
-      queryFn();
-      return {
-        data: mockTextCategoryData,
-        isLoading: false,
-      };
-    });
+    let capturedFetchFn: any;
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+      (_key: any, fetchFn: any) => {
+        capturedFetchFn = fetchFn;
+        return buildInfiniteQueryResult();
+      },
+    );
 
     setup();
+
+    await capturedFetchFn({ pageParam: 0, queryKey: ["works", "works-id"] });
 
     expect(axiosSpy).toHaveBeenCalledWith(
       "/api/v1/texts",
@@ -294,20 +297,22 @@ describe("Works Component", () => {
     );
   });
 
-  test("passes correct pagination parameters to API", () => {
+  test("passes correct pagination parameters to API", async () => {
     const axiosSpy = vi.spyOn(axiosInstance, "get").mockResolvedValueOnce({
       data: mockTextCategoryData,
     });
 
-    vi.spyOn(reactQuery, "useQuery").mockImplementation((_, queryFn) => {
-      queryFn();
-      return {
-        data: mockTextCategoryData,
-        isLoading: false,
-      };
-    });
+    let capturedFetchFn: any;
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+      (_key: any, fetchFn: any) => {
+        capturedFetchFn = fetchFn;
+        return buildInfiniteQueryResult();
+      },
+    );
 
     setup();
+
+    await capturedFetchFn({ pageParam: 0, queryKey: ["works", "works-id"] });
 
     expect(axiosSpy).toHaveBeenCalledWith(
       "/api/v1/texts",
@@ -348,10 +353,11 @@ describe("Works Component", () => {
       ],
     };
 
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: multipleTypesData,
-      isLoading: false,
-    }));
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({
+        data: { pages: [multipleTypesData], pageParams: [0] },
+      }),
+    );
 
     setup();
 
@@ -375,10 +381,11 @@ describe("Works Component", () => {
       ],
     };
 
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: noDescriptionData,
-      isLoading: false,
-    }));
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({
+        data: { pages: [noDescriptionData], pageParams: [0] },
+      }),
+    );
 
     setup();
 
@@ -402,10 +409,11 @@ describe("Works Component", () => {
       total: 1,
     };
 
-    vi.spyOn(reactQuery, "useQuery").mockImplementation(() => ({
-      data: dataWithTexts,
-      isLoading: false,
-    }));
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({
+        data: { pages: [dataWithTexts], pageParams: [0] },
+      }),
+    );
 
     setup({ setRendererInfo: mockSetRendererInfo });
 
@@ -413,5 +421,63 @@ describe("Works Component", () => {
     await user.click(button);
 
     expect(mockSetRendererInfo).toHaveBeenCalled();
+  });
+
+  test("getNextPageParam returns undefined when has_more is false", () => {
+    let capturedGetNextPageParam: any;
+
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+      (_key: any, _fetchFn: any, options: any) => {
+        capturedGetNextPageParam = options.getNextPageParam;
+        return buildInfiniteQueryResult();
+      },
+    );
+
+    setup();
+
+    const result = capturedGetNextPageParam({ has_more: false, skip: 0 });
+    expect(result).toBeUndefined();
+  });
+
+  test("getNextPageParam returns next skip value when has_more is true", () => {
+    let capturedGetNextPageParam: any;
+
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockImplementation(
+      (_key: any, _fetchFn: any, options: any) => {
+        capturedGetNextPageParam = options.getNextPageParam;
+        return buildInfiniteQueryResult();
+      },
+    );
+
+    setup();
+
+    const result = capturedGetNextPageParam({ has_more: true, skip: 0 });
+    expect(result).toBe(12); // LIMIT = 12
+  });
+
+  test("renders loading indicator when fetching next page", () => {
+    const dataWithTexts = {
+      collection: { title: "Test Collection" },
+      texts: [
+        {
+          id: "text1",
+          title: "Test Text",
+          type: "root_text",
+          language: "en",
+        },
+      ],
+    };
+
+    vi.spyOn(reactQuery, "useInfiniteQuery").mockReturnValue(
+      buildInfiniteQueryResult({
+        data: { pages: [dataWithTexts], pageParams: [0] },
+        isFetchingNextPage: true,
+        hasNextPage: true,
+      }),
+    );
+
+    setup();
+
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 });

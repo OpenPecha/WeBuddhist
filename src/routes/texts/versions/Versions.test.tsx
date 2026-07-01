@@ -190,10 +190,7 @@ describe("Versions Component", () => {
       const links = screen.getAllByRole("link");
       expect(links).toHaveLength(3);
 
-      expect(links[0]).toHaveAttribute(
-        "href",
-        "/chapter?text_id=version1&content_id=content1",
-      );
+      expect(links[0]).toHaveAttribute("href", "/chapter?text_id=version1");
     });
   });
 

@@ -59,15 +59,13 @@ const CommonCard = ({
         <button
           type="button"
           onClick={() => {
-            if (contentId) {
-              addChapter(
-                {
-                  textId: version.id,
-                  contentId: contentId,
-                },
-                currentChapter,
-              );
-            }
+            addChapter(
+              {
+                textId: version.id,
+                ...(contentId && { contentId }),
+              },
+              currentChapter,
+            );
           }}
           className="text-left cursor-pointer hover:opacity-80 transition-opacity"
         >
@@ -80,10 +78,7 @@ const CommonCard = ({
       );
     }
     return (
-      <Link
-        to={`/chapter?text_id=${version.id}&content_id=${contentId}`}
-        className="text-left"
-      >
+      <Link to={`/chapter?text_id=${version.id}`} className="text-left">
         <div
           className={` text-lg font-bold text-zinc-600 ${getLanguageClass(version.language)}`}
         >

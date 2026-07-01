@@ -8,25 +8,15 @@ import UseChapterHook from "./helpers/UseChapterHook.tsx";
 import axiosInstance from "@/config/axios-config.ts";
 import { useInfiniteQuery } from "react-query";
 import { PanelProvider } from "@/context/PanelContext.tsx";
-import {
-  getEarlyReturn,
-  getFirstSegmentId,
-  getLastSegmentId,
-  mergeSections,
-} from "@/utils/helperFunctions.tsx";
+import { getEarlyReturn, mergeSections } from "@/utils/helperFunctions.tsx";
 import { useTranslate } from "@tolgee/react";
 import Seo from "@/routes/commons/seo/Seo.tsx";
 
-const fetchContentDetails = async ({ pageParam = null, queryKey }: any) => {
-  const [_, textId, contentId, versionId, size, initialSegmentId] = queryKey;
-  const segmentId = pageParam?.segmentId ?? initialSegmentId;
-  const direction = pageParam?.direction ?? "next";
-  const { data } = await axiosInstance.post(`/api/v1/texts/${textId}/details`, {
-    ...(contentId && { content_id: contentId }),
-    ...(segmentId && { segment_id: segmentId }),
-    ...(versionId && { version_id: versionId }),
-    direction,
-    size,
+const fetchContentDetails = async ({ pageParam = 0, queryKey }: any) => {
+  const [_, textId, limit] = queryKey;
+  const offset = pageParam;
+  const { data } = await axiosInstance.get(`/api/v1/texts/${textId}/details`, {
+    params: { offset, limit },
   });
   return data;
 };
@@ -100,25 +90,15 @@ const ContentsChapter = ({
   }, [layoutMode]);
 
   const infiniteQuery = useInfiniteQuery(
-    ["content", textId, contentId, versionId, size, currentSegmentId],
+    ["content", textId, size],
     fetchContentDetails,
     {
       getNextPageParam: isFromSheet
         ? undefined
-        : (lastPage) => {
-            if (lastPage?.current_segment_position === lastPage?.total_segments)
-              return null;
-            const lastSegmentId = getLastSegmentId(lastPage.content.sections);
-            return { segmentId: lastSegmentId, direction: "next" };
-          },
-      getPreviousPageParam: isFromSheet
-        ? undefined
-        : (firstPage) => {
-            if (firstPage?.current_segment_position === 1) return null;
-            const firstSegmentId = getFirstSegmentId(
-              firstPage.content.sections,
-            );
-            return { segmentId: firstSegmentId, direction: "previous" };
+        : (lastPage, allPages) => {
+            const currentOffset = allPages.length * size;
+            if (currentOffset >= lastPage?.total_segments) return undefined;
+            return currentOffset;
           },
       enabled: !!textId,
       refetchOnWindowFocus: false,
