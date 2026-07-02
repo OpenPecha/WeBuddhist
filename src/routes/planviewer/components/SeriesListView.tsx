@@ -8,7 +8,7 @@ import {
 import SeriesCard from "./SeriesCard.tsx";
 import VerseOfDayCard from "./VerseOfDayCard.tsx";
 import { getEarlyReturn } from "../../../utils/helperFunctions.tsx";
-import { siteName } from "../../../utils/constants.ts";
+import { siteDescription, siteName } from "../../../utils/constants.ts";
 import Seo from "../../commons/seo/Seo.tsx";
 import type { PlanLanguageCode } from "../utils/seriesUtils.ts";
 
@@ -70,10 +70,7 @@ const SeriesListView = ({
     <>
       <Seo
         title={`${t("plans.practice_routines", "Practice Routines")} | ${siteName}`}
-        description={t(
-          "plans.practice_routines_description",
-          "Daily Buddhist study plans and practice routines.",
-        )}
+        description={siteDescription}
         canonical={`${window.location.origin}/`}
       />
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 pb-10">
