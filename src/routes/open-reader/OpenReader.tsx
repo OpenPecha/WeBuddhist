@@ -1,10 +1,7 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import {
-  VIEW_MODES,
-  LAYOUT_MODES,
-} from "@/routes/chapterV2/utils/header/view-selector/ViewSelector.tsx";
-import { LAYOUT_MODE, siteName } from "@/utils/constants.ts";
+import { VIEW_MODES } from "@/routes/chapterV2/utils/header/view-selector/ViewSelector.tsx";
+import { siteName } from "@/utils/constants.ts";
 import axiosInstance from "@/config/axios-config.ts";
 import { useInfiniteQuery } from "react-query";
 import { PanelProvider } from "@/context/PanelContext.tsx";
@@ -16,7 +13,6 @@ import {
 } from "@/utils/helperFunctions.tsx";
 import { useTranslate } from "@tolgee/react";
 import Seo from "@/routes/commons/seo/Seo.tsx";
-import ChapterHeader from "@/routes/chapterV2/utils/header/ChapterHeader.tsx";
 
 const fetchContentDetails = async ({ pageParam = null, queryKey }: any) => {
   const [_, textId, size, initialSegmentId] = queryKey;
@@ -73,10 +69,8 @@ const OpenReader = () => {
   const { textId } = useParams<{ textId: string }>();
   const [searchParams] = useSearchParams();
   const sharedSegmentId = searchParams.get("segment");
-  const lang = searchParams.get("lang") || "en";
 
   const [viewMode] = useState(VIEW_MODES.SOURCE);
-  const [layoutMode] = useState(LAYOUT_MODES.SEGMENTED);
   const size = 20;
   const { t } = useTranslate();
 
@@ -179,11 +173,6 @@ const OpenReader = () => {
         className="flex flex-col items-center w-full"
         key={section.id || section.title || "root"}
       >
-        {section.title && (
-          <h2 className="w-fit border-b-2 border-zinc-500 p-2 text-lg">
-            {section.title}
-          </h2>
-        )}
         <div className="flex flex-col w-full px-2.5 items-center mx-auto">
           {section.segments?.map((segment) => {
             const isShared = segment.segment_id === sharedSegmentId;
@@ -217,7 +206,7 @@ const OpenReader = () => {
       {/* Content with blur overlay */}
       <div className="relative flex-1">
         <PanelProvider>
-          <div className="flex flex-col w-full p-4">
+          <div className="flex flex-col w-full px-4 pt-6">
             {allContent?.content?.sections?.map((section: Section) =>
               renderSection(section),
             )}
