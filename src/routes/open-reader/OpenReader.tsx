@@ -137,7 +137,7 @@ const OpenReader = () => {
           !isShared ? "blur-sm select-none pointer-events-none" : ""
         }`}
       >
-        <p className="md:mr-4 text-xs text-orange-500">
+        <p className="md:mr-4 text-xs text-gray-700">
           {segment.segment_number}
         </p>
         <div className="flex flex-col items-start text-lg w-full text-justify">
@@ -224,10 +224,33 @@ const OpenReader = () => {
               }}
             >
               <div className="flex flex-col items-center pt-32">
-                <p className="text-xl font-semibold text-gray-800 mb-2">
-                  Please install our Webuddhist app
+                <p className="text-gray-600 mb-4">
+                  Download the app to read the full text.
                 </p>
-                <p className="text-gray-600">to continue reading this text</p>
+                <div className="flex gap-4">
+                  <a
+                    href="https://play.google.com/store/apps/details?id=com.pecha.webuddhist"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                      alt="Get it on Google Play"
+                      className="h-10"
+                    />
+                  </a>
+                  <a
+                    href="https://apps.apple.com/app/webuddhist/id6504488772"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg"
+                      alt="Download on the App Store"
+                      className="h-10"
+                    />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
