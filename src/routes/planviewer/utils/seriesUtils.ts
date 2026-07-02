@@ -179,6 +179,18 @@ export function getVerseText(
   return first?.trim() ?? "";
 }
 
+export function getVerseAttribution(
+  attributions: Record<string, string> | null | undefined,
+  lang: string,
+): string {
+  const attribution = attributions?.find(
+    (attribution) =>
+      String(attribution.language).toLowerCase() === String(lang).toLowerCase(),
+  );
+  if (!attribution) return "";
+  return attribution.sub_title?.trim() ?? "";
+}
+
 export function formatDisplayDate(dateStr: string): string {
   const date = new Date(`${dateStr}T12:00:00`);
   return date.toLocaleDateString(undefined, {

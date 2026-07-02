@@ -7,6 +7,8 @@ import {
 } from "../api/plansApi.ts";
 import SeriesCard from "./SeriesCard.tsx";
 import VerseOfDayCard from "./VerseOfDayCard.tsx";
+import PresetMantrasSection from "../../mantras/components/PresetMantrasSection.tsx";
+import JoinableGroupsSection from "../../mantras/components/JoinableGroupsSection.tsx";
 import { getEarlyReturn } from "../../../utils/helperFunctions.tsx";
 import { siteDescription, siteName } from "../../../utils/constants.ts";
 import Seo from "../../commons/seo/Seo.tsx";
@@ -17,6 +19,7 @@ type SeriesListViewProps = {
   language: PlanLanguageCode;
   isAuthenticated: boolean;
   onSelectSeries: (seriesId: string) => void;
+  onSelectGroup: (groupId: string) => void;
 };
 
 const SeriesListView = ({
@@ -24,6 +27,7 @@ const SeriesListView = ({
   language,
   isAuthenticated,
   onSelectSeries,
+  onSelectGroup,
 }: SeriesListViewProps) => {
   const { t } = useTranslate();
 
@@ -73,9 +77,8 @@ const SeriesListView = ({
         description={siteDescription}
         canonical={`${window.location.origin}/`}
       />
+      <VerseOfDayCard apiLanguage={apiLanguage} />
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 pb-10">
-        <VerseOfDayCard apiLanguage={apiLanguage} />
-
         <header className="space-y-2">
           <h1 className="text-2xl font-semibold text-gray-900">
             {t("plans.practice_routines", "Practice Routines")}
@@ -103,6 +106,14 @@ const SeriesListView = ({
             ))}
           </div>
         )}
+
+        <PresetMantrasSection apiLanguage={apiLanguage} language={language} />
+
+        <JoinableGroupsSection
+          apiLanguage={apiLanguage}
+          language={language}
+          onSelectGroup={onSelectGroup}
+        />
       </div>
     </>
   );

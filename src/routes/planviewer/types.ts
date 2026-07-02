@@ -115,14 +115,25 @@ export type UserSeriesEnrollmentsResponse = {
   total: number;
 };
 
+export type GroupInfoDTO = {
+  id: string;
+  title: string;
+  sub_title?: string | null;
+  description?: string | null;
+  language: string;
+};
+
 export type VerseOfDayPublicDTO = {
   id: string;
   verses?: Record<string, string> | null;
   verse?: string | null;
+  attributions?: Record<string, string> | null;
+  attribution?: string | null;
   image_url?: string | null;
   ref_id?: string | null;
   ref_type?: string | null;
   date: string;
+  group_info?: GroupInfoDTO[] | null;
 };
 
 export type VerseOfDayPublicResponse = {
