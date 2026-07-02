@@ -207,14 +207,6 @@ const OpenReader = () => {
         canonical={canonicalUrl}
       />
 
-      {/* Header */}
-      <div className="border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center gap-3">
-          <img src="/img/icon.png" alt="WeBuddhist" className="w-8 h-8" />
-          <span className="font-semibold text-lg">WeBuddhist</span>
-        </div>
-      </div>
-
       {/* Title bar */}
       <div className="border-b border-gray-200 px-4 py-3 text-center">
         <h1 className="text-lg font-medium">
