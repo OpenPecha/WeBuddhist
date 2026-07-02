@@ -228,13 +228,13 @@ const OpenReader = () => {
         {hasSharedSegment && (
           <div className="absolute inset-0 pointer-events-none">
             <div
-              className="absolute left-0 right-0 bottom-0 h-2/3 pointer-events-auto"
+              className="absolute left-0 right-0 top-24 bottom-0 pointer-events-auto"
               style={{
                 background:
-                  "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 30%)",
+                  "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 20%)",
               }}
             >
-              <div className="flex flex-col items-center justify-center h-full pt-24">
+              <div className="flex flex-col items-center pt-32">
                 <p className="text-xl font-semibold text-gray-800 mb-2">
                   Please install our Webuddhist app
                 </p>
