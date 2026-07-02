@@ -12,16 +12,20 @@ import {
   getEarlyReturn,
   mergeSections,
   getLanguageClass,
+  getLastSegmentId,
 } from "@/utils/helperFunctions.tsx";
 import { useTranslate } from "@tolgee/react";
 import Seo from "@/routes/commons/seo/Seo.tsx";
 import ChapterHeader from "@/routes/chapterV2/utils/header/ChapterHeader.tsx";
 
-const fetchContentDetails = async ({ pageParam = 0, queryKey }: any) => {
-  const [_, textId, limit] = queryKey;
-  const offset = pageParam;
-  const { data } = await axiosInstance.get(`/api/v1/texts/${textId}/details`, {
-    params: { offset, limit },
+const fetchContentDetails = async ({ pageParam = null, queryKey }: any) => {
+  const [_, textId, size, initialSegmentId] = queryKey;
+  const segmentId = pageParam?.segmentId ?? initialSegmentId;
+  const direction = pageParam?.direction ?? "next";
+  const { data } = await axiosInstance.post(`/api/v1/texts/${textId}/details`, {
+    ...(segmentId && { segment_id: segmentId }),
+    direction,
+    size,
   });
   return data;
 };
@@ -77,13 +81,14 @@ const OpenReader = () => {
   const { t } = useTranslate();
 
   const infiniteQuery = useInfiniteQuery(
-    ["content", textId, size],
+    ["content", textId, size, sharedSegmentId],
     fetchContentDetails,
     {
-      getNextPageParam: (lastPage, allPages) => {
-        const currentOffset = allPages.length * size;
-        if (currentOffset >= lastPage?.total_segments) return undefined;
-        return currentOffset;
+      getNextPageParam: (lastPage) => {
+        if (lastPage?.current_segment_position === lastPage?.total_segments)
+          return null;
+        const lastSegmentId = getLastSegmentId(lastPage.content.sections);
+        return { segmentId: lastSegmentId, direction: "next" };
       },
       enabled: !!textId,
       refetchOnWindowFocus: false,
