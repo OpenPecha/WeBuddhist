@@ -6,7 +6,6 @@ import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import * as reactQuery from "react-query";
 import { mockReactQuery } from "../../test-utils/CommonMocks.ts";
-import { LANGUAGE } from "../../utils/constants.ts";
 
 mockReactQuery();
 
@@ -290,17 +289,85 @@ describe("Planviewer", () => {
     ).toBeInTheDocument();
   });
 
-  test("navigates from series card to today's plan", async () => {
+  test("navigates from series card Start button to today's plan", async () => {
     renderPlanviewer();
     const user = userEvent.setup();
 
     await screen.findByText("200-Day Road to the ITCC 2026");
-    await user.click(
-      screen.getByRole("button", { name: "200-Day Road to the ITCC 2026" }),
-    );
+    await user.click(screen.getByRole("button", { name: /^Start$/i }));
 
     expect(await screen.findByText("Morning reading")).toBeInTheDocument();
     expect(screen.queryByText("Enroll")).not.toBeInTheDocument();
+  });
+
+  test("navigates from series card to chapter list", async () => {
+    renderPlanviewer();
+    const user = userEvent.setup();
+
+    await screen.findByText("200-Day Road to the ITCC 2026");
+    await user.click(screen.getByRole("button", { name: /View chapters/i }));
+
+    expect(await screen.findByText("ITCC: Days 1-6")).toBeInTheDocument();
+    expect(await screen.findByText("Enroll")).toBeInTheDocument();
+  });
+
+  test("renders the series detail list when view=list", async () => {
+    renderPlanviewer("/?series=series-1&view=list");
+
+    expect(
+      await screen.findByRole("button", { name: /Enroll/i }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("ITCC: Days 1-6")).toBeInTheDocument();
+    expect(await screen.findByText("ITCC: Days 7-37")).toBeInTheDocument();
+  });
+
+  test("selecting a plan from the detail list opens its daily content", async () => {
+    renderPlanviewer("/?series=series-1&view=list");
+    const user = userEvent.setup();
+
+    const planRow = await screen.findByText("ITCC: Days 1-6");
+    await user.click(planRow);
+
+    expect(await screen.findByText("Morning reading")).toBeInTheDocument();
+  });
+
+  test("back from a daily plan returns to the series detail list", async () => {
+    renderPlanviewer("/?series=series-1&plan=plan-1");
+    const user = userEvent.setup();
+
+    expect(await screen.findByText("Morning reading")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /Back to series/i }));
+
+    expect(
+      await screen.findByRole("button", { name: /Enroll/i }),
+    ).toBeInTheDocument();
+  });
+
+  test("changing the day updates the daily content", async () => {
+    renderPlanviewer("/?series=series-1&plan=plan-1");
+    const user = userEvent.setup();
+
+    expect(await screen.findByText("Morning reading")).toBeInTheDocument();
+
+    const dayButton = await screen.findByRole("button", {
+      name: /^Day 2,/i,
+    });
+    await user.click(dayButton);
+
+    expect(await screen.findByText("Morning reading")).toBeInTheDocument();
+  });
+
+  test("back from the detail list keeps the non-English language param", async () => {
+    getLanguageMock.mockReturnValue("bo-IN");
+    renderPlanviewer("/?series=series-1&view=list&lang=bo");
+    const user = userEvent.setup();
+
+    await screen.findByRole("button", { name: /Enroll/i });
+    await user.click(screen.getByRole("button", { name: /All routines/i }));
+
+    expect(
+      await screen.findByText("200-Day Road to the ITCC 2026"),
+    ).toBeInTheDocument();
   });
 
   test("maps tolgee language codes for backend requests", async () => {

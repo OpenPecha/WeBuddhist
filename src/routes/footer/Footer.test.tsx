@@ -87,10 +87,19 @@ describe("Footer", () => {
   test("renders correct total number of links", () => {
     setup();
     const links = screen.getAllByRole("link");
-    // +1 for the Privacy Policy internal link
+    // +2 for the Privacy Policy and Terms of Service internal links
     expect(links).toHaveLength(
-      expectedColumnLinks.length + expectedSocialLinks.length + 1,
+      expectedColumnLinks.length + expectedSocialLinks.length + 2,
     );
+  });
+
+  test("renders Privacy Policy and Terms of Service footer links", () => {
+    setup();
+    const privacyLink = screen.getByRole("link", { name: /privacy policy/i });
+    expect(privacyLink).toHaveAttribute("href", "/privacy-policy");
+
+    const tosLink = screen.getByRole("link", { name: /terms of service/i });
+    expect(tosLink).toHaveAttribute("href", "/terms-of-service");
   });
 
   test("uses translation helper for column headings", () => {

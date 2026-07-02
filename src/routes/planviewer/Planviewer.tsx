@@ -6,6 +6,7 @@ import { useAuth } from "../../config/AuthContext.tsx";
 import { LANGUAGE } from "../../utils/constants.ts";
 import { mapLanguageCode } from "../../utils/helperFunctions.tsx";
 import SeriesListView from "./components/SeriesListView.tsx";
+import SeriesDetailView from "./components/SeriesDetailView.tsx";
 import SeriesPlanRedirect from "./components/SeriesPlanRedirect.tsx";
 import DailyPlanView from "./components/DailyPlanView.tsx";
 import GroupDetailView from "../mantras/components/GroupDetailView.tsx";
@@ -33,6 +34,7 @@ const Planviewer = () => {
   const selectedDate = searchParams.get("date");
   const selectedGroupId = searchParams.get("group");
   const selectedAccumulatorId = searchParams.get("accumulator");
+  const seriesView = searchParams.get("view");
   const isAuthenticatedReady =
     !isAuthLoading &&
     !isAuth0Loading &&
@@ -68,13 +70,42 @@ const Planviewer = () => {
     );
   }, [apiLanguage, selectedGroupId, setSearchParams]);
 
+  const handleViewSeriesPlans = useCallback(
+    (seriesId: string) => {
+      setSearchParams({ series: seriesId, view: "list", lang: apiLanguage });
+    },
+    [apiLanguage, setSearchParams],
+  );
+
+  const handleSelectPlan = useCallback(
+    (planId: string, date?: string) => {
+      if (!selectedSeriesId) return;
+      const params: Record<string, string> = {
+        series: selectedSeriesId,
+        plan: planId,
+        lang: apiLanguage,
+      };
+      if (date) params.date = date;
+      setSearchParams(params);
+    },
+    [apiLanguage, selectedSeriesId, setSearchParams],
+  );
+
   const handleBackToList = useCallback(() => {
     setSearchParams(apiLanguage !== "en" ? { lang: apiLanguage } : {});
   }, [apiLanguage, setSearchParams]);
 
   const handleBackToSeries = useCallback(() => {
+    if (selectedSeriesId) {
+      setSearchParams({
+        series: selectedSeriesId,
+        view: "list",
+        lang: apiLanguage,
+      });
+      return;
+    }
     setSearchParams(apiLanguage !== "en" ? { lang: apiLanguage } : {});
-  }, [apiLanguage, setSearchParams]);
+  }, [apiLanguage, selectedSeriesId, setSearchParams]);
 
   const handleDateChange = useCallback(
     (date: string | null) => {
@@ -125,6 +156,19 @@ const Planviewer = () => {
       );
     }
 
+    if (selectedSeriesId && seriesView === "list") {
+      return (
+        <SeriesDetailView
+          seriesId={selectedSeriesId}
+          language={planLanguage}
+          apiLanguage={tolgeeApiLanguage}
+          isAuthenticated={isAuthenticatedReady}
+          onBack={handleBackToList}
+          onSelectPlan={handleSelectPlan}
+        />
+      );
+    }
+
     if (selectedSeriesId) {
       return (
         <SeriesPlanRedirect
@@ -143,6 +187,7 @@ const Planviewer = () => {
         language={planLanguage}
         isAuthenticated={isAuthenticatedReady}
         onSelectSeries={handleSelectSeries}
+        onViewSeriesPlans={handleViewSeriesPlans}
       />
     );
   }, [
@@ -151,8 +196,10 @@ const Planviewer = () => {
     selectedSeriesId,
     selectedPlanId,
     selectedDate,
+    seriesView,
     planLanguage,
     tolgeeApiLanguage,
+    apiLanguage,
     isAuthenticatedReady,
     handleBackToList,
     handleBackToGroup,
@@ -160,6 +207,8 @@ const Planviewer = () => {
     handleDateChange,
     handleSelectSeries,
     handleSelectAccumulator,
+    handleViewSeriesPlans,
+    handleSelectPlan,
   ]);
 
   return <div className="min-h-[calc(100dvh-4rem)] w-full">{content}</div>;

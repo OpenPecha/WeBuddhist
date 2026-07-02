@@ -59,7 +59,11 @@ const PrivacyPolicy = lazy(
 const TermsOfService = lazy(
   () => import("./routes/terms-of-service/TermsOfService.tsx"),
 );
+const DeleteAccount = lazy(
+  () => import("./routes/delete-account/DeleteAccount.tsx"),
+);
 const AppShare = lazy(() => import("./routes/app-share/AppShare.tsx"));
+const OpenReader = lazy(() => import("./routes/open-reader/OpenReader.tsx"));
 
 type Auth0UserType = {
   getAccessTokenSilently: (options?: {
@@ -259,6 +263,7 @@ function App() {
           <Route path="/app/share" element={<AppShare />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="/login" element={<UserLogin />} />
           <Route path="/register" element={<UserRegistration />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -276,6 +281,7 @@ function App() {
           <Route path="/" element={<Planviewer />} />
           <Route path="/sheets/:id" element={<Sheets />} />
           <Route path="/chapter" element={<ChaptersV2 />} />
+          <Route path="/open/reader/:textId" element={<OpenReader />} />
         </Route>
 
         <Route element={<MainLayout />}>

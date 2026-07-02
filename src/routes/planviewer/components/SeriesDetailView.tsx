@@ -16,7 +16,10 @@ import {
   resolveImageUrl,
   type PlanLanguageCode,
 } from "../utils/seriesUtils.ts";
-import { getPlanRowStatus } from "../utils/planStatusUtils.ts";
+import {
+  getPlanRowStatus,
+  resolvePlanInitialDate,
+} from "../utils/planStatusUtils.ts";
 import {
   getEarlyReturn,
   getLanguageClass,
@@ -28,7 +31,7 @@ type SeriesDetailViewProps = {
   apiLanguage: string;
   isAuthenticated: boolean;
   onBack: () => void;
-  onSelectPlan: (planId: string) => void;
+  onSelectPlan: (planId: string, date?: string) => void;
 };
 
 const SeriesDetailView = ({
@@ -187,7 +190,12 @@ const SeriesDetailView = ({
                   enrollment?.current_plan_id,
                 )}
                 contentFontClass={contentFontClass}
-                onSelect={onSelectPlan}
+                onSelect={(planId) =>
+                  onSelectPlan(
+                    planId,
+                    resolvePlanInitialDate(plan, today) ?? undefined,
+                  )
+                }
               />
             ))
           )}

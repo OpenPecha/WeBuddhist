@@ -24,6 +24,7 @@ type SeriesListViewProps = {
   language: PlanLanguageCode;
   isAuthenticated: boolean;
   onSelectSeries: (seriesId: string) => void;
+  onViewSeriesPlans: (seriesId: string) => void;
 };
 
 const SeriesListView = ({
@@ -31,6 +32,7 @@ const SeriesListView = ({
   language,
   isAuthenticated,
   onSelectSeries,
+  onViewSeriesPlans,
 }: SeriesListViewProps) => {
   const { t } = useTranslate();
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
@@ -114,6 +116,7 @@ const SeriesListView = ({
                 language={language}
                 enrollment={enrollmentBySeriesId.get(series.id)}
                 onSelect={onSelectSeries}
+                onViewPlans={onViewSeriesPlans}
               />
             ))}
           </div>
