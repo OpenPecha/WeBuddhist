@@ -63,6 +63,7 @@ const DeleteAccount = lazy(
   () => import("./routes/delete-account/DeleteAccount.tsx"),
 );
 const AppShare = lazy(() => import("./routes/app-share/AppShare.tsx"));
+const OpenReader = lazy(() => import("./routes/open-reader/OpenReader.tsx"));
 
 type Auth0UserType = {
   getAccessTokenSilently: (options?: {
@@ -280,6 +281,7 @@ function App() {
           <Route path="/" element={<Planviewer />} />
           <Route path="/sheets/:id" element={<Sheets />} />
           <Route path="/chapter" element={<ChaptersV2 />} />
+          <Route path="/open/reader/:textId" element={<OpenReader />} />
         </Route>
 
         <Route element={<MainLayout />}>
