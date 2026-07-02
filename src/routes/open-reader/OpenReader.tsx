@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { VIEW_MODES } from "@/routes/chapterV2/utils/header/view-selector/ViewSelector.tsx";
-import { siteName } from "@/utils/constants.ts";
+import { siteName, PLAY_STORE_URL, APP_STORE_URL } from "@/utils/constants.ts";
 import axiosInstance from "@/config/axios-config.ts";
 import { useInfiniteQuery } from "react-query";
 import { PanelProvider } from "@/context/PanelContext.tsx";
@@ -229,7 +229,7 @@ const OpenReader = () => {
                 </p>
                 <div className="flex gap-4">
                   <a
-                    href="https://play.google.com/store/apps/details?id=com.pecha.webuddhist"
+                    href={PLAY_STORE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -240,7 +240,7 @@ const OpenReader = () => {
                     />
                   </a>
                   <a
-                    href="https://apps.apple.com/app/webuddhist/id6504488772"
+                    href={APP_STORE_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
