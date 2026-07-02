@@ -8,13 +8,13 @@ import type { PlanLanguageCode } from "../../planviewer/utils/seriesUtils.ts";
 type JoinableGroupsSectionProps = {
   apiLanguage: string;
   language: PlanLanguageCode;
-  onSelectGroup: (groupId: string) => void;
+  onOpenApp: () => void;
 };
 
 const JoinableGroupsSection = ({
   apiLanguage,
   language,
-  onSelectGroup,
+  onOpenApp,
 }: JoinableGroupsSectionProps) => {
   const { t } = useTranslate();
 
@@ -50,7 +50,7 @@ const JoinableGroupsSection = ({
         <p className="text-sm text-gray-600">
           {t(
             "mantras.joinable_groups_description",
-            "Join a group to practice together and see fellow members.",
+            "Tap a group to download the app and join.",
           )}
         </p>
       </header>
@@ -60,7 +60,7 @@ const JoinableGroupsSection = ({
             key={group.id}
             group={group}
             language={language}
-            onSelect={onSelectGroup}
+            onOpenApp={onOpenApp}
           />
         ))}
       </div>

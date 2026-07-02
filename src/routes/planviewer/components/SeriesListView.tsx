@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -12,6 +12,11 @@ import JoinableGroupsSection from "../../mantras/components/JoinableGroupsSectio
 import { getEarlyReturn } from "../../../utils/helperFunctions.tsx";
 import { siteDescription, siteName } from "../../../utils/constants.ts";
 import Seo from "../../commons/seo/Seo.tsx";
+import DownloadAppModal from "../../../components/DownloadAppModal.tsx";
+import {
+  isMobileDevice,
+  openAppDownloadPage,
+} from "../../../utils/deviceUtils.ts";
 import type { PlanLanguageCode } from "../utils/seriesUtils.ts";
 
 type SeriesListViewProps = {
@@ -19,7 +24,6 @@ type SeriesListViewProps = {
   language: PlanLanguageCode;
   isAuthenticated: boolean;
   onSelectSeries: (seriesId: string) => void;
-  onSelectGroup: (groupId: string) => void;
 };
 
 const SeriesListView = ({
@@ -27,9 +31,17 @@ const SeriesListView = ({
   language,
   isAuthenticated,
   onSelectSeries,
-  onSelectGroup,
 }: SeriesListViewProps) => {
   const { t } = useTranslate();
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+
+  const handleOpenApp = useCallback(() => {
+    if (isMobileDevice()) {
+      openAppDownloadPage();
+      return;
+    }
+    setDownloadModalOpen(true);
+  }, []);
 
   const {
     data: seriesData,
@@ -107,14 +119,22 @@ const SeriesListView = ({
           </div>
         )}
 
-        <PresetMantrasSection apiLanguage={apiLanguage} language={language} />
+        <PresetMantrasSection
+          apiLanguage={apiLanguage}
+          language={language}
+          onOpenApp={handleOpenApp}
+        />
 
         <JoinableGroupsSection
           apiLanguage={apiLanguage}
           language={language}
-          onSelectGroup={onSelectGroup}
+          onOpenApp={handleOpenApp}
         />
       </div>
+      <DownloadAppModal
+        open={downloadModalOpen}
+        onClose={() => setDownloadModalOpen(false)}
+      />
     </>
   );
 };

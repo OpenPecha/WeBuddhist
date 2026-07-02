@@ -8,11 +8,13 @@ import type { PlanLanguageCode } from "../../planviewer/utils/seriesUtils.ts";
 type PresetMantrasSectionProps = {
   apiLanguage: string;
   language: PlanLanguageCode;
+  onOpenApp: () => void;
 };
 
 const PresetMantrasSection = ({
   apiLanguage,
   language,
+  onOpenApp,
 }: PresetMantrasSectionProps) => {
   const { t } = useTranslate();
 
@@ -52,12 +54,13 @@ const PresetMantrasSection = ({
           )}
         </p>
       </header>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-4 lg:grid-cols-4">
         {presets.map((preset) => (
           <PresetMantraCard
             key={preset.id}
             preset={preset}
             language={language}
+            onOpenApp={onOpenApp}
           />
         ))}
       </div>

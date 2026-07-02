@@ -46,17 +46,6 @@ const Planviewer = () => {
     [apiLanguage, setSearchParams],
   );
 
-  const handleSelectGroup = useCallback(
-    (groupId: string) => {
-      setSearchParams(
-        apiLanguage !== "en"
-          ? { group: groupId, lang: apiLanguage }
-          : { group: groupId },
-      );
-    },
-    [apiLanguage, setSearchParams],
-  );
-
   const handleSelectAccumulator = useCallback(
     (accumulatorId: string) => {
       if (!selectedGroupId) return;
@@ -154,7 +143,6 @@ const Planviewer = () => {
         language={planLanguage}
         isAuthenticated={isAuthenticatedReady}
         onSelectSeries={handleSelectSeries}
-        onSelectGroup={handleSelectGroup}
       />
     );
   }, [
@@ -171,7 +159,6 @@ const Planviewer = () => {
     handleBackToSeries,
     handleDateChange,
     handleSelectSeries,
-    handleSelectGroup,
     handleSelectAccumulator,
   ]);
 

@@ -12,13 +12,13 @@ import { getMemberInitials } from "../utils/groupUtils.ts";
 type JoinableGroupCardProps = {
   group: AuthorGroupSummaryDTO;
   language: PlanLanguageCode;
-  onSelect: (groupId: string) => void;
+  onOpenApp: () => void;
 };
 
 const JoinableGroupCard = ({
   group,
   language,
-  onSelect,
+  onOpenApp,
 }: JoinableGroupCardProps) => {
   const { t } = useTranslate();
   const title = getGroupTitleForLanguage(group.metadata, language);
@@ -28,7 +28,7 @@ const JoinableGroupCard = ({
   );
 
   const handleClick = () => {
-    onSelect(group.id);
+    onOpenApp();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -44,7 +44,11 @@ const JoinableGroupCard = ({
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       tabIndex={0}
-      aria-label={title}
+      aria-label={t(
+        "mantras.open_app_for_group",
+        "Download the app to join {title}",
+        { title },
+      )}
       className="group flex w-full items-start gap-4 rounded-2xl border border-amber-100 bg-white p-4 text-left shadow-sm transition hover:border-amber-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
     >
       <Avatar className="size-14 border border-amber-100">
