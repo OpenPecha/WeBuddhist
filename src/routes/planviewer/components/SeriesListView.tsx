@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { useTranslate } from "@tolgee/react";
 import {
@@ -7,9 +7,16 @@ import {
 } from "../api/plansApi.ts";
 import SeriesCard from "./SeriesCard.tsx";
 import VerseOfDayCard from "./VerseOfDayCard.tsx";
+import PresetMantrasSection from "../../mantras/components/PresetMantrasSection.tsx";
+import JoinableGroupsSection from "../../mantras/components/JoinableGroupsSection.tsx";
 import { getEarlyReturn } from "../../../utils/helperFunctions.tsx";
 import { siteDescription, siteName } from "../../../utils/constants.ts";
 import Seo from "../../commons/seo/Seo.tsx";
+import DownloadAppModal from "../../../components/DownloadAppModal.tsx";
+import {
+  isMobileDevice,
+  openAppDownloadPage,
+} from "../../../utils/deviceUtils.ts";
 import type { PlanLanguageCode } from "../utils/seriesUtils.ts";
 
 type SeriesListViewProps = {
@@ -28,6 +35,15 @@ const SeriesListView = ({
   onViewSeriesPlans,
 }: SeriesListViewProps) => {
   const { t } = useTranslate();
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+
+  const handleOpenApp = useCallback(() => {
+    if (isMobileDevice()) {
+      openAppDownloadPage();
+      return;
+    }
+    setDownloadModalOpen(true);
+  }, []);
 
   const {
     data: seriesData,
@@ -75,9 +91,8 @@ const SeriesListView = ({
         description={siteDescription}
         canonical={`${window.location.origin}/`}
       />
+      <VerseOfDayCard apiLanguage={apiLanguage} />
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 pb-10">
-        <VerseOfDayCard apiLanguage={apiLanguage} />
-
         <header className="space-y-2">
           <h1 className="text-2xl font-semibold text-gray-900">
             {t("plans.practice_routines", "Practice Routines")}
@@ -106,7 +121,23 @@ const SeriesListView = ({
             ))}
           </div>
         )}
+
+        <PresetMantrasSection
+          apiLanguage={apiLanguage}
+          language={language}
+          onOpenApp={handleOpenApp}
+        />
+
+        <JoinableGroupsSection
+          apiLanguage={apiLanguage}
+          language={language}
+          onOpenApp={handleOpenApp}
+        />
       </div>
+      <DownloadAppModal
+        open={downloadModalOpen}
+        onClose={() => setDownloadModalOpen(false)}
+      />
     </>
   );
 };

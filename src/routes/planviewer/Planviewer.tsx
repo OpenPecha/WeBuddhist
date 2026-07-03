@@ -9,6 +9,8 @@ import SeriesListView from "./components/SeriesListView.tsx";
 import SeriesDetailView from "./components/SeriesDetailView.tsx";
 import SeriesPlanRedirect from "./components/SeriesPlanRedirect.tsx";
 import DailyPlanView from "./components/DailyPlanView.tsx";
+import GroupDetailView from "../mantras/components/GroupDetailView.tsx";
+import GroupAccumulatorDetailView from "../mantras/components/GroupAccumulatorDetailView.tsx";
 import { apiLanguageParam, tolgeeToPlanLanguage } from "./utils/seriesUtils.ts";
 
 const Planviewer = () => {
@@ -30,6 +32,8 @@ const Planviewer = () => {
   const selectedSeriesId = searchParams.get("series");
   const selectedPlanId = searchParams.get("plan");
   const selectedDate = searchParams.get("date");
+  const selectedGroupId = searchParams.get("group");
+  const selectedAccumulatorId = searchParams.get("accumulator");
   const seriesView = searchParams.get("view");
   const isAuthenticatedReady =
     !isAuthLoading &&
@@ -43,6 +47,28 @@ const Planviewer = () => {
     },
     [apiLanguage, setSearchParams],
   );
+
+  const handleSelectAccumulator = useCallback(
+    (accumulatorId: string) => {
+      if (!selectedGroupId) return;
+      const params: Record<string, string> = {
+        group: selectedGroupId,
+        accumulator: accumulatorId,
+        lang: apiLanguage,
+      };
+      setSearchParams(params);
+    },
+    [apiLanguage, selectedGroupId, setSearchParams],
+  );
+
+  const handleBackToGroup = useCallback(() => {
+    if (!selectedGroupId) return;
+    setSearchParams(
+      apiLanguage !== "en"
+        ? { group: selectedGroupId, lang: apiLanguage }
+        : { group: selectedGroupId },
+    );
+  }, [apiLanguage, selectedGroupId, setSearchParams]);
 
   const handleViewSeriesPlans = useCallback(
     (seriesId: string) => {
@@ -96,6 +122,27 @@ const Planviewer = () => {
   );
 
   const content = useMemo(() => {
+    if (selectedGroupId && selectedAccumulatorId) {
+      return (
+        <GroupAccumulatorDetailView
+          groupAccumulatorId={selectedAccumulatorId}
+          onBack={handleBackToGroup}
+        />
+      );
+    }
+
+    if (selectedGroupId) {
+      return (
+        <GroupDetailView
+          groupId={selectedGroupId}
+          apiLanguage={tolgeeApiLanguage}
+          language={planLanguage}
+          onBack={handleBackToList}
+          onSelectAccumulator={handleSelectAccumulator}
+        />
+      );
+    }
+
     if (selectedSeriesId && selectedPlanId) {
       return (
         <DailyPlanView
@@ -144,6 +191,8 @@ const Planviewer = () => {
       />
     );
   }, [
+    selectedGroupId,
+    selectedAccumulatorId,
     selectedSeriesId,
     selectedPlanId,
     selectedDate,
@@ -153,9 +202,11 @@ const Planviewer = () => {
     apiLanguage,
     isAuthenticatedReady,
     handleBackToList,
+    handleBackToGroup,
     handleBackToSeries,
     handleDateChange,
     handleSelectSeries,
+    handleSelectAccumulator,
     handleViewSeriesPlans,
     handleSelectPlan,
   ]);
