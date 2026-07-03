@@ -64,7 +64,7 @@ const VerseOfDayCard = ({ apiLanguage }: VerseOfDayCardProps) => {
       role="button"
     >
       {verse.image_url ? (
-        <div className="relative w-full h-[320px] min-h-[130px]  overflow-hidden flex-shrink-0">
+        <div className="relative w-full h-[320px] min-h-[130px] overflow-hidden flex-shrink-0">
           <img
             src={verse.image_url}
             alt=""
@@ -72,19 +72,24 @@ const VerseOfDayCard = ({ apiLanguage }: VerseOfDayCardProps) => {
             style={{ width: "100%", height: "100%" }}
           />
           <div
-            className={`absolute inset-0 flex flex-col  justify-center items-center flex-1 p-6 ${!verse.image_url ? "" : ""}`}
+            className={`
+              absolute inset-0 flex flex-col justify-center items-center flex-1 p-6 
+              bg-gradient-to-b from-black/70 via-black/50 to-black/80
+            `}
           >
             <div>
               <blockquote
-                className={`relative  text-2xl sm:text-3xl leading-relaxed text-gray-200  text-center ${getLanguageClass(apiLanguage)} ${
-                  isTibetan ? "" : "font-serif italic"
-                } drop-shadow`}
+                className={`
+                  relative text-2xl sm:text-3xl leading-relaxed text-gray-100 text-center 
+                  ${getLanguageClass(apiLanguage)} ${isTibetan ? "" : "font-serif italic"} 
+                  drop-shadow-lg
+                `}
               >
                 {verseText}
               </blockquote>
               {verseAttribution && (
-                <div className="text-center text-white text-3xl font-bold ">
-                  {verseAttribution}
+                <div className="text-center text-white text-2xl capitalize font-bold mt-4 drop-shadow">
+                  - {verseAttribution}
                 </div>
               )}
             </div>
