@@ -20,8 +20,12 @@ import { UserbackProvider } from "./context/UserBackProvider.tsx";
 import { CollectionColorProvider } from "./context/CollectionColorContext.tsx";
 import { Toaster } from "@/components/ui/sonner";
 import AppOpenBanner from "./components/layout/AppOpenBanner.tsx";
+import { initClarity } from "./utils/clarity.ts";
+
 const queryClient = new QueryClient();
 const defaultLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE || "en";
+
+initClarity();
 
 if (!localStorage.getItem(LANGUAGE)) {
   localStorage.setItem(LANGUAGE, defaultLanguage);
