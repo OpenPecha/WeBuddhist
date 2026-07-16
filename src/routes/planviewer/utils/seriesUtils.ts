@@ -180,12 +180,15 @@ export function getVerseText(
 }
 
 export function getVerseAttribution(
-  attributions: Record<string, string> | null | undefined,
+  attributions:
+    | { language?: string; sub_title?: string | null }[]
+    | null
+    | undefined,
   lang: string,
 ): string {
   const attribution = attributions?.find(
-    (attribution) =>
-      String(attribution.language).toLowerCase() === String(lang).toLowerCase(),
+    (entry) =>
+      String(entry.language).toLowerCase() === String(lang).toLowerCase(),
   );
   if (!attribution) return "";
   return attribution.sub_title?.trim() ?? "";

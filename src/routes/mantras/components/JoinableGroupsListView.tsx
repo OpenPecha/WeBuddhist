@@ -69,11 +69,11 @@ const JoinableGroupsListView = ({
         description={siteDescription}
         canonical={`${window.location.origin}/`}
       />
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 pb-10">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 bg-[#f4f6f8] px-4 py-6 pb-10">
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex w-fit items-center gap-2 text-sm font-medium text-amber-800 transition hover:text-amber-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+          className="inline-flex w-fit items-center gap-2 text-sm font-medium text-[#102544] transition hover:text-[#0c1c34] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#102544]/40"
           aria-label={t("mantras.back_to_home", "Back to home")}
         >
           <IoArrowBack className="size-4" aria-hidden="true" />
@@ -81,20 +81,20 @@ const JoinableGroupsListView = ({
         </button>
 
         <header className="space-y-1">
-          <h1 className="text-2xl font-semibold text-gray-900">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
             {t("mantras.joinable_groups", "Groups to Join")}
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-slate-500">
             {t(
               "mantras.joinable_groups_description",
-              "Tap a group to download the app and join.",
+              "Practice together with the community.",
             )}
           </p>
         </header>
 
         {groups.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-amber-200 bg-amber-50/50 px-6 py-12 text-center">
-            <p className="text-gray-600">
+          <div className="rounded-3xl border border-dashed border-slate-300 bg-white/60 px-6 py-12 text-center">
+            <p className="text-slate-600">
               {t(
                 "mantras.no_joinable_groups",
                 "No groups available to join yet.",
@@ -110,6 +110,7 @@ const JoinableGroupsListView = ({
                   group={group}
                   language={language}
                   onOpenApp={handleOpenApp}
+                  variant="list"
                 />
               ))}
             </div>

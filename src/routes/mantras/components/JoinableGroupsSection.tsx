@@ -5,7 +5,7 @@ import JoinableGroupCard from "./JoinableGroupCard.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { PlanLanguageCode } from "../../planviewer/utils/seriesUtils.ts";
 
-const PREVIEW_COUNT = 3;
+const PREVIEW_COUNT = 4;
 
 type JoinableGroupsSectionProps = {
   apiLanguage: string;
@@ -33,11 +33,14 @@ const JoinableGroupsSection = ({
 
   if (isLoading) {
     return (
-      <section className="space-y-4">
-        <Skeleton className="h-8 w-48" />
-        <div className="grid gap-4">
+      <section className="space-y-5">
+        <Skeleton className="h-8 w-56" />
+        <div className="-mx-4 flex gap-4 overflow-hidden px-4 sm:-mx-6 sm:px-6">
           {Array.from({ length: PREVIEW_COUNT }).map((_, index) => (
-            <Skeleton key={index} className="h-24 w-full rounded-2xl" />
+            <Skeleton
+              key={index}
+              className="h-44 w-[16rem] shrink-0 rounded-2xl"
+            />
           ))}
         </div>
       </section>
@@ -47,16 +50,19 @@ const JoinableGroupsSection = ({
   if (!groups.length) return null;
 
   return (
-    <section className="space-y-4">
-      <header className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h2 className="text-2xl font-semibold text-gray-900">
+    <section
+      className="space-y-5"
+      aria-label={t("mantras.joinable_groups", "Groups to Join")}
+    >
+      <header className="flex items-end justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
             {t("mantras.joinable_groups", "Groups to Join")}
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="mt-1 text-sm text-slate-500">
             {t(
               "mantras.joinable_groups_description",
-              "Tap a group to download the app and join.",
+              "Practice together with the community.",
             )}
           </p>
         </div>
@@ -64,13 +70,13 @@ const JoinableGroupsSection = ({
           <button
             type="button"
             onClick={onViewAllGroups}
-            className="shrink-0 text-sm font-medium text-amber-800 transition hover:text-amber-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            className="shrink-0 text-sm font-semibold text-[#102544] transition hover:text-[#0c1c34] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#102544]/40"
           >
-            {t("mantras.show_all_groups", "Show all")}
+            {t("mantras.show_all_groups", "See all")}
           </button>
         )}
       </header>
-      <div className="grid gap-4">
+      <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6">
         {groups.map((group) => (
           <JoinableGroupCard
             key={group.id}
