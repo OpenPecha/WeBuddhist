@@ -11,6 +11,7 @@ import SeriesPlanRedirect from "./components/SeriesPlanRedirect.tsx";
 import DailyPlanView from "./components/DailyPlanView.tsx";
 import GroupDetailView from "../mantras/components/GroupDetailView.tsx";
 import GroupAccumulatorDetailView from "../mantras/components/GroupAccumulatorDetailView.tsx";
+import JoinableGroupsListView from "../mantras/components/JoinableGroupsListView.tsx";
 import { apiLanguageParam, tolgeeToPlanLanguage } from "./utils/seriesUtils.ts";
 
 const Planviewer = () => {
@@ -35,6 +36,7 @@ const Planviewer = () => {
   const selectedGroupId = searchParams.get("group");
   const selectedAccumulatorId = searchParams.get("accumulator");
   const seriesView = searchParams.get("view");
+  const showGroupsList = seriesView === "groups";
   const isAuthenticatedReady =
     !isAuthLoading &&
     !isAuth0Loading &&
@@ -93,6 +95,10 @@ const Planviewer = () => {
 
   const handleBackToList = useCallback(() => {
     setSearchParams(apiLanguage !== "en" ? { lang: apiLanguage } : {});
+  }, [apiLanguage, setSearchParams]);
+
+  const handleViewAllGroups = useCallback(() => {
+    setSearchParams({ view: "groups", lang: apiLanguage });
   }, [apiLanguage, setSearchParams]);
 
   const handleBackToSeries = useCallback(() => {
@@ -181,6 +187,16 @@ const Planviewer = () => {
       );
     }
 
+    if (showGroupsList) {
+      return (
+        <JoinableGroupsListView
+          apiLanguage={tolgeeApiLanguage}
+          language={planLanguage}
+          onBack={handleBackToList}
+        />
+      );
+    }
+
     return (
       <SeriesListView
         apiLanguage={tolgeeApiLanguage}
@@ -188,6 +204,7 @@ const Planviewer = () => {
         isAuthenticated={isAuthenticatedReady}
         onSelectSeries={handleSelectSeries}
         onViewSeriesPlans={handleViewSeriesPlans}
+        onViewAllGroups={handleViewAllGroups}
       />
     );
   }, [
@@ -209,6 +226,8 @@ const Planviewer = () => {
     handleSelectAccumulator,
     handleViewSeriesPlans,
     handleSelectPlan,
+    showGroupsList,
+    handleViewAllGroups,
   ]);
 
   return <div className="min-h-[calc(100dvh-4rem)] w-full">{content}</div>;

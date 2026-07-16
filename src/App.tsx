@@ -1,5 +1,11 @@
 import "./App.css";
-import { Route, Routes, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { AuthenticationGuard } from "./config/AuthenticationGuard.tsx";
 import { useEffect, useState, Suspense, lazy } from "react";
@@ -304,7 +310,7 @@ function App() {
             path="/:username/:sheetSlugAndId"
             element={<SheetChapters />}
           />
-          <Route path="*" element={<Collections />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </Suspense>

@@ -45,7 +45,7 @@ const PresetMantrasSection = ({
     <section className="space-y-4">
       <header className="space-y-1">
         <h2 className="text-2xl font-semibold text-gray-900">
-          {t("mantras.preset_mantras", "Preset Mantras")}
+          {t("mantras.preset_mantras", "Mantras")}
         </h2>
         <p className="text-sm text-gray-600">
           {t(

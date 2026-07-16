@@ -28,10 +28,11 @@ export async function fetchPresetAccumulators(
 export async function fetchPublicGroups(
   language: string,
   limit = 50,
+  skip = 0,
 ): Promise<PublicAuthorGroupListResponse> {
   const { data } = await axiosInstance.get<PublicAuthorGroupListResponse>(
     "/api/v1/author/groups",
-    { params: { language, limit, skip: 0, group_type: "COMMUNITY" } },
+    { params: { language, limit, skip, group_type: "COMMUNITY" } },
   );
   return data;
 }

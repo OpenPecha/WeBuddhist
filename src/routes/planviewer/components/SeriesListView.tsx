@@ -25,6 +25,7 @@ type SeriesListViewProps = {
   isAuthenticated: boolean;
   onSelectSeries: (seriesId: string) => void;
   onViewSeriesPlans: (seriesId: string) => void;
+  onViewAllGroups: () => void;
 };
 
 const SeriesListView = ({
@@ -33,6 +34,7 @@ const SeriesListView = ({
   isAuthenticated,
   onSelectSeries,
   onViewSeriesPlans,
+  onViewAllGroups,
 }: SeriesListViewProps) => {
   const { t } = useTranslate();
   const [downloadModalOpen, setDownloadModalOpen] = useState(false);
@@ -132,6 +134,7 @@ const SeriesListView = ({
           apiLanguage={apiLanguage}
           language={language}
           onOpenApp={handleOpenApp}
+          onViewAllGroups={onViewAllGroups}
         />
       </div>
       <DownloadAppModal
