@@ -376,7 +376,7 @@ describe("Planviewer", () => {
     renderPlanviewer();
 
     await waitFor(() => {
-      expect(screen.getByText("Practice Routines")).toBeInTheDocument();
+      expect(screen.getByText("Join the Practice")).toBeInTheDocument();
     });
   });
 });

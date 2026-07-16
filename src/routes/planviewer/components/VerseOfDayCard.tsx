@@ -22,11 +22,12 @@ const VerseOfDayCard = ({ apiLanguage }: VerseOfDayCardProps) => {
   const verse = data?.verse_of_day;
   if (isLoading) {
     return (
-      <div className="animate-pulse rounded-2xl border border-amber-100 bg-white p-6 shadow-sm">
-        <div className="mb-3 h-4 w-32 rounded bg-amber-100" />
-        <div className="space-y-2">
-          <div className="h-4 w-full rounded bg-amber-50" />
-          <div className="h-4 w-4/5 rounded bg-amber-50" />
+      <div className="animate-pulse bg-[#f4f6f8]">
+        <div className="h-[min(52vh,480px)] w-full bg-slate-200/70" />
+        <div className="mx-auto max-w-3xl space-y-3 px-6 py-10">
+          <div className="mx-auto h-3 w-40 rounded-full bg-slate-200" />
+          <div className="mx-auto h-5 w-full max-w-xl rounded-full bg-slate-200/80" />
+          <div className="mx-auto h-5 w-4/5 max-w-lg rounded-full bg-slate-200/70" />
         </div>
       </div>
     );
@@ -44,82 +45,63 @@ const VerseOfDayCard = ({ apiLanguage }: VerseOfDayCardProps) => {
       await navigator.clipboard.writeText(verseText);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
-    } catch (e) {
-      // Silently fail, or show message if desired
+    } catch {
+      // Clipboard may be unavailable; fail silently.
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleCopy();
     }
   };
 
   return (
     <section
-      className="relative flex flex-col items-center items-stretch gap-0 overflow-hidden p-0 cursor-pointer transition group"
+      className="relative overflow-hidden bg-[#f4f6f8]"
       aria-label={t("plans.verse_of_day", "Verse of the day")}
-      title={t("plans.copy_to_clipboard", "Copy verse to clipboard")}
-      onClick={handleCopy}
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          handleCopy();
-        }
-      }}
-      role="button"
     >
-      {verse.image_url ? (
-        <div className="relative w-full h-[320px] min-h-[130px] overflow-hidden flex-shrink-0">
+      {verse.image_url && (
+        <div className="relative h-[min(52vh,480px)] w-full overflow-hidden">
           <img
             src={verse.image_url}
             alt=""
-            className="object-cover object-center w-full h-full absolute inset-0"
-            style={{ width: "100%", height: "100%" }}
+            className="h-full w-full object-cover animate-[fadeInUp_0.7s_ease-out]"
           />
-          <div
-            className={`
-              absolute inset-0 flex flex-col justify-center items-center flex-1 p-6 
-              bg-gradient-to-b from-black/70 via-black/50 to-black/80
-            `}
-          >
-            <div>
-              <blockquote
-                className={`
-                  relative text-2xl sm:text-3xl leading-relaxed text-gray-100 text-center 
-                  ${getLanguageClass(apiLanguage)} ${isTibetan ? "" : "font-serif italic"} 
-                  drop-shadow-lg
-                `}
-              >
-                {verseText}
-              </blockquote>
-              {verseAttribution && (
-                <div className="text-center text-white text-2xl capitalize font-bold mt-4 drop-shadow">
-                  - {verseAttribution}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className={`flex flex-1 flex-col justify-between p-6`}>
-          <div>
-            <p className="mb-4 sm:mb-5 text-[0.83rem] font-bold uppercase tracking-widest text-amber-700 drop-shadow">
-              {copied && (
-                <span className="ml-2 text-amber-700 font-normal text-xs bg-amber-100 px-2 py-1 rounded transition">
-                  {t("plans.copied", "Copied!")}
-                </span>
-              )}
-            </p>
-            <blockquote
-              className={`relative text-lg sm:text-xl leading-relaxed text-gray-800 pl-3 ${getLanguageClass(apiLanguage)} ${
-                isTibetan ? "" : "font-serif italic"
-              }`}
-            >
-              {verseText}
-            </blockquote>
-            {verseAttribution && (
-              <div className="mt-4 text-center text-sm font-bold text-amber-800">
-                {verseAttribution}
-              </div>
-            )}
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#f4f6f8] via-[#f4f6f8]/25 to-transparent" />
         </div>
       )}
+
+      <button
+        type="button"
+        className={`relative z-10 mx-auto block w-full max-w-3xl cursor-pointer px-6 text-left ${verse.image_url ? "-mt-16 pb-12 pt-2" : "py-14"}`}
+        title={t("plans.copy_to_clipboard", "Copy verse to clipboard")}
+        onClick={handleCopy}
+        onKeyDown={handleKeyDown}
+        aria-label={t("plans.copy_to_clipboard", "Copy verse to clipboard")}
+      >
+        <p className="mb-5 text-center text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-slate-500">
+          {t("plans.verse_of_day", "Verse of the day")}
+        </p>
+        <blockquote
+          className={`text-center text-2xl leading-relaxed text-slate-800 sm:text-3xl sm:leading-snug ${getLanguageClass(apiLanguage)} ${
+            isTibetan ? "" : "en-serif-text"
+          }`}
+        >
+          “{verseText}”
+        </blockquote>
+        {verseAttribution && (
+          <p className="mt-5 text-center text-sm font-medium tracking-wide text-slate-500 capitalize">
+            — {verseAttribution}
+          </p>
+        )}
+        {copied && (
+          <p className="mt-4 text-center text-xs font-medium text-[#102544]/80 transition">
+            {t("plans.copied", "Copied!")}
+          </p>
+        )}
+      </button>
     </section>
   );
 };

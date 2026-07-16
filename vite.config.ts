@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
     envDir: "./env",
     server: {
       host: true,
+      port: 3000,
       open: true,
       proxy: {
         "/api": {

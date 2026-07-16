@@ -42,60 +42,64 @@ const PresetMantraCard = ({
   };
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <div className="w-full max-w-md">
-        <div className="relative  w-full overflow-hidden ">
-          {imageUrl ? (
-            <img src={imageUrl} alt="" className="h-12 w-12 object-cover" />
-          ) : (
-            <div className="flex h-full items-center justify-center bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700/50">
-              <span className={`text-2xl font-medium ${contentFontClass}`}>
-                ཨོཾ
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        aria-label={t(
-          "mantras.open_app_for_mantra",
-          "Download the app to practice {title}",
-          { title },
+    <button
+      type="button"
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      aria-label={t(
+        "mantras.open_app_for_mantra",
+        "Download the app to practice {title}",
+        { title },
+      )}
+      className="group flex w-40 shrink-0 flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white text-left shadow-sm shadow-slate-900/5 transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#102544]/40 focus-visible:ring-offset-2 sm:w-44"
+    >
+      <div className="relative flex aspect-square w-full items-center justify-center bg-linear-to-br from-amber-50/90 via-white to-slate-100 p-5">
+        <div
+          className="absolute inset-0 opacity-40"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 50% 40%, rgba(251, 191, 36, 0.18), transparent 68%)",
+          }}
+          aria-hidden="true"
+        />
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt=""
+            className="relative z-10 h-[4.75rem] w-[4.75rem] object-contain drop-shadow-sm transition duration-300 group-hover:scale-105 sm:h-[5.25rem] sm:w-[5.25rem]"
+          />
+        ) : (
+          <span
+            className={`relative z-10 text-4xl font-medium text-amber-800/70 ${contentFontClass}`}
+          >
+            ཨོཾ
+          </span>
         )}
-        className="flex flex-col w-full max-w-md gap-2 py-4 cursor-pointer outline-none"
-        style={{ border: "none", background: "none" }}
-      >
+      </div>
+
+      <div className="flex flex-1 flex-col gap-1.5 p-3 pt-2.5">
         <h3
-          className={`text-lg font-semibold text-gray-900 ${contentFontClass}`}
+          className={`line-clamp-2 text-sm font-semibold leading-snug text-slate-900 ${contentFontClass}`}
         >
           {title}
         </h3>
         {mantraText && (
           <p
-            className={`line-clamp-2 text-sm text-amber-900/80 ${contentFontClass}`}
+            className={`line-clamp-2 text-xs leading-relaxed text-slate-500 ${contentFontClass}`}
           >
             {mantraText}
           </p>
         )}
-        {description && (
+        {!mantraText && description && (
           <p
-            className={`line-clamp-2 text-sm text-gray-600 ${contentFontClass}`}
+            className={`line-clamp-2 text-xs leading-relaxed text-slate-500 ${contentFontClass}`}
           >
             {description}
           </p>
         )}
-        {preset.target_count != null && preset.target_count > 0 && (
-          <p className="mt-auto text-xs text-gray-500">
-            {t("mantras.target_count", "Target")}:{" "}
-            {preset.target_count.toLocaleString()}
-          </p>
-        )}
       </div>
-    </div>
+    </button>
   );
 };
 
