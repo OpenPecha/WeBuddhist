@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 
 import { Badge } from "@/components/ui/badge";
-import webuddhist_logo from "/img/webuddhist_logo.svg";
+import webuddhist_logo from "/img/logo.png";
 import { Link } from "react-router-dom";
 
 type AuthTwoColumnLayoutProps = {
