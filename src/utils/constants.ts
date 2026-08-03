@@ -11,7 +11,7 @@ export const siteName = "WeBuddhist";
 export const siteDescription =
   "We are Buddhist. We learn, practice and connect. Daily.";
 export const USERBACK_ID = "A-JldUwSRlsuKf8Te85bql54w7U";
-export const CLARITY_PROJECT_ID = "xls0e1q3b5";
+export const CLARITY_PROJECT_ID = "xlscfcpnox";
 
 //for app open banner
 export const APP_SCHEME_URL = "webuddhist://home";
