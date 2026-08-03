@@ -216,11 +216,7 @@ const Navigation = () => {
             }
           }}
         >
-          <img
-            className="h-[30px]"
-            src="/img/webuddhist_logo.svg"
-            alt="Webuddhist"
-          />
+          <img className="h-[30px]" src="/img/logo.png" alt="Webuddhist" />
         </Link>
         <div className={`hidden md:flex space-x-8`}>
           {navItems.map((navItem) => (

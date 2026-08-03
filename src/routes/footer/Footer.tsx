@@ -85,12 +85,7 @@ const Footer = () => {
         <div className="flex-1 items-center justify-center">
           <div className="flex w-full flex-col text-start">
             <div className=" flex items-center">
-              <img
-                src="/img/webuddhist_logo.svg"
-                alt="logo"
-                width={150}
-                height={150}
-              />
+              <img src="/img/logo.png" alt="logo" width={150} height={150} />
             </div>
             <div className="flex w-full max-w-xl">
               <p className="text-sm md:text-base text-muted-foreground">
