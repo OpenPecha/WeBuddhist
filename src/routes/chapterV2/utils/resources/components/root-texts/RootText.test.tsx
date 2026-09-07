@@ -56,14 +56,14 @@ vi.mock("../../../../../../context/PanelContext", async () => {
 describe("RootTextView", () => {
   const queryClient = new QueryClient();
   const mockRootTextData = {
-    segment_root_mapping: [
+    root_text: [
       {
         text_id: "mock-root-text-1",
         title: "རྩ་བའི་གཞུང་དང་པོ།",
         language: "bo",
         segments: [
           {
-            segment_id: "mock-segment-id",
+            id: "mock-segment-id",
             content:
               "<p>འདི་ནི་རྩ་བའི་གཞུང་གི་ནང་དོན་ཡིན།</p><p>གཉིས་པའི་བརྗོད་པ།</p>",
           },
@@ -75,7 +75,7 @@ describe("RootTextView", () => {
         language: "en",
         segments: [
           {
-            segment_id: "mock-segment-id",
+            id: "mock-segment-id",
             content:
               "<p>This is a sample root text about Buddhist philosophy.</p><p>Second paragraph with a <span class='footnote-marker'>*</span><span class='footnote'>This is a footnote</span> footnote.</p>",
           },
@@ -85,7 +85,7 @@ describe("RootTextView", () => {
   };
 
   const mockEmptyRootTextData = {
-    segment_root_mapping: [],
+    root_text: [],
   };
 
   let mockSetIsRootTextView: ReturnType<typeof vi.fn>;
@@ -315,37 +315,35 @@ describe("RootTextView", () => {
     expect(screen.getByText("text.root_text")).toBeInTheDocument();
   });
 
-  test("renders root text with count when count property exists", () => {
-    const mockDataWithCount = {
-      segment_root_mapping: [
+  test("renders root text with count derived from segments length", () => {
+    const mockDataWithSegments = {
+      root_text: [
         {
           text_id: "mock-root-text-1",
           title: "Test Root Text",
           language: "en",
-          count: 5,
           segments: [
-            {
-              segment_id: "mock-segment-id",
-              content: "<p>Test content</p>",
-            },
+            { id: "mock-segment-id-1", content: "<p>Test content 1</p>" },
+            { id: "mock-segment-id-2", content: "<p>Test content 2</p>" },
+            { id: "mock-segment-id-3", content: "<p>Test content 3</p>" },
           ],
         },
       ],
     };
 
     vi.spyOn(reactQuery, "useQuery").mockImplementationOnce((() => ({
-      data: mockDataWithCount,
+      data: mockDataWithSegments,
       isLoading: false,
     })) as any);
 
     setup();
 
-    expect(screen.getByText(/Test Root Text.*\(5\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Test Root Text.*\(3\)/)).toBeInTheDocument();
   });
 
   test("does not render segments section when segments array is missing", () => {
     const mockDataWithoutSegments = {
-      segment_root_mapping: [
+      root_text: [
         {
           text_id: "mock-root-text-1",
           title: "Test Root Text Without Segments",

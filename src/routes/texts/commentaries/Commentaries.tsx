@@ -7,6 +7,7 @@ import {
 import PaginationComponent from "../../commons/pagination/PaginationComponent.tsx";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge.tsx";
+import { usePanelContext } from "@/context/PanelContext.tsx";
 
 const LANGUAGE_MAP = {
   sa: "language.sanskrit",
@@ -47,6 +48,7 @@ const Commentaries = ({
   currentChapter,
 }: CommentariesProps) => {
   const { t } = useTranslate();
+  const { closeResourcesPanel } = usePanelContext() as any;
 
   const earlyReturn = getEarlyReturn({ isLoading, error: isError, t });
   if (earlyReturn) return earlyReturn;
@@ -66,19 +68,17 @@ const Commentaries = ({
   };
 
   const CommentaryCard = ({ commentary }: { commentary: CommentaryItem }) => {
+    const handleOpenText = () => {
+      addChapter?.({ textId: commentary.id }, currentChapter);
+      closeResourcesPanel?.();
+    };
+
     const renderTitle = () => {
       if (addChapter) {
         return (
           <button
             type="button"
-            onClick={() => {
-              addChapter(
-                {
-                  textId: commentary.id,
-                },
-                currentChapter,
-              );
-            }}
+            onClick={handleOpenText}
             className="text-left cursor-pointer hover:opacity-80 transition-opacity"
           >
             <div

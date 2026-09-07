@@ -6,6 +6,7 @@ import {
 import { Link } from "react-router-dom";
 import { useTranslate } from "@tolgee/react";
 import { Badge } from "@/components/ui/badge.tsx";
+import { usePanelContext } from "@/context/PanelContext.tsx";
 
 type VersionItem = {
   id: string;
@@ -52,23 +53,19 @@ const CommonCard = ({
   currentChapter?: any;
 }) => {
   const { t } = useTranslate();
+  const { closeResourcesPanel } = usePanelContext() as any;
+
+  const handleOpenText = () => {
+    addChapter?.({ textId: version.id }, currentChapter);
+    closeResourcesPanel?.();
+  };
 
   const renderTitle = () => {
     if (addChapter) {
       return (
         <button
           type="button"
-          onClick={() => {
-            if (contentId) {
-              addChapter(
-                {
-                  textId: version.id,
-                  contentId: contentId,
-                },
-                currentChapter,
-              );
-            }
-          }}
+          onClick={handleOpenText}
           className="text-left cursor-pointer hover:opacity-80 transition-opacity"
         >
           <div

@@ -1,6 +1,6 @@
 import { vi, describe, beforeEach, test, expect } from "vitest";
 import { BrowserRouter as Router } from "react-router-dom";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { TolgeeProvider } from "@tolgee/react";
 import "@testing-library/jest-dom";
 import {
@@ -35,6 +35,13 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
     if (error) return <div>Error occurred</div>;
     return null;
   },
+}));
+
+const mockCloseResourcesPanel = vi.fn();
+vi.mock("@/context/PanelContext.tsx", () => ({
+  usePanelContext: () => ({
+    closeResourcesPanel: mockCloseResourcesPanel,
+  }),
 }));
 
 vi.mock("../../commons/pagination/PaginationComponent.jsx", () => ({
@@ -97,5 +104,20 @@ describe("Commentaries Component", () => {
   test("shows not found message when items is null", () => {
     setup({ items: null });
     expect(screen.getByText("global.not_found")).toBeInTheDocument();
+  });
+
+  test("calls addChapter and closes the resources panel when a commentary is clicked", () => {
+    const mockAddChapter = vi.fn();
+    const currentChapter = { textId: "current-1" };
+
+    setup({ addChapter: mockAddChapter, currentChapter });
+
+    fireEvent.click(screen.getByText("Commentary 1"));
+
+    expect(mockAddChapter).toHaveBeenCalledWith(
+      { textId: "c1" },
+      currentChapter,
+    );
+    expect(mockCloseResourcesPanel).toHaveBeenCalled();
   });
 });

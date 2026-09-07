@@ -32,6 +32,15 @@ const CommentaryView = ({
 }: any) => {
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext() as any;
+
+  const handleOpenText = (targetTextId: string, targetSegmentId: string) => {
+    addChapter(
+      { textId: targetTextId, segmentId: targetSegmentId },
+      currentChapter,
+    );
+    closeResourcesPanel();
+  };
+
   const { data: segmentCommentaries } = useQuery(
     ["relatedTexts", segmentId],
     () => fetchCommentaryData(segmentId),
@@ -60,7 +69,9 @@ const CommentaryView = ({
                     )}`}
                   >
                     {commentary.title}
-                    {commentary.count && `(${commentary.count})`}
+                    {commentary.segments?.length > 1
+                      ? ` (${commentary.segments.length})`
+                      : ""}
                   </h3>
                   {commentary.segments && (
                     <div className="space-y-4">
@@ -77,16 +88,7 @@ const CommentaryView = ({
                               <button
                                 type="button"
                                 className="flex space-x-2 items-center text-sm text-gray-600 transition hover:text-red-700 cursor-pointer"
-                                onClick={() => {
-                                  addChapter(
-                                    {
-                                      textId: textId,
-                                      segmentId: item.segment_id,
-                                    },
-                                    currentChapter,
-                                  );
-                                  closeResourcesPanel();
-                                }}
+                                onClick={() => handleOpenText(textId, item.id)}
                               >
                                 <GoLinkExternal />
                                 <span>{t("text.translation.open_text")}</span>

@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom";
 import { mockTolgee } from "../../../test-utils/CommonMocks.ts";
 import { TolgeeProvider } from "@tolgee/react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import Versions from "./Versions.tsx";
 import { vi, beforeEach, describe, test, expect } from "vitest";
 
@@ -25,6 +25,13 @@ vi.mock("../../../utils/helperFunctions.jsx", () => ({
     if (error) return <div>Error occurred</div>;
     return null;
   },
+}));
+
+const mockCloseResourcesPanel = vi.fn();
+vi.mock("@/context/PanelContext.tsx", () => ({
+  usePanelContext: () => ({
+    closeResourcesPanel: mockCloseResourcesPanel,
+  }),
 }));
 
 describe("Versions Component", () => {
@@ -138,6 +145,31 @@ describe("Versions Component", () => {
       setup({ contentId: "prop-123" });
 
       expect(screen.getByText("Version 1 Title")).toBeInTheDocument();
+    });
+
+    test("calls addChapter with just textId when a version is clicked, even without table_of_contents", () => {
+      const mockAddChapter = vi.fn();
+      const currentChapter = { textId: "current-1" };
+      const versionsWithoutToc = {
+        versions: [
+          { id: "version1", title: "Version 1 Title", language: "bo" },
+        ],
+      };
+
+      setup({
+        versions: versionsWithoutToc,
+        contentId: undefined,
+        addChapter: mockAddChapter,
+        currentChapter,
+      });
+
+      fireEvent.click(screen.getByText("Version 1 Title"));
+
+      expect(mockAddChapter).toHaveBeenCalledWith(
+        { textId: "version1" },
+        currentChapter,
+      );
+      expect(mockCloseResourcesPanel).toHaveBeenCalled();
     });
   });
 

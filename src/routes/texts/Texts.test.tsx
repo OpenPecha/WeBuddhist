@@ -25,6 +25,13 @@ import Texts, { fetchTableOfContents, fetchVersions } from "./Texts.tsx";
 mockUseAuth();
 mockReactQuery();
 
+const mockCloseResourcesPanel = vi.fn();
+vi.mock("@/context/PanelContext.tsx", () => ({
+  usePanelContext: () => ({
+    closeResourcesPanel: mockCloseResourcesPanel,
+  }),
+}));
+
 vi.mock("./versions/Versions.tsx", () => ({
   __esModule: true,
   default: () => <div data-testid="versions-component">Versions Component</div>,
@@ -243,9 +250,49 @@ describe("Texts Component", () => {
     const titleButton = screen.getByRole("button");
     await user.click(titleButton);
 
-    expect(mockAddChapter).toHaveBeenCalledWith(
-      { textId: "123", contentId: "content-1" },
-      "ch1",
+    expect(mockAddChapter).toHaveBeenCalledWith({ textId: "123" }, "ch1");
+    expect(mockCloseResourcesPanel).toHaveBeenCalled();
+  });
+
+  test("handles title click with addChapter even when table of contents has no data", async () => {
+    const user = userEvent.setup();
+    const mockAddChapter = vi.fn();
+
+    vi.spyOn(reactQuery, "useQuery").mockImplementation(((
+      queryKey: string[],
+    ) => {
+      if (queryKey[0] === "table-of-contents") {
+        return { data: undefined, isLoading: false, error: undefined };
+      }
+      if (queryKey[0] === "versions") {
+        return { data: versionsData, isLoading: false, error: undefined };
+      }
+      if (queryKey[0] === "commentaries") {
+        return { data: commentariesData, isLoading: false, error: undefined };
+      }
+      return { data: undefined, isLoading: false, error: undefined };
+    }) as any);
+
+    const queryClient = new QueryClient();
+    render(
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <TolgeeProvider fallback={"Loading tolgee..."} tolgee={mockTolgee}>
+            <Texts
+              isCompactView={true}
+              collection_id="123"
+              addChapter={mockAddChapter}
+              currentChapter="ch1"
+            />
+          </TolgeeProvider>
+        </QueryClientProvider>
+      </Router>,
     );
+
+    const titleButton = screen.getByRole("button");
+    await user.click(titleButton);
+
+    expect(mockAddChapter).toHaveBeenCalledWith({ textId: "123" }, "ch1");
+    expect(mockCloseResourcesPanel).toHaveBeenCalled();
   });
 });

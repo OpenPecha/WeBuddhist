@@ -65,27 +65,24 @@ describe("TranslationView Component", () => {
     translations: [
       {
         language: "en",
-        content: "English translation content",
         title: "English Title",
-        source: "English Source",
+        source_link: "English Source",
         text_id: "text-123",
-        segment_id: "test-segment-id",
+        segments: [{ id: "seg-en-1", content: "English translation content" }],
       },
       {
         language: "bo",
-        content: "Tibetan translation content",
         title: "Tibetan Title",
-        source: "Tibetan Source",
+        source_link: "Tibetan Source",
         text_id: "text-456",
-        segment_id: "test-segment-id",
+        segments: [{ id: "seg-bo-1", content: "Tibetan translation content" }],
       },
       {
         language: "en",
-        content: "Another English translation",
         title: "Another English Title",
-        source: "Another English Source",
+        source_link: "Another English Source",
         text_id: "text-789",
-        segment_id: "test-segment-id",
+        segments: [{ id: "seg-en-2", content: "Another English translation" }],
       },
     ],
   };
@@ -277,7 +274,7 @@ describe("TranslationView Component", () => {
     expect(mockAddChapter).toHaveBeenCalledWith(
       {
         textId: "text-123",
-        segmentId: "test-segment-id",
+        segmentId: "seg-en-1",
       },
       currentChapter,
     );

@@ -25,6 +25,15 @@ const RootTextView = ({
 }: any) => {
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext() as any;
+
+  const handleOpenText = (targetTextId: string, targetSegmentId: string) => {
+    addChapter(
+      { textId: targetTextId, segmentId: targetSegmentId },
+      currentChapter,
+    );
+    closeResourcesPanel();
+  };
+
   const { data: rootTextData } = useQuery(
     ["rootTexts", segmentId],
     () => fetchRootTextData(segmentId),
@@ -64,15 +73,15 @@ const RootTextView = ({
   return (
     <div className="flex h-full flex-col">
       <ResourceHeader
-        title={`${t("text.root_text")}${rootTextData?.segment_root_mapping?.length ? ` (${rootTextData.segment_root_mapping.length})` : ""}`}
+        title={`${t("text.root_text")}${rootTextData?.root_text?.length ? ` (${rootTextData.root_text.length})` : ""}`}
         onBack={handleNavigate}
         onClose={() => setIsRootTextView("main")}
       />
       <div className="flex-1 overflow-y-auto p-4 text-left text-black">
         <div className=" [&_.footnote-marker]:cursor-pointer [&_.footnote-marker]:px-0.5 [&_.footnote-marker]:text-xs [&_.footnote-marker]:font-semibold [&_.footnote-marker]:text-blue-600 [&_.footnote-marker]:transition-colors [&_.footnote-marker]:duration-200 hover:[&_.footnote-marker]:text-blue-800 [&_.footnote]:hidden [&_.footnote]:rounded [&_.footnote]:bg-gray-100 [&_.footnote]:px-1.5 [&_.footnote]:py-0.5 [&_.footnote]:text-[0.9em] [&_.footnote]:italic [&_.footnote]:text-[#8a8a8a] [&_.footnote.active]:inline">
-          {rootTextData?.segment_root_mapping?.length > 0 && (
+          {rootTextData?.root_text?.length > 0 && (
             <div>
-              {rootTextData.segment_root_mapping.map((rootText: any) => {
+              {rootTextData.root_text.map((rootText: any) => {
                 const textId = rootText.text_id;
                 const language = rootText.language;
                 return (
@@ -82,7 +91,10 @@ const RootTextView = ({
                         language,
                       )}`}
                     >
-                      {rootText.title} {rootText.count && `(${rootText.count})`}
+                      {rootText.title}{" "}
+                      {rootText.segments?.length > 1
+                        ? `(${rootText.segments.length})`
+                        : ""}
                     </h3>
                     {rootText.segments && (
                       <div className="space-y-2">
@@ -96,16 +108,9 @@ const RootTextView = ({
                                 <Button
                                   variant="secondary"
                                   className="flex items-center gap-1 bg-transparent p-0 text-sm text-[#555] hover:text-[#a70c0c]"
-                                  onClick={() => {
-                                    addChapter(
-                                      {
-                                        textId: textId,
-                                        segmentId: item.segment_id,
-                                      },
-                                      currentChapter,
-                                    );
-                                    closeResourcesPanel();
-                                  }}
+                                  onClick={() =>
+                                    handleOpenText(textId, item.id)
+                                  }
                                 >
                                   <GoLinkExternal size={14} className="mr-1" />
                                   <span>{t("text.translation.open_text")}</span>
