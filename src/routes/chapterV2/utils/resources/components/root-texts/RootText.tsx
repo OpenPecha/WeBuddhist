@@ -25,6 +25,15 @@ const RootTextView = ({
 }: any) => {
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext() as any;
+
+  const handleOpenText = (targetTextId: string, targetSegmentId: string) => {
+    addChapter(
+      { textId: targetTextId, segmentId: targetSegmentId },
+      currentChapter,
+    );
+    closeResourcesPanel();
+  };
+
   const { data: rootTextData } = useQuery(
     ["rootTexts", segmentId],
     () => fetchRootTextData(segmentId),
@@ -99,16 +108,9 @@ const RootTextView = ({
                                 <Button
                                   variant="secondary"
                                   className="flex items-center gap-1 bg-transparent p-0 text-sm text-[#555] hover:text-[#a70c0c]"
-                                  onClick={() => {
-                                    addChapter(
-                                      {
-                                        textId: textId,
-                                        segmentId: item.id,
-                                      },
-                                      currentChapter,
-                                    );
-                                    closeResourcesPanel();
-                                  }}
+                                  onClick={() =>
+                                    handleOpenText(textId, item.id)
+                                  }
                                 >
                                   <GoLinkExternal size={14} className="mr-1" />
                                   <span>{t("text.translation.open_text")}</span>

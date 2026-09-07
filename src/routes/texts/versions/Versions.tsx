@@ -55,15 +55,17 @@ const CommonCard = ({
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext() as any;
 
+  const handleOpenText = () => {
+    addChapter?.({ textId: version.id }, currentChapter);
+    closeResourcesPanel?.();
+  };
+
   const renderTitle = () => {
     if (addChapter) {
       return (
         <button
           type="button"
-          onClick={() => {
-            addChapter({ textId: version.id }, currentChapter);
-            closeResourcesPanel?.();
-          }}
+          onClick={handleOpenText}
           className="text-left cursor-pointer hover:opacity-80 transition-opacity"
         >
           <div

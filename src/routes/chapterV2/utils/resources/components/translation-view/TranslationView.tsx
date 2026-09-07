@@ -39,6 +39,14 @@ const TranslationView = ({
   const { t } = useTranslate();
   const { closeResourcesPanel } = usePanelContext() as any;
 
+  const handleOpenText = (targetTextId: string, targetSegmentId: string) => {
+    addChapter(
+      { textId: targetTextId, segmentId: targetSegmentId },
+      currentChapter,
+    );
+    closeResourcesPanel();
+  };
+
   const { data: sidePanelTranslationsData } = useQuery(
     ["sidePanelTranslations", segmentId],
     () => fetchTranslationsData(segmentId),
@@ -114,16 +122,7 @@ const TranslationView = ({
               {addChapter && (
                 <Button
                   variant="secondary"
-                  onClick={() => {
-                    addChapter(
-                      {
-                        textId: translation.text_id,
-                        segmentId: item.id,
-                      },
-                      currentChapter,
-                    );
-                    closeResourcesPanel();
-                  }}
+                  onClick={() => handleOpenText(translation.text_id, item.id)}
                 >
                   <GoLinkExternal />
                   {t("text.translation.open_text")}

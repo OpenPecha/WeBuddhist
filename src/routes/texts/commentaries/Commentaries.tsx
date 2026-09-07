@@ -68,20 +68,17 @@ const Commentaries = ({
   };
 
   const CommentaryCard = ({ commentary }: { commentary: CommentaryItem }) => {
+    const handleOpenText = () => {
+      addChapter?.({ textId: commentary.id }, currentChapter);
+      closeResourcesPanel?.();
+    };
+
     const renderTitle = () => {
       if (addChapter) {
         return (
           <button
             type="button"
-            onClick={() => {
-              addChapter(
-                {
-                  textId: commentary.id,
-                },
-                currentChapter,
-              );
-              closeResourcesPanel?.();
-            }}
+            onClick={handleOpenText}
             className="text-left cursor-pointer hover:opacity-80 transition-opacity"
           >
             <div
