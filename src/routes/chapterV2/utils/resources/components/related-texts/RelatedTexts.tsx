@@ -60,7 +60,9 @@ const CommentaryView = ({
                     )}`}
                   >
                     {commentary.title}
-                    {commentary.count && `(${commentary.count})`}
+                    {commentary.segments?.length > 1
+                      ? ` (${commentary.segments.length})`
+                      : ""}
                   </h3>
                   {commentary.segments && (
                     <div className="space-y-4">
@@ -81,7 +83,7 @@ const CommentaryView = ({
                                   addChapter(
                                     {
                                       textId: textId,
-                                      segmentId: item.segment_id,
+                                      segmentId: item.id,
                                     },
                                     currentChapter,
                                   );

@@ -50,24 +50,28 @@ describe("CommentaryView", () => {
     commentaries: [
       {
         text_id: "mock-RelatedText-1",
-        segment_id: "mock-segment-id",
         title: "རྩོམ་པ་པོ་དང་པོ། དབུ་མའི་ལྟ་བའི་གསལ་བཤད།",
         language: "bo",
-        content: [
-          "<p>སེམས་ཀྱི་ངོ་བོ་ནི་གསལ་བ་དང་རིག་པ་ཡིན། དེ་ནི་འོད་གསལ་བ་དང་རྣམ་པར་དག་པ་ཡིན།</p>",
+        segments: [
+          {
+            id: "mock-segment-id-1",
+            content:
+              "<p>སེམས་ཀྱི་ངོ་བོ་ནི་གསལ་བ་དང་རིག་པ་ཡིན། དེ་ནི་འོད་གསལ་བ་དང་རྣམ་པར་དག་པ་ཡིན།</p>",
+          },
         ],
-        count: 2,
       },
       {
         text_id: "mock-RelatedText-2",
-        segment_id: "mock-segment-id",
         title: "RelatedText on Buddhist Philosophy",
         language: "en",
-        content: [
-          "<p>This is a sample RelatedText about Buddhist philosophy and its principles.</p>",
-          "<p>Second paragraph.</p>",
+        segments: [
+          {
+            id: "mock-segment-id-2a",
+            content:
+              "<p>This is a sample RelatedText about Buddhist philosophy and its principles.</p>",
+          },
+          { id: "mock-segment-id-2b", content: "<p>Second paragraph.</p>" },
         ],
-        count: 3,
       },
     ],
   };
@@ -127,8 +131,9 @@ describe("CommentaryView", () => {
   test("closes commentary view when close icon is clicked", () => {
     const { container } = setup();
 
+    // ResourceHeader renders back then close; "Open Text" buttons follow in the list below.
     const buttons = container.querySelectorAll('button[type="button"]');
-    const closeButton = buttons[buttons.length - 1];
+    const closeButton = buttons[1];
 
     fireEvent.click(closeButton);
     expect(mockSetIsRelatedTextView).toHaveBeenCalledWith("main");
@@ -199,7 +204,7 @@ describe("CommentaryView", () => {
           text_id: "mock-text-1",
           title: "Title",
           language: "en",
-          segments: [{ segment_id: "seg-1", content: "the-text" }],
+          segments: [{ id: "seg-1", content: "the-text" }],
         },
       ],
     };

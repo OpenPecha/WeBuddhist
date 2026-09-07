@@ -90,43 +90,48 @@ const TranslationView = ({
           </Badge>
         </div>
 
-        <TextExpand language={translation.language} maxLength={250}>
-          {translation.content}
-        </TextExpand>
-        <div
-          className={`text-sm space-y-1 ${getLanguageClass(
-            translation.language,
-          )}`}
-        >
-          {translation.source && (
+        {translation.source_link && (
+          <div
+            className={`text-sm space-y-1 ${getLanguageClass(
+              translation.language,
+            )}`}
+          >
             <p className="overalltext">
               {t("connection_panel.menuscript.source")}:
               <span className={`${getLanguageClass("en")} text-sm`}>
-                {translation.source}
+                {translation.source_link}
               </span>
             </p>
-          )}
-          <div className="flex min-h-10 items-center justify-between overalltext">
-            {addChapter && (
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  addChapter(
-                    {
-                      textId: translation.text_id,
-                      segmentId: translation.segment_id,
-                    },
-                    currentChapter,
-                  );
-                  closeResourcesPanel();
-                }}
-              >
-                <GoLinkExternal />
-                {t("text.translation.open_text")}
-              </Button>
-            )}
           </div>
-        </div>
+        )}
+
+        {translation.segments?.map((item: any, idx: number) => (
+          <div key={idx} className="space-y-2">
+            <TextExpand language={translation.language} maxLength={250}>
+              {item.content}
+            </TextExpand>
+            <div className="flex min-h-10 items-center justify-between overalltext">
+              {addChapter && (
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    addChapter(
+                      {
+                        textId: translation.text_id,
+                        segmentId: item.id,
+                      },
+                      currentChapter,
+                    );
+                    closeResourcesPanel();
+                  }}
+                >
+                  <GoLinkExternal />
+                  {t("text.translation.open_text")}
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     );
   };
