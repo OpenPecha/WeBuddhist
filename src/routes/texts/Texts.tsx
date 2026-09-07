@@ -16,6 +16,7 @@ import Breadcrumbs, {
 } from "../commons/breadcrumbs/Breadcrumbs.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TwoColumnLayout from "../../components/layout/TwoColumnLayout";
+import { usePanelContext } from "@/context/PanelContext.tsx";
 
 export const fetchTableOfContents = async (
   textId: string,
@@ -76,6 +77,7 @@ const Texts = (props: any) => {
     isCompactView = false,
   } = props || {};
   const { t } = useTranslate();
+  const { closeResourcesPanel } = usePanelContext() as any;
   const { id: urlId } = useParams();
   const location = useLocation();
   const textId = collection_id || urlId || "";
@@ -220,13 +222,10 @@ const Texts = (props: any) => {
   };
 
   const handleTextTitleClick = (e: React.MouseEvent) => {
-    if (addChapter && tableOfContents?.contents[0]?.id) {
+    if (addChapter) {
       e.preventDefault();
-      const chapterData = {
-        textId: textId,
-        contentId: tableOfContents.contents[0].id,
-      };
-      addChapter(chapterData, currentChapter);
+      addChapter({ textId: textId }, currentChapter);
+      closeResourcesPanel?.();
     }
   };
 
